@@ -4,11 +4,842 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Matematik ve Yapay Zeka Enstitüsü Dersleri</title>
+  <meta name="description" content="Matematik ve Yapay Zeka Enstitüsü'nün açık ders portalları. Lineer cebir, yapay zeka, olasılık, optimizasyon ve daha fazlası.">
+  <style>
+    :root {
+      --ink: #101820;
+      --muted: #5e6875;
+      --line: #d9e2e8;
+      --paper: #f7fafb;
+      --white: #ffffff;
+      --teal: #087a78;
+      --teal-dark: #045b5a;
+      --amber: #d88712;
+      --red: #b84e52;
+      --shadow: 0 18px 60px rgba(13, 31, 45, 0.12);
+      --soft-shadow: 0 10px 30px rgba(13, 31, 45, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(16, 24, 32, 0.035) 1px, transparent 1px),
+        linear-gradient(rgba(16, 24, 32, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 46px 46px;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(13, 20, 27, 0.94);
+      backdrop-filter: blur(14px);
+      color: var(--white);
+    }
+
+    .topbar-inner {
+      width: min(1180px, calc(100% - 40px));
+      min-height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #d8d8d8;
+    }
+
+    .brand-name {
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1.05;
+      font-size: 15px;
+      text-transform: uppercase;
+      max-width: 250px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .nav a {
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(118deg, #ffffff 0%, #ffffff 50%, transparent 50.2%),
+        linear-gradient(135deg, rgba(8, 122, 120, 0.15), rgba(216, 135, 18, 0.18)),
+        #e9f1f2;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 48%;
+      background:
+        linear-gradient(rgba(16, 24, 32, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 24, 32, 0.04) 1px, transparent 1px),
+        radial-gradient(circle at 34% 38%, rgba(255, 255, 255, 0.65), transparent 32%),
+        linear-gradient(135deg, rgba(8, 122, 120, 0.12), rgba(184, 78, 82, 0.1));
+      background-size: 38px 38px, 38px 38px, auto, auto;
+      clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 40px));
+      min-height: 430px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 410px;
+      gap: 42px;
+      align-items: center;
+      padding: 72px 0 62px;
+    }
+
+    .hero-copy {
+      max-width: 660px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 6vw, 76px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      margin: 26px 0 0;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.55;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 16px;
+      font-weight: 800;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .button-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    }
+
+    .button-secondary {
+      color: #a25b00;
+      background: #fff;
+      border-color: rgba(216, 135, 18, 0.55);
+    }
+
+    .hero-panel {
+      position: relative;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 310px;
+    }
+
+    .formula-board {
+      width: min(100%, 360px);
+      border: 1px solid rgba(16, 24, 32, 0.14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+    }
+
+    .formula-board-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .formula-lines {
+      display: grid;
+      gap: 16px;
+      padding-top: 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 15px;
+      color: #27313a;
+    }
+
+    .formula-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(217, 226, 232, 0.9);
+      border-radius: 8px;
+      background: rgba(247, 250, 251, 0.8);
+    }
+
+    .formula-line strong {
+      color: var(--teal-dark);
+      font-weight: 900;
+    }
+
+    .main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 72px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--line);
+      box-shadow: var(--soft-shadow);
+      transform: translateY(-46px);
+      margin-bottom: -10px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 98px;
+      padding: 22px 28px;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .stat-number {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 540px);
+      align-items: end;
+      gap: 24px;
+      margin-top: 10px;
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 620px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 12px;
+    }
+
+    .control {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+      padding: 0 14px;
+      box-shadow: 0 8px 22px rgba(13, 31, 45, 0.04);
+    }
+
+    .control:focus {
+      outline: 3px solid rgba(8, 122, 120, 0.18);
+      border-color: rgba(8, 122, 120, 0.62);
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .course-card {
+      position: relative;
+      min-height: 252px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94);
+      padding: 22px;
+      box-shadow: 0 10px 32px rgba(13, 31, 45, 0.06);
+      transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+    }
+
+    a.course-card:hover,
+    a.course-card:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(8, 122, 120, 0.7);
+      outline: none;
+    }
+
+    .course-card.active {
+      border-color: rgba(8, 122, 120, 0.8);
+      box-shadow: 0 16px 45px rgba(8, 122, 120, 0.13);
+    }
+
+    .course-card.disabled {
+      color: rgba(16, 24, 32, 0.84);
+    }
+
+    .course-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .course-icon {
+      width: 70px;
+      height: 70px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .course-card:nth-child(2) .course-icon {
+      background: linear-gradient(135deg, #1f9f92, #087a78);
+    }
+
+    .course-card:nth-child(3) .course-icon {
+      background: linear-gradient(135deg, #e5a02c, var(--amber));
+    }
+
+    .course-card:nth-child(4) .course-icon {
+      background: linear-gradient(135deg, #c95b61, var(--red));
+    }
+
+    .status {
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: rgba(8, 122, 120, 0.1);
+      color: var(--teal-dark);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .status.soon {
+      background: rgba(184, 78, 82, 0.1);
+      color: #9d373c;
+    }
+
+    .course-title {
+      margin: 22px 0 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      line-height: 1.12;
+      font-weight: 800;
+    }
+
+    .course-desc {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .course-meta span + span {
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .arrow {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .empty {
+      display: none;
+      margin-top: 18px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--muted);
+    }
+
+    .notice {
+      margin-top: 22px;
+      border: 1px solid rgba(8, 122, 120, 0.25);
+      border-radius: 8px;
+      background: rgba(8, 122, 120, 0.06);
+      padding: 18px 20px;
+      color: #234246;
+      line-height: 1.55;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: #101820;
+      color: rgba(255, 255, 255, 0.76);
+    }
+
+    .footer-inner {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: #fff;
+      font-weight: 750;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .nav {
+        display: none;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 54px 0 70px;
+      }
+
+      .hero::after {
+        width: 100%;
+        opacity: 0.32;
+        clip-path: none;
+      }
+
+      .hero-panel {
+        min-height: auto;
+        justify-content: flex-start;
+      }
+
+      .stats,
+      .course-grid,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        transform: translateY(-34px);
+      }
+
+      .course-grid {
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner,
+      .hero-inner,
+      .main,
+      .footer-inner {
+        width: calc(100% - 28px);
+        max-width: 1180px;
+      }
+
+      .topbar-inner {
+        min-height: 68px;
+      }
+
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+      }
+
+      .brand-name {
+        font-size: 13px;
+      }
+
+      .hero-inner {
+        padding: 42px 0 64px;
+      }
+
+      .hero-copy {
+        max-width: 100%;
+      }
+
+      h1 {
+        font-size: clamp(34px, 11vw, 44px);
+        line-height: 1.03;
+      }
+
+      .hero-copy p {
+        font-size: 17px;
+        line-height: 1.58;
+      }
+
+      .hero-actions,
+      .footer-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .formula-board {
+        width: 100%;
+        padding: 18px;
+      }
+
+      .formula-lines {
+        font-size: 14px;
+      }
+
+      .formula-line {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .stats {
+        transform: translateY(-28px);
+      }
+
+      .stat {
+        min-height: 82px;
+        padding: 18px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .course-card {
+        min-height: 230px;
+        padding: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Matematik ve Yapay Zeka Enstitüsü Dersleri</h1>
-  <ul>
-    <li><a href="linear-algebra/">Lineer Cebir</a></li>
-  </ul>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="./" aria-label="Matematik ve Yapay Zeka Enstitüsü Dersleri ana sayfa">
+          <img class="brand-mark" src="linear-algebra/matematik_ve_yapay_zeka_logo.jpeg" alt="">
+          <span class="brand-name">Matematik ve Yapay Zeka Enstitüsü</span>
+        </a>
+        <nav class="nav" aria-label="Ana gezinme">
+          <a href="./">Ana Sayfa</a>
+          <a href="#dersler">Dersler</a>
+          <a href="https://github.com/mat-yz-e/lectures">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1>Matematik ve<br>Yapay Zeka<br>Enstitüsü<br>Dersleri</h1>
+          <p>Matematik, yapay zeka ve hesaplamalı düşünme alanlarında hazırlanan açık ders portalları. Her ders kendi içinde düzenli, okunabilir ve doğrudan çalışılabilir bir kaynak olarak yayınlanır.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#dersler">Dersleri İncele</a>
+            <a class="button button-secondary" href="linear-algebra/">Lineer Cebir'e Başla</a>
+          </div>
+        </div>
+
+        <div class="hero-panel" aria-hidden="true">
+          <div class="formula-board">
+            <div class="formula-board-header">
+              <span>course-index</span>
+              <span>mat-yz-e</span>
+            </div>
+            <div class="formula-lines">
+              <div class="formula-line"><span>A x = b</span><strong>linear algebra</strong></div>
+              <div class="formula-line"><span>p(y | x)</span><strong>ai foundations</strong></div>
+              <div class="formula-line"><span>min f(x)</span><strong>optimization</strong></div>
+              <div class="formula-line"><span>E[X]</span><strong>probability</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <section class="stats" aria-label="Ders istatistikleri">
+        <div class="stat">
+          <div class="stat-number">1</div>
+          <div class="stat-label">aktif<br>ders portalı</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">32</div>
+          <div class="stat-label">yayınlanmış<br>lecture</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">TR</div>
+          <div class="stat-label">Türkçe<br>içerik</div>
+        </div>
+      </section>
+
+      <section id="dersler" aria-labelledby="courses-title">
+        <div class="section-head">
+          <div>
+            <h2 id="courses-title">Dersler</h2>
+            <p>Aktif derslere doğrudan geçebilir, yakında eklenecek başlıkları takip edebilirsiniz. Yeni dersler aynı katalog altında ayrı klasörler halinde yayınlanacak.</p>
+          </div>
+          <div class="controls" aria-label="Ders filtreleri">
+            <label>
+              <span hidden>Ders ara</span>
+              <input class="control" id="course-search" type="search" placeholder="Ders ara..." autocomplete="off">
+            </label>
+            <label>
+              <span hidden>Durum filtresi</span>
+              <select class="control" id="course-filter">
+                <option value="all">Tümü</option>
+                <option value="active">Aktif</option>
+                <option value="soon">Yakında</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="course-grid" data-course-grid>
+          <a class="course-card active" href="linear-algebra/" data-status="active" data-search="lineer cebir linear algebra matris vektör özdeğer">
+            <div>
+              <div class="course-top">
+                <div class="course-icon">Σ</div>
+                <span class="status">Aktif</span>
+              </div>
+              <h3 class="course-title">Lineer Cebir</h3>
+              <p class="course-desc">Vektör uzayları, matrisler, lineer denklem sistemleri, özdeğerler, tekil değer ayrışımı ve uygulamalar.</p>
+            </div>
+            <div class="course-meta">
+              <span>32 lecture</span>
+              <span>Orta seviye</span>
+              <span class="arrow" aria-hidden="true">›</span>
+            </div>
+          </a>
+
+          <article class="course-card disabled" data-status="soon" data-search="yapay zeka ai machine learning algoritma öğrenme">
+            <div>
+              <div class="course-top">
+                <div class="course-icon">AI</div>
+                <span class="status soon">Yakında</span>
+              </div>
+              <h3 class="course-title">Yapay Zekaya Giriş</h3>
+              <p class="course-desc">Arama, temsil, öğrenme algoritmaları, modern yapay zeka akışları ve temel uygulama örnekleri.</p>
+            </div>
+            <div class="course-meta">
+              <span>Planlanıyor</span>
+              <span>Başlangıç</span>
+              <span class="arrow" aria-hidden="true">›</span>
+            </div>
+          </article>
+
+          <article class="course-card disabled" data-status="soon" data-search="olasılık istatistik probability statistics regresyon">
+            <div>
+              <div class="course-top">
+                <div class="course-icon">P</div>
+                <span class="status soon">Yakında</span>
+              </div>
+              <h3 class="course-title">Olasılık ve İstatistik</h3>
+              <p class="course-desc">Rastgele değişkenler, dağılımlar, çıkarım, regresyon ve veri odaklı modelleme temelleri.</p>
+            </div>
+            <div class="course-meta">
+              <span>Planlanıyor</span>
+              <span>Orta seviye</span>
+              <span class="arrow" aria-hidden="true">›</span>
+            </div>
+          </article>
+
+          <article class="course-card disabled" data-status="soon" data-search="optimizasyon optimization gradyan konveks">
+            <div>
+              <div class="course-top">
+                <div class="course-icon">∇</div>
+                <span class="status soon">Yakında</span>
+              </div>
+              <h3 class="course-title">Optimizasyon</h3>
+              <p class="course-desc">Konveks analiz, gradyan yöntemleri, kısıtlı optimizasyon ve makine öğrenmesi bağlantıları.</p>
+            </div>
+            <div class="course-meta">
+              <span>Planlanıyor</span>
+              <span>İleri seviye</span>
+              <span class="arrow" aria-hidden="true">›</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="empty" data-empty>Bu arama veya filtre için ders bulunamadı.</div>
+
+        <div class="notice">
+          Yeni ders eklendiğinde bu sayfaya yeni bir kart ve ilgili ders klasörü eklenir. Örneğin `probability/` veya `machine-learning/` klasörleri aynı katalog altında yayınlanabilir.
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span>Matematik ve Yapay Zeka Enstitüsü Dersleri</span>
+        <a href="https://github.com/mat-yz-e/lectures">GitHub reposunu görüntüle</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const searchInput = document.querySelector("#course-search");
+    const filterInput = document.querySelector("#course-filter");
+    const cards = Array.from(document.querySelectorAll("[data-course-grid] .course-card"));
+    const emptyState = document.querySelector("[data-empty]");
+
+    function normalize(value) {
+      return value.toLocaleLowerCase("tr-TR").trim();
+    }
+
+    function updateCourses() {
+      const query = normalize(searchInput.value);
+      const filter = filterInput.value;
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const statusMatch = filter === "all" || card.dataset.status === filter;
+        const text = normalize(`${card.textContent} ${card.dataset.search || ""}`);
+        const queryMatch = !query || text.includes(query);
+        const visible = statusMatch && queryMatch;
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      emptyState.style.display = visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", updateCourses);
+    filterInput.addEventListener("change", updateCourses);
+  </script>
 </body>
 </html>
