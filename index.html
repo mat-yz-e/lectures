@@ -4,20 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Matematik ve Yapay Zeka Enstitüsü Dersleri</title>
-  <meta name="description" content="Matematik ve Yapay Zeka Enstitüsü'nün açık ders portalları. Lineer cebir, yapay zeka, olasılık, optimizasyon ve daha fazlası.">
+  <meta name="description" content="Matematik ve Yapay Zeka Enstitüsü'nün açık ders portalları.">
   <style>
     :root {
-      --ink: #101820;
-      --muted: #5e6875;
-      --line: #d9e2e8;
-      --paper: #f7fafb;
+      --ink: #202124;
+      --ink-strong: #111214;
+      --muted: #656b72;
+      --line: #d9dce0;
+      --soft-line: #eceef0;
+      --paper: #f5f6f7;
       --white: #ffffff;
-      --teal: #087a78;
-      --teal-dark: #045b5a;
-      --amber: #d88712;
-      --red: #b84e52;
-      --shadow: 0 18px 60px rgba(13, 31, 45, 0.12);
-      --soft-shadow: 0 10px 30px rgba(13, 31, 45, 0.08);
+      --tile-dark: #2f3032;
+      --tile-mid: #858684;
+      --aqua: #0b7774;
+      --amber: #c98921;
+      --shadow: 0 22px 70px rgba(17, 18, 20, 0.12);
+      --soft-shadow: 0 10px 34px rgba(17, 18, 20, 0.08);
     }
 
     * {
@@ -30,14 +32,14 @@
 
     body {
       margin: 0;
+      overflow-x: hidden;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
       background:
-        linear-gradient(90deg, rgba(16, 24, 32, 0.035) 1px, transparent 1px),
-        linear-gradient(rgba(16, 24, 32, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(32, 33, 36, 0.035) 1px, transparent 1px),
+        linear-gradient(rgba(32, 33, 36, 0.035) 1px, transparent 1px),
         var(--paper);
-      background-size: 46px 46px;
-      overflow-x: hidden;
+      background-size: 42px 42px;
     }
 
     a {
@@ -45,28 +47,30 @@
       text-decoration: none;
     }
 
-    .site-shell {
-      min-height: 100vh;
-    }
-
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 10;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(13, 20, 27, 0.94);
-      backdrop-filter: blur(14px);
+      z-index: 20;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(17, 18, 20, 0.95);
       color: var(--white);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner,
+    .hero-inner,
+    .main,
+    .footer-inner {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
     }
 
     .topbar-inner {
-      width: min(1180px, calc(100% - 40px));
-      min-height: 76px;
-      margin: 0 auto;
+      min-height: 78px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 28px;
+      gap: 24px;
     }
 
     .brand {
@@ -76,100 +80,99 @@
       min-width: 0;
     }
 
-    .brand-mark {
-      width: 46px;
-      height: 46px;
-      border-radius: 8px;
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
       object-fit: cover;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: #d8d8d8;
+      border-radius: 8px;
+      background: #dedede;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
     }
 
     .brand-name {
-      font-weight: 800;
+      max-width: 280px;
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.12;
       letter-spacing: 0;
-      line-height: 1.05;
-      font-size: 15px;
       text-transform: uppercase;
-      max-width: 250px;
     }
 
     .nav {
       display: flex;
       align-items: center;
-      gap: 10px;
-      color: rgba(255, 255, 255, 0.8);
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.78);
       font-size: 14px;
-      font-weight: 650;
+      font-weight: 750;
     }
 
     .nav a {
-      padding: 10px 12px;
       border-radius: 8px;
+      padding: 10px 12px;
     }
 
     .nav a:hover,
     .nav a:focus-visible {
-      background: rgba(255, 255, 255, 0.1);
       color: #fff;
+      background: rgba(255, 255, 255, 0.1);
       outline: none;
     }
 
     .hero {
       position: relative;
       overflow: hidden;
-      background:
-        linear-gradient(118deg, #ffffff 0%, #ffffff 50%, transparent 50.2%),
-        linear-gradient(135deg, rgba(8, 122, 120, 0.15), rgba(216, 135, 18, 0.18)),
-        #e9f1f2;
       border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(118deg, #ffffff 0%, #ffffff 55%, transparent 55.2%),
+        linear-gradient(135deg, rgba(47, 48, 50, 0.1), rgba(133, 134, 132, 0.22)),
+        #e8eaeb;
     }
 
     .hero::after {
       content: "";
       position: absolute;
       inset: 0 0 0 auto;
-      width: 48%;
+      width: 47%;
       background:
-        linear-gradient(rgba(16, 24, 32, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16, 24, 32, 0.04) 1px, transparent 1px),
-        radial-gradient(circle at 34% 38%, rgba(255, 255, 255, 0.65), transparent 32%),
-        linear-gradient(135deg, rgba(8, 122, 120, 0.12), rgba(184, 78, 82, 0.1));
-      background-size: 38px 38px, 38px 38px, auto, auto;
+        linear-gradient(rgba(32, 33, 36, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(32, 33, 36, 0.045) 1px, transparent 1px),
+        linear-gradient(135deg, rgba(11, 119, 116, 0.12), rgba(201, 137, 33, 0.12));
+      background-size: 40px 40px, 40px 40px, auto;
       clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
     }
 
     .hero-inner {
       position: relative;
       z-index: 1;
-      width: min(1180px, calc(100% - 40px));
-      min-height: 430px;
-      margin: 0 auto;
+      min-height: 520px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 410px;
-      gap: 42px;
+      grid-template-columns: minmax(0, 1fr) 390px;
       align-items: center;
-      padding: 72px 0 62px;
+      gap: 48px;
+      padding: 76px 0 82px;
     }
 
     .hero-copy {
-      max-width: 660px;
+      max-width: 680px;
     }
 
     h1 {
       margin: 0;
+      color: var(--ink-strong);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(42px, 6vw, 76px);
+      font-size: clamp(44px, 6.2vw, 78px);
       line-height: 0.98;
       letter-spacing: 0;
     }
 
     .hero-copy p {
+      max-width: 630px;
       margin: 26px 0 0;
-      max-width: 620px;
-      color: var(--muted);
+      color: #5d6570;
       font-size: clamp(18px, 2vw, 22px);
-      line-height: 1.55;
+      line-height: 1.58;
     }
 
     .hero-actions {
@@ -180,95 +183,109 @@
     }
 
     .button {
+      min-height: 54px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 54px;
-      padding: 0 22px;
-      border-radius: 8px;
       border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 0 22px;
       font-size: 16px;
-      font-weight: 800;
+      font-weight: 850;
       transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
     }
 
     .button:hover,
     .button:focus-visible {
       transform: translateY(-1px);
-      outline: none;
       box-shadow: var(--soft-shadow);
+      outline: none;
     }
 
     .button-primary {
       color: #fff;
-      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      background: linear-gradient(135deg, var(--tile-dark), var(--ink-strong));
     }
 
     .button-secondary {
-      color: #a25b00;
+      color: #7a4a00;
       background: #fff;
-      border-color: rgba(216, 135, 18, 0.55);
+      border-color: rgba(201, 137, 33, 0.5);
     }
 
-    .hero-panel {
-      position: relative;
-      align-self: stretch;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 310px;
-    }
-
-    .formula-board {
-      width: min(100%, 360px);
-      border: 1px solid rgba(16, 24, 32, 0.14);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.84);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      padding: 24px;
-    }
-
-    .formula-board-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 750;
-    }
-
-    .formula-lines {
+    .identity-panel {
       display: grid;
-      gap: 16px;
-      padding-top: 20px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 15px;
-      color: #27313a;
+      place-items: center;
     }
 
-    .formula-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 12px 14px;
-      border: 1px solid rgba(217, 226, 232, 0.9);
+    .logo-card {
+      width: min(100%, 360px);
+      border: 1px solid rgba(32, 33, 36, 0.12);
       border-radius: 8px;
-      background: rgba(247, 250, 251, 0.8);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      backdrop-filter: blur(12px);
     }
 
-    .formula-line strong {
-      color: var(--teal-dark);
+    .logo-card img {
+      width: 164px;
+      height: 164px;
+      display: block;
+      margin: 0 auto 24px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #dedede;
+    }
+
+    .logo-card-title {
+      margin: 0;
+      color: var(--ink-strong);
+      font-size: 22px;
       font-weight: 900;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .logo-card-subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .logo-grid span {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--soft-line);
+    }
+
+    .logo-grid span:nth-child(1) {
+      background: var(--tile-dark);
+    }
+
+    .logo-grid span:nth-child(2) {
+      background: var(--tile-mid);
+    }
+
+    .logo-grid span:nth-child(3) {
+      background: var(--aqua);
+    }
+
+    .logo-grid span:nth-child(4) {
+      background: var(--amber);
     }
 
     .main {
-      width: min(1180px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0 72px;
+      padding: 0 0 72px;
     }
 
     .stats {
@@ -276,28 +293,29 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 1px;
       overflow: hidden;
+      transform: translateY(-42px);
+      margin-bottom: -8px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--line);
       box-shadow: var(--soft-shadow);
-      transform: translateY(-46px);
-      margin-bottom: -10px;
     }
 
     .stat {
+      min-height: 96px;
       display: flex;
       align-items: center;
       gap: 16px;
-      min-height: 98px;
-      padding: 22px 28px;
+      padding: 22px 26px;
       background: rgba(255, 255, 255, 0.94);
     }
 
     .stat-number {
+      color: var(--ink-strong);
       font-family: Georgia, "Times New Roman", serif;
       font-size: 38px;
+      font-weight: 900;
       line-height: 1;
-      font-weight: 800;
     }
 
     .stat-label {
@@ -308,87 +326,73 @@
 
     .section-head {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, 540px);
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 420px);
       align-items: end;
       gap: 24px;
-      margin-top: 10px;
-      margin-bottom: 22px;
+      margin: 10px 0 24px;
     }
 
     h2 {
       margin: 0;
+      color: var(--ink-strong);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(30px, 4vw, 44px);
-      line-height: 1.1;
+      font-size: clamp(32px, 4vw, 46px);
+      line-height: 1.08;
       letter-spacing: 0;
     }
 
     .section-head p {
+      max-width: 620px;
       margin: 10px 0 0;
       color: var(--muted);
       line-height: 1.55;
-      max-width: 620px;
     }
 
-    .controls {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 180px;
-      gap: 12px;
-    }
-
-    .control {
+    .search {
       width: 100%;
       min-height: 50px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.92);
       color: var(--ink);
       font: inherit;
       font-size: 15px;
-      padding: 0 14px;
-      box-shadow: 0 8px 22px rgba(13, 31, 45, 0.04);
+      padding: 0 15px;
+      box-shadow: 0 8px 22px rgba(17, 18, 20, 0.04);
     }
 
-    .control:focus {
-      outline: 3px solid rgba(8, 122, 120, 0.18);
-      border-color: rgba(8, 122, 120, 0.62);
+    .search:focus {
+      border-color: rgba(11, 119, 116, 0.62);
+      outline: 3px solid rgba(11, 119, 116, 0.18);
     }
 
     .course-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
     }
 
     .course-card {
-      position: relative;
-      min-height: 252px;
+      min-height: 282px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(11, 119, 116, 0.55);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.94);
-      padding: 22px;
-      box-shadow: 0 10px 32px rgba(13, 31, 45, 0.06);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.9)),
+        linear-gradient(135deg, rgba(47, 48, 50, 0.08), rgba(11, 119, 116, 0.08));
+      box-shadow: 0 16px 46px rgba(11, 119, 116, 0.1);
+      padding: 24px;
       transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
     }
 
-    a.course-card:hover,
-    a.course-card:focus-visible {
+    .course-card:hover,
+    .course-card:focus-visible {
       transform: translateY(-3px);
+      border-color: var(--aqua);
       box-shadow: var(--shadow);
-      border-color: rgba(8, 122, 120, 0.7);
       outline: none;
-    }
-
-    .course-card.active {
-      border-color: rgba(8, 122, 120, 0.8);
-      box-shadow: 0 16px 45px rgba(8, 122, 120, 0.13);
-    }
-
-    .course-card.disabled {
-      color: rgba(16, 24, 32, 0.84);
     }
 
     .course-top {
@@ -399,61 +403,45 @@
     }
 
     .course-icon {
-      width: 70px;
-      height: 70px;
+      width: 72px;
+      height: 72px;
       display: grid;
       place-items: center;
       border-radius: 8px;
       color: #fff;
-      background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+      background: linear-gradient(135deg, var(--tile-dark), var(--ink-strong));
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 900;
-      letter-spacing: 0;
-    }
-
-    .course-card:nth-child(2) .course-icon {
-      background: linear-gradient(135deg, #1f9f92, #087a78);
-    }
-
-    .course-card:nth-child(3) .course-icon {
-      background: linear-gradient(135deg, #e5a02c, var(--amber));
-    }
-
-    .course-card:nth-child(4) .course-icon {
-      background: linear-gradient(135deg, #c95b61, var(--red));
     }
 
     .status {
       border-radius: 999px;
-      padding: 6px 9px;
-      background: rgba(8, 122, 120, 0.1);
-      color: var(--teal-dark);
+      padding: 7px 10px;
+      background: rgba(11, 119, 116, 0.11);
+      color: #075c59;
       font-size: 11px;
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       white-space: nowrap;
     }
 
-    .status.soon {
-      background: rgba(184, 78, 82, 0.1);
-      color: #9d373c;
-    }
-
     .course-title {
-      margin: 22px 0 10px;
+      margin: 24px 0 12px;
+      color: var(--ink-strong);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 24px;
-      line-height: 1.12;
-      font-weight: 800;
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 900;
     }
 
     .course-desc {
+      max-width: 620px;
       margin: 0;
       color: var(--muted);
-      line-height: 1.55;
-      font-size: 14px;
+      font-size: 15px;
+      line-height: 1.58;
     }
 
     .course-meta {
@@ -461,54 +449,52 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-top: 28px;
+      margin-top: 30px;
       padding-top: 18px;
       border-top: 1px solid var(--line);
-      color: var(--teal-dark);
-      font-size: 13px;
+      color: #075c59;
+      font-size: 14px;
       font-weight: 850;
     }
 
     .course-meta span + span {
       color: var(--muted);
-      font-weight: 750;
     }
 
     .arrow {
-      font-size: 24px;
+      color: var(--ink-strong);
+      font-size: 28px;
       line-height: 1;
     }
 
     .empty {
       display: none;
       margin-top: 18px;
-      padding: 22px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.92);
       color: var(--muted);
+      padding: 20px;
     }
 
-    .notice {
+    .note {
       margin-top: 22px;
-      border: 1px solid rgba(8, 122, 120, 0.25);
+      border: 1px solid rgba(32, 33, 36, 0.14);
       border-radius: 8px;
-      background: rgba(8, 122, 120, 0.06);
+      background: rgba(255, 255, 255, 0.74);
+      color: #4c535b;
       padding: 18px 20px;
-      color: #234246;
-      line-height: 1.55;
+      line-height: 1.56;
     }
 
     .footer {
-      border-top: 1px solid var(--line);
-      background: #101820;
-      color: rgba(255, 255, 255, 0.76);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--ink-strong);
+      color: rgba(255, 255, 255, 0.75);
     }
 
     .footer-inner {
-      width: min(1180px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0;
+      min-height: 82px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -518,47 +504,41 @@
 
     .footer a {
       color: #fff;
-      font-weight: 750;
+      font-weight: 800;
     }
 
     [hidden] {
       display: none !important;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 900px) {
       .nav {
         display: none;
+      }
+
+      .hero::after {
+        width: 100%;
+        opacity: 0.34;
+        clip-path: none;
       }
 
       .hero-inner {
         grid-template-columns: 1fr;
         min-height: auto;
-        padding: 54px 0 70px;
+        padding: 54px 0 78px;
       }
 
-      .hero::after {
-        width: 100%;
-        opacity: 0.32;
-        clip-path: none;
-      }
-
-      .hero-panel {
-        min-height: auto;
-        justify-content: flex-start;
+      .identity-panel {
+        place-items: start;
       }
 
       .stats,
-      .course-grid,
       .section-head {
         grid-template-columns: 1fr;
       }
 
       .stats {
         transform: translateY(-34px);
-      }
-
-      .course-grid {
-        gap: 14px;
       }
     }
 
@@ -568,16 +548,15 @@
       .main,
       .footer-inner {
         width: calc(100% - 28px);
-        max-width: 1180px;
       }
 
       .topbar-inner {
         min-height: 68px;
       }
 
-      .brand-mark {
-        width: 40px;
-        height: 40px;
+      .brand-logo {
+        width: 42px;
+        height: 42px;
       }
 
       .brand-name {
@@ -585,21 +564,16 @@
       }
 
       .hero-inner {
-        padding: 42px 0 64px;
-      }
-
-      .hero-copy {
-        max-width: 100%;
+        padding: 42px 0 68px;
       }
 
       h1 {
-        font-size: clamp(34px, 11vw, 44px);
+        font-size: clamp(36px, 12vw, 46px);
         line-height: 1.03;
       }
 
       .hero-copy p {
         font-size: 17px;
-        line-height: 1.58;
       }
 
       .hero-actions,
@@ -612,23 +586,14 @@
         width: 100%;
       }
 
-      .formula-board {
+      .logo-card {
         width: 100%;
-        padding: 18px;
+        padding: 22px;
       }
 
-      .formula-lines {
-        font-size: 14px;
-      }
-
-      .formula-line {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .stats {
-        transform: translateY(-28px);
+      .logo-card img {
+        width: 132px;
+        height: 132px;
       }
 
       .stat {
@@ -636,184 +601,118 @@
         padding: 18px;
       }
 
-      .controls {
-        grid-template-columns: 1fr;
-      }
-
       .course-card {
-        min-height: 230px;
-        padding: 18px;
+        min-height: 260px;
+        padding: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="site-shell">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <a class="brand" href="./" aria-label="Matematik ve Yapay Zeka Enstitüsü Dersleri ana sayfa">
-          <img class="brand-mark" src="linear-algebra/matematik_ve_yapay_zeka_logo.jpeg" alt="">
-          <span class="brand-name">Matematik ve Yapay Zeka Enstitüsü</span>
-        </a>
-        <nav class="nav" aria-label="Ana gezinme">
-          <a href="./">Ana Sayfa</a>
-          <a href="#dersler">Dersler</a>
-          <a href="https://github.com/mat-yz-e/lectures">GitHub</a>
-        </nav>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./" aria-label="Matematik ve Yapay Zeka Enstitüsü Dersleri ana sayfa">
+        <img class="brand-logo" src="matematik_ve_yapay_zeka_logo.jpeg" alt="">
+        <span class="brand-name">Matematik ve Yapay Zeka Enstitüsü</span>
+      </a>
+      <nav class="nav" aria-label="Ana gezinme">
+        <a href="./">Ana Sayfa</a>
+        <a href="#dersler">Dersler</a>
+        <a href="https://github.com/mat-yz-e/lectures">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h1>Matematik ve<br>Yapay Zeka<br>Enstitüsü<br>Dersleri</h1>
+        <p>Matematik ve yapay zeka alanlarında hazırlanan açık ders portalları. Her ders, kendi klasöründe düzenli ve doğrudan çalışılabilir bir kaynak olarak yayınlanır.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#dersler">Dersleri İncele</a>
+          <a class="button button-secondary" href="linear-algebra/">Lineer Cebir'e Başla</a>
+        </div>
       </div>
-    </header>
 
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <h1>Matematik ve<br>Yapay Zeka<br>Enstitüsü<br>Dersleri</h1>
-          <p>Matematik, yapay zeka ve hesaplamalı düşünme alanlarında hazırlanan açık ders portalları. Her ders kendi içinde düzenli, okunabilir ve doğrudan çalışılabilir bir kaynak olarak yayınlanır.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#dersler">Dersleri İncele</a>
-            <a class="button button-secondary" href="linear-algebra/">Lineer Cebir'e Başla</a>
+      <div class="identity-panel" aria-label="Enstitü logosu">
+        <div class="logo-card">
+          <img src="matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu">
+          <p class="logo-card-title">Açık Ders Kataloğu</p>
+          <p class="logo-card-subtitle">Lineer cebir ile başlayan, yeni derslerle genişleyecek akademik kaynak alanı.</p>
+          <div class="logo-grid" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="hero-panel" aria-hidden="true">
-          <div class="formula-board">
-            <div class="formula-board-header">
-              <span>course-index</span>
-              <span>mat-yz-e</span>
-            </div>
-            <div class="formula-lines">
-              <div class="formula-line"><span>A x = b</span><strong>linear algebra</strong></div>
-              <div class="formula-line"><span>p(y | x)</span><strong>ai foundations</strong></div>
-              <div class="formula-line"><span>min f(x)</span><strong>optimization</strong></div>
-              <div class="formula-line"><span>E[X]</span><strong>probability</strong></div>
-            </div>
-          </div>
-        </div>
+  <main class="main">
+    <section class="stats" aria-label="Ders istatistikleri">
+      <div class="stat">
+        <div class="stat-number">1</div>
+        <div class="stat-label">aktif<br>ders portalı</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">32</div>
+        <div class="stat-label">yayınlanmış<br>lecture</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">TR</div>
+        <div class="stat-label">Türkçe<br>içerik</div>
       </div>
     </section>
 
-    <main class="main">
-      <section class="stats" aria-label="Ders istatistikleri">
-        <div class="stat">
-          <div class="stat-number">1</div>
-          <div class="stat-label">aktif<br>ders portalı</div>
+    <section id="dersler" aria-labelledby="courses-title">
+      <div class="section-head">
+        <div>
+          <h2 id="courses-title">Dersler</h2>
+          <p>Şimdilik katalogda sadece yayınlanan dersler listelenir. Yeni dersler hazır oldukça buraya kendi kartlarıyla eklenecek.</p>
         </div>
-        <div class="stat">
-          <div class="stat-number">32</div>
-          <div class="stat-label">yayınlanmış<br>lecture</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">TR</div>
-          <div class="stat-label">Türkçe<br>içerik</div>
-        </div>
-      </section>
-
-      <section id="dersler" aria-labelledby="courses-title">
-        <div class="section-head">
-          <div>
-            <h2 id="courses-title">Dersler</h2>
-            <p>Aktif derslere doğrudan geçebilir, yakında eklenecek başlıkları takip edebilirsiniz. Yeni dersler aynı katalog altında ayrı klasörler halinde yayınlanacak.</p>
-          </div>
-          <div class="controls" aria-label="Ders filtreleri">
-            <label>
-              <span hidden>Ders ara</span>
-              <input class="control" id="course-search" type="search" placeholder="Ders ara..." autocomplete="off">
-            </label>
-            <label>
-              <span hidden>Durum filtresi</span>
-              <select class="control" id="course-filter">
-                <option value="all">Tümü</option>
-                <option value="active">Aktif</option>
-                <option value="soon">Yakında</option>
-              </select>
-            </label>
-          </div>
-        </div>
-
-        <div class="course-grid" data-course-grid>
-          <a class="course-card active" href="linear-algebra/" data-status="active" data-search="lineer cebir linear algebra matris vektör özdeğer">
-            <div>
-              <div class="course-top">
-                <div class="course-icon">Σ</div>
-                <span class="status">Aktif</span>
-              </div>
-              <h3 class="course-title">Lineer Cebir</h3>
-              <p class="course-desc">Vektör uzayları, matrisler, lineer denklem sistemleri, özdeğerler, tekil değer ayrışımı ve uygulamalar.</p>
-            </div>
-            <div class="course-meta">
-              <span>32 lecture</span>
-              <span>Orta seviye</span>
-              <span class="arrow" aria-hidden="true">›</span>
-            </div>
-          </a>
-
-          <article class="course-card disabled" data-status="soon" data-search="yapay zeka ai machine learning algoritma öğrenme">
-            <div>
-              <div class="course-top">
-                <div class="course-icon">AI</div>
-                <span class="status soon">Yakında</span>
-              </div>
-              <h3 class="course-title">Yapay Zekaya Giriş</h3>
-              <p class="course-desc">Arama, temsil, öğrenme algoritmaları, modern yapay zeka akışları ve temel uygulama örnekleri.</p>
-            </div>
-            <div class="course-meta">
-              <span>Planlanıyor</span>
-              <span>Başlangıç</span>
-              <span class="arrow" aria-hidden="true">›</span>
-            </div>
-          </article>
-
-          <article class="course-card disabled" data-status="soon" data-search="olasılık istatistik probability statistics regresyon">
-            <div>
-              <div class="course-top">
-                <div class="course-icon">P</div>
-                <span class="status soon">Yakında</span>
-              </div>
-              <h3 class="course-title">Olasılık ve İstatistik</h3>
-              <p class="course-desc">Rastgele değişkenler, dağılımlar, çıkarım, regresyon ve veri odaklı modelleme temelleri.</p>
-            </div>
-            <div class="course-meta">
-              <span>Planlanıyor</span>
-              <span>Orta seviye</span>
-              <span class="arrow" aria-hidden="true">›</span>
-            </div>
-          </article>
-
-          <article class="course-card disabled" data-status="soon" data-search="optimizasyon optimization gradyan konveks">
-            <div>
-              <div class="course-top">
-                <div class="course-icon">∇</div>
-                <span class="status soon">Yakında</span>
-              </div>
-              <h3 class="course-title">Optimizasyon</h3>
-              <p class="course-desc">Konveks analiz, gradyan yöntemleri, kısıtlı optimizasyon ve makine öğrenmesi bağlantıları.</p>
-            </div>
-            <div class="course-meta">
-              <span>Planlanıyor</span>
-              <span>İleri seviye</span>
-              <span class="arrow" aria-hidden="true">›</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="empty" data-empty>Bu arama veya filtre için ders bulunamadı.</div>
-
-        <div class="notice">
-          Yeni ders eklendiğinde bu sayfaya yeni bir kart ve ilgili ders klasörü eklenir. Örneğin `probability/` veya `machine-learning/` klasörleri aynı katalog altında yayınlanabilir.
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        <span>Matematik ve Yapay Zeka Enstitüsü Dersleri</span>
-        <a href="https://github.com/mat-yz-e/lectures">GitHub reposunu görüntüle</a>
+        <label>
+          <span hidden>Ders ara</span>
+          <input class="search" id="course-search" type="search" placeholder="Ders ara..." autocomplete="off">
+        </label>
       </div>
-    </footer>
-  </div>
+
+      <div class="course-grid" data-course-grid>
+        <a class="course-card" href="linear-algebra/" data-search="lineer cebir linear algebra matris vektör özdeğer svd">
+          <div>
+            <div class="course-top">
+              <div class="course-icon">Σ</div>
+              <span class="status">Aktif</span>
+            </div>
+            <h3 class="course-title">Lineer Cebir</h3>
+            <p class="course-desc">Vektör uzayları, matrisler, lineer denklem sistemleri, özdeğerler, tekil değer ayrışımı ve uygulamalar.</p>
+          </div>
+          <div class="course-meta">
+            <span>32 lecture</span>
+            <span>Orta seviye</span>
+            <span class="arrow" aria-hidden="true">›</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="empty" data-empty>Bu arama için ders bulunamadı.</div>
+
+      <div class="note">
+        Yeni ders eklemek için repo kökünde yeni bir klasör oluşturup içinde kendi `index.html` dosyasını yayınlamak yeterli. Bu katalog sayfasına yalnızca hazır olan derslerin kartlarını ekleyebilirsiniz.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>Matematik ve Yapay Zeka Enstitüsü Dersleri</span>
+      <a href="https://github.com/mat-yz-e/lectures">GitHub reposunu görüntüle</a>
+    </div>
+  </footer>
 
   <script>
     const searchInput = document.querySelector("#course-search");
-    const filterInput = document.querySelector("#course-filter");
     const cards = Array.from(document.querySelectorAll("[data-course-grid] .course-card"));
     const emptyState = document.querySelector("[data-empty]");
 
@@ -823,14 +722,11 @@
 
     function updateCourses() {
       const query = normalize(searchInput.value);
-      const filter = filterInput.value;
       let visibleCount = 0;
 
       cards.forEach((card) => {
-        const statusMatch = filter === "all" || card.dataset.status === filter;
         const text = normalize(`${card.textContent} ${card.dataset.search || ""}`);
-        const queryMatch = !query || text.includes(query);
-        const visible = statusMatch && queryMatch;
+        const visible = !query || text.includes(query);
         card.hidden = !visible;
         if (visible) visibleCount += 1;
       });
@@ -839,7 +735,6 @@
     }
 
     searchInput.addEventListener("input", updateCourses);
-    filterInput.addEventListener("change", updateCourses);
   </script>
 </body>
 </html>
