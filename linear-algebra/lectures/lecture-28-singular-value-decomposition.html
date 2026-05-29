@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>28. Ders: Tekil Değer Ayrışımı</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" class="active" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">28. Ders: Tekil Değer Ayrışımı</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, herhangi bir matrisin iki dik matris ve ortada köşegen biçimli bir matris yardımıyla nasıl ayrıştırılacağını inceler.</p>
+        <p>Önceki derslerde simetrik pozitif tanımlı matrisler için özel bir durum vardı: özvektörler dik seçilebiliyor, özdeğerler pozitif oluyor ve matris \(Q\Lambda Q^T\) biçiminde yazılabiliyordu. Tekil değer ayrışımı bu iyi yapıyı simetrik olmayan ve hatta dikdörtgen olan matrislere taşır. Bunun için tek bir dik matris genellikle yetmez; sağ tarafta bir dik baz, sol tarafta başka bir dik baz gerekir.</p>
+        <p>Bu bölümde amaç, \(A\)'nın satır uzayında dik bir baz seçip bu bazın \(A\) ile çarpıldığında sütun uzayında dik bir baza gitmesini sağlamaktır. Böylece matris, dört temel alt uzayın doğru dik bazları kullanılarak köşegen biçimli bir etkiye indirgenir.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Tekil değer ayrışımının \(A=U\Sigma V^T\) biçimini açıklamak.</li>
+          <li>Sağ tekil vektörlerin \(A^TA\) matrisinden, sol tekil vektörlerin \(AA^T\) matrisinden geldiğini göstermek.</li>
+          <li>Tekil değerlerin \(A^TA\) özdeğerlerinin pozitif karekökleri olduğunu hesaplamak.</li>
+          <li>\(A\mathbf{v}_i=\sigma_i\mathbf{u}_i\) ilişkisini geometrik ve cebirsel olarak yorumlamak.</li>
+          <li>Sıfır uzayı ve sol sıfır uzayının ayrışımda sıfır tekil değerlerle nasıl temsil edildiğini anlamak.</li>
+          <li>Verilen iki temel örnek üzerinde ayrışımı adım adım kurmak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Dik ve birim uzunluklu vektörler.</li>
+          <li>Dik matris ve \(Q^{-1}=Q^T\) özelliği.</li>
+          <li>Simetrik matrislerin dik özvektörleri.</li>
+          <li>Pozitif yarı tanımlı \(A^TA\) matrisi.</li>
+          <li>Satır uzayı, sütun uzayı, sıfır uzayı ve sol sıfır uzayı.</li>
+          <li>Rütbe ve boyut ilişkileri.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Ayrıştırılacak \(m\times n\) matristir.</td>
+              </tr>
+              <tr>
+                <td>\(U\)</td>
+                <td>Sütunları sol tekil vektörlerden oluşan \(m\times m\) dik matristir.</td>
+              </tr>
+              <tr>
+                <td>\(V\)</td>
+                <td>Sütunları sağ tekil vektörlerden oluşan \(n\times n\) dik matristir.</td>
+              </tr>
+              <tr>
+                <td>\(\Sigma\)</td>
+                <td>Tekil değerleri köşegeninde taşıyan \(m\times n\) köşegen biçimli matristir.</td>
+              </tr>
+              <tr>
+                <td>\(\sigma_i\)</td>
+                <td>\(i\). tekil değerdir; negatif olmayan bir skalerdir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{v}_i\)</td>
+                <td>Sağ tekil vektördür; satır uzayı veya sıfır uzayı içinde yer alır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{u}_i\)</td>
+                <td>Sol tekil vektördür; sütun uzayı veya sol sıfır uzayı içinde yer alır.</td>
+              </tr>
+              <tr>
+                <td>\(r\)</td>
+                <td>\(A\) matrisinin rütbesidir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{N}(A)\)</td>
+                <td>\(A\) matrisinin sıfır uzayıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{N}(A^T)\)</td>
+                <td>\(A^T\) matrisinin sıfır uzayıdır; sol sıfır uzayıdır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Tekil değer ayrışımı, bir matrisin dört temel alt uzayı için en uygun dik bazları seçer. Satır uzayındaki ilk \(r\) sağ tekil vektör \(A\) ile çarpılınca sütun uzayındaki ilk \(r\) sol tekil vektöre gider. Geriye kalan sağ tekil vektörler sıfır uzayını oluşturur ve \(A\) tarafından \(\mathbf{0}\)'a gönderilir.</p>
+        <p>Bu nedenle ayrışım, yalnızca bir çarpanlara ayırma işlemi değildir. Aynı zamanda \(A\)'nın satır uzayı, sütun uzayı, sıfır uzayı ve sol sıfır uzayı üzerindeki etkisini tek bir düzenli yapıda gösterir.</p>
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Simetrik pozitif tanımlı durumda tek bir dik özvektör bazı yeterlidir. Genel durumda ise sağ tarafta \(V\), sol tarafta \(U\) olmak üzere iki farklı dik baz gerekir.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Tekil Değer Ayrışımı</h3>
+          <p>Her \(m\times n\) matris \(A\), uygun dik matrisler \(U\) ve \(V\) ile köşegen biçimli bir \(\Sigma\) matrisi kullanılarak aşağıdaki biçimde yazılır:</p>
+          <div class="equation-card" data-raw-latex="A=U\Sigma V^T">
+            <div class="equation-content">
+              \[
+              A=U\Sigma V^T
+              \]
+            </div>
+          </div>
+          <p>Burada \(U^TU=I\), \(V^TV=I\) ve \(\Sigma\)'nın köşegenindeki sayılar \(\sigma_1,\sigma_2,\ldots,\sigma_r\) pozitif tekil değerlerdir. Geri kalan köşegen konumları sıfır olabilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Tekil Vektör İlişkisi</h3>
+          <p>Ayrışımın özü, sağ tekil vektörlerin \(A\) altında sol tekil vektörlere ölçeklenerek gitmesidir:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{v}_i=\sigma_i\mathbf{u}_i,\qquad i=1,\ldots,r">
+            <div class="equation-content">
+              \[
+              A\mathbf{v}_i=\sigma_i\mathbf{u}_i,\qquad i=1,\ldots,r
+              \]
+            </div>
+          </div>
+          <p>Burada \(\mathbf{v}_1,\ldots,\mathbf{v}_r\) satır uzayında dik birim vektörler, \(\mathbf{u}_1,\ldots,\mathbf{u}_r\) sütun uzayında dik birim vektörlerdir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Tekil Değerlerin Kaynağı</h3>
+          <p><strong>İfade:</strong> \(A=U\Sigma V^T\) ise \(A^TA\)'nın özvektörleri \(V\)'nin sütunlarıdır ve özdeğerleri \(\sigma_i^2\)'dir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^TA\), genel bir \(A\) matrisinden simetrik ve pozitif yarı tanımlı bir matris üretir. Bu nedenle dik özvektörlere ve negatif olmayan özdeğerlere sahiptir.</p>
+          <p><strong>Formal İspat:</strong> Ayrışımda transpoz alırsak</p>
+          <div class="equation-card" data-raw-latex="A^T=V\Sigma^T U^T">
+            <div class="equation-content">
+              \[
+              A^T=V\Sigma^T U^T
+              \]
+            </div>
+          </div>
+          <p>olur. Bu yüzden</p>
+          <div class="equation-card" data-raw-latex="A^TA=V\Sigma^T U^T U\Sigma V^T=V(\Sigma^T\Sigma)V^T">
+            <div class="equation-content">
+              \[
+              A^TA=V\Sigma^T U^T U\Sigma V^T=V(\Sigma^T\Sigma)V^T
+              \]
+            </div>
+          </div>
+          <p>Dik matris özelliği \(U^TU=I\) olduğu için \(U\) ortadan kalkar. \(\Sigma^T\Sigma\) köşegeninde \(\sigma_i^2\) değerlerini taşır.</p>
+          <p><strong>Yorum:</strong> \(V\)'yi bulmak için \(A^TA\)'nın dik özvektörleri kullanılır. Tekil değerler ise \(A^TA\)'nın özdeğerlerinin pozitif karekökleridir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: Sol Tekil Vektörlerin Kaynağı</h3>
+          <p><strong>İfade:</strong> \(A=U\Sigma V^T\) ise \(AA^T\)'nin özvektörleri \(U\)'nun sütunlarıdır ve özdeğerleri yine \(\sigma_i^2\)'dir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^TA\) sağ taraftaki dik bazı ortaya çıkarırken, \(AA^T\) sol taraftaki dik bazı ortaya çıkarır.</p>
+          <p><strong>Formal İspat:</strong></p>
+          <div class="equation-card" data-raw-latex="AA^T=U\Sigma V^T V\Sigma^T U^T=U(\Sigma\Sigma^T)U^T">
+            <div class="equation-content">
+              \[
+              AA^T=U\Sigma V^T V\Sigma^T U^T=U(\Sigma\Sigma^T)U^T
+              \]
+            </div>
+          </div>
+          <p>Burada \(V^TV=I\) olduğundan \(V\) ortadan kalkar. \(\Sigma\Sigma^T\) köşegeninde aynı pozitif \(\sigma_i^2\) değerleri ve gerekirse ek sıfırlar bulunur.</p>
+          <p><strong>Yorum:</strong> \(A^TA\) ve \(AA^T\) farklı boyutlarda olabilir; fakat sıfır olmayan özdeğerleri aynıdır.</p>
+        </section>
+
+        <section>
+          <h3>Simetrik Pozitif Tanımlı Durum</h3>
+          <p>Eğer \(A\) simetrik pozitif tanımlıysa, daha önceki spektral ayrışım zaten özel bir tekil değer ayrışımıdır:</p>
+          <div class="equation-card" data-raw-latex="A=Q\Lambda Q^T">
+            <div class="equation-content">
+              \[
+              A=Q\Lambda Q^T
+              \]
+            </div>
+          </div>
+          <p>Bu durumda \(U\) ve \(V\) aynı \(Q\) matrisi olarak seçilebilir; \(\Sigma\) ise pozitif özdeğerleri taşıyan \(\Lambda\)'dır. Genel matrislerde bu kadar iyi bir durum beklenmez; iki farklı dik baz gerekir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: Terslenebilir İki Boyutlu Matris</h3>
+          <p>Aşağıdaki matrisi ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}4 &amp; 4\\-3 &amp; 3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}4 &amp; 4\\-3 &amp; 3\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Önce \(A^TA\) hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}25 &amp; 7\\7 &amp; 25\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=\begin{bmatrix}25 &amp; 7\\7 &amp; 25\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matrisin dik özvektörleri ve özdeğerleri şunlardır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_1=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix},\quad \lambda_1=32,\qquad \mathbf{v}_2=\frac{1}{\sqrt2}\begin{bmatrix}1\\-1\end{bmatrix},\quad \lambda_2=18">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_1=\frac{1}{\sqrt2}\begin{bmatrix}1\\1\end{bmatrix},\quad \lambda_1=32,\qquad
+              \mathbf{v}_2=\frac{1}{\sqrt2}\begin{bmatrix}1\\-1\end{bmatrix},\quad \lambda_2=18
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla tekil değerler</p>
+          <div class="equation-card" data-raw-latex="\sigma_1=\sqrt{32}=4\sqrt2,\qquad \sigma_2=\sqrt{18}=3\sqrt2">
+            <div class="equation-content">
+              \[
+              \sigma_1=\sqrt{32}=4\sqrt2,\qquad \sigma_2=\sqrt{18}=3\sqrt2
+              \]
+            </div>
+          </div>
+          <p>olur. Şimdi \(AA^T\) hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="AA^T=\begin{bmatrix}32 &amp; 0\\0 &amp; 18\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              AA^T=\begin{bmatrix}32 &amp; 0\\0 &amp; 18\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Buradan sol tekil vektörler işaret seçimiyle</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_1=\begin{bmatrix}1\\0\end{bmatrix},\qquad \mathbf{u}_2=\begin{bmatrix}0\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_1=\begin{bmatrix}1\\0\end{bmatrix},\qquad
+              \mathbf{u}_2=\begin{bmatrix}0\\-1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>seçilir. Bu işaret seçimi \(A\mathbf{v}_2=\sigma_2\mathbf{u}_2\) ilişkisini doğru yönde verir. Böylece</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}1 &amp; 0\\0 &amp; -1\end{bmatrix},\qquad \Sigma=\begin{bmatrix}\sqrt{32} &amp; 0\\0 &amp; \sqrt{18}\end{bmatrix},\qquad V^T=\frac{1}{\sqrt2}\begin{bmatrix}1 &amp; 1\\1 &amp; -1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              U=\begin{bmatrix}1 &amp; 0\\0 &amp; -1\end{bmatrix},\qquad
+              \Sigma=\begin{bmatrix}\sqrt{32} &amp; 0\\0 &amp; \sqrt{18}\end{bmatrix},\qquad
+              V^T=\frac{1}{\sqrt2}\begin{bmatrix}1 &amp; 1\\1 &amp; -1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ve sonuçta \(A=U\Sigma V^T\) elde edilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Rütbesi Bir Olan Matris</h3>
+          <p>Şimdi rütbesi \(1\) olan aşağıdaki matrisi inceleyelim:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}4 &amp; 3\\8 &amp; 6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}4 &amp; 3\\8 &amp; 6\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Satır uzayı \((4,3)\) doğrultusundadır; bu nedenle birim sağ tekil vektör</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_1=\begin{bmatrix}4/5\\3/5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_1=\begin{bmatrix}4/5\\3/5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olarak seçilir. Buna dik olan sıfır uzayı yönü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_2=\begin{bmatrix}3/5\\-4/5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_2=\begin{bmatrix}3/5\\-4/5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Sütun uzayı \((1,2)\) doğrultusundadır; bu yüzden</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_1=\frac{1}{\sqrt5}\begin{bmatrix}1\\2\end{bmatrix},\qquad \mathbf{u}_2=\frac{1}{\sqrt5}\begin{bmatrix}2\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_1=\frac{1}{\sqrt5}\begin{bmatrix}1\\2\end{bmatrix},\qquad
+              \mathbf{u}_2=\frac{1}{\sqrt5}\begin{bmatrix}2\\-1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>seçilebilir. Tekil değeri bulmak için \(A^TA\) hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}80 &amp; 60\\60 &amp; 45\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=\begin{bmatrix}80 &amp; 60\\60 &amp; 45\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matrisin özdeğerleri \(125\) ve \(0\)'dır. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\sigma_1=\sqrt{125}=5\sqrt5,\qquad \sigma_2=0">
+            <div class="equation-content">
+              \[
+              \sigma_1=\sqrt{125}=5\sqrt5,\qquad \sigma_2=0
+              \]
+            </div>
+          </div>
+          <p>olur. Ayrışım şu biçimde yazılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}4 &amp; 3\\8 &amp; 6\end{bmatrix}=\frac{1}{\sqrt5}\begin{bmatrix}1 &amp; 2\\2 &amp; -1\end{bmatrix}\begin{bmatrix}\sqrt{125} &amp; 0\\0 &amp; 0\end{bmatrix}\begin{bmatrix}4/5 &amp; 3/5\\3/5 &amp; -4/5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}4 &amp; 3\\8 &amp; 6\end{bmatrix}
+              =
+              \frac{1}{\sqrt5}\begin{bmatrix}1 &amp; 2\\2 &amp; -1\end{bmatrix}
+              \begin{bmatrix}\sqrt{125} &amp; 0\\0 &amp; 0\end{bmatrix}
+              \begin{bmatrix}4/5 &amp; 3/5\\3/5 &amp; -4/5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Sıfır tekil değer, sıfır uzayı yönünün \(A\) tarafından sıfır vektörüne gönderildiğini gösterir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: \(A^TA\) Pozitif Yarı Tanımlıdır</h3>
+          <p><strong>İfade:</strong> Her \(A\) matrisi için \(A^TA\) simetrik ve pozitif yarı tanımlıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^TA\), bir vektörü önce \(A\) ile dönüştürüp sonra ortaya çıkan vektörün uzunluk karesini ölçer.</p>
+          <p><strong>Formal İspat:</strong> Simetri için \((A^TA)^T=A^TA\). Ayrıca her \(\mathbf{x}\) için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=(A\mathbf{x})^T(A\mathbf{x})=\|A\mathbf{x}\|^2\ge0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}=(A\mathbf{x})^T(A\mathbf{x})=\|A\mathbf{x}\|^2\ge0
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu sonuç, tekil değerlerin neden negatif olmayan sayılardan oluştuğunu açıklar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: Dört Alt Uzay İçin Doğru Bazlar</h3>
+          <p><strong>İfade:</strong> \(A\)'nın rütbesi \(r\) ise \(\mathbf{v}_1,\ldots,\mathbf{v}_r\) satır uzayı için, \(\mathbf{v}_{r+1},\ldots,\mathbf{v}_n\) sıfır uzayı için dik birim baz olarak seçilebilir. Benzer biçimde \(\mathbf{u}_1,\ldots,\mathbf{u}_r\) sütun uzayı için, \(\mathbf{u}_{r+1},\ldots,\mathbf{u}_m\) sol sıfır uzayı için dik birim bazdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Tekil değer ayrışımı, \(A\)'nın etkisini satır uzayından sütun uzayına taşıyan kısımda ölçer; sıfır uzayı ise sıfıra gider.</p>
+          <p><strong>Formal İspat:</strong> Ayrışımın temel ilişkileri</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{v}_i=\sigma_i\mathbf{u}_i\quad (1\le i\le r),\qquad A\mathbf{v}_i=\mathbf{0}\quad (r&lt;i\le n)">
+            <div class="equation-content">
+              \[
+              A\mathbf{v}_i=\sigma_i\mathbf{u}_i\quad (1\le i\le r),\qquad
+              A\mathbf{v}_i=\mathbf{0}\quad (r&lt;i\le n)
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. İlk \(r\) vektör satır uzayında etkin yönleri oluşturur. Geri kalan \(n-r\) vektör sıfır uzayındadır. Sol tarafta da ilk \(r\) vektör sütun uzayını, kalan \(m-r\) vektör \(A^T\)'nin sıfır uzayını tamamlar.</p>
+          <p><strong>Yorum:</strong> Ayrışım, dört temel alt uzayı tek bir dik koordinat sistemi içinde birleştirir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Tekil Değer Ayrışımını Hesaplama</h3>
+        <ol>
+          <li>\(A^TA\) matrisini hesapla.</li>
+          <li>\(A^TA\)'nın dik birim özvektörlerini bul; bunlar \(V\)'nin sütunlarıdır.</li>
+          <li>\(A^TA\)'nın özdeğerlerinin negatif olmayan kareköklerini al; bunlar \(\sigma_i\) değerleridir.</li>
+          <li>\(\sigma_i>0\) için \(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) formülüyle sol tekil vektörleri bul.</li>
+          <li>Gerekirse \(U\)'yu sol sıfır uzayından gelen dik birim vektörlerle tamamla.</li>
+          <li>\(A=U\Sigma V^T\) çarpımını kontrol et.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\mathbf{u}_i=\frac{A\mathbf{v}_i}{\sigma_i}\qquad(\sigma_i>0)">
+          <div class="equation-content">
+            \[
+            \mathbf{u}_i=\frac{A\mathbf{v}_i}{\sigma_i}\qquad(\sigma_i>0)
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 2: Rütbesi Eksik Matrislerde Sıfır Tekil Değerleri Okuma</h3>
+        <p>Rütbe \(r\) ise yalnızca \(r\) tane pozitif tekil değer vardır. \(n-r\) sağ tekil vektör sıfır uzayında yer alır ve \(A\) tarafından \(\mathbf{0}\)'a gönderilir.</p>
+        <div class="equation-card" data-raw-latex="\dim \mathcal{N}(A)=n-r,\qquad \dim \mathcal{N}(A^T)=m-r">
+          <div class="equation-content">
+            \[
+            \dim \mathcal{N}(A)=n-r,\qquad
+            \dim \mathcal{N}(A^T)=m-r
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 3: İşaret Seçimini Kontrol Etme</h3>
+        <p>Özvektörlerin işareti serbesttir. Ancak seçilen işaretler \(A\mathbf{v}_i=\sigma_i\mathbf{u}_i\) eşitliğini sağlamalıdır. Gerekirse \(\mathbf{u}_i\) veya \(\mathbf{v}_i\) aynı anda uygun işaretle seçilir.</p>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki uygulama bağlantısı en küçük kareler denklemlerinde görülen \(A^TA\) matrisidir. Dikdörtgen bir \(A\) matrisi doğrudan pozitif tanımlı olamaz; fakat \(A^TA\) kare, simetrik ve pozitif yarı tanımlıdır. Sütunlar bağımsızsa bu matris pozitif tanımlı olur.</p>
+        <p>Tekil değer ayrışımı, \(A^TA\)'nın bu iyi yapısını kullanarak genel bir matris için dik bazlar üretir. Böylece dikdörtgen veya simetrik olmayan matrislerin de düzenli biçimde incelenmesini sağlar.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>\(U\) ve \(V\)'yi aynı sanmak:</strong> Simetrik pozitif tanımlı özel durumda aynı seçilebilirler; genel durumda iki farklı dik matris gerekir.</li>
+          <li><strong>Tekil değerleri \(A\)'nın özdeğerleriyle karıştırmak:</strong> Tekil değerler \(A^TA\)'nın özdeğerlerinin karekökleridir.</li>
+          <li><strong>Sıfır uzayını ihmal etmek:</strong> Rütbesi eksik matrislerde sıfır tekil değerler ve sıfır uzayı ayrışımın parçasıdır.</li>
+          <li><strong>Özvektörleri birim yapmayı unutmak:</strong> \(U\) ve \(V\) dik matris olmalıdır; bunun için sütunlar dik ve birim uzunluklu seçilmelidir.</li>
+          <li><strong>İşaret seçimini kontrol etmemek:</strong> Özvektörün işareti serbesttir; fakat seçilen işaret \(A\mathbf{v}_i=\sigma_i\mathbf{u}_i\) eşitliğiyle uyumlu olmalıdır.</li>
+          <li><strong>\(\Sigma\)'yı her zaman kare sanmak:</strong> \(A\) dikdörtgense \(\Sigma\) da \(m\times n\) boyutundadır.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Genel matris \(A\) \(\rightarrow\) iki dik baz gereksinimi</span>
+          <span>Sağ tekil vektörler \(\rightarrow\) \(A^TA\)'nın dik özvektörleri</span>
+          <span>Sol tekil vektörler \(\rightarrow\) \(AA^T\)'nin dik özvektörleri</span>
+          <span>Tekil değerler \(\rightarrow\) \(\sqrt{\lambda_i(A^TA)}\)</span>
+          <span>Satır uzayı \(\rightarrow\) sütun uzayına \(\sigma_i\) katıyla gider</span>
+          <span>Sıfır uzayı \(\rightarrow\) sıfır tekil değerler</span>
+          <span>Dört temel alt uzay \(\rightarrow\) tek ayrışımda birleşir</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Tekil Değer Ayrışımı</h3>
+            <p>Her matris iki dik matris ve ortada köşegen biçimli bir matrisle yazılır.</p>
+            <div class="equation-card" data-raw-latex="A=U\Sigma V^T">
+              <div class="equation-content">
+                \[
+                A=U\Sigma V^T
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Temel Vektör İlişkisi</h3>
+            <p>Satır uzayındaki doğru dik baz sütun uzayındaki doğru dik baza ölçeklenerek gider.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{v}_i=\sigma_i\mathbf{u}_i">
+              <div class="equation-content">
+                \[
+                A\mathbf{v}_i=\sigma_i\mathbf{u}_i
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sağ Tekil Vektörler</h3>
+            <p>\(V\)'nin sütunları \(A^TA\)'nın dik özvektörleridir.</p>
+            <div class="equation-card" data-raw-latex="A^TA=V(\Sigma^T\Sigma)V^T">
+              <div class="equation-content">
+                \[
+                A^TA=V(\Sigma^T\Sigma)V^T
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sol Tekil Vektörler</h3>
+            <p>\(U\)'nun sütunları \(AA^T\)'nin dik özvektörleridir.</p>
+            <div class="equation-card" data-raw-latex="AA^T=U(\Sigma\Sigma^T)U^T">
+              <div class="equation-content">
+                \[
+                AA^T=U(\Sigma\Sigma^T)U^T
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Tekil Değerler</h3>
+            <p>Tekil değerler \(A^TA\)'nın özdeğerlerinden elde edilir.</p>
+            <div class="equation-card" data-raw-latex="\sigma_i=\sqrt{\lambda_i(A^TA)}">
+              <div class="equation-content">
+                \[
+                \sigma_i=\sqrt{\lambda_i(A^TA)}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sıfır Uzayları</h3>
+            <p>Rütbe eksikliği ayrışımda sıfır tekil değerlerle görünür.</p>
+            <div class="equation-card" data-raw-latex="\dim \mathcal{N}(A)=n-r,\qquad \dim \mathcal{N}(A^T)=m-r">
+              <div class="equation-content">
+                \[
+                \dim \mathcal{N}(A)=n-r,\qquad
+                \dim \mathcal{N}(A^T)=m-r
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde tekil değer ayrışımı \(A=U\Sigma V^T\) biçiminde kuruldu. Bu ayrışım, herhangi bir matrisi sağda ve solda dik bazlar kullanarak köşegen biçimli bir etkiye indirger.</p>
+        <p>Sağ tekil vektörler \(A^TA\)'nın, sol tekil vektörler \(AA^T\)'nin özvektörlerinden gelir. Tekil değerler ise \(A^TA\)'nın özdeğerlerinin pozitif karekökleridir. Sıfır tekil değerler, sıfır uzaylarını ve rütbe eksikliğini temsil eder.</p>
+        <p>Ayrışımın en önemli kavramsal sonucu, dört temel alt uzay için doğru dik bazları aynı anda üretmesidir: satır uzayı, sütun uzayı, sıfır uzayı ve sol sıfır uzayı tek bir formülde birleşir.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: Kolay Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matris için \(A^TA\)'yı bulun ve tekil değerleri hesaplayın.</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}3 &amp; 0\\0 &amp; 2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}3 &amp; 0\\0 &amp; 2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong></p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}9 &amp; 0\\0 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=\begin{bmatrix}9 &amp; 0\\0 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Özdeğerler \(9\) ve \(4\)'tür. Tekil değerler bunların pozitif karekökleri olduğundan</p>
+          <div class="equation-card" data-raw-latex="\sigma_1=3,\qquad \sigma_2=2">
+            <div class="equation-content">
+              \[
+              \sigma_1=3,\qquad \sigma_2=2
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Köşegen pozitif bir matriste tekil değerler doğrudan köşegen değerleri olarak okunur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Orta Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matris için \(A^TA\)'yı hesaplayın ve rütbenin \(1\) olduğunu tekil değerlerden okuyun.</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1 &amp; 2\\2 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}1 &amp; 2\\2 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong></p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}5 &amp; 10\\10 &amp; 20\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=\begin{bmatrix}5 &amp; 10\\10 &amp; 20\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matrisin determinantı \(5\cdot20-10\cdot10=0\)'dır. İzi \(25\)'tir. Dolayısıyla özdeğerler \(25\) ve \(0\)'dır. Tekil değerler</p>
+          <div class="equation-card" data-raw-latex="\sigma_1=5,\qquad \sigma_2=0">
+            <div class="equation-content">
+              \[
+              \sigma_1=5,\qquad \sigma_2=0
+              \]
+            </div>
+          </div>
+          <p>olur. Yalnızca bir pozitif tekil değer bulunduğu için matrisin rütbesi \(1\)'dir.</p>
+          <p><strong>Yorum:</strong> Pozitif tekil değer sayısı rütbeyi verir; sıfır tekil değerler sıfır uzayıyla ilişkilidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: İleri Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matris için \(A^TA\)'yı kullanarak \(V\), \(\Sigma\) ve uygun \(U\) matrislerini bulun.</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0 &amp; 2\\2 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}0 &amp; 2\\2 &amp; 0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong></p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}4 &amp; 0\\0 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=\begin{bmatrix}4 &amp; 0\\0 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Tekil değerler \(\sigma_1=\sigma_2=2\)'dir. \(A^TA=4I\) olduğundan \(V\) için standart dik baz seçilebilir:</p>
+          <div class="equation-card" data-raw-latex="V=I,\qquad \Sigma=\begin{bmatrix}2 &amp; 0\\0 &amp; 2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              V=I,\qquad
+              \Sigma=\begin{bmatrix}2 &amp; 0\\0 &amp; 2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\(\mathbf{u}_i=A\mathbf{v}_i/\sigma_i\) formülünü kullanırsak</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_1=\begin{bmatrix}0\\1\end{bmatrix},\qquad \mathbf{u}_2=\begin{bmatrix}1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_1=\begin{bmatrix}0\\1\end{bmatrix},\qquad
+              \mathbf{u}_2=\begin{bmatrix}1\\0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}0 &amp; 1\\1 &amp; 0\end{bmatrix},\qquad A=U\Sigma V^T">
+            <div class="equation-content">
+              \[
+              U=\begin{bmatrix}0 &amp; 1\\1 &amp; 0\end{bmatrix},\qquad
+              A=U\Sigma V^T
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Tekil değerler eşit olduğunda dik baz seçimi tek değildir; seçilen bazın \(A\mathbf{v}_i=\sigma_i\mathbf{u}_i\) ilişkisini sağlaması yeterlidir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>singular value decomposition</td>
+                <td>tekil değer ayrışımı</td>
+                <td>\(A=U\Sigma V^T\) biçimindeki ayrışım.</td>
+              </tr>
+              <tr>
+                <td>singular value</td>
+                <td>tekil değer</td>
+                <td>\(A^TA\)'nın özdeğerlerinin negatif olmayan karekökü.</td>
+              </tr>
+              <tr>
+                <td>left singular vector</td>
+                <td>sol tekil vektör</td>
+                <td>\(U\) matrisinin sütunlarından biri.</td>
+              </tr>
+              <tr>
+                <td>right singular vector</td>
+                <td>sağ tekil vektör</td>
+                <td>\(V\) matrisinin sütunlarından biri.</td>
+              </tr>
+              <tr>
+                <td>orthogonal matrix</td>
+                <td>dik matris</td>
+                <td>Sütunları dik birim vektörlerden oluşan matris.</td>
+              </tr>
+              <tr>
+                <td>diagonal matrix</td>
+                <td>köşegen matris</td>
+                <td>Köşegen dışındaki girişleri sıfır olan matris.</td>
+              </tr>
+              <tr>
+                <td>row space</td>
+                <td>satır uzayı</td>
+                <td>Matris satırlarının oluşturduğu alt uzay.</td>
+              </tr>
+              <tr>
+                <td>column space</td>
+                <td>sütun uzayı</td>
+                <td>Matris sütunlarının oluşturduğu alt uzay.</td>
+              </tr>
+              <tr>
+                <td>null space</td>
+                <td>sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan vektörlerin uzayı.</td>
+              </tr>
+              <tr>
+                <td>left null space</td>
+                <td>sol sıfır uzayı</td>
+                <td>\(A^T\)'nin sıfır uzayı.</td>
+              </tr>
+              <tr>
+                <td>rank</td>
+                <td>rütbe</td>
+                <td>Satır uzayı ve sütun uzayının ortak boyutu.</td>
+              </tr>
+              <tr>
+                <td>positive semidefinite</td>
+                <td>pozitif yarı tanımlı</td>
+                <td>\(\mathbf{x}^TA\mathbf{x}\ge0\) koşulunu sağlayan simetrik yapı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) {
+          const minMobileSize = 18;
+          let mobileSize = parseFloat(window.getComputedStyle(title).fontSize);
+          let mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+
+          while (
+            Math.round(title.getBoundingClientRect().height / mobileLineHeight) > 2 &&
+            mobileSize > minMobileSize
+          ) {
+            mobileSize -= 1;
+            title.style.fontSize = mobileSize + "px";
+            mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+          }
+
+          return;
+        }
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

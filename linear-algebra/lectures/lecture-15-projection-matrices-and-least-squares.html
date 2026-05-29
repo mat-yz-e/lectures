@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.1vw, 1.8rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" class="active" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, izdüşüm matrisinin geometrik anlamını pekiştirir ve en küçük kareler yaklaşımını tam bir sayısal doğru uydurma örneği üzerinde kurar.</p>
+        <p>Önce \(P=A(A^TA)^{-1}A^T\) matrisinin ne yaptığı incelenir. \(\mathbf{b}\) vektörü sütun uzayındaysa \(P\mathbf{b}=\mathbf{b}\) olur; \(\mathbf{b}\) sütun uzayına dikse \(P\mathbf{b}=\mathbf{0}\) olur. Genel durumda ise \(\mathbf{b}\), sütun uzayındaki izdüşüm parçası ve ona dik hata parçası olarak ayrılır.</p>
+        <p>Ardından üç veri noktasına en iyi doğruyu uydurma problemi ele alınır. Bu problem, çözülemeyen bir \(A\mathbf{x}=\mathbf{b}\) sistemi yerine, normal denklemler yoluyla çözülebilen bir en küçük kareler problemine dönüştürülür.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>İzdüşüm matrisinin sütun uzayındaki ve ona dik uzaydaki davranışını açıklamak.</li>
+          <li>\(\mathbf{b}=\mathbf{p}+\mathbf{e}\) ayrışımını sütun uzayı ve sol sıfır uzayı açısından yorumlamak.</li>
+          <li>\(I-P\) matrisinin dik tamamlayıcı uzaya izdüşüm verdiğini göstermek.</li>
+          <li>En küçük kareler problemini hata kareleri toplamını küçültme problemi olarak yazmak.</li>
+          <li>Üç nokta için en iyi doğruyu normal denklemlerle hesaplamak.</li>
+          <li>Hata vektörünün \(A\) matrisinin sütunlarına dik olduğunu doğrulamak.</li>
+          <li>Bağımsız sütunlar koşulunun \(A^TA\) matrisini neden tersinir yaptığını ispatlamak.</li>
+          <li>Dik ve birim sütunların özel önemini fark etmek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Sütun uzayı ve sol sıfır uzayı arasındaki ortogonallik.</li>
+          <li>İzdüşüm matrisi formülü \(P=A(A^TA)^{-1}A^T\).</li>
+          <li>Normal denklemler \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\).</li>
+          <li>Matris çarpımı, transpoz ve tersinirlik kavramları.</li>
+          <li>Vektör uzunluğu ve hata vektörünün uzunluk karesi.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Sütunları alt uzayı belirleyen matris</td>
+                <td>Örnekte \(3\times2\) boyutludur ve iki sütunu doğru uydurma modelini taşır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{C}(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının tüm doğrusal kombinasyonlarıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{N}(A^T)\)</td>
+                <td>Sol sıfır uzayı</td>
+                <td>Sütun uzayına dik olan hata vektörlerinin bulunduğu uzaydır.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>İzdüşüm matrisi</td>
+                <td>\(P\mathbf{b}=\mathbf{p}\) eşitliğiyle \(\mathbf{b}\) vektörünü sütun uzayına indirger.</td>
+              </tr>
+              <tr>
+                <td>\(I-P\)</td>
+                <td>Dik tamamlayıcıya izdüşüm matrisi</td>
+                <td>\((I-P)\mathbf{b}=\mathbf{e}\) hata vektörünü verir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{b}\)</td>
+                <td>Veri veya sağ taraf vektörü</td>
+                <td>Örnekte \((1,2,2)^T\) vektörüdür.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{p}\)</td>
+                <td>İzdüşüm vektörü</td>
+                <td>Sütun uzayında \(\mathbf{b}\) vektörüne en yakın vektördür.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{e}\)</td>
+                <td>Hata vektörü</td>
+                <td>\(\mathbf{e}=\mathbf{b}-\mathbf{p}\) ve \(A^T\mathbf{e}=\mathbf{0}\).</td>
+              </tr>
+              <tr>
+                <td>\(\hat{\mathbf{x}}\)</td>
+                <td>En iyi katsayı vektörü</td>
+                <td>Doğru uydurma örneğinde \((\hat{C},\hat{D})^T\) biçimindedir.</td>
+              </tr>
+              <tr>
+                <td>\(C,D\)</td>
+                <td>Doğru katsayıları</td>
+                <td>\(b=C+Dt\) modelinde sabit terim ve eğimdir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>İzdüşüm matrisi, bir vektörü iki ortogonal parçaya ayırır: sütun uzayında kalan parça ve sütun uzayına dik kalan hata parçası. Bu ayrışım, çözülemeyen lineer sistemlerde en iyi yaklaşık çözümün neden normal denklemlerle bulunduğunu açıklar.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>\(P\), sütun uzayındaki bileşeni korur; sütun uzayına dik bileşeni sıfırlar. \(I-P\) ise bunun tamamlayıcısını yapar: sütun uzayındaki bileşeni sıfırlar, dik hata bileşenini korur.</p>
+        </aside>
+        <p>En küçük kareler yaklaşımı, hata vektörünün uzunluk karesini küçültür. Hatanın karelerinin toplamı seçildiğinde problem, türevlerle de normal denklemlere iner; bu yüzden geometri, cebir ve hesap aynı denklemi üretir.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: En Küçük Kareler Problemi</h3>
+          <p>\(A\mathbf{x}=\mathbf{b}\) denklemi tam çözülemiyorsa, en küçük kareler problemi hata vektörünün uzunluk karesini en küçük yapan \(\hat{\mathbf{x}}\) katsayısını arar:</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{e}\|^2=\|A\mathbf{x}-\mathbf{b}\|^2">
+            <div class="equation-content">
+              \[
+              \|\mathbf{e}\|^2=\|A\mathbf{x}-\mathbf{b}\|^2
+              \]
+            </div>
+          </div>
+          <p>Bu dersin örneğinde \(\mathbf{x}=(C,D)^T\) olup amaç, üç noktaya en iyi doğruyu uydurmaktır.</p>
+        </section>
+
+        <h3>İzdüşüm Matrisinin İki Uç Davranışı</h3>
+        <p>İzdüşüm matrisi</p>
+        <div class="equation-card" data-raw-latex="P=A(A^TA)^{-1}A^T">
+          <div class="equation-content">
+            \[
+            P=A(A^TA)^{-1}A^T
+            \]
+          </div>
+        </div>
+        <p>bir vektörü \(A\) matrisinin sütun uzayına indirger. Eğer \(\mathbf{b}\in\mathcal{C}(A)\) ise \(\mathbf{b}=A\mathbf{x}\) biçiminde yazılır. Bu durumda</p>
+        <div class="equation-card" data-raw-latex="P\mathbf{b}=A(A^TA)^{-1}A^T(A\mathbf{x})=A\mathbf{x}=\mathbf{b}">
+          <div class="equation-content">
+            \[
+            P\mathbf{b}
+            =
+            A(A^TA)^{-1}A^T(A\mathbf{x})
+            =
+            A\mathbf{x}
+            =
+            \mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>Yani sütun uzayında zaten bulunan vektör değişmez. Buna karşılık \(\mathbf{b}\), sütun uzayına dikse \(\mathbf{b}\in\mathcal{N}(A^T)\) olur ve \(A^T\mathbf{b}=\mathbf{0}\) olduğundan</p>
+        <div class="equation-card" data-raw-latex="P\mathbf{b}=A(A^TA)^{-1}A^T\mathbf{b}=\mathbf{0}">
+          <div class="equation-content">
+            \[
+            P\mathbf{b}
+            =
+            A(A^TA)^{-1}A^T\mathbf{b}
+            =
+            \mathbf{0}
+            \]
+          </div>
+        </div>
+        <p>Genel vektör bu iki davranışın birleşimidir: sütun uzayındaki bileşen korunur, dik bileşen silinir.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.2: \(I-P\) Matrisinin Anlamı</h3>
+          <p><strong>İfade:</strong> \(P\) sütun uzayına ortogonal izdüşüm matrisi ise \(I-P\), sütun uzayına dik tamamlayıcıya izdüşüm matrisidir. Her \(\mathbf{b}\) için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=P\mathbf{b},\qquad \mathbf{e}=(I-P)\mathbf{b},\qquad \mathbf{b}=\mathbf{p}+\mathbf{e}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=P\mathbf{b},
+              \qquad
+              \mathbf{e}=(I-P)\mathbf{b},
+              \qquad
+              \mathbf{b}=\mathbf{p}+\mathbf{e}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(P\mathbf{b}\) sütun uzayındaki parçayı verir. Geri kalan parça \(\mathbf{b}-P\mathbf{b}\) olduğundan bu parça \((I-P)\mathbf{b}\) ile elde edilir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{p}=P\mathbf{b}\) olarak tanımlansın. Hata \(\mathbf{e}=\mathbf{b}-\mathbf{p}\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{e}=\mathbf{b}-P\mathbf{b}=(I-P)\mathbf{b}">
+            <div class="equation-content">
+              \[
+              \mathbf{e}=\mathbf{b}-P\mathbf{b}=(I-P)\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p>olur. Ayrıca \(P^2=P\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="(I-P)^2=I-2P+P^2=I-P">
+            <div class="equation-content">
+              \[
+              (I-P)^2=I-2P+P^2=I-P
+              \]
+            </div>
+          </div>
+          <p>ve \(P^T=P\) olduğundan \((I-P)^T=I-P\). Dolayısıyla \(I-P\) de bir ortogonal izdüşüm matrisidir.</p>
+          <p><strong>Yorum:</strong> Bir vektörün en iyi yaklaşımı ve hatası aynı izdüşüm geometrisinin iki tamamlayıcı yüzüdür.</p>
+        </section>
+
+        <h3>Doğru Uydurma Problemi</h3>
+        <p>Üç veri noktası ele alınsın:</p>
+        <div class="equation-card" data-raw-latex="(1,1),\qquad (2,2),\qquad (3,2)">
+          <div class="equation-content">
+            \[
+            (1,1),\qquad (2,2),\qquad (3,2)
+            \]
+          </div>
+        </div>
+        <p>Bu noktalara \(b=C+Dt\) biçiminde bir doğru uydurulmak istensin. Noktaların hepsinden geçen bir doğru olsaydı şu üç denklem aynı anda sağlanırdı:</p>
+        <div class="equation-card" data-raw-latex="C+D=1,\qquad C+2D=2,\qquad C+3D=2">
+          <div class="equation-content">
+            \[
+            C+D=1,\qquad C+2D=2,\qquad C+3D=2
+            \]
+          </div>
+        </div>
+        <p>Bu sistem, matris biçiminde</p>
+        <div class="equation-card" data-raw-latex="\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix}\begin{bmatrix}C\\D\end{bmatrix}=\begin{bmatrix}1\\2\\2\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            \begin{bmatrix}
+            1&1\\
+            1&2\\
+            1&3
+            \end{bmatrix}
+            \begin{bmatrix}
+            C\\
+            D
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+            1\\
+            2\\
+            2
+            \end{bmatrix}
+            \]
+          </div>
+        </div>
+        <p>şeklindedir. Üç denklemin iki bilinmeyeni vardır ve bu özel veriler için tam çözüm yoktur. Bu nedenle hata kareleri toplamı küçültülür.</p>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Hata Kareleri Toplamı</h3>
+          <p>Doğru \(b=C+Dt\) ise üç hata şu ifadelerle ölçülür:</p>
+          <div class="equation-card" data-raw-latex="e_1=C+D-1,\qquad e_2=C+2D-2,\qquad e_3=C+3D-2">
+            <div class="equation-content">
+              \[
+              e_1=C+D-1,\qquad
+              e_2=C+2D-2,\qquad
+              e_3=C+3D-2
+              \]
+            </div>
+          </div>
+          <p>Küçültülecek toplam</p>
+          <div class="equation-card" data-raw-latex="E(C,D)=(C+D-1)^2+(C+2D-2)^2+(C+3D-2)^2">
+            <div class="equation-content">
+              \[
+              E(C,D)
+              =
+              (C+D-1)^2
+              +(C+2D-2)^2
+              +(C+3D-2)^2
+              \]
+            </div>
+          </div>
+          <p>olur. Bu fonksiyonun \(C\) ve \(D\) değişkenlerine göre türevlerini sıfıra eşitlemek de normal denklemleri verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Normal Denklemlerle En İyi Doğru</h3>
+          <p>Matris ve sağ taraf</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}1\\2\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1\\
+              1&2\\
+              1&3
+              \end{bmatrix},
+              \qquad
+              \mathbf{b}=
+              \begin{bmatrix}
+              1\\
+              2\\
+              2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olsun. Normal denklemler için</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}3&6\\6&14\end{bmatrix},\qquad A^T\mathbf{b}=\begin{bmatrix}5\\11\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              3&6\\
+              6&14
+              \end{bmatrix},
+              \qquad
+              A^T\mathbf{b}=
+              \begin{bmatrix}
+              5\\
+              11
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Böylece</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3&6\\6&14\end{bmatrix}\begin{bmatrix}\hat{C}\\\hat{D}\end{bmatrix}=\begin{bmatrix}5\\11\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              3&6\\
+              6&14
+              \end{bmatrix}
+              \begin{bmatrix}
+              \hat{C}\\
+              \hat{D}
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              5\\
+              11
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>çözülür. İlk denklemin iki katı ikinci denklemden çıkarılırsa \(2\hat{D}=1\), yani \(\hat{D}=\frac12\) bulunur. İlk denklemde yerine koyunca \(3\hat{C}+3=5\), dolayısıyla \(\hat{C}=\frac23\).</p>
+          <div class="equation-card" data-raw-latex="\hat{C}=\frac23,\qquad \hat{D}=\frac12">
+            <div class="equation-content">
+              \[
+              \hat{C}=\frac23,\qquad \hat{D}=\frac12
+              \]
+            </div>
+          </div>
+          <p>En iyi doğru</p>
+          <div class="equation-card" data-raw-latex="b=\frac23+\frac12 t">
+            <div class="equation-content">
+              \[
+              b=\frac23+\frac12 t
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: İzdüşüm ve Hata Vektörleri</h3>
+          <p>En iyi doğru \(t=1,2,3\) için şu tahminleri verir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=\begin{bmatrix}7/6\\5/3\\13/6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=
+              \begin{bmatrix}
+              7/6\\
+              5/3\\
+              13/6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Veri vektörü \(\mathbf{b}=(1,2,2)^T\) olduğundan hata vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{e}=\mathbf{b}-\mathbf{p}=\begin{bmatrix}-1/6\\1/3\\-1/6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{e}
+              =
+              \mathbf{b}-\mathbf{p}
+              =
+              \begin{bmatrix}
+              -1/6\\
+              1/3\\
+              -1/6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu hata, sütun uzayına diktir. Gerçekten de \(A\) matrisinin sütunları \((1,1,1)^T\) ve \((1,2,3)^T\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\1\\1\end{bmatrix}^T\mathbf{e}=0,\qquad \begin{bmatrix}1\\2\\3\end{bmatrix}^T\mathbf{e}=0">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1\\1\\1
+              \end{bmatrix}^T\mathbf{e}=0,
+              \qquad
+              \begin{bmatrix}
+              1\\2\\3
+              \end{bmatrix}^T\mathbf{e}=0
+              \]
+            </div>
+          </div>
+          <p>Ayrıca \(\mathbf{p}\) sütun uzayında olduğu için \(\mathbf{e}\) ile \(\mathbf{p}\) de diktir.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Kareler toplamı yöntemi, büyük hataları karesel olarak büyütür. Bu nedenle tek bir aykırı gözlem, en iyi doğruyu ciddi biçimde etkileyebilir. Bu bölümdeki amaç, bu yöntemin lineer cebir yapısını kurmaktır.</p>
+        </aside>
+
+        <h3>\(A^TA\) Matrisinin Tersinirliği</h3>
+        <p>Normal denklemlerin güvenilir biçimde çözülebilmesi için \(A^TA\) matrisinin tersinir olması gerekir. Bu derste kullanılan temel koşul şudur: \(A\) matrisinin sütunları bağımsızsa \(A^TA\) tersinirdir.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Bağımsız Sütunlar ve \(A^TA\) Tersinirliği</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin sütunları bağımsızsa \(A^TA\) tersinirdir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bağımsız sütunlar, \(A\mathbf{x}=\mathbf{0}\) eşitliğinin yalnızca \(\mathbf{x}=\mathbf{0}\) çözümüne sahip olduğunu söyler. \(A^TA\) sıfır uzayına yeni bir sıfır dışı vektör ekleyemez.</p>
+          <p><strong>Formal İspat:</strong> \(A^TA\mathbf{x}=\mathbf{0}\) olduğunu varsayalım. Her iki tarafı soldan \(\mathbf{x}^T\) ile çarparsak</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}=0
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Sol taraf</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=(A\mathbf{x})^T(A\mathbf{x})=\|A\mathbf{x}\|^2">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}
+              =
+              (A\mathbf{x})^T(A\mathbf{x})
+              =
+              \|A\mathbf{x}\|^2
+              \]
+            </div>
+          </div>
+          <p>olduğundan \(\|A\mathbf{x}\|^2=0\) ve dolayısıyla \(A\mathbf{x}=\mathbf{0}\). Sütunlar bağımsız olduğu için bu eşitlik yalnızca \(\mathbf{x}=\mathbf{0}\) ile mümkündür. Böylece \(A^TA\) matrisinin sıfır uzayı yalnızca sıfır vektöründen oluşur; bu da tersinirliktir.</p>
+          <p><strong>Yorum:</strong> Normal denklemlerin çözümünü mümkün kılan temel cebirsel güvence budur.</p>
+        </section>
+
+        <h3>Dik ve Birim Sütunlar</h3>
+        <p>Sütunların bağımsız olmasını garanti eden özel bir durum, sütunların birbirine dik ve uzunluklarının \(1\) olmasıdır. Böyle sütunlar için</p>
+        <div class="equation-card" data-raw-latex="A^TA=I">
+          <div class="equation-content">
+            \[
+            A^TA=I
+            \]
+          </div>
+        </div>
+        <p>olur. Bu durum, izdüşüm ve en küçük kareler hesaplarını özellikle sadeleştirir.</p>
+        <section class="example-card">
+          <h3>Örnek 1.7: Düzlemde Dik ve Birim İki Vektör</h3>
+          <p>Aşağıdaki iki vektör birbirine diktir ve her birinin uzunluğu \(1\)dir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_1=\begin{bmatrix}\cos\theta\\\sin\theta\end{bmatrix},\qquad \mathbf{q}_2=\begin{bmatrix}-\sin\theta\\\cos\theta\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_1=
+              \begin{bmatrix}
+              \cos\theta\\
+              \sin\theta
+              \end{bmatrix},
+              \qquad
+              \mathbf{q}_2=
+              \begin{bmatrix}
+              -\sin\theta\\
+              \cos\theta
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu özel yapı, sonraki hesaplarda sütunları daha kullanışlı hâle getirmenin temel motivasyonudur.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: İzdüşüm Matrisi Sütun Uzayını Korur</h3>
+          <p><strong>İfade:</strong> \(\mathbf{b}\in\mathcal{C}(A)\) ise \(P\mathbf{b}=\mathbf{b}\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Vektör zaten hedef alt uzaydadır; en yakın nokta yine kendisidir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{b}=A\mathbf{x}\) yazılır. Bu durumda</p>
+          <div class="equation-card" data-raw-latex="P\mathbf{b}=A(A^TA)^{-1}A^TA\mathbf{x}=A\mathbf{x}=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              P\mathbf{b}
+              =
+              A(A^TA)^{-1}A^TA\mathbf{x}
+              =
+              A\mathbf{x}
+              =
+              \mathbf{b}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu özellik, izdüşümün sütun uzayındaki bileşeni değiştirmediğini gösterir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: İzdüşüm Matrisi Dik Bileşeni Sıfırlar</h3>
+          <p><strong>İfade:</strong> \(\mathbf{b}\in\mathcal{N}(A^T)\) ise \(P\mathbf{b}=\mathbf{0}\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Vektör tamamen sütun uzayına dikse, sütun uzayındaki en yakın vektör sıfır vektörüdür.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{b}\in\mathcal{N}(A^T)\) olduğundan \(A^T\mathbf{b}=\mathbf{0}\). Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="P\mathbf{b}=A(A^TA)^{-1}A^T\mathbf{b}=A(A^TA)^{-1}\mathbf{0}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              P\mathbf{b}
+              =
+              A(A^TA)^{-1}A^T\mathbf{b}
+              =
+              A(A^TA)^{-1}\mathbf{0}
+              =
+              \mathbf{0}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> \(P\), \(\mathcal{N}(A^T)\) yönündeki bileşeni yok eder.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: En Küçük Kareler İçin Normal Denklemler</h3>
+          <p><strong>İfade:</strong> \(\|A\mathbf{x}-\mathbf{b}\|^2\) ifadesini en küçük yapan \(\hat{\mathbf{x}}\), normal denklemleri sağlar:</p>
+          <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+            <div class="equation-content">
+              \[
+              A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> En iyi yaklaşım seçildiğinde hata vektörü sütun uzayına dik olur.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{e}=\mathbf{b}-A\hat{\mathbf{x}}\) olsun. En iyi izdüşümde \(\mathbf{e}\perp\mathcal{C}(A)\), yani \(A^T\mathbf{e}=\mathbf{0}\). Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>ve buradan \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu denklem, hem geometri hem de hata kareleri toplamını türevle küçültme yaklaşımıyla aynı sonuca götürür.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: En İyi Doğruyu Normal Denklemlerle Bulma</h3>
+        <ol>
+          <li>Modeli yaz: \(b=C+Dt\).</li>
+          <li>Her veri noktası için denklem kur.</li>
+          <li>Bu denklemleri \(A\mathbf{x}=\mathbf{b}\) biçimine getir.</li>
+          <li>Normal denklemleri hesapla: \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\).</li>
+          <li>\(\hat{\mathbf{x}}=(\hat{C},\hat{D})^T\) katsayılarını çöz.</li>
+          <li>İzdüşümü \(\mathbf{p}=A\hat{\mathbf{x}}\) ve hatayı \(\mathbf{e}=\mathbf{b}-\mathbf{p}\) ile bul.</li>
+        </ol>
+        <p>Örnek 1.4’te bu yöntem \(\hat{C}=\frac23\), \(\hat{D}=\frac12\) sonucunu vermiştir.</p>
+
+        <h3>Yöntem 2: Hatanın Sütun Uzayına Dikliğini Kontrol Etme</h3>
+        <ol>
+          <li>Hata vektörünü hesapla: \(\mathbf{e}=\mathbf{b}-A\hat{\mathbf{x}}\).</li>
+          <li>\(A^T\mathbf{e}\) çarpımını hesapla.</li>
+          <li>Sonuç \(\mathbf{0}\) ise hata sütun uzayına diktir.</li>
+        </ol>
+        <p>Örnek 1.5’te</p>
+        <div class="equation-card" data-raw-latex="A^T\mathbf{e}=\begin{bmatrix}1&1&1\\1&2&3\end{bmatrix}\begin{bmatrix}-1/6\\1/3\\-1/6\end{bmatrix}=\begin{bmatrix}0\\0\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            A^T\mathbf{e}
+            =
+            \begin{bmatrix}
+            1&1&1\\
+            1&2&3
+            \end{bmatrix}
+            \begin{bmatrix}
+            -1/6\\
+            1/3\\
+            -1/6
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+            0\\
+            0
+            \end{bmatrix}
+            \]
+          </div>
+        </div>
+        <aside class="note-card">
+          <strong>Yaygın hata noktası:</strong>
+          <p>Hata vektörünün yalnızca \(\mathbf{p}\) vektörüne dik olduğunu söylemek eksiktir. Doğru ifade, hatanın \(A\) matrisinin bütün sütunlarına ve dolayısıyla tüm sütun uzayına dik olduğudur.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki uygulama, üç noktaya en iyi doğruyu uydurma problemidir. Tam çözüm olmadığında, hataların kareleri toplamı en küçük yapılır. Bu, çok sayıda gözlemden az sayıda parametre belirleme fikrini temsil eder.</p>
+        <p>Kareler toplamı yöntemi, hesaplamayı lineer ve düzenli hâle getirir; normal denklemler ortaya çıkar. Ancak aykırı gözlemler karesel biçimde büyüdüğü için sonuç üzerinde güçlü etki yapabilir. Bu not, yöntemin matematiksel yapısını anlamak açısından önemlidir.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <aside class="note-card">
+            <strong>Hata 1:</strong>
+            <p>\(\mathbf{b}\) ile \(\mathbf{p}\) karıştırılabilir. \(\mathbf{b}\) veri vektörüdür; \(\mathbf{p}\) onun sütun uzayındaki en yakın temsilidir.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 2:</strong>
+            <p>\(P\) matrisinin her vektörü değiştirdiği sanılabilir. Sütun uzayındaki vektörler için \(P\mathbf{b}=\mathbf{b}\) olur.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 3:</strong>
+            <p>\((I-P)\) matrisinin sıradan bir fark matrisi olduğu düşünülebilir. Oysa \((I-P)\mathbf{b}\), hata vektörünü yani dik tamamlayıcı bileşeni verir.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 4:</strong>
+            <p>Hata kareleri toplamının doğrudan \(A\mathbf{x}=\mathbf{b}\) sistemini çözdüğü sanılabilir. Tam çözüm yoksa çözülen sistem normal denklemlerdir.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 5:</strong>
+            <p>\(A^TA\) matrisinin tersinirliği otomatik sanılabilir. Bu derste kullanılan güvence, \(A\) matrisinin sütunlarının bağımsız olmasıdır.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 6:</strong>
+            <p>En iyi doğru ile tüm noktalardan geçen doğru aynı sanılabilir. Bu örnekte tüm noktalardan geçen tek bir doğru yoktur; bulunan doğru hatayı en küçük yapan doğrudur.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li><strong>İzdüşüm matrisi:</strong> \(P=A(A^TA)^{-1}A^T\), sütun uzayındaki bileşeni verir.</li>
+            <li><strong>Dik tamamlayıcı izdüşümü:</strong> \(I-P\), hata bileşenini verir.</li>
+            <li><strong>Ayrışım:</strong> \(\mathbf{b}=\mathbf{p}+\mathbf{e}\), burada \(\mathbf{p}\in\mathcal{C}(A)\) ve \(\mathbf{e}\in\mathcal{N}(A^T)\).</li>
+            <li><strong>En küçük kareler:</strong> \(\|A\mathbf{x}-\mathbf{b}\|^2\) en küçük yapılır.</li>
+            <li><strong>Normal denklemler:</strong> \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\), en iyi katsayıları verir.</li>
+            <li><strong>Doğru uydurma:</strong> \(b=C+Dt\), örnekte en iyi doğru \(b=\frac23+\frac12t\).</li>
+            <li><strong>Tersinirlik koşulu:</strong> \(A\) bağımsız sütunlara sahipse \(A^TA\) tersinirdir.</li>
+            <li><strong>Dik ve birim sütunlar:</strong> \(A^TA=I\) durumunu verir ve hesapları sadeleştirir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Sütun uzayına izdüşüm matrisi</p>
+        <div class="equation-card" data-raw-latex="P=A(A^TA)^{-1}A^T">
+          <div class="equation-content">
+            \[
+            P=A(A^TA)^{-1}A^T
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Dik tamamlayıcıya izdüşüm</p>
+        <div class="equation-card" data-raw-latex="I-P">
+          <div class="equation-content">
+            \[
+            I-P
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Vektör ayrışımı</p>
+        <div class="equation-card" data-raw-latex="\mathbf{b}=\mathbf{p}+\mathbf{e},\qquad \mathbf{p}=P\mathbf{b},\qquad \mathbf{e}=(I-P)\mathbf{b}">
+          <div class="equation-content">
+            \[
+            \mathbf{b}=\mathbf{p}+\mathbf{e},
+            \qquad
+            \mathbf{p}=P\mathbf{b},
+            \qquad
+            \mathbf{e}=(I-P)\mathbf{b}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Normal denklemler</p>
+        <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Hata kareleri toplamı</p>
+        <div class="equation-card" data-raw-latex="\|A\mathbf{x}-\mathbf{b}\|^2=e_1^2+e_2^2+\cdots+e_m^2">
+          <div class="equation-content">
+            \[
+            \|A\mathbf{x}-\mathbf{b}\|^2
+            =
+            e_1^2+e_2^2+\cdots+e_m^2
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Örnekteki en iyi doğru</p>
+        <div class="equation-card" data-raw-latex="b=\frac23+\frac12t">
+          <div class="equation-content">
+            \[
+            b=\frac23+\frac12t
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Dik ve birim sütunlar için özel durum</p>
+        <div class="equation-card" data-raw-latex="A^TA=I">
+          <div class="equation-content">
+            \[
+            A^TA=I
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde izdüşüm matrisinin sütun uzayındaki vektörleri koruduğu, sütun uzayına dik vektörleri ise sıfırladığı görüldü. Bu davranış, \(\mathbf{b}=\mathbf{p}+\mathbf{e}\) ayrışımının cebirsel karşılığıdır.</p>
+        <p>En küçük kareler yöntemi, çözülemeyen \(A\mathbf{x}=\mathbf{b}\) sisteminde hata vektörünün uzunluk karesini en küçük yapar. Üç nokta için doğru uydurma örneğinde normal denklemler çözülerek \(\hat{C}=\frac23\), \(\hat{D}=\frac12\) ve en iyi doğru \(b=\frac23+\frac12t\) elde edildi.</p>
+        <p>Son olarak, bağımsız sütunlara sahip \(A\) için \(A^TA\) matrisinin tersinir olduğu ispatlandı. Dik ve birim sütunlar ise \(A^TA=I\) gibi çok daha sade bir özel durum oluşturur.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 1: İzdüşüm ve Hata Ayrışımı</h3>
+          <p><strong>Soru:</strong> Bir izdüşüm matrisi \(P\) için \(P\mathbf{b}=\mathbf{p}\) olsun. Hata vektörünün \((I-P)\mathbf{b}\) olduğunu gösterin.</p>
+          <p><strong>Çözüm:</strong> Hata vektörü tanım gereği \(\mathbf{e}=\mathbf{b}-\mathbf{p}\). \(\mathbf{p}=P\mathbf{b}\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{e}=\mathbf{b}-P\mathbf{b}=(I-P)\mathbf{b}">
+            <div class="equation-content">
+              \[
+              \mathbf{e}=\mathbf{b}-P\mathbf{b}=(I-P)\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> \(P\) en iyi yaklaşımı, \(I-P\) ise geriye kalan dik hatayı verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 2: Küçük Bir En Küçük Kareler Hesabı</h3>
+          <p><strong>Soru:</strong></p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}2\\2\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1\\
+              1&2\\
+              1&3
+              \end{bmatrix},
+              \qquad
+              \mathbf{b}=
+              \begin{bmatrix}
+              2\\
+              2\\
+              4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Normal denklemleri kurup \(\hat{\mathbf{x}}\) vektörünü bulun.</p>
+          <p><strong>Çözüm:</strong> \(A^TA\) aynı kalır:</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}3&6\\6&14\end{bmatrix},\qquad A^T\mathbf{b}=\begin{bmatrix}8\\18\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              3&6\\
+              6&14
+              \end{bmatrix},
+              \qquad
+              A^T\mathbf{b}=
+              \begin{bmatrix}
+              8\\
+              18
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3&6\\6&14\end{bmatrix}\begin{bmatrix}\hat{C}\\\hat{D}\end{bmatrix}=\begin{bmatrix}8\\18\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              3&6\\
+              6&14
+              \end{bmatrix}
+              \begin{bmatrix}
+              \hat{C}\\
+              \hat{D}
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              8\\
+              18
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İlk denklemin iki katını ikinci denklemden çıkarınca \(2\hat{D}=2\), yani \(\hat{D}=1\). İlk denklem \(3\hat{C}+6=8\) verir; buradan \(\hat{C}=\frac23\).</p>
+          <div class="equation-card" data-raw-latex="\hat{\mathbf{x}}=\begin{bmatrix}2/3\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \hat{\mathbf{x}}=
+              \begin{bmatrix}
+              2/3\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu katsayılar, \(b=\frac23+t\) doğrusunu verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 3: \(A^TA\) Tersinirliği</h3>
+          <p><strong>Soru:</strong> \(A\) matrisinin sütunları bağımsız olsun. \(A^TA\mathbf{x}=\mathbf{0}\) ise \(\mathbf{x}=\mathbf{0}\) olduğunu gösterin.</p>
+          <p><strong>Çözüm:</strong> Denklemi soldan \(\mathbf{x}^T\) ile çarpalım:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}=0
+              \]
+            </div>
+          </div>
+          <p>Bu ifade \(\|A\mathbf{x}\|^2\) olduğundan \(A\mathbf{x}=\mathbf{0}\). Sütunlar bağımsız olduğu için \(A\mathbf{x}=\mathbf{0}\) yalnızca \(\mathbf{x}=\mathbf{0}\) ile mümkündür.</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{0}\quad\Longrightarrow\quad \mathbf{x}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=\mathbf{0}
+              \quad\Longrightarrow\quad
+              \mathbf{x}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu, \(A^TA\) matrisinin sıfır uzayında sıfırdan farklı vektör bulunmadığını gösterir; dolayısıyla \(A^TA\) tersinirdir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Projection matrix</td>
+                <td>İzdüşüm matrisi</td>
+                <td>Bir vektörü belirli bir alt uzaya izdüşüren matristir.</td>
+              </tr>
+              <tr>
+                <td>Least squares</td>
+                <td>En küçük kareler</td>
+                <td>Hata kareleri toplamını en küçük yapan yaklaşım yöntemidir.</td>
+              </tr>
+              <tr>
+                <td>Normal equations</td>
+                <td>Normal denklemler</td>
+                <td>\(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) biçimindeki denklemlerdir.</td>
+              </tr>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>Bir matrisin sütunlarının tüm doğrusal kombinasyonlarından oluşur.</td>
+              </tr>
+              <tr>
+                <td>Left nullspace</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{e}=\mathbf{0}\) koşulunu sağlayan vektörlerin uzayıdır.</td>
+              </tr>
+              <tr>
+                <td>Error vector</td>
+                <td>Hata vektörü</td>
+                <td>Veri vektörü ile izdüşüm arasındaki farktır.</td>
+              </tr>
+              <tr>
+                <td>Linear regression</td>
+                <td>Doğrusal gerileme</td>
+                <td>Veri noktalarını bir doğruyla yaklaşık temsil etme bağlamında kullanılan terimdir.</td>
+              </tr>
+              <tr>
+                <td>Outlier</td>
+                <td>Aykırı gözlem</td>
+                <td>Diğer gözlemlerden çok uzakta yer alan ve kareler toplamını güçlü etkileyebilen gözlemdir.</td>
+              </tr>
+              <tr>
+                <td>Orthonormal vectors</td>
+                <td>Dik ve birim vektörler</td>
+                <td>Birbirine dik ve uzunlukları \(1\) olan vektörlerdir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

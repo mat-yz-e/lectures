@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>32. Ders: Final Ders Tekrarı</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" class="active" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">32. Ders: Final Ders Tekrarı</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, ders boyunca kurulan ana fikirleri sınav tipi sorular üzerinden yeniden düzenler: çözüm varlığı, tekillik, rütbe, dört temel alt uzay, projeksiyonlar, özdeğerler ve en küçük kareler aynı çatı altında toplanır.</p>
+        <p>Tekrarın ana amacı, bir problemin hangi kavrama ait olduğunu hızlıca tanımaktır. Bir denklemin çözümsüz olması sütun uzayını ve rütbeyi; çözümün tek olması sıfır uzayını; \(A^TA\) ve \(AA^T\) matrislerinin davranışı pozitif tanımlılık ve rütbe ilişkisini; Markov örneği ise özdeğerlerin uzun dönem davranışını belirler.</p>
+        <p>Bu bölüm yeni bir teori kurmaktan çok, önceki kavramları birlikte kullanmayı öğretir. Her örnekte sorunun görünen biçimi ile arkasındaki lineer cebir ilkesi açıkça ayrıştırılır.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir sistemin çözümsüz veya tek çözümlü olmasından \(m,n,r\) ilişkilerini çıkarmak.</li>
+          <li>\(A^TA\) ve \(AA^T\) matrislerinin terslenebilirlik ve pozitif tanımlılık durumlarını rütbe ile ilişkilendirmek.</li>
+          <li>\(A^T\mathbf{y}=\mathbf{c}\) sisteminin çözüm sayısını satır rütbesi ve sıfır uzayı boyutuyla belirlemek.</li>
+          <li>Matris-vektör çarpımını sütunların doğrusal kombinasyonu olarak okumak.</li>
+          <li>Sıfır uzayındaki sıfır olmayan bir vektörün çözüm tekliğini nasıl bozduğunu açıklamak.</li>
+          <li>Ortonormal vektörlerde projeksiyon ve en yakın vektör fikrini kullanmak.</li>
+          <li>Bir Markov matrisinin özdeğerlerini ve durağan durumunu bulmak.</li>
+          <li>Verilen özdeğer ve özvektörlerden matrisi \(S\Lambda S^{-1}\) biçiminde kurmak.</li>
+          <li>En küçük kareler çözümünden projeksiyon vektörünü ve hata vektörünü yorumlamak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Rütbe, pivot sayısı ve serbest değişken sayısı.</li>
+          <li>Sütun uzayı, satır uzayı ve sıfır uzayı.</li>
+          <li>Matris çarpımının sütunlar üzerinden yorumu.</li>
+          <li>Ortonormal vektörler ve projeksiyon matrisi.</li>
+          <li>Özdeğer, özvektör ve köşegenleştirme.</li>
+          <li>Markov matrisi ve durağan durum.</li>
+          <li>En küçük kareler ve normal denklemler.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Matris</td>
+                <td>Çözüm, rütbe, özdeğer veya en küçük kareler bağlamında incelenen temel matris.</td>
+              </tr>
+              <tr>
+                <td>\(m,n,r\)</td>
+                <td>Satır sayısı, sütun sayısı, rütbe</td>
+                <td>Bir \(m\times n\) matrisin pivot sayısı \(r\) ile gösterilir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3\)</td>
+                <td>Sütun vektörleri</td>
+                <td>\(A=[\mathbf{v}_1\ \mathbf{v}_2\ \mathbf{v}_3]\) biçiminde kullanılan sütunlar.</td>
+              </tr>
+              <tr>
+                <td>\(C(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{b}\) sisteminin çözülebilir olduğu sağ tarafların uzayı.</td>
+              </tr>
+              <tr>
+                <td>\(N(A)\)</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) eşitliğini sağlayan vektörler.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>Projeksiyon matrisi</td>
+                <td>Bir alt uzaya en yakın vektörü veren izdüşüm matrisi.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda\)</td>
+                <td>Özdeğer</td>
+                <td>\(A\mathbf{x}=\lambda\mathbf{x}\) eşitliğindeki skaler.</td>
+              </tr>
+              <tr>
+                <td>\(S\)</td>
+                <td>Özvektör matrisi</td>
+                <td>Sütunları özvektörlerden oluşan matris.</td>
+              </tr>
+              <tr>
+                <td>\(\Lambda\)</td>
+                <td>Özdeğer matrisi</td>
+                <td>Köşegeninde özdeğerleri taşıyan matris.</td>
+              </tr>
+              <tr>
+                <td>\(\widehat{\mathbf{x}}\)</td>
+                <td>En küçük kareler çözümü</td>
+                <td>Tam çözülemeyen sistemde hata uzunluğunu en küçük yapan katsayı vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{p}\)</td>
+                <td>Projeksiyon vektörü</td>
+                <td>\(A\widehat{\mathbf{x}}\) ile verilen, \(\mathbf{b}\) vektörünün sütun uzayındaki izdüşümü.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Lineer cebirde birçok soru, aynı temel karar ağacına indirgenir: sağ taraf sütun uzayında mı, sıfır uzayı yalnızca \(\mathbf{0}\) mı, rütbe satır veya sütun sayısına eşit mi, matris simetrik veya pozitif tanımlı mı, özdeğerler uzun dönem davranışını nasıl belirliyor?</p>
+        <p>Bu tekrar, bu karar ağacını farklı örnekler üzerinde uygular. İlk örnek rütbe ve çözüm sayısını; ikinci örnek sütun kombinasyonunu ve sıfır uzayını; üçüncü örnek ortonormal projeksiyonu; dördüncü örnek Markov matrislerini; son örnekler ise projeksiyon, özdeğerlerden matris kurma ve en küçük kareler ilişkisini bir araya getirir.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.1: Çözümsüzlük ve Tek Çözümden Rütbe Bilgisi</h3>
+          <p>\(A\) bir \(3\times n\) matris olsun. Aşağıdaki bilgiler verilsin:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\begin{bmatrix}1\\0\\0\end{bmatrix}\ \text{çözümsüz},\qquad A\mathbf{x}=\begin{bmatrix}0\\1\\0\end{bmatrix}\ \text{tek çözümlü}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=\begin{bmatrix}1\\0\\0\end{bmatrix}\ \text{çözümsüz},\qquad
+              A\mathbf{x}=\begin{bmatrix}0\\1\\0\end{bmatrix}\ \text{tek çözümlü}
+              \]
+            </div>
+          </div>
+          <p>Matrisin üç satırı olduğu için \(m=3\). Bir sağ taraf için çözüm olmaması, sütun uzayının bütün \(\mathbb{R}^3\) olmadığını gösterir. Bu yüzden \(r&lt;m=3\). Öte yandan bir çözümün tek olması, sıfır uzayında sıfırdan başka vektör olmadığını gösterir. Bu da \(r=n\) anlamına gelir.</p>
+          <div class="equation-card" data-raw-latex="m=3,\qquad r=n,\qquad r&lt;m">
+            <div class="equation-content">
+              \[
+              m=3,\qquad r=n,\qquad r&lt;m
+              \]
+            </div>
+          </div>
+          <p>Bu koşullara uyan en basit örneklerden biri tek sütunlu bir matristir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0\\1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}0\\1\\0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu durumda \(C(A)\), yalnızca \(\begin{bmatrix}0&1&0\end{bmatrix}^T\) doğrultusudur. Dolayısıyla \(\begin{bmatrix}0&1&0\end{bmatrix}^T\) için tek çözüm vardır, fakat \(\begin{bmatrix}1&0&0\end{bmatrix}^T\) sütun uzayında değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.2: \(A^TA\), \(AA^T\) ve Doğru-Yanlış Kararları</h3>
+          <p>Örnek 1.1 koşulları altında \(r=n&lt;m=3\) olduğunu biliyoruz. Bu nedenle \(A\) tam sütun rütbelidir. Buna göre \(A^TA\) terslenebilir:</p>
+          <div class="equation-card" data-raw-latex="r=n\quad\Longrightarrow\quad A^TA\ \text{terslenebilir}">
+            <div class="equation-content">
+              \[
+              r=n\quad\Longrightarrow\quad A^TA\ \text{terslenebilir}
+              \]
+            </div>
+          </div>
+          <p>Buna karşılık \(AA^T\), \(3\times3\) boyutlu olmasına rağmen rütbesi en fazla \(r&lt;3\) olduğu için terslenebilir değildir ve pozitif tanımlı olamaz. Ancak her zaman pozitif yarı tanımlıdır.</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(AA^T)=r&lt;3">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(AA^T)=r&lt;3
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla şu üç ifade değerlendirilir:</p>
+          <div class="equation-card" data-raw-latex="\det(A^TA)=\det(AA^T)\ \text{yanlış},\qquad A^TA\ \text{terslenebilir doğru},\qquad AA^T\ \text{pozitif tanımlı yanlış}">
+            <div class="equation-content">
+              \[
+              \det(A^TA)=\det(AA^T)\ \text{yanlış},\qquad
+              A^TA\ \text{terslenebilir doğru},\qquad
+              AA^T\ \text{pozitif tanımlı yanlış}
+              \]
+            </div>
+          </div>
+          <p>Determinant eşitliğinin yanlış olmasının nedeni, \(A\) matrisinin kare olmamasıdır. Kare matrisler için \(\det(AB)=\det(BA)\) gibi kurallar kullanılabilir; burada \(A^TA\) ve \(AA^T\) farklı boyutlu kare matrislerdir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: \(A^T\mathbf{y}=\mathbf{c}\) Sisteminin Çözüm Sayısı</h3>
+          <p>Yine \(r=n&lt;m\) durumunda \(A^T\) matrisi \(n\times m\) boyutludur ve tam satır rütbesine sahiptir. Bu yüzden \(A^T\mathbf{y}=\mathbf{c}\) sistemi her \(\mathbf{c}\) için en az bir çözüme sahiptir.</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(A^T)=n=\text{satır sayısı}">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(A^T)=n=\text{satır sayısı}
+              \]
+            </div>
+          </div>
+          <p>Çözümün tek olmamasını belirleyen şey \(A^T\) matrisinin sıfır uzayıdır. Bu sıfır uzayının boyutu</p>
+          <div class="equation-card" data-raw-latex="\dim N(A^T)=m-r">
+            <div class="equation-content">
+              \[
+              \dim N(A^T)=m-r
+              \]
+            </div>
+          </div>
+          <p>olur. Burada \(m-r&gt;0\) olduğundan her sağ taraf için sonsuz çözüm vardır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Matris Çarpımının Sütun Yorumu</h3>
+          <p>\(A=[\mathbf{v}_1\ \mathbf{v}_2\ \mathbf{v}_3]\) ise</p>
+          <div class="equation-card" data-raw-latex="A\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}=x_1\mathbf{v}_1+x_2\mathbf{v}_2+x_3\mathbf{v}_3">
+            <div class="equation-content">
+              \[
+              A\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}
+              =x_1\mathbf{v}_1+x_2\mathbf{v}_2+x_3\mathbf{v}_3
+              \]
+            </div>
+          </div>
+          <p>Bu yorum, sistemi çözmeden önce sağ tarafın sütunların hangi doğrusal kombinasyonu olduğunu görmeyi sağlar.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: Sütun Kombinasyonu ve Sıfır Uzayı</h3>
+          <p>\(A=[\mathbf{v}_1\ \mathbf{v}_2\ \mathbf{v}_3]\) olsun. Aşağıdaki sistemi çözelim:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{v}_1-\mathbf{v}_2+\mathbf{v}_3">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=\mathbf{v}_1-\mathbf{v}_2+\mathbf{v}_3
+              \]
+            </div>
+          </div>
+          <p>Sütun yorumu doğrudan katsayıları verir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}1\\-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=\begin{bmatrix}1\\-1\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Eğer ayrıca</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_1-\mathbf{v}_2+\mathbf{v}_3=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_1-\mathbf{v}_2+\mathbf{v}_3=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>ise \(\begin{bmatrix}1&-1&1\end{bmatrix}^T\) sıfır uzayında sıfırdan farklı bir vektördür. Bu nedenle herhangi bir çözüme bu vektörün katları eklenebilir ve çözüm tek olamaz.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Ortonormal Vektörlerde En Yakın Kombinasyon</h3>
+          <p>\(\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3\) ortonormal olsun. \(\mathbf{v}_1\) ve \(\mathbf{v}_2\) vektörlerinin gerdiği düzlemde \(\mathbf{v}_3\) vektörüne en yakın vektör, \(\mathbf{v}_3\) vektörünün bu düzleme projeksiyonudur.</p>
+          <p>Ortonormallik nedeniyle \(\mathbf{v}_3\), hem \(\mathbf{v}_1\) hem \(\mathbf{v}_2\) vektörlerine diktir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_1^T\mathbf{v}_3=0,\qquad \mathbf{v}_2^T\mathbf{v}_3=0">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_1^T\mathbf{v}_3=0,\qquad \mathbf{v}_2^T\mathbf{v}_3=0
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle projeksiyon katsayıları sıfırdır:</p>
+          <div class="equation-card" data-raw-latex="\operatorname{proj}_{\operatorname{span}(\mathbf{v}_1,\mathbf{v}_2)}\mathbf{v}_3=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \operatorname{proj}_{\operatorname{span}(\mathbf{v}_1,\mathbf{v}_2)}\mathbf{v}_3=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>En yakın kombinasyon \(0\mathbf{v}_1+0\mathbf{v}_2=\mathbf{0}\) olur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.7: Markov Matrisi, Özdeğerler ve Durağan Durum</h3>
+          <p>Aşağıdaki sütunları toplamı \(1\) olan Markov matrisini ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0.2 &amp; 0.4 &amp; 0.3\\0.4 &amp; 0.2 &amp; 0.3\\0.4 &amp; 0.4 &amp; 0.4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              0.2 &amp; 0.4 &amp; 0.3\\
+              0.4 &amp; 0.2 &amp; 0.3\\
+              0.4 &amp; 0.4 &amp; 0.4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Birinci ve ikinci sütunların toplamı üçüncü sütunun iki katıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1+\mathbf{a}_2=2\mathbf{a}_3">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1+\mathbf{a}_2=2\mathbf{a}_3
+              \]
+            </div>
+          </div>
+          <p>Bu bağımlılık nedeniyle \(\lambda=0\) bir özdeğerdir. Markov matrislerinde \(\lambda=1\) de bir özdeğerdir. İz \(\operatorname{tr}(A)=0.8\) olduğundan üçüncü özdeğer</p>
+          <div class="equation-card" data-raw-latex="0+1+\lambda_3=0.8\quad\Longrightarrow\quad \lambda_3=-0.2">
+            <div class="equation-content">
+              \[
+              0+1+\lambda_3=0.8\quad\Longrightarrow\quad \lambda_3=-0.2
+              \]
+            </div>
+          </div>
+          <p>Durağan durum \(\lambda=1\) özdeğerine karşılık gelir. Burada</p>
+          <div class="equation-card" data-raw-latex="A\begin{bmatrix}3\\3\\4\end{bmatrix}=\begin{bmatrix}3\\3\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\begin{bmatrix}3\\3\\4\end{bmatrix}
+              =\begin{bmatrix}3\\3\\4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğundan başlangıç vektörü \(\mathbf{u}(0)=\begin{bmatrix}0&10&0\end{bmatrix}^T\) için toplam nüfus \(10\) korunur ve uzun dönem vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(\infty)=\begin{bmatrix}3\\3\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(\infty)=\begin{bmatrix}3\\3\\4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Bir Doğruya Projeksiyon Matrisi</h3>
+          <p>\(\mathbf{a}=\begin{bmatrix}4&-3\end{bmatrix}^T\) doğrultusundaki doğruya projeksiyon matrisi</p>
+          <div class="equation-card" data-raw-latex="P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}">
+            <div class="equation-content">
+              \[
+              P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}
+              \]
+            </div>
+          </div>
+          <p>formülüyle bulunur. Burada \(\mathbf{a}^T\mathbf{a}=4^2+(-3)^2=25\). Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="P=\frac{1}{25}\begin{bmatrix}16 &amp; -12\\-12 &amp; 9\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              P=\frac{1}{25}\begin{bmatrix}
+              16 &amp; -12\\
+              -12 &amp; 9
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: Özdeğer ve Özvektörlerden Matrisi Kurmak</h3>
+          <p>\(\lambda_1=0\) için özvektör \(\begin{bmatrix}1&2\end{bmatrix}^T\), \(\lambda_2=3\) için özvektör \(\begin{bmatrix}2&1\end{bmatrix}^T\) olsun. Özvektör matrisi ve özdeğer matrisi</p>
+          <div class="equation-card" data-raw-latex="S=\begin{bmatrix}1 &amp; 2\\2 &amp; 1\end{bmatrix},\qquad \Lambda=\begin{bmatrix}0 &amp; 0\\0 &amp; 3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              S=\begin{bmatrix}1 &amp; 2\\2 &amp; 1\end{bmatrix},\qquad
+              \Lambda=\begin{bmatrix}0 &amp; 0\\0 &amp; 3\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Matris</p>
+          <div class="equation-card" data-raw-latex="A=S\Lambda S^{-1}">
+            <div class="equation-content">
+              \[
+              A=S\Lambda S^{-1}
+              \]
+            </div>
+          </div>
+          <p>ile elde edilir. Bu formül, köşegenleştirme denklemi \(S^{-1}AS=\Lambda\) eşitliğinin yeniden düzenlenmiş hâlidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: \(B^TB\) Biçiminde Yazılamayan Matris</h3>
+          <p>Her \(B^TB\) matrisi simetriktir:</p>
+          <div class="equation-card" data-raw-latex="(B^TB)^T=B^TB">
+            <div class="equation-content">
+              \[
+              (B^TB)^T=B^TB
+              \]
+            </div>
+          </div>
+          <p>Bu yüzden simetrik olmayan herhangi bir \(2\times2\) matris bu biçimde yazılamaz. Örneğin</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0 &amp; 1\\0 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              0 &amp; 1\\
+              0 &amp; 0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>simetrik değildir; dolayısıyla hiçbir \(B\) için \(A=B^TB\) olamaz.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: Ortonormal Özvektörlü Fakat Simetrik Olmayan Matris</h3>
+          <p>Simetrik matrislerin ortonormal özvektörleri vardır; fakat bu özellik yalnızca simetrik matrislere özgü değildir. Örneğin</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0 &amp; -1\\1 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              0 &amp; -1\\
+              1 &amp; 0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>reel ve simetrik olmayan bir dönme matrisidir. Karmaşık özvektörler kullanıldığında ortogonallik yapısı korunur. Bu örnek, ortogonal özvektör fikrinin simetrik matrislerin ötesinde de ortaya çıkabildiğini gösterir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.12: En Küçük Kareler ve Projeksiyon</h3>
+          <p>Aşağıdaki sistem tam olarak çözülemeyebilir:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1 &amp; 0\\1 &amp; 1\\1 &amp; 2\end{bmatrix}\begin{bmatrix}c\\d\end{bmatrix}=\begin{bmatrix}3\\4\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1 &amp; 0\\
+              1 &amp; 1\\
+              1 &amp; 2
+              \end{bmatrix}
+              \begin{bmatrix}c\\d\end{bmatrix}
+              =
+              \begin{bmatrix}3\\4\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>En küçük kareler çözümü</p>
+          <div class="equation-card" data-raw-latex="\widehat{\mathbf{x}}=\begin{bmatrix}\widehat{c}\\\widehat{d}\end{bmatrix}=\begin{bmatrix}11/3\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \widehat{\mathbf{x}}=
+              \begin{bmatrix}\widehat{c}\\\widehat{d}\end{bmatrix}
+              =
+              \begin{bmatrix}11/3\\-1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ise \(\mathbf{b}\) vektörünün sütun uzayındaki projeksiyonu \(A\widehat{\mathbf{x}}\) olur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=A\widehat{\mathbf{x}}=\frac{11}{3}\begin{bmatrix}1\\1\\1\end{bmatrix}-\begin{bmatrix}0\\1\\2\end{bmatrix}=\begin{bmatrix}11/3\\8/3\\5/3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=A\widehat{\mathbf{x}}
+              =
+              \frac{11}{3}\begin{bmatrix}1\\1\\1\end{bmatrix}
+              -
+              \begin{bmatrix}0\\1\\2\end{bmatrix}
+              =
+              \begin{bmatrix}11/3\\8/3\\5/3\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu sistem, \(t=0,1,2\) noktalarındaki \(3,4,1\) değerlerine en iyi doğruyu uydurma problemidir. En iyi doğru</p>
+          <div class="equation-card" data-raw-latex="y=\frac{11}{3}-t">
+            <div class="equation-content">
+              \[
+              y=\frac{11}{3}-t
+              \]
+            </div>
+          </div>
+          <p>şeklindedir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: En Küçük Kareler Çözümünün Sıfır Olması</h3>
+          <p>Bir \(\mathbf{b}\) vektörü, \(A\) matrisinin sütun uzayına dikse, \(\mathbf{b}\) vektörünün sütun uzayına projeksiyonu \(\mathbf{0}\) olur. Bu durumda en küçük kareler çözümü de sıfır katsayı vektörüdür.</p>
+          <p>Örnek 1.12'de \(A\) matrisinin sütunları \(\begin{bmatrix}1&1&1\end{bmatrix}^T\) ve \(\begin{bmatrix}0&1&2\end{bmatrix}^T\) vektörleridir. Bu iki sütuna dik sıfır olmayan bir vektör</p>
+          <div class="equation-card" data-raw-latex="\mathbf{b}=\begin{bmatrix}1\\-2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{b}=\begin{bmatrix}1\\-2\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur, çünkü</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\1\\1\end{bmatrix}^T\mathbf{b}=0,\qquad \begin{bmatrix}0\\1\\2\end{bmatrix}^T\mathbf{b}=0">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}1\\1\\1\end{bmatrix}^T\mathbf{b}=0,\qquad
+              \begin{bmatrix}0\\1\\2\end{bmatrix}^T\mathbf{b}=0
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle bu \(\mathbf{b}\) için en küçük kareler çözümü \(\widehat{\mathbf{x}}=\mathbf{0}\) olur.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.14: Çözüm Sayısı ve Sıfır Uzayı</h3>
+          <p><strong>İfade:</strong> \(A\mathbf{x}=\mathbf{b}\) sistemi çözülebilir olsun. Çözümün tek olması için \(N(A)=\{\mathbf{0}\}\) gerekir ve yeterlidir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sıfır uzayındaki vektörler, sağ tarafı değiştirmeden çözüme eklenebilen yönlerdir. Sıfırdan farklı böyle bir yön varsa çözüm tek kalamaz.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{x}_p\) bir çözüm olsun. Eğer \(\mathbf{z}\in N(A)\) ise</p>
+          <div class="equation-card" data-raw-latex="A(\mathbf{x}_p+\mathbf{z})=A\mathbf{x}_p+A\mathbf{z}=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              A(\mathbf{x}_p+\mathbf{z})=A\mathbf{x}_p+A\mathbf{z}=\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p>olur. Dolayısıyla sıfırdan farklı \(\mathbf{z}\) varsa yeni çözümler elde edilir. Tersine, \(\mathbf{x}_1\) ve \(\mathbf{x}_2\) iki çözümse \(A(\mathbf{x}_1-\mathbf{x}_2)=\mathbf{0}\). Eğer \(N(A)=\{\mathbf{0}\}\) ise \(\mathbf{x}_1=\mathbf{x}_2\).</p>
+          <p><strong>Yorum:</strong> Tek çözüm bilgisi doğrudan sütun bağımsızlığına, yani \(r=n\) koşuluna bağlanır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.15: \(A^TA\) Terslenebilirliği</h3>
+          <p><strong>İfade:</strong> \(A^TA\) matrisi, \(A\) matrisinin sütunları bağımsız olduğunda ve yalnızca o durumda terslenebilirdir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^TA\), \(A\) matrisinin sıfır uzayını değiştirmez. Eğer \(A\) bir yönü sıfıra gönderiyorsa \(A^TA\) da o yönü sıfıra gönderir.</p>
+          <p><strong>Formal İspat:</strong> Eğer \(A^TA\mathbf{x}=\mathbf{0}\) ise soldan \(\mathbf{x}^T\) ile çarpınca</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=\|A\mathbf{x}\|^2=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}=\|A\mathbf{x}\|^2=0
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu, \(A\mathbf{x}=\mathbf{0}\) demektir. Dolayısıyla \(N(A^TA)=N(A)\). \(A^TA\) kare \(n\times n\) matris olduğundan, ancak sıfır uzayı yalnızca \(\mathbf{0}\) ise terslenebilir; bu da \(r=n\) koşuludur.</p>
+          <p><strong>Yorum:</strong> En küçük kareler problemlerinde \(A^TA\) matrisinin iyi davranması, \(A\) sütunlarının bağımsız olmasına bağlıdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.16: En Küçük Kareler ve Ortogonallik</h3>
+          <p><strong>İfade:</strong> En küçük kareler çözümü \(\widehat{\mathbf{x}}\), hata vektörünü sütun uzayına dik yapar:</p>
+          <div class="equation-card" data-raw-latex="A^T(\mathbf{b}-A\widehat{\mathbf{x}})=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A^T(\mathbf{b}-A\widehat{\mathbf{x}})=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> En yakın nokta, alt uzaya indirilen dikmenin ayağıdır. Bu nedenle hata vektörü, alt uzayın bütün yönlerine dik olmalıdır.</p>
+          <p><strong>Formal İspat:</strong> Projeksiyon \(\mathbf{p}=A\widehat{\mathbf{x}}\) sütun uzayındadır. En iyi yaklaşımda \(\mathbf{b}-\mathbf{p}\) vektörü sütun uzayına dik olmalıdır. Sütun uzayına diklik, \(A\) matrisinin her sütunuyla iç çarpımın sıfır olmasıdır; bu da</p>
+          <div class="equation-card" data-raw-latex="A^T(\mathbf{b}-A\widehat{\mathbf{x}})=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A^T(\mathbf{b}-A\widehat{\mathbf{x}})=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>eşitliğidir. Düzenlenirse normal denklemler elde edilir:</p>
+          <div class="equation-card" data-raw-latex="A^TA\widehat{\mathbf{x}}=A^T\mathbf{b}">
+            <div class="equation-content">
+              \[
+              A^TA\widehat{\mathbf{x}}=A^T\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> En küçük kareler yalnızca hesap yöntemi değil, ortogonal projeksiyon fikrinin cebirsel ifadesidir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Çözüm Bilgisinden Rütbe Çıkarmak</h3>
+        <ol>
+          <li>Çözümsüz bir sağ taraf varsa \(r&lt;m\) sonucunu çıkar.</li>
+          <li>Çözülebilir bir sistemin tek çözümü varsa \(N(A)=\{\mathbf{0}\}\), dolayısıyla \(r=n\) sonucunu çıkar.</li>
+          <li>Bu iki sonucu matris boyutuyla birleştir.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\text{çözümsüz sağ taraf}\Rightarrow r&lt;m,\qquad \text{tek çözüm}\Rightarrow r=n">
+          <div class="equation-content">
+            \[
+            \text{çözümsüz sağ taraf}\Rightarrow r&lt;m,\qquad
+            \text{tek çözüm}\Rightarrow r=n
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 2: \(A^TA\) ve \(AA^T\) Hakkında Hızlı Karar Vermek</h3>
+        <ol>
+          <li>\(A^TA\) için sütun bağımsızlığını kontrol et.</li>
+          <li>\(AA^T\) için satır bağımsızlığını kontrol et.</li>
+          <li>Rütbe boyuttan küçükse pozitif tanımlılık yerine en fazla pozitif yarı tanımlılık bekle.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="A^TA\ \text{terslenebilir}\Longleftrightarrow r=n,\qquad AA^T\ \text{terslenebilir}\Longleftrightarrow r=m">
+          <div class="equation-content">
+            \[
+            A^TA\ \text{terslenebilir}\Longleftrightarrow r=n,\qquad
+            AA^T\ \text{terslenebilir}\Longleftrightarrow r=m
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 3: Markov Matrisinde Uzun Dönem Durumu Bulmak</h3>
+        <ol>
+          <li>\(\lambda=1\) özdeğerine karşılık gelen özvektörü bul.</li>
+          <li>Başlangıç vektörünün toplamını hesapla.</li>
+          <li>Durağan özvektörü bu toplamı koruyacak şekilde ölçekle.</li>
+          <li>Mutlak değeri \(1\)'den küçük özdeğerlere ait bileşenlerin uzun dönemde kaybolduğunu kullan.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\mathbf{u}(k)=c_1\lambda_1^k\mathbf{x}_1+c_2\lambda_2^k\mathbf{x}_2+c_3\lambda_3^k\mathbf{x}_3">
+          <div class="equation-content">
+            \[
+            \mathbf{u}(k)=c_1\lambda_1^k\mathbf{x}_1+c_2\lambda_2^k\mathbf{x}_2+c_3\lambda_3^k\mathbf{x}_3
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 4: En Küçük Kareler Projeksiyonunu Bulmak</h3>
+        <ol>
+          <li>Normal denklemleri çözerek \(\widehat{\mathbf{x}}\) katsayılarını bul.</li>
+          <li>Projeksiyonu \(\mathbf{p}=A\widehat{\mathbf{x}}\) olarak hesapla.</li>
+          <li>Hata vektörünün \(\mathbf{b}-\mathbf{p}\) olduğunu yaz.</li>
+          <li>Hatanın sütun uzayına dik olduğunu \(A^T(\mathbf{b}-\mathbf{p})=\mathbf{0}\) ile kontrol et.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\widehat{\mathbf{x}}=(A^TA)^{-1}A^T\mathbf{b}\quad\text{ve}\quad \mathbf{p}=A\widehat{\mathbf{x}}">
+          <div class="equation-content">
+            \[
+            \widehat{\mathbf{x}}=(A^TA)^{-1}A^T\mathbf{b}\quad\text{ve}\quad \mathbf{p}=A\widehat{\mathbf{x}}
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu tekrar içinde iki uygulama biçimi açıkça görünür. Markov matrisi örneğinde özdeğerler, bir durum dağılımının uzun dönemde hangi vektöre yaklaşacağını belirler. \(\lambda=1\) özdeğeri durağan durumu verir; mutlak değeri \(1\)'den küçük özdeğerlerin etkisi zamanla kaybolur.</p>
+        <p>En küçük kareler örneği ise verilen noktalara en iyi doğruyu uydurma problemidir. Bu problemde çözüm, \(\mathbf{b}\) vektörünün \(A\) matrisinin sütun uzayına projeksiyonunu bulmakla aynıdır.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Çözümsüzlüğü sıfır uzayıyla karıştırmak:</strong> Çözümsüzlük sağ tarafın sütun uzayında olmamasıdır; sıfır uzayı çözüm tekliğiyle ilgilidir.</li>
+          <li><strong>Tek çözümden \(r=m\) sonucu çıkarmak:</strong> Tek çözüm \(N(A)=\{\mathbf{0}\}\), yani \(r=n\) demektir. \(r=m\) her sağ tarafın çözülebilirliğiyle ilgilidir.</li>
+          <li><strong>\(\det(A^TA)=\det(AA^T)\) sanmak:</strong> \(A\) kare değilse bu determinantlar farklı boyutlu matrislere ait olabilir ve eşit olmak zorunda değildir.</li>
+          <li><strong>Pozitif yarı tanımlılığı pozitif tanımlılıkla karıştırmak:</strong> \(AA^T\) her zaman pozitif yarı tanımlıdır; fakat rütbe eksikse pozitif tanımlı değildir.</li>
+          <li><strong>Sütun kombinasyonu katsayılarını gereksizce elemeyle aramak:</strong> Sağ taraf açıkça \(\mathbf{v}_1-\mathbf{v}_2+\mathbf{v}_3\) ise çözüm katsayıları doğrudan \((1,-1,1)\) olur.</li>
+          <li><strong>Markov matrisinde yanlış özvektörü uzun dönem sanmak:</strong> Uzun dönemde yalnızca \(\lambda=1\) özdeğerine ait bileşen kalır.</li>
+          <li><strong>En küçük kareler çözümünü tam çözüm sanmak:</strong> En küçük kareler çözümü \(A\mathbf{x}=\mathbf{b}\) eşitliğini değil, \(\mathbf{b}\)'ye en yakın sütun uzayı vektörünü verir.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Çözümsüz sistem \(\rightarrow\) sağ taraf sütun uzayında değil \(\rightarrow r&lt;m\)</span>
+          <span>Tek çözüm \(\rightarrow\) sıfır uzayı yalnızca \(\mathbf{0}\) \(\rightarrow r=n\)</span>
+          <span>\(A^TA\) \(\rightarrow\) sütun bağımsızlığı ve en küçük kareler</span>
+          <span>\(AA^T\) \(\rightarrow\) satır bağımsızlığı ve pozitif yarı tanımlılık</span>
+          <span>Sütun yorumu \(\rightarrow\) \(A\mathbf{x}\) sütunların doğrusal kombinasyonudur</span>
+          <span>Ortonormal vektörler \(\rightarrow\) projeksiyon katsayıları iç çarpımlarla bulunur</span>
+          <span>Markov matrisi \(\rightarrow\) \(\lambda=1\) durağan durumu belirler</span>
+          <span>Özvektörlerden matris \(\rightarrow\) \(A=S\Lambda S^{-1}\)</span>
+          <span>En küçük kareler \(\rightarrow\) \(\mathbf{b}\)'nin sütun uzayına projeksiyonu</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Çözüm Tekliği</h3>
+            <p>Sistem çözülebilirken tek çözüm olması sıfır uzayına bağlıdır.</p>
+            <div class="equation-card" data-raw-latex="N(A)=\{\mathbf{0}\}\Longleftrightarrow r=n">
+              <div class="equation-content">
+                \[
+                N(A)=\{\mathbf{0}\}\Longleftrightarrow r=n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sütun Uzayı ve Çözülebilirlik</h3>
+            <p>Sağ taraf sütun uzayındaysa sistem çözülebilir.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}\Longleftrightarrow \mathbf{b}\in C(A)">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}\Longleftrightarrow \mathbf{b}\in C(A)
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>\(A^TA\) Terslenebilirliği</h3>
+            <p>Tam sütun rütbesi koşuluna bağlıdır.</p>
+            <div class="equation-card" data-raw-latex="A^TA\ \text{terslenebilir}\Longleftrightarrow r=n">
+              <div class="equation-content">
+                \[
+                A^TA\ \text{terslenebilir}\Longleftrightarrow r=n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Doğruya Projeksiyon</h3>
+            <p>Bir vektörün gerdiği doğruya projeksiyon matrisi.</p>
+            <div class="equation-card" data-raw-latex="P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}">
+              <div class="equation-content">
+                \[
+                P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Köşegenleştirme</h3>
+            <p>Özdeğer ve özvektörlerden matris kurma.</p>
+            <div class="equation-card" data-raw-latex="A=S\Lambda S^{-1}">
+              <div class="equation-content">
+                \[
+                A=S\Lambda S^{-1}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>En Küçük Kareler</h3>
+            <p>Hata vektörü sütun uzayına diktir.</p>
+            <div class="equation-card" data-raw-latex="A^TA\widehat{\mathbf{x}}=A^T\mathbf{b}">
+              <div class="equation-content">
+                \[
+                A^TA\widehat{\mathbf{x}}=A^T\mathbf{b}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Projeksiyon Vektörü</h3>
+            <p>En küçük kareler çözümünün sütun uzayında verdiği vektör.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{p}=A\widehat{\mathbf{x}}">
+              <div class="equation-content">
+                \[
+                \mathbf{p}=A\widehat{\mathbf{x}}
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde dersin ana fikirleri sınav tipi örneklerle tekrarlandı. Çözüm varlığı sütun uzayıyla, çözüm tekliği sıfır uzayıyla, \(A^TA\) matrisinin terslenebilirliği sütun bağımsızlığıyla, \(AA^T\) matrisinin pozitif tanımlılığı ise satır rütbesiyle ilişkilendirildi.</p>
+        <p>Matris çarpımının sütun yorumu, ortonormal projeksiyonlar, Markov matrislerinin uzun dönem davranışı, özdeğer ve özvektörlerden matris kurma, \(B^TB\) biçiminin simetrikliği ve en küçük karelerde projeksiyon fikri aynı bütünün parçaları olarak ele alındı.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(A\) bir \(4\times2\) matris ve \(N(A)=\{\mathbf{0}\}\) olsun. \(A^TA\) terslenebilir mi? \(A\mathbf{x}=\mathbf{b}\) denklemi her \(\mathbf{b}\in\mathbb{R}^4\) için çözülebilir mi?</p>
+          <p><strong>Çözüm:</strong> \(N(A)=\{\mathbf{0}\}\) olduğundan sütunlar bağımsızdır ve \(r=n=2\). Bu nedenle \(A^TA\) terslenebilir.</p>
+          <div class="equation-card" data-raw-latex="r=n=2\quad\Longrightarrow\quad A^TA\ \text{terslenebilir}">
+            <div class="equation-content">
+              \[
+              r=n=2\quad\Longrightarrow\quad A^TA\ \text{terslenebilir}
+              \]
+            </div>
+          </div>
+          <p>Ancak \(m=4\) ve \(r=2&lt;4\) olduğundan sütun uzayı \(\mathbb{R}^4\)'ün tamamı değildir. Bu yüzden her \(\mathbf{b}\) için çözüm yoktur.</p>
+          <p><strong>Yorum:</strong> Sütun bağımsızlığı çözüm tekliğini sağlar; her sağ taraf için çözüm sağlamaz.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>\(\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3\) sütunları için \(\mathbf{v}_1+2\mathbf{v}_2-\mathbf{v}_3=\mathbf{0}\) olsun. \(A=[\mathbf{v}_1\ \mathbf{v}_2\ \mathbf{v}_3]\) sisteminde çözüm tek olabilir mi?</p>
+          <p><strong>Çözüm:</strong> Verilen ilişki</p>
+          <div class="equation-card" data-raw-latex="A\begin{bmatrix}1\\2\\-1\end{bmatrix}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A\begin{bmatrix}1\\2\\-1\end{bmatrix}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>demektir. Vektör \(\begin{bmatrix}1&2&-1\end{bmatrix}^T\) sıfırdan farklı olduğu için \(N(A)\) yalnızca \(\mathbf{0}\) değildir. Eğer bir sağ taraf için çözüm varsa, bu sıfır uzayı vektörünün katları çözüme eklenebilir.</p>
+          <div class="equation-card" data-raw-latex="A(\mathbf{x}_p+t\begin{bmatrix}1\\2\\-1\end{bmatrix})=A\mathbf{x}_p">
+            <div class="equation-content">
+              \[
+              A\left(\mathbf{x}_p+t\begin{bmatrix}1\\2\\-1\end{bmatrix}\right)=A\mathbf{x}_p
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla çözüm tek olamaz.</p>
+          <p><strong>Yorum:</strong> Sütunlar arasındaki bağımlılık, sıfır uzayında sıfır olmayan bir vektör üretir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>\(A=\begin{bmatrix}1&0\\1&1\\1&2\end{bmatrix}\) ve \(\mathbf{b}=\begin{bmatrix}1\\-2\\1\end{bmatrix}\) olsun. En küçük kareler çözümünü bulmadan, çözümün \(\widehat{\mathbf{x}}=\mathbf{0}\) olduğunu gösterin.</p>
+          <p><strong>Çözüm:</strong> En küçük kareler çözümünün sıfır olması için \(\mathbf{b}\) vektörünün \(A\) matrisinin sütun uzayına dik olması gerekir. Sütunlar</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1=\begin{bmatrix}1\\1\\1\end{bmatrix},\qquad \mathbf{a}_2=\begin{bmatrix}0\\1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1=\begin{bmatrix}1\\1\\1\end{bmatrix},\qquad
+              \mathbf{a}_2=\begin{bmatrix}0\\1\\2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğundan iç çarpımları hesaplayalım:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1^T\mathbf{b}=1-2+1=0,\qquad \mathbf{a}_2^T\mathbf{b}=0-2+2=0">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1^T\mathbf{b}=1-2+1=0,\qquad
+              \mathbf{a}_2^T\mathbf{b}=0-2+2=0
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\mathbf{b}\), \(A\) matrisinin iki sütununa da diktir. Bu, \(A^T\mathbf{b}=\mathbf{0}\) demektir. Normal denklemler</p>
+          <div class="equation-card" data-raw-latex="A^TA\widehat{\mathbf{x}}=A^T\mathbf{b}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A^TA\widehat{\mathbf{x}}=A^T\mathbf{b}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>Bu örnekte \(A\) sütunları bağımsızdır; bu yüzden \(A^TA\) terslenebilir. Sonuç olarak \(\widehat{\mathbf{x}}=\mathbf{0}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> En küçük karelerde sıfır çözüm için sağ tarafın yalnızca bir sütuna değil, tüm sütun uzayına dik olması gerekir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rank</td>
+                <td>Rütbe</td>
+                <td>Bir matrisin pivot sayısı ve sütun uzayının boyutu.</td>
+              </tr>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>Bir matrisin sütunlarının tüm doğrusal kombinasyonlarından oluşan uzay.</td>
+              </tr>
+              <tr>
+                <td>Null space</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan vektörlerin uzayı.</td>
+              </tr>
+              <tr>
+                <td>Orthogonal</td>
+                <td>Dik</td>
+                <td>İç çarpımı sıfır olan vektörler için kullanılan terim.</td>
+              </tr>
+              <tr>
+                <td>Orthonormal</td>
+                <td>Ortonormal</td>
+                <td>Hem dik hem birim uzunluklu vektörlerden oluşan yapı.</td>
+              </tr>
+              <tr>
+                <td>Projection</td>
+                <td>Projeksiyon</td>
+                <td>Bir vektörün bir alt uzaydaki en yakın karşılığı.</td>
+              </tr>
+              <tr>
+                <td>Markov matrix</td>
+                <td>Markov matrisi</td>
+                <td>Sütunları toplamı \(1\) olan ve durum dağılımlarını güncelleyen matris.</td>
+              </tr>
+              <tr>
+                <td>Eigenvalue</td>
+                <td>Özdeğer</td>
+                <td>Bir özvektörün dönüşüm altında hangi katsayıyla ölçeklendiğini gösteren skaler.</td>
+              </tr>
+              <tr>
+                <td>Eigenvector</td>
+                <td>Özvektör</td>
+                <td>Dönüşüm altında yalnızca ölçeklenen sıfır olmayan vektör.</td>
+              </tr>
+              <tr>
+                <td>Diagonalization</td>
+                <td>Köşegenleştirme</td>
+                <td>Bir matrisi özvektörler yardımıyla \(A=S\Lambda S^{-1}\) biçiminde yazma.</td>
+              </tr>
+              <tr>
+                <td>Least squares</td>
+                <td>En küçük kareler</td>
+                <td>Tam çözülemeyen sistemde hata uzunluğunu en küçük yapan yöntem.</td>
+              </tr>
+              <tr>
+                <td>Positive definite</td>
+                <td>Pozitif tanımlı</td>
+                <td>Sıfır olmayan her vektör için \(\mathbf{x}^TA\mathbf{x}&gt;0\) veren simetrik matris özelliği.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        const computed = window.getComputedStyle(title);
+        let size = parseFloat(computed.fontSize);
+        const containerWidth = title.parentElement ? title.parentElement.clientWidth : title.clientWidth;
+
+        while (title.scrollWidth > containerWidth && size > minSize) {
+          size -= 1;
+          title.style.fontSize = size + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            const successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("Kopyalama başarısız"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.dataset.tooltip;
+        button.dataset.tooltip = message;
+        button.classList.add("is-copied");
+
+        window.setTimeout(function () {
+          button.dataset.tooltip = original;
+          button.classList.remove("is-copied");
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

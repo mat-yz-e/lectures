@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" class="active" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, baz değişiminin yalnızca soyut bir koordinat işlemi olmadığını; görüntü ve işaret sıkıştırma gibi büyük veri akışlarında temel bir lineer cebir aracı olduğunu gösterir.</p>
+        <p>Bir görüntü, her pikselin gri düzeyini veya renk bileşenlerini içeren çok uzun bir vektör olarak düşünülebilir. Standart baz bu vektörü piksel piksel saklar. Ancak komşu pikseller çoğu zaman birbirine yakın değerler taşıdığı için bu temsil, görüntüdeki düzenli yapıyı verimli kullanmaz. Daha iyi bir baz seçildiğinde aynı vektör, az sayıda büyük katsayı ve çok sayıda küçük katsayı ile temsil edilebilir.</p>
+        <p>Bölümün ikinci kısmında, baz değişimi lineer dönüşümlerin matris temsiliyle birleştirilir. Aynı lineer dönüşüm farklı bazlarda farklı matrislerle yazılır; bu matrisler birbirinden bağımsız değildir, benzerlik ilişkisiyle bağlıdır. Böylece görüntü sıkıştırmadaki baz seçimi ile soyut lineer dönüşüm matrisleri aynı temel fikre bağlanır: koordinatlar değişir, geometrik veya cebirsel nesne aynı kalır.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir görüntünün yüksek boyutlu bir vektör olarak nasıl temsil edildiğini açıklamak.</li>
+          <li>Standart bazın sıkıştırma açısından neden çoğu zaman verimsiz olduğunu görmek.</li>
+          <li>Sabit, düşük frekanslı ve yüksek frekanslı baz vektörlerinin sıkıştırmadaki rollerini ayırt etmek.</li>
+          <li>Bir baz değişiminde \(\mathbf{p}=W\mathbf{c}\) ve \(\mathbf{c}=W^{-1}\mathbf{p}\) ilişkilerini kullanmak.</li>
+          <li>Dalgacık tipi bir bazın ortogonalliğini ve ters alma kolaylığını yorumlamak.</li>
+          <li>Katsayı eşiklemenin kayıplı sıkıştırmayı nasıl verdiğini açıklamak.</li>
+          <li>Bir lineer dönüşümün bir bazdaki matrisini baz vektörlerinin görüntülerinden kurmak.</li>
+          <li>Aynı dönüşümün farklı bazlardaki matrislerinin neden benzer olduğunu ispatlamak.</li>
+          <li>Özvektör bazının bir dönüşüm matrisini neden köşegen hâle getirdiğini görmek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Vektörler, doğrusal kombinasyon ve baz kavramı.</li>
+          <li>Matris-vektör çarpımı ve ters matris.</li>
+          <li>Ortogonallik ve ortonormal sütunlar.</li>
+          <li>Lineer dönüşüm ve dönüşüm matrisi.</li>
+          <li>Özvektör ve özdeğer fikri.</li>
+          <li>Fourier matrisi ve hızlı Fourier dönüşümünün temel amacı.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\mathbf{p}\)</td>
+                <td>Piksel vektörü</td>
+                <td>Bir görüntü bloğundaki gri düzeylerini veya sayısal değerleri içeren vektör.</td>
+              </tr>
+              <tr>
+                <td>\(n\)</td>
+                <td>Boyut</td>
+                <td>Bir görüntü vektöründeki toplam bileşen sayısı; örneğin \(512^2\).</td>
+              </tr>
+              <tr>
+                <td>\(W\)</td>
+                <td>Baz matrisi</td>
+                <td>Sütunları yeni baz vektörlerinden oluşan matris.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{c}\)</td>
+                <td>Yeni bazdaki katsayı vektörü</td>
+                <td>\(\mathbf{p}=W\mathbf{c}\) eşitliğinde aranan koordinat vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(\widehat{\mathbf{c}}\)</td>
+                <td>Sıkıştırılmış katsayı vektörü</td>
+                <td>Küçük katsayıları sıfırlanmış veya atılmış katsayı vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(\widehat{\mathbf{p}}\)</td>
+                <td>Yaklaşık görüntü vektörü</td>
+                <td>Sıkıştırılmış katsayılardan yeniden kurulan vektör.</td>
+              </tr>
+              <tr>
+                <td>\(T\)</td>
+                <td>Lineer dönüşüm</td>
+                <td>Vektör uzayından kendisine giden koordinatlardan bağımsız kural.</td>
+              </tr>
+              <tr>
+                <td>\(A,B\)</td>
+                <td>Dönüşüm matrisleri</td>
+                <td>Aynı \(T\) dönüşümünün iki farklı bazdaki matrisleri.</td>
+              </tr>
+              <tr>
+                <td>\(M\)</td>
+                <td>Baz değiştirme matrisi</td>
+                <td>Yeni koordinatları eski koordinatlara taşıyan matris.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda_i\)</td>
+                <td>Özdeğer</td>
+                <td>\(T(\mathbf{v}_i)=\lambda_i\mathbf{v}_i\) eşitliğindeki skaler.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Lineer cebirde baz seçimi, aynı vektörü farklı koordinatlarla anlatmanın yoludur. Uygun baz seçimi yalnızca gösterimi değiştirmez; hesaplamayı hızlandırır, sıkıştırmayı mümkün kılar ve dönüşüm matrislerinin yapısını sadeleştirir.</p>
+        <p>Bir görüntüde komşu piksellerin genellikle benzer değerler taşıması, standart bazın verimsizliğini ortaya çıkarır. Her pikseli ayrı ayrı saklamak yerine, görüntünün sabit veya yavaş değişen bileşenlerini yakalayan baz vektörleri kullanılır. Bu durumda büyük katsayılar görüntünün ana bilgisini, küçük katsayılar ise çoğu zaman gözle zor seçilen ayrıntıları taşır.</p>
+        <p>Aynı fikir soyut dönüşümlerde de geçerlidir. Bir lineer dönüşüm koordinatlardan bağımsızdır; fakat baz seçildiğinde bir matrisle ifade edilir. Baz değişirse matris de değişir, ancak dönüşüm değişmez. Bu yüzden farklı bazlardaki matrisler arasında belirli ve sıkı bir ilişki vardır.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Görüntünün Vektör Olarak Temsili</h3>
+          <p>Siyah-beyaz bir görüntü, her piksel için bir gri düzeyi saklayan bir vektör olarak yazılabilir. \(512\times512\) piksellik bir görüntü için boyut</p>
+          <div class="equation-card" data-raw-latex="n=512^2">
+            <div class="equation-content">
+              \[
+              n=512^2
+              \]
+            </div>
+          </div>
+          <p>olur. Her bileşen çoğu standart gösterimde \(0\) ile \(255\) arasında bir gri düzeyidir. Bu aralık \(2^8\) olası değer içerdiğinden tek piksel için sekiz bit yeterlidir. Renkli bir görüntüde aynı konum için üç bileşen gerektiğinden boyut yaklaşık üç katına çıkar.</p>
+        </section>
+
+        <p>Standart bazda her piksel ayrı bir koordinattır. Bu, matematiksel olarak basit fakat sıkıştırma açısından çoğu zaman zayıf bir temsildir. Çünkü düzgün bir bölgede yan yana gelen piksellerin gri düzeyleri çok benzerdir. Standart baz bu benzerliği doğrudan kullanmaz.</p>
+
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Sıkıştırmanın lineer cebirsel özü, aynı vektörü daha uygun bir bazda yazmaktır. Baz değişimi bilgi kaybetmez; bilgi kaybı ancak küçük katsayılar atıldığında başlar.</p>
+        </aside>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Baz Değişimi</h3>
+          <p>\(\mathbb{R}^n\) uzayında sütunları yeni baz vektörlerinden oluşan \(W\) matrisi verilsin. Bir \(\mathbf{p}\) vektörünün bu bazdaki katsayıları \(\mathbf{c}\) ile gösterilirse</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=W\mathbf{c}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=W\mathbf{c}
+              \]
+            </div>
+          </div>
+          <p>eşitliği sağlanır. Buradan katsayı vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{c}=W^{-1}\mathbf{p}">
+            <div class="equation-content">
+              \[
+              \mathbf{c}=W^{-1}\mathbf{p}
+              \]
+            </div>
+          </div>
+          <p>ile bulunur. Bu işlem aynı vektörü başka koordinatlarla yazmaktır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Sabit Görüntü ve Tüm Birler Vektörü</h3>
+          <p>Bütün pikselleri aynı gri düzeyine sahip bir görüntü düşünelim. Standart bazda bu görüntüyü anlatmak için her piksel değeri ayrı ayrı saklanır. Oysa bazda</p>
+          <div class="equation-card" data-raw-latex="\mathbf{1}=\begin{bmatrix}1 &amp; 1 &amp; \cdots &amp; 1\end{bmatrix}^T">
+            <div class="equation-content">
+              \[
+              \mathbf{1}=\begin{bmatrix}1 &amp; 1 &amp; \cdots &amp; 1\end{bmatrix}^T
+              \]
+            </div>
+          </div>
+          <p>vektörü varsa sabit görüntü tek bir katsayıyla temsil edilir. Örneğin bütün gri düzeyleri \(a\) ise görüntü vektörü \(a\mathbf{1}\) biçimindedir. Bu nedenle tüm birler vektörü, görüntü sıkıştırmada çok değerli bir baz vektörüdür.</p>
+        </section>
+
+        <h3>Düşük ve Yüksek Frekanslı Baz Vektörleri</h3>
+        <p>Bir görüntüde yavaş değişen bölgeler düşük frekanslı bileşenlerle, hızlı değişen pürüzlü yapı ise yüksek frekanslı bileşenlerle yakalanır. Sabit vektör en düşük frekanslı bileşendir. Buna karşılık</p>
+        <div class="equation-card" data-raw-latex="\begin{bmatrix}1 &amp; -1 &amp; 1 &amp; -1 &amp; \cdots\end{bmatrix}^T">
+          <div class="equation-content">
+            \[
+            \begin{bmatrix}1 &amp; -1 &amp; 1 &amp; -1 &amp; \cdots\end{bmatrix}^T
+            \]
+          </div>
+        </div>
+        <p>gibi hızla işaret değiştiren bir vektör en yüksek frekanslı bileşenleri temsil eder. Doğal görüntülerde bu tür bileşenlerin katsayıları çoğu zaman küçüktür. Sıkıştırma, bu küçük katsayıları atarak yapılır.</p>
+
+        <h3>Bloklara Ayırma ve Sıkıştırma Akışı</h3>
+        <p>Büyük bir görüntüyü tek seferde dönüştürmek yerine küçük bloklara ayırmak yaygın bir yaklaşımdır. Örneğin \(8\times8\) bir blokta \(64\) piksel vardır. Bu blok \(\mathbb{R}^{64}\) içinde bir vektör gibi ele alınır. Önce seçilen bazda \(64\) katsayı bulunur; bu adım kayıpsızdır. Ardından küçük katsayılar atılır veya sıfırlanır; bu adım kayıplıdır.</p>
+        <div class="equation-card" data-raw-latex="\mathbf{p}\longmapsto \mathbf{c}=W^{-1}\mathbf{p}\longmapsto \widehat{\mathbf{c}}\longmapsto \widehat{\mathbf{p}}=W\widehat{\mathbf{c}}">
+          <div class="equation-content">
+            \[
+            \mathbf{p}\longmapsto \mathbf{c}=W^{-1}\mathbf{p}\longmapsto \widehat{\mathbf{c}}\longmapsto \widehat{\mathbf{p}}=W\widehat{\mathbf{c}}
+            \]
+          </div>
+        </div>
+        <p>Burada \(\widehat{\mathbf{c}}\), küçük katsayıların çoğu sıfırlanmış hâlidir. Eğer yalnızca birkaç katsayı kalıyorsa veri miktarı ciddi biçimde azalır. Örneğin \(64\) katsayı yerine yaklaşık \(3\) katsayı kullanmak, aynı blok için yaklaşık \(21\) katlık bir azaltma fikri verir.</p>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Sekiz Bileşenli Dalgacık Bazı</h3>
+          <p>Bir boyutlu sekiz piksel değerinden oluşan bir parça için şu baz vektörleri kullanılabilir:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}\mathbf{w}_1&amp;=\begin{bmatrix}1\\1\\1\\1\\1\\1\\1\\1\end{bmatrix},&
+\mathbf{w}_2&amp;=\begin{bmatrix}1\\1\\1\\1\\-1\\-1\\-1\\-1\end{bmatrix},&
+\mathbf{w}_3&amp;=\begin{bmatrix}1\\1\\-1\\-1\\0\\0\\0\\0\end{bmatrix},&
+\mathbf{w}_4&amp;=\begin{bmatrix}0\\0\\0\\0\\1\\1\\-1\\-1\end{bmatrix},\\
+\mathbf{w}_5&amp;=\begin{bmatrix}1\\-1\\0\\0\\0\\0\\0\\0\end{bmatrix},&
+\mathbf{w}_6&amp;=\begin{bmatrix}0\\0\\1\\-1\\0\\0\\0\\0\end{bmatrix},&
+\mathbf{w}_7&amp;=\begin{bmatrix}0\\0\\0\\0\\1\\-1\\0\\0\end{bmatrix},&
+\mathbf{w}_8&amp;=\begin{bmatrix}0\\0\\0\\0\\0\\0\\1\\-1\end{bmatrix}.
+\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              \mathbf{w}_1&amp;=\begin{bmatrix}1\\1\\1\\1\\1\\1\\1\\1\end{bmatrix},&
+              \mathbf{w}_2&amp;=\begin{bmatrix}1\\1\\1\\1\\-1\\-1\\-1\\-1\end{bmatrix},&
+              \mathbf{w}_3&amp;=\begin{bmatrix}1\\1\\-1\\-1\\0\\0\\0\\0\end{bmatrix},&
+              \mathbf{w}_4&amp;=\begin{bmatrix}0\\0\\0\\0\\1\\1\\-1\\-1\end{bmatrix},\\
+              \mathbf{w}_5&amp;=\begin{bmatrix}1\\-1\\0\\0\\0\\0\\0\\0\end{bmatrix},&
+              \mathbf{w}_6&amp;=\begin{bmatrix}0\\0\\1\\-1\\0\\0\\0\\0\end{bmatrix},&
+              \mathbf{w}_7&amp;=\begin{bmatrix}0\\0\\0\\0\\1\\-1\\0\\0\end{bmatrix},&
+              \mathbf{w}_8&amp;=\begin{bmatrix}0\\0\\0\\0\\0\\0\\1\\-1\end{bmatrix}.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Bu baz, önce tüm bloğun ortalama seviyesini, sonra yarılar arasındaki farkı, sonra daha küçük aralıklardaki farkları yakalar. Böylece büyük ölçekli değişimlerden küçük ölçekli değişimlere doğru giden bir temsil elde edilir.</p>
+        </section>
+
+        <p>Bu vektörler birbirine ortogonaldir. Örneğin \(\mathbf{w}_1\cdot\mathbf{w}_2=4-4=0\), \(\mathbf{w}_1\cdot\mathbf{w}_3=2-2=0\), \(\mathbf{w}_2\cdot\mathbf{w}_3=2-2=0\). Benzer biçimde destekleri ayrık olan vektörlerin iç çarpımları da sıfırdır.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Ortonormal Bazda Ters Matris</h3>
+          <p><strong>İfade:</strong> Sütunları ortonormal olan bir \(W\) matrisi için</p>
+          <div class="equation-card" data-raw-latex="W^{-1}=W^T">
+            <div class="equation-content">
+              \[
+              W^{-1}=W^T
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Ortonormal sütunlar birbirinden bağımsız yönleri ve birim uzunlukları temsil eder. Bu yüzden bir vektörün bu yönlerdeki katsayıları, doğrudan iç çarpımlarla bulunur. Matris dilinde bu iç çarpımlar \(W^T\) ile yapılır.</p>
+          <p><strong>Formal İspat:</strong> \(W=[\mathbf{q}_1\ \mathbf{q}_2\ \cdots\ \mathbf{q}_n]\) olsun ve sütunlar ortonormal olsun. Bu durumda \(\mathbf{q}_i^T\mathbf{q}_j=0\) eğer \(i\ne j\), \(\mathbf{q}_i^T\mathbf{q}_i=1\) olur. Dolayısıyla \(W^TW\) matrisinin \((i,j)\) girdisi \(\mathbf{q}_i^T\mathbf{q}_j\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="W^TW=I">
+            <div class="equation-content">
+              \[
+              W^TW=I
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Kare bir matris için soldan ters aynı zamanda ters matristir; bu nedenle \(W^{-1}=W^T\).</p>
+          <p><strong>Yorum:</strong> Bu sonuç, ortonormal bazların hesaplamada neden elverişli olduğunu açıklar. Katsayı bulmak için genel bir denklem sistemi çözmek yerine transpozla çarpmak yeterlidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Hızlı Salınım Vektörünün Dalgacık Bazında Yazılması</h3>
+          <p>Sekiz bileşenli hızlı salınım vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{h}=\begin{bmatrix}1\\-1\\1\\-1\\1\\-1\\1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{h}=\begin{bmatrix}1\\-1\\1\\-1\\1\\-1\\1\\-1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>yukarıdaki dalgacık bazının son dört vektörünün toplamıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{h}=\mathbf{w}_5+\mathbf{w}_6+\mathbf{w}_7+\mathbf{w}_8">
+            <div class="equation-content">
+              \[
+              \mathbf{h}=\mathbf{w}_5+\mathbf{w}_6+\mathbf{w}_7+\mathbf{w}_8
+              \]
+            </div>
+          </div>
+          <p>Bu örnek, aynı vektörün farklı bazlarda çok farklı katsayı desenleri alabileceğini gösterir. Hızlı salınımı temsil eden ayrıntı vektörleri, düzgün görüntülerde genellikle küçük katsayılara sahip olur.</p>
+        </section>
+
+        <h3>İyi Bir Bazın İki Ölçütü</h3>
+        <p>Sıkıştırma için kullanılacak bazın yalnızca matematiksel olarak baz olması yetmez. İki pratik koşul önemlidir:</p>
+        <ul>
+          <li><strong>Hız:</strong> \(W\) ve \(W^{-1}\) ile çarpma hızlı yapılabilmelidir. Fourier bazında bu rolü hızlı Fourier dönüşümü, dalgacık bazlarında ise hızlı dalgacık dönüşümü üstlenir.</li>
+          <li><strong>Sıkıştırma gücü:</strong> Görüntü birkaç baz vektörüyle iyi yaklaştırılabilmelidir. Eğer çok sayıda katsayı büyükse, baz değişimi sıkıştırma sağlamaz.</li>
+        </ul>
+
+        <section class="definition-card">
+          <h3>Tanım 1.7: Lineer Dönüşümün Bir Bazdaki Matrisi</h3>
+          <p>\(T:V\to V\) bir lineer dönüşüm ve \(\mathbf{v}_1,\ldots,\mathbf{v}_n\) uzayın bir bazı olsun. Her \(j\) için \(T(\mathbf{v}_j)\), aynı bazın doğrusal kombinasyonu olarak yazılır:</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v}_j)=a_{1j}\mathbf{v}_1+a_{2j}\mathbf{v}_2+\cdots+a_{nj}\mathbf{v}_n">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v}_j)=a_{1j}\mathbf{v}_1+a_{2j}\mathbf{v}_2+\cdots+a_{nj}\mathbf{v}_n
+              \]
+            </div>
+          </div>
+          <p>Bu katsayılar, \(T\) dönüşümünün bu bazdaki \(A\) matrisinin \(j\). sütununu verir.</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n}\\a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n}\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n}\\
+              a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n}\\
+              \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+              a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <p>Bu tanım, önceki sıkıştırma fikriyle aynı türden bir koordinat mantığı taşır. Bir vektörün bazdaki katsayılarını bulmak nasıl koordinatları veriyorsa, \(T(\mathbf{v}_j)\) vektörlerinin bazdaki katsayıları da dönüşüm matrisinin sütunlarını verir.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: Baz Vektörlerinin Görüntüleri Dönüşümü Belirler</h3>
+          <p><strong>İfade:</strong> \(T:V\to V\) lineer bir dönüşüm ve \(\mathbf{v}_1,\ldots,\mathbf{v}_n\) bir baz olsun. \(T(\mathbf{v}_1),\ldots,T(\mathbf{v}_n)\) biliniyorsa \(T(\mathbf{x})\) her \(\mathbf{x}\in V\) için tek olarak belirlenir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir baz, uzaydaki her vektörü baz vektörlerinin tek bir doğrusal kombinasyonu olarak verir. Lineer dönüşüm bu kombinasyonun katsayılarını koruyarak baz vektörlerinin görüntülerine uygular.</p>
+          <p><strong>Formal İspat:</strong> Her \(\mathbf{x}\in V\) için tek katsayılarla</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_n\mathbf{v}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_n\mathbf{v}_n
+              \]
+            </div>
+          </div>
+          <p>yazılır. \(T\) lineer olduğundan</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{x})=c_1T(\mathbf{v}_1)+c_2T(\mathbf{v}_2)+\cdots+c_nT(\mathbf{v}_n)">
+            <div class="equation-content">
+              \[
+              T(\mathbf{x})=c_1T(\mathbf{v}_1)+c_2T(\mathbf{v}_2)+\cdots+c_nT(\mathbf{v}_n)
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Sağ taraf yalnızca katsayılara ve baz vektörlerinin görüntülerine bağlıdır. Bu nedenle \(T(\mathbf{x})\) tek olarak belirlenir.</p>
+          <p><strong>Yorum:</strong> Bir dönüşüm matrisini sütun sütun kurma kuralının temel nedeni budur: sütunlar, baz vektörlerinin görüntülerinin koordinatlarıdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Baz Değişiminde Benzerlik</h3>
+          <p><strong>İfade:</strong> Aynı \(T:V\to V\) lineer dönüşümünün birinci bazdaki matrisi \(A\), ikinci bazdaki matrisi \(B\) olsun. \(M\), ikinci baz koordinatlarını birinci baz koordinatlarına taşıyan tersinir baz değiştirme matrisi ise</p>
+          <div class="equation-card" data-raw-latex="B=M^{-1}AM">
+            <div class="equation-content">
+              \[
+              B=M^{-1}AM
+              \]
+            </div>
+          </div>
+          <p>olur. Bu nedenle \(A\) ve \(B\) benzer matrislerdir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\) ve \(B\) aynı dönüşümü anlatır; yalnızca koordinat dili değişmiştir. Yeni koordinatta bir vektörü alıp eski koordinata çevirmek, dönüşümü eski matriste uygulamak ve tekrar yeni koordinata dönmek \(B\) matrisini verir.</p>
+          <p><strong>Formal İspat:</strong> \([\mathbf{x}]_{\text{yeni}}\) yeni bazdaki koordinat vektörü olsun. \(M\) tanımı gereği</p>
+          <div class="equation-card" data-raw-latex="[\mathbf{x}]_{\text{eski}}=M[\mathbf{x}]_{\text{yeni}}">
+            <div class="equation-content">
+              \[
+              [\mathbf{x}]_{\text{eski}}=M[\mathbf{x}]_{\text{yeni}}
+              \]
+            </div>
+          </div>
+          <p>eşitliği geçerlidir. Dönüşüm eski koordinatlarda \(A\) ile, yeni koordinatlarda \(B\) ile temsil edildiğinden</p>
+          <div class="equation-card" data-raw-latex="[T(\mathbf{x})]_{\text{eski}}=A[\mathbf{x}]_{\text{eski}}=AM[\mathbf{x}]_{\text{yeni}}">
+            <div class="equation-content">
+              \[
+              [T(\mathbf{x})]_{\text{eski}}=A[\mathbf{x}]_{\text{eski}}=AM[\mathbf{x}]_{\text{yeni}}
+              \]
+            </div>
+          </div>
+          <p>ve aynı zamanda</p>
+          <div class="equation-card" data-raw-latex="[T(\mathbf{x})]_{\text{eski}}=M[T(\mathbf{x})]_{\text{yeni}}=MB[\mathbf{x}]_{\text{yeni}}">
+            <div class="equation-content">
+              \[
+              [T(\mathbf{x})]_{\text{eski}}=M[T(\mathbf{x})]_{\text{yeni}}=MB[\mathbf{x}]_{\text{yeni}}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu eşitlik her \([\mathbf{x}]_{\text{yeni}}\) için sağlandığından \(AM=MB\). Soldan \(M^{-1}\) ile çarparsak \(B=M^{-1}AM\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Benzer matrisler aynı lineer dönüşümün farklı bazlardaki yüzleridir. Bu yüzden özdeğer gibi bazdan bağımsız bilgiler korunur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Özvektör Bazında Matris</h3>
+          <p>\(\mathbf{v}_1,\ldots,\mathbf{v}_n\) vektörleri \(T\) dönüşümünün bir özvektör bazı olsun. Yani</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v}_i)=\lambda_i\mathbf{v}_i,\qquad i=1,\ldots,n">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v}_i)=\lambda_i\mathbf{v}_i,\qquad i=1,\ldots,n
+              \]
+            </div>
+          </div>
+          <p>olsun. Birinci baz vektörünün görüntüsü \(\lambda_1\mathbf{v}_1\) olduğundan ilk sütunda yalnızca ilk bileşen \(\lambda_1\) olur. İkinci baz vektörünün görüntüsü \(\lambda_2\mathbf{v}_2\) olduğundan ikinci sütunda yalnızca ikinci bileşen \(\lambda_2\) olur. Böyle devam ederek matris</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}\lambda_1 &amp; 0 &amp; \cdots &amp; 0\\0 &amp; \lambda_2 &amp; \cdots &amp; 0\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\0 &amp; 0 &amp; \cdots &amp; \lambda_n\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              \lambda_1 &amp; 0 &amp; \cdots &amp; 0\\
+              0 &amp; \lambda_2 &amp; \cdots &amp; 0\\
+              \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+              0 &amp; 0 &amp; \cdots &amp; \lambda_n
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu, özvektör bazının dönüşüm matrisi için en sade baz olduğunu gösterir. Ancak büyük görüntü problemlerinde özvektörleri doğrudan bulmak çok pahalı olabileceğinden daha hızlı ve yeterince iyi bazlar tercih edilir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+        <p>Bu bölümde kullanılan temel teoremler, yukarıdaki anlatımda kanıtlandı. Burada sonuçlar kısa biçimde bir araya getirilir.</p>
+        <div class="formula-list">
+          <article>
+            <h3>Ortonormal Sütunlar</h3>
+            <p>Ortonormal sütunlu \(W\) için ters alma transpoz almaya indirgenir.</p>
+            <div class="equation-card" data-raw-latex="W^{-1}=W^T">
+              <div class="equation-content">
+                \[
+                W^{-1}=W^T
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Dönüşümün Baz Görüntüleriyle Belirlenmesi</h3>
+            <p>Lineerlik nedeniyle baz vektörlerinin görüntüleri bütün dönüşümü belirler.</p>
+            <div class="equation-card" data-raw-latex="T\left(\sum_{i=1}^n c_i\mathbf{v}_i\right)=\sum_{i=1}^n c_iT(\mathbf{v}_i)">
+              <div class="equation-content">
+                \[
+                T\left(\sum_{i=1}^n c_i\mathbf{v}_i\right)=\sum_{i=1}^n c_iT(\mathbf{v}_i)
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Farklı Bazlardaki Matrisler</h3>
+            <p>Aynı dönüşümün iki bazdaki matrisleri benzerlik bağıntısıyla bağlıdır.</p>
+            <div class="equation-card" data-raw-latex="B=M^{-1}AM">
+              <div class="equation-content">
+                \[
+                B=M^{-1}AM
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Bir Görüntü Bloğunun Yeni Bazdaki Katsayılarını Bulma</h3>
+        <p>Bu yöntem, standart piksel değerlerinden yeni baz katsayılarına geçmek için kullanılır.</p>
+        <ol>
+          <li>Görüntü bloğunu \(\mathbf{p}\) vektörü olarak yaz.</li>
+          <li>Yeni baz vektörlerini sütun yaparak \(W\) matrisini kur.</li>
+          <li>\(\mathbf{p}=W\mathbf{c}\) sistemini çöz.</li>
+          <li>Ortonormal baz kullanılıyorsa \(\mathbf{c}=W^T\mathbf{p}\) formülünü uygula.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\mathbf{c}=W^{-1}\mathbf{p}\quad\text{ve ortonormal durumda}\quad \mathbf{c}=W^T\mathbf{p}">
+          <div class="equation-content">
+            \[
+            \mathbf{c}=W^{-1}\mathbf{p}\quad\text{ve ortonormal durumda}\quad \mathbf{c}=W^T\mathbf{p}
+            \]
+          </div>
+        </div>
+        <p>Yaygın hata, \(W\mathbf{p}\) işlemini katsayı bulma adımı sanmaktır. Eğer \(W\) sütunları baz vektörlerinden oluşuyorsa \(\mathbf{p}=W\mathbf{c}\) yazılır; katsayı için ters yön gerekir.</p>
+
+        <h3>Yöntem 2: Katsayı Eşikleme ile Sıkıştırma</h3>
+        <p>Bu yöntem, küçük katsayıların görüntüye katkısının az olduğu durumlarda veri miktarını düşürür.</p>
+        <ol>
+          <li>\(\mathbf{c}\) katsayı vektörünü bul.</li>
+          <li>Seçilen eşikten küçük katsayıları sıfırla veya saklama.</li>
+          <li>Kalan katsayıları \(\widehat{\mathbf{c}}\) olarak yaz.</li>
+          <li>Yaklaşık görüntüyü \(\widehat{\mathbf{p}}=W\widehat{\mathbf{c}}\) ile yeniden kur.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\widehat{\mathbf{p}}=W\widehat{\mathbf{c}}">
+          <div class="equation-content">
+            \[
+            \widehat{\mathbf{p}}=W\widehat{\mathbf{c}}
+            \]
+          </div>
+        </div>
+        <p>Burada dikkat edilmesi gereken nokta, piksellerin değil katsayıların atılmasıdır. Standart bazda pikselleri atmak görüntüyü doğrudan bozar; iyi bir bazda küçük katsayıları atmak çoğu zaman daha az görünür hata üretir.</p>
+
+        <h3>Yöntem 3: Bir Dönüşüm Matrisini Bazdan Kurma</h3>
+        <p>Bu yöntem, soyut bir lineer dönüşümü seçilen bazda matrise dönüştürür.</p>
+        <ol>
+          <li>Baz vektörlerini \(\mathbf{v}_1,\ldots,\mathbf{v}_n\) olarak belirle.</li>
+          <li>Her \(j\) için \(T(\mathbf{v}_j)\) vektörünü hesapla.</li>
+          <li>Bu görüntüyü aynı bazda koordinatlarına ayır.</li>
+          <li>Bulunan koordinat vektörünü \(A\) matrisinin \(j\). sütunu yap.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="T(\mathbf{v}_j)=a_{1j}\mathbf{v}_1+\cdots+a_{nj}\mathbf{v}_n">
+          <div class="equation-content">
+            \[
+            T(\mathbf{v}_j)=a_{1j}\mathbf{v}_1+\cdots+a_{nj}\mathbf{v}_n
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 4: Aynı Dönüşümün Yeni Bazdaki Matrisini Bulma</h3>
+        <p>Birinci bazdaki matris \(A\) ve baz değiştirme matrisi \(M\) biliniyorsa yeni bazdaki matris doğrudan hesaplanır.</p>
+        <ol>
+          <li>\(M\) matrisini, yeni baz koordinatlarını eski baz koordinatlarına taşıyacak şekilde kur.</li>
+          <li>Önce \(AM\) çarpımını hesapla.</li>
+          <li>Sonra soldan \(M^{-1}\) ile çarp.</li>
+          <li>Sonuç \(B=M^{-1}AM\) matrisidir.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="AM=MB">
+          <div class="equation-content">
+            \[
+            AM=MB
+            \]
+          </div>
+        </div>
+        <p>Yaygın hata, \(MAM^{-1}\) ve \(M^{-1}AM\) sırasını karıştırmaktır. Doğru sıra, \(M\) matrisinin hangi yönde koordinat çevirdiğine bağlıdır. Burada \(M\), yeni koordinatlardan eski koordinatlara gider.</p>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Görüntü sıkıştırmada amaç, çok sayıda piksel değerini daha az sayıda anlamlı katsayıyla temsil etmektir. Bir görüntüde geniş düz bölgeler, yumuşak geçişler ve komşu pikseller arasındaki güçlü ilişki, baz değişimiyle kullanılabilir hâle gelir.</p>
+        <p>Hareketli görüntülerde ardışık kareler de genellikle birbirine yakındır. Bir sonraki kareyi tamamen yeniden saklamak yerine önceki kareden tahmin etmek ve yalnızca küçük düzeltmeyi kodlamak, aynı korelasyon fikrinin zamana uygulanmış biçimidir.</p>
+        <p>Parmak izi gibi büyük görüntü arşivlerinde de benzer sorun ortaya çıkar. Sayısal saklama tek başına yeterli değildir; her görüntünün verimli bir bazda temsil edilip sınırlı sayıda katsayıyla aranabilir hâle getirilmesi gerekir. Bu örnekler, baz seçiminin yalnızca kuramsal değil, hesaplama maliyeti ve veri aktarımı açısından da belirleyici olduğunu gösterir.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Baz değişimini sıkıştırma ile karıştırmak:</strong> \(\mathbf{p}=W\mathbf{c}\) veya \(\mathbf{c}=W^{-1}\mathbf{p}\) adımı bilgi kaybetmez. Kayıp, küçük katsayılar atıldığında oluşur.</li>
+          <li><strong>Piksel atmayı katsayı atmak sanmak:</strong> Standart bazdaki pikseller doğrudan görüntü noktalarıdır. Bunları atmak görüntüyü bozar. İyi seçilmiş bazda küçük katsayılar daha güvenli biçimde ihmal edilir.</li>
+          <li><strong>\(W\) ile \(W^{-1}\) yönünü karıştırmak:</strong> Baz vektörleri \(W\) matrisinin sütunlarıysa \(\mathbf{p}=W\mathbf{c}\) olur. Katsayı bulmak için \(W^{-1}\) gerekir.</li>
+          <li><strong>Ortogonalliği ortonormallik sanmak:</strong> Dalgacık örneğindeki vektörler ortogonaldir, fakat uzunlukları bir değildir. Transpozun ters olması için önce birim uzunluğa getirmek gerekir.</li>
+          <li><strong>Dönüşüm ile matrisini özdeş görmek:</strong> \(T\) dönüşümü bazdan bağımsızdır; \(A\) ve \(B\) ise baz seçimine bağlı matrislerdir.</li>
+          <li><strong>Benzerlik formülünde sırayı ters yazmak:</strong> \(M\) yeni koordinatlardan eski koordinatlara gidiyorsa yeni matris \(B=M^{-1}AM\) olur.</li>
+          <li><strong>Özvektör bazının pratik maliyetini gözden kaçırmak:</strong> Özvektör bazı matrisi köşegen yapar; fakat büyük görüntü verilerinde bu bazı bulmak pahalı olabilir.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Görüntü vektörü \(\rightarrow\) çok sayıda piksel değeri</span>
+          <span>Standart baz \(\rightarrow\) piksel piksel temsil</span>
+          <span>Daha iyi baz \(\rightarrow\) sabit ve yavaş değişen bileşenleri yakalama</span>
+          <span>Baz değişimi \(\rightarrow\) \(\mathbf{p}=W\mathbf{c}\), \(\mathbf{c}=W^{-1}\mathbf{p}\)</span>
+          <span>Eşikleme \(\rightarrow\) küçük katsayıların atılması</span>
+          <span>Yaklaşık yeniden kurma \(\rightarrow\) \(\widehat{\mathbf{p}}=W\widehat{\mathbf{c}}\)</span>
+          <span>Lineer dönüşüm \(\rightarrow\) baz vektörlerinin görüntüleriyle belirlenir</span>
+          <span>Dönüşüm matrisi \(\rightarrow\) görüntü koordinatları sütunlara yazılır</span>
+          <span>Baz değişiminde benzerlik \(\rightarrow\) \(B=M^{-1}AM\)</span>
+          <span>Özvektör bazı \(\rightarrow\) köşegen matris</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Görüntü Boyutu</h3>
+            <p>\(512\times512\) siyah-beyaz görüntünün vektör boyutu.</p>
+            <div class="equation-card" data-raw-latex="n=512^2">
+              <div class="equation-content">
+                \[
+                n=512^2
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Baz Değişimi</h3>
+            <p>Yeni baz vektörleri \(W\) sütunlarıysa vektör ve katsayı ilişkisi.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{p}=W\mathbf{c}">
+              <div class="equation-content">
+                \[
+                \mathbf{p}=W\mathbf{c}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Katsayı Bulma</h3>
+            <p>Standart koordinatlardan yeni baz katsayılarına geçiş.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{c}=W^{-1}\mathbf{p}">
+              <div class="equation-content">
+                \[
+                \mathbf{c}=W^{-1}\mathbf{p}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Ortonormal Baz</h3>
+            <p>Ortonormal sütunlu baz matrisinde ters alma.</p>
+            <div class="equation-card" data-raw-latex="W^{-1}=W^T">
+              <div class="equation-content">
+                \[
+                W^{-1}=W^T
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sıkıştırılmış Yeniden Kurma</h3>
+            <p>Küçük katsayılar atıldıktan sonra yaklaşık görüntü.</p>
+            <div class="equation-card" data-raw-latex="\widehat{\mathbf{p}}=W\widehat{\mathbf{c}}">
+              <div class="equation-content">
+                \[
+                \widehat{\mathbf{p}}=W\widehat{\mathbf{c}}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Dönüşüm Matrisi Sütunları</h3>
+            <p>\(j\). sütun, \(T(\mathbf{v}_j)\) görüntüsünün bazdaki koordinatlarıdır.</p>
+            <div class="equation-card" data-raw-latex="T(\mathbf{v}_j)=a_{1j}\mathbf{v}_1+\cdots+a_{nj}\mathbf{v}_n">
+              <div class="equation-content">
+                \[
+                T(\mathbf{v}_j)=a_{1j}\mathbf{v}_1+\cdots+a_{nj}\mathbf{v}_n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Benzerlik İlişkisi</h3>
+            <p>Aynı dönüşümün farklı bazlardaki matrisleri.</p>
+            <div class="equation-card" data-raw-latex="B=M^{-1}AM">
+              <div class="equation-content">
+                \[
+                B=M^{-1}AM
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Özvektör Bazında Matris</h3>
+            <p>Özvektör bazı seçildiğinde dönüşüm matrisi köşegendir.</p>
+            <div class="equation-card" data-raw-latex="A=\operatorname{diag}(\lambda_1,\lambda_2,\ldots,\lambda_n)">
+              <div class="equation-content">
+                \[
+                A=\operatorname{diag}(\lambda_1,\lambda_2,\ldots,\lambda_n)
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde baz değişiminin iki yönü işlendi. İlk yön, görüntü sıkıştırmadır: görüntü yüksek boyutlu bir vektör olarak görülür, standart baz yerine daha uygun bir baz seçilir, katsayılar bulunur ve küçük katsayılar atılarak kayıplı sıkıştırma yapılır.</p>
+        <p>İkinci yön, lineer dönüşümlerin matris temsilleridir. Bir dönüşüm, baz vektörlerinin görüntülerinden tamamen belirlenir. Baz değiştiğinde dönüşümün matrisi de değişir; fakat aynı dönüşümü temsil eden matrisler benzerlik bağıntısıyla bağlı kalır. Özvektör bazı, bu fikrin en sade örneğini verir: dönüşüm matrisi köşegen olur.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(\mathbf{p}=a\mathbf{1}\) sabit görüntü vektörü olsun. \(\mathbf{1}\) vektörü bazda yer alıyorsa bu görüntünün neden tek katsayıyla temsil edilebildiğini açıklayın.</p>
+          <p><strong>Çözüm:</strong> Bazın ilk vektörü \(\mathbf{w}_1=\mathbf{1}\) olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=a\mathbf{w}_1+0\mathbf{w}_2+\cdots+0\mathbf{w}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=a\mathbf{w}_1+0\mathbf{w}_2+\cdots+0\mathbf{w}_n
+              \]
+            </div>
+          </div>
+          <p>yazılır. Katsayı vektörü yalnızca ilk bileşende \(a\) değerini taşır.</p>
+          <p><strong>Yorum:</strong> Sabit bölgeler, tüm birler vektörünü içeren bazlarda çok az bilgiyle temsil edilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>Ortonormal sütunlu bir \(W\) matrisi için \(\mathbf{c}=W^T\mathbf{p}\) olduğunu gösterin ve bunun sıkıştırma hesabında neden önemli olduğunu açıklayın.</p>
+          <p><strong>Çözüm:</strong> Baz değişimi denklemi</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=W\mathbf{c}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=W\mathbf{c}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. \(W\) ortonormal sütunlara sahipse \(W^{-1}=W^T\). Bu nedenle her iki tarafı \(W^T\) ile çarparız:</p>
+          <div class="equation-card" data-raw-latex="W^T\mathbf{p}=W^TW\mathbf{c}=I\mathbf{c}=\mathbf{c}">
+            <div class="equation-content">
+              \[
+              W^T\mathbf{p}=W^TW\mathbf{c}=I\mathbf{c}=\mathbf{c}
+              \]
+            </div>
+          </div>
+          <p>Böylece \(\mathbf{c}=W^T\mathbf{p}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Katsayı bulma işlemi ters matris hesabı yerine transpozla çarpmaya indirgenir. Bu, büyük görüntü bloklarında hesaplama hızını belirgin biçimde artırır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>Aynı \(T\) lineer dönüşümünün eski bazdaki matrisi \(A\), yeni bazdaki matrisi \(B\) olsun. \(M\), yeni koordinatları eski koordinatlara taşısın. \(B=M^{-1}AM\) formülünü türetin.</p>
+          <p><strong>Çözüm:</strong> Yeni bazdaki koordinat vektörünü \([\mathbf{x}]_{\text{yeni}}\) ile gösterelim. Tanım gereği eski koordinatlar</p>
+          <div class="equation-card" data-raw-latex="[\mathbf{x}]_{\text{eski}}=M[\mathbf{x}]_{\text{yeni}}">
+            <div class="equation-content">
+              \[
+              [\mathbf{x}]_{\text{eski}}=M[\mathbf{x}]_{\text{yeni}}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Dönüşümü eski koordinatta uygularsak</p>
+          <div class="equation-card" data-raw-latex="[T(\mathbf{x})]_{\text{eski}}=A[\mathbf{x}]_{\text{eski}}=AM[\mathbf{x}]_{\text{yeni}}">
+            <div class="equation-content">
+              \[
+              [T(\mathbf{x})]_{\text{eski}}=A[\mathbf{x}]_{\text{eski}}=AM[\mathbf{x}]_{\text{yeni}}
+              \]
+            </div>
+          </div>
+          <p>olur. Aynı çıktı yeni koordinatta \(B[\mathbf{x}]_{\text{yeni}}\) olduğundan eski koordinata çevrilmiş hâli</p>
+          <div class="equation-card" data-raw-latex="[T(\mathbf{x})]_{\text{eski}}=MB[\mathbf{x}]_{\text{yeni}}">
+            <div class="equation-content">
+              \[
+              [T(\mathbf{x})]_{\text{eski}}=MB[\mathbf{x}]_{\text{yeni}}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Her \([\mathbf{x}]_{\text{yeni}}\) için \(AM[\mathbf{x}]_{\text{yeni}}=MB[\mathbf{x}]_{\text{yeni}}\) olduğundan \(AM=MB\). Soldan \(M^{-1}\) ile çarparak</p>
+          <div class="equation-card" data-raw-latex="B=M^{-1}AM">
+            <div class="equation-content">
+              \[
+              B=M^{-1}AM
+              \]
+            </div>
+          </div>
+          <p>elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu formül, baz değişiminin dönüşüm matrisleri üzerindeki etkisini tam olarak verir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Change of basis</td>
+                <td>Baz değişimi</td>
+                <td>Aynı vektörü farklı bir bazın katsayılarıyla ifade etme işlemi.</td>
+              </tr>
+              <tr>
+                <td>Image compression</td>
+                <td>Görüntü sıkıştırma</td>
+                <td>Görüntüyü daha az sayısal bilgiyle yaklaşık veya tam temsil etme süreci.</td>
+              </tr>
+              <tr>
+                <td>Standard basis</td>
+                <td>Standart baz</td>
+                <td>Her koordinatı ayrı ayrı temsil eden temel baz.</td>
+              </tr>
+              <tr>
+                <td>Fourier basis</td>
+                <td>Fourier bazı</td>
+                <td>Salınımlı bileşenlerle temsil veren, hızlı dönüşümle kullanılabilen baz ailesi.</td>
+              </tr>
+              <tr>
+                <td>Wavelet basis</td>
+                <td>Dalgacık bazı</td>
+                <td>Farklı ölçeklerde değişimleri yakalayan baz ailesi.</td>
+              </tr>
+              <tr>
+                <td>Thresholding</td>
+                <td>Eşikleme</td>
+                <td>Küçük katsayıları sıfırlama veya atma işlemi.</td>
+              </tr>
+              <tr>
+                <td>Lossless step</td>
+                <td>Kayıpsız adım</td>
+                <td>Bilgi kaybetmeyen dönüşüm adımı; baz değişimi bu türdendir.</td>
+              </tr>
+              <tr>
+                <td>Lossy compression</td>
+                <td>Kayıplı sıkıştırma</td>
+                <td>Bazı bilgileri atarak daha küçük temsil elde etme.</td>
+              </tr>
+              <tr>
+                <td>Linear transformation</td>
+                <td>Lineer dönüşüm</td>
+                <td>Toplama ve skaler çarpımı koruyan dönüşüm.</td>
+              </tr>
+              <tr>
+                <td>Matrix representation</td>
+                <td>Matris temsili</td>
+                <td>Bir lineer dönüşümün seçilen bazlara göre matrisle yazılması.</td>
+              </tr>
+              <tr>
+                <td>Similar matrices</td>
+                <td>Benzer matrisler</td>
+                <td>Aynı dönüşümün farklı bazlardaki matrisleri olarak yorumlanabilen matrisler.</td>
+              </tr>
+              <tr>
+                <td>Eigenvector basis</td>
+                <td>Özvektör bazı</td>
+                <td>Dönüşümün baz vektörlerini yalnızca ölçeklediği özel baz.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        const computed = window.getComputedStyle(title);
+        let size = parseFloat(computed.fontSize);
+        const containerWidth = title.parentElement ? title.parentElement.clientWidth : title.clientWidth;
+
+        while (title.scrollWidth > containerWidth && size > minSize) {
+          size -= 1;
+          title.style.fontSize = size + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            const successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("Kopyalama başarısız"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.dataset.tooltip;
+        button.dataset.tooltip = message;
+        button.classList.add("is-copied");
+
+        window.setTimeout(function () {
+          button.dataset.tooltip = original;
+          button.classList.remove("is-copied");
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

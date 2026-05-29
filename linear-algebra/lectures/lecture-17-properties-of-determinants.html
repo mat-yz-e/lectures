@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17. Ders: Determinantların Özellikleri</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.2vw, 1.85rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" class="active" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">17. Ders: Determinantların Özellikleri</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, dikdörtgensel matrislerden kare matrislerin özel dünyasına geçerek determinant kavramını başlatır.</p>
+        <p>Determinant, her kare matrise bağlı tek bir sayıdır. Bu sayı matrisin tamamını yeniden kurmaya yetmez; fakat tersinirlik, tekillik, eleme sonucunda oluşan pivotlar, çarpım davranışı ve transpoz ilişkisi gibi temel bilgileri yoğun biçimde taşır.</p>
+        <p>Bölümün ana problemi şudur: Determinantı büyük bir formül olarak ezberlemek yerine, onu hangi temel özellikler belirler ve bu özelliklerden hangi sonuçlar zorunlu olarak çıkar? Bu yaklaşım, özellikle kare matrislerin tersinirliğini ve daha sonra özdeğer problemlerini anlamak için temel oluşturur.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Determinantın kare matrislere bağlı bir sayı olduğunu açıklamak.</li>
+          <li>Determinantı belirleyen üç temel özelliği yazmak.</li>
+          <li>Satır değişiminin determinantın işaretini değiştirdiğini kullanmak.</li>
+          <li>Determinantın her satırda ayrı ayrı doğrusal olduğunu ayırt etmek.</li>
+          <li>İki eşit satır, sıfır satır ve satır toplama işlemlerinin determinant üzerindeki etkisini kanıtlamak.</li>
+          <li>Üçgensel matrisin determinantını köşegen çarpımı olarak hesaplamak.</li>
+          <li>Eleme ve pivotlar yardımıyla determinant hesaplamak.</li>
+          <li>\(\det A=0\) koşulunun tekillik, \(\det A\ne0\) koşulunun tersinirlik anlamına geldiğini göstermek.</li>
+          <li>Çarpım, ters, skaler kat ve transpoz özelliklerini kullanmak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Kare matris, birim matris ve ters matris kavramları.</li>
+          <li>Satır değişimi, satırın skalerle çarpılması ve bir satıra başka satırın katını ekleme işlemleri.</li>
+          <li>Gauss elemesi, pivotlar ve üst üçgensel matrisler.</li>
+          <li>Tekil ve tersinir matris ayrımı.</li>
+          <li>Matris çarpımı ve transpoz işlemi.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\det A\) veya \(|A|\)</td>
+                <td>\(A\) matrisinin determinantı</td>
+                <td>Yalnızca kare matrisler için tanımlanan sayıdır.</td>
+              </tr>
+              <tr>
+                <td>\(I\)</td>
+                <td>Birim matris</td>
+                <td>Determinantın ilk temel özelliğinde \(\det I=1\) olarak yer alır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{r}_i\)</td>
+                <td>\(i\). satır</td>
+                <td>Satır işlemleri determinant özelliklerini ifade etmek için kullanılır.</td>
+              </tr>
+              <tr>
+                <td>\(U\)</td>
+                <td>Üst üçgensel matris</td>
+                <td>Eleme sonunda elde edilen matristir.</td>
+              </tr>
+              <tr>
+                <td>\(d_1,\ldots,d_n\)</td>
+                <td>Pivotlar</td>
+                <td>Üst üçgensel matriste köşegen girişleri olarak düşünülür.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>Permütasyon matrisi</td>
+                <td>Satır değişimleriyle birim matristen elde edilen matristir.</td>
+              </tr>
+              <tr>
+                <td>\(A^{-1}\)</td>
+                <td>Ters matris</td>
+                <td>Yalnızca \(\det A\ne0\) olduğunda vardır.</td>
+              </tr>
+              <tr>
+                <td>\(A^T\)</td>
+                <td>Transpoz matris</td>
+                <td>Determinantı \(A\) ile aynıdır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Determinant, kare matrislerin temel bir sayısal özetidir. Bu özetin en önemli ilk anlamı tersinirlik testidir: determinant sıfırsa matris tekildir; sıfır değilse matris tersinirdir. Bu test eleme sırasında oluşan pivotlarla doğrudan bağlantılıdır.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Determinantı hesaplamanın pratik yolu, matrisi eleme ile üst üçgensel hâle getirmek ve işaret değişimlerini izleyerek pivotları çarpmaktır.</p>
+        </aside>
+        <p>Bu bölümde determinant büyük bir kapalı formülden değil, üç temel özellikten doğar. Bu özellikler hem iki boyutlu \(\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=ad-bc\) formülünü hem de \(n\) boyutlu hesaplama kurallarını zorunlu kılar.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Determinant</h3>
+          <p>Bir kare matris \(A\) için determinant, \(\det A\) veya \(|A|\) ile gösterilen tek bir sayıdır. Bu sayı, özellikle matrisin tersinir olup olmadığını belirlemede kullanılır:</p>
+          <div class="equation-card" data-raw-latex="A\ \text{tersinirdir}\iff \det A\ne 0">
+            <div class="equation-content">
+              \[
+              A\ \text{tersinirdir}
+              \iff
+              \det A\ne 0
+              \]
+            </div>
+          </div>
+          <p>Bu bölümde bu sonucun neden doğru olduğu, determinantın temel özelliklerinden başlayarak elde edilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Determinantı Belirleyen Üç Temel Özellik</h3>
+          <p>Determinant, kare matrislerde aşağıdaki üç temel koşulu sağlayan sayısal fonksiyon olarak ele alınır.</p>
+          <p><strong>Birinci özellik:</strong> Birim matrisin determinantı birdir.</p>
+          <div class="equation-card" data-raw-latex="\det I=1">
+            <div class="equation-content">
+              \[
+              \det I=1
+              \]
+            </div>
+          </div>
+          <p><strong>İkinci özellik:</strong> İki satırın yer değiştirmesi determinantın işaretini değiştirir.</p>
+          <div class="equation-card" data-raw-latex="\det(\text{satır değişimi yapılmış }A)=-\det A">
+            <div class="equation-content">
+              \[
+              \det(\text{satır değişimi yapılmış }A)=-\det A
+              \]
+            </div>
+          </div>
+          <p><strong>Üçüncü özellik:</strong> Determinant her satırda ayrı ayrı doğrusaldır. Bir satır \(t\) ile çarpılırsa determinant da \(t\) ile çarpılır:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}t\mathbf{r}_1\\\mathbf{r}_2\\\vdots\\\mathbf{r}_n\end{bmatrix}=t\det\begin{bmatrix}\mathbf{r}_1\\\mathbf{r}_2\\\vdots\\\mathbf{r}_n\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              t\mathbf{r}_1\\
+              \mathbf{r}_2\\
+              \vdots\\
+              \mathbf{r}_n
+              \end{bmatrix}
+              =
+              t\det
+              \begin{bmatrix}
+              \mathbf{r}_1\\
+              \mathbf{r}_2\\
+              \vdots\\
+              \mathbf{r}_n
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Aynı satır iki satırın toplamı biçimindeyse determinant iki determinantın toplamına ayrılır:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}\mathbf{r}_1+\mathbf{s}_1\\\mathbf{r}_2\\\vdots\\\mathbf{r}_n\end{bmatrix}=\det\begin{bmatrix}\mathbf{r}_1\\\mathbf{r}_2\\\vdots\\\mathbf{r}_n\end{bmatrix}+\det\begin{bmatrix}\mathbf{s}_1\\\mathbf{r}_2\\\vdots\\\mathbf{r}_n\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              \mathbf{r}_1+\mathbf{s}_1\\
+              \mathbf{r}_2\\
+              \vdots\\
+              \mathbf{r}_n
+              \end{bmatrix}
+              =
+              \det
+              \begin{bmatrix}
+              \mathbf{r}_1\\
+              \mathbf{r}_2\\
+              \vdots\\
+              \mathbf{r}_n
+              \end{bmatrix}
+              +
+              \det
+              \begin{bmatrix}
+              \mathbf{s}_1\\
+              \mathbf{r}_2\\
+              \vdots\\
+              \mathbf{r}_n
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Burada doğrusallık bütün matris için değil, her satır için ayrı ayrı geçerlidir. Genel olarak \(\det(A+B)=\det A+\det B\) değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Birim ve Permütasyon Matrisleri</h3>
+          <p>İki boyutta birim matrisin determinantı birinci özellik gereği \(1\)'dir:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}1&0\\0&1\end{bmatrix}=1">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              1&0\\
+              0&1
+              \end{bmatrix}
+              =1
+              \]
+            </div>
+          </div>
+          <p>Satırları bir kez değiştirince determinantın işareti değişir:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}0&1\\1&0\end{bmatrix}=-1">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              =-1
+              \]
+            </div>
+          </div>
+          <p>Genel olarak bir permütasyon matrisinin determinantı, onu birim matristen elde etmek için gereken satır değişimlerinin sayısına göre \(1\) veya \(-1\) olur.</p>
+        </section>
+
+        <h3>İki Boyutlu Formülün Hedefi</h3>
+        <p>İki boyutta tanıdık formül aşağıdaki biçimdedir:</p>
+        <div class="equation-card" data-raw-latex="\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=ad-bc">
+          <div class="equation-content">
+            \[
+            \det
+            \begin{bmatrix}
+            a&b\\
+            c&d
+            \end{bmatrix}
+            =
+            ad-bc
+            \]
+          </div>
+        </div>
+        <p>Bu formül burada başlangıç noktası değildir; amaç, onu üç temel özellik ve eleme fikrinden elde etmektir.</p>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: İki Eşit Satır Determinantı Sıfır Yapar</h3>
+          <p><strong>İfade:</strong> Bir kare matrisin iki satırı eşitse determinantı sıfırdır.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{r}_i=\mathbf{r}_j\ (i\ne j)\quad\Longrightarrow\quad \det A=0">
+            <div class="equation-content">
+              \[
+              \mathbf{r}_i=\mathbf{r}_j\quad (i\ne j)
+              \Longrightarrow
+              \det A=0
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> İki aynı satırı yer değiştirince matris değişmez; fakat determinantın işaret değiştirmesi gerekir. Aynı sayının hem kendisi hem negatifi olması yalnızca sıfır için mümkündür.</p>
+          <p><strong>Formal İspat:</strong> \(A\) matrisinde \(\mathbf{r}_i=\mathbf{r}_j\) olsun. Bu iki satırı değiştirerek elde edilen matris yine \(A\)'dır. Bu nedenle determinant değişmemiş gibi görünür: yeni determinant \(\det A\)'dır. İkinci temel özellik ise aynı satır değişiminin determinantı \(-\det A\) yaptığını söyler. Dolayısıyla \(\det A=-\det A\), buradan \(2\det A=0\) ve \(\det A=0\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, eşit satırların doğrusal bağımlılık yarattığı ve matrisin tersinir olamayacağı fikriyle uyumludur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Bir Satıra Başka Satırın Katını Eklemek Determinantı Değiştirmez</h3>
+          <p><strong>İfade:</strong> \(i\ne k\) için \(\mathbf{r}_k\) satırı \(\mathbf{r}_k-l\mathbf{r}_i\) ile değiştirilirse determinant değişmez.</p>
+          <div class="equation-card" data-raw-latex="\det(\mathbf{r}_k\mapsto \mathbf{r}_k-l\mathbf{r}_i)=\det A">
+            <div class="equation-content">
+              \[
+              \det(\mathbf{r}_k\mapsto \mathbf{r}_k-l\mathbf{r}_i)=\det A
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Eleme işleminde bir satırdan başka satırın katı çıkarılır. Bu işlem satırların kapsadığı tersinirlik bilgisini değiştirmez; determinantın da değişmemesi beklenir.</p>
+          <p><strong>Formal İspat:</strong> Determinantın \(\mathbf{r}_k\) satırında doğrusal olduğunu kullanarak yeni determinantı iki parçaya ayırırız:</p>
+          <div class="equation-card" data-raw-latex="\det(\ldots,\mathbf{r}_k-l\mathbf{r}_i,\ldots)=\det(\ldots,\mathbf{r}_k,\ldots)-l\det(\ldots,\mathbf{r}_i,\ldots)">
+            <div class="equation-content">
+              \[
+              \det(\ldots,\mathbf{r}_k-l\mathbf{r}_i,\ldots)
+              =
+              \det(\ldots,\mathbf{r}_k,\ldots)
+              -
+              l\det(\ldots,\mathbf{r}_i,\ldots)
+              \]
+            </div>
+          </div>
+          <p>İkinci determinantta \(\mathbf{r}_k\) yerine \(\mathbf{r}_i\) yazıldığı için iki satır eşit hâle gelir. Teorem 1.4 gereği bu ikinci determinant sıfırdır. Bu nedenle geriye yalnızca \(\det A\) kalır.</p>
+          <p><strong>Yorum:</strong> Bu teorem determinant hesabını eleme ile uyumlu hâle getirir. Satır toplama işlemleri determinantı değiştirmediği için matris üst üçgensel hâle getirilebilir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Sıfır Satır Determinantı Sıfır Yapar</h3>
+          <p><strong>İfade:</strong> Bir kare matrisin bir satırı tamamen sıfırsa determinant sıfırdır.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{r}_k=\mathbf{0}\quad\Longrightarrow\quad \det A=0">
+            <div class="equation-content">
+              \[
+              \mathbf{r}_k=\mathbf{0}
+              \Longrightarrow
+              \det A=0
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Sıfır satır, matrisin tam pivot sayısına sahip olamayacağını gösterir. Bu durum tersinirliği yok eder.</p>
+          <p><strong>Formal İspat:</strong> Determinantın ilgili satırda skalerle uyumlu olduğunu kullanalım. Sıfır satır, herhangi bir satırın \(0\) ile çarpılmış hâli olarak düşünülebilir. Üçüncü temel özellik gereği bu \(0\) katsayısı determinantın dışına çıkar ve determinant \(0\) ile çarpılır. Dolayısıyla sonuç sıfırdır.</p>
+          <p><strong>Yorum:</strong> Eleme sırasında sıfır satır oluşması, determinantın sıfır olmasının doğrudan işaretidir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Üçgensel Matrisin Determinantı</h3>
+          <p><strong>İfade:</strong> \(U\) üst üçgensel ve köşegen girişleri \(d_1,\ldots,d_n\) ise</p>
+          <div class="equation-card" data-raw-latex="\det U=d_1d_2\cdots d_n">
+            <div class="equation-content">
+              \[
+              \det U=d_1d_2\cdots d_n
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Üst üçgensel matriste determinantı etkileyen temel bilgiler köşegendeki pivotlardır; köşegen üstündeki girişler satır toplama işlemleriyle yok edilebilir.</p>
+          <p><strong>Formal İspat:</strong> Köşegendeki \(d_i\) girişleri sıfır değilse, Teorem 1.5 türündeki satır işlemleriyle köşegen üstündeki girişler determinantı değiştirmeden yok edilebilir. Böylece diagonal matrise ulaşılır. Diagonal matriste her satırdan sırasıyla \(d_i\) faktörü dışarı alınır:</p>
+          <div class="equation-card" data-raw-latex="\det\operatorname{diag}(d_1,\ldots,d_n)=d_1\cdots d_n\det I=d_1\cdots d_n">
+            <div class="equation-content">
+              \[
+              \det\operatorname{diag}(d_1,\ldots,d_n)
+              =
+              d_1\cdots d_n\det I
+              =
+              d_1\cdots d_n
+              \]
+            </div>
+          </div>
+          <p>Bir \(d_i=0\) ise eleme sonunda sıfır satır oluşur ve Teorem 1.6 determinantın sıfır olduğunu verir. Bu da \(d_1\cdots d_n=0\) ile aynıdır.</p>
+          <p><strong>Yorum:</strong> Bu teorem determinant hesabının pratik temelidir: eleme, determinantı pivot çarpımına indirger.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: İki Boyutlu Formülün Elemeden Çıkışı</h3>
+          <p>\(a\ne0\) olsun. Aşağıdaki matris için ilk pivot \(a\)'dır. İkinci satırdan \(\frac{c}{a}\) kat birinci satır çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}a&b\\c&d\end{bmatrix}\longrightarrow\begin{bmatrix}a&b\\0&d-\frac{c}{a}b\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              \longrightarrow
+              \begin{bmatrix}
+              a&b\\
+              0&d-\frac{c}{a}b
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Satır toplama işlemi determinantı değiştirmez. Üst üçgensel matrisin determinantı köşegen çarpımıdır:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=a\left(d-\frac{c}{a}b\right)=ad-bc">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              =
+              a\left(d-\frac{c}{a}b\right)
+              =
+              ad-bc
+              \]
+            </div>
+          </div>
+          <p>Eğer \(a=0\) ise pivot için satır değişimi gerekebilir. Satır değişimi yapılırsa determinantın işareti de izlenmelidir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Determinant ve Tersinirlik</h3>
+          <p><strong>İfade:</strong> Bir kare matris \(A\) için</p>
+          <div class="equation-card" data-raw-latex="\det A=0\iff A\ \text{tekildir},\qquad \det A\ne0\iff A\ \text{tersinirdir}">
+            <div class="equation-content">
+              \[
+              \det A=0\iff A\ \text{tekildir},
+              \qquad
+              \det A\ne0\iff A\ \text{tersinirdir}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Eleme tam pivot sayısı üretirse köşegen çarpımı sıfır olmayan pivotlardan oluşur. Bir pivot eksik kalırsa sıfır satır ortaya çıkar ve determinant sıfır olur.</p>
+          <p><strong>Formal İspat:</strong> \(A\) üzerinde eleme yapalım. Satır toplama işlemleri determinantı değiştirmez; satır değişimleri yalnızca işaret değiştirir. Eğer \(A\) tersinirse eleme \(n\) tane sıfır olmayan pivot üretir. Bu durumda \(U\)'nun determinantı \(d_1\cdots d_n\ne0\)'dır; satır değişimleri yalnızca işaret çarpanı eklediği için \(\det A\ne0\). Eğer \(A\) tekilse eleme sırasında bir sıfır satır oluşur. Teorem 1.6 gereği determinant sıfırdır.</p>
+          <p><strong>Yorum:</strong> Determinant, kare matrislerde tersinirlik için tek sayılık fakat kesin bir test sağlar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: Çarpım, Ters ve Skaler Kat Özellikleri</h3>
+          <p><strong>İfade:</strong> Aynı boyutlu kare matrisler \(A\) ve \(B\) için</p>
+          <div class="equation-card" data-raw-latex="\det(AB)=\det A\,\det B">
+            <div class="equation-content">
+              \[
+              \det(AB)=\det A\,\det B
+              \]
+            </div>
+          </div>
+          <p>Ayrıca \(A\) tersinir ise</p>
+          <div class="equation-card" data-raw-latex="\det(A^{-1})=\frac{1}{\det A}">
+            <div class="equation-content">
+              \[
+              \det(A^{-1})=\frac{1}{\det A}
+              \]
+            </div>
+          </div>
+          <p>ve \(A\), \(n\times n\) ise</p>
+          <div class="equation-card" data-raw-latex="\det(tA)=t^n\det A">
+            <div class="equation-content">
+              \[
+              \det(tA)=t^n\det A
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Matris çarpımı dönüşümlerin ardışık uygulanması gibidir; determinant bu ardışıklığı sayıların çarpımı olarak izler. Bütün matrisi \(t\) ile çarpmak ise her satırı ayrı ayrı \(t\) ile çarpmaktır.</p>
+          <p><strong>Formal İspat:</strong> Çarpım özelliği determinantın temel kurallarından türetilen ana sonuçlardan biridir. Ters matris sonucu için \(A^{-1}A=I\) eşitliğinin determinantını alalım:</p>
+          <div class="equation-card" data-raw-latex="\det(A^{-1}A)=\det I\quad\Longrightarrow\quad \det(A^{-1})\det A=1">
+            <div class="equation-content">
+              \[
+              \det(A^{-1}A)=\det I
+              \Longrightarrow
+              \det(A^{-1})\det A=1
+              \]
+            </div>
+          </div>
+          <p>\(\det A\ne0\) olduğundan \(\det(A^{-1})=1/\det A\) elde edilir. Skaler kat sonucu ise üçüncü temel özelliğin her satıra ayrı ayrı uygulanmasından gelir: \(n\) satırın her birinden bir \(t\) faktörü çıkar.</p>
+          <p><strong>Yorum:</strong> Bu teorem, determinantın toplama için değil çarpma için uyumlu olduğunu özellikle vurgular.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: Ters ve Kare Alma</h3>
+          <p>\(\det A=6\) ve \(A\) tersinir olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="\det(A^{-1})=\frac{1}{6},\qquad \det(A^2)=(\det A)^2=36">
+            <div class="equation-content">
+              \[
+              \det(A^{-1})=\frac{1}{6},
+              \qquad
+              \det(A^2)=(\det A)^2=36
+              \]
+            </div>
+          </div>
+          <p>İlk sonuç ters matris özelliğinden, ikinci sonuç \(\det(AA)=\det A\det A\) eşitliğinden gelir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Transpoz Determinantı Değiştirmez</h3>
+          <p><strong>İfade:</strong> Her kare matris \(A\) için</p>
+          <div class="equation-card" data-raw-latex="\det(A^T)=\det A">
+            <div class="equation-content">
+              \[
+              \det(A^T)=\det A
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Determinant için satırlarla elde edilen kurallar, transpoz aracılığıyla sütunlara da aktarılır. Bu nedenle satır ve sütun bakışları aynı sayıyı verir.</p>
+          <p><strong>Formal İspat:</strong> Satır değişimi gerektirmeyen tipik durumda \(A=LU\) yazılsın. O zaman \(A^T=U^TL^T\). Çarpım özelliğini kullanırsak</p>
+          <div class="equation-card" data-raw-latex="\det(A^T)=\det(U^TL^T)=\det(U^T)\det(L^T)">
+            <div class="equation-content">
+              \[
+              \det(A^T)=\det(U^TL^T)=\det(U^T)\det(L^T)
+              \]
+            </div>
+          </div>
+          <p>\(L\) ve \(L^T\) üçgensel olup köşegenlerinde \(1\)'ler vardır; bu nedenle determinantları \(1\)'dir. \(U\) ve \(U^T\) aynı köşegen girişlerine sahip üçgensel matrislerdir; determinantları aynı pivot çarpımıdır. Böylece \(\det(A^T)=\det A\) elde edilir. Satır değişimleri gereken durumlarda işaret çarpanları da aynı biçimde izlenir.</p>
+          <p><strong>Yorum:</strong> Bu sonuçtan sonra satırlar için kanıtlanan özelliklerin sütunlar için de geçerli olduğu anlaşılır: iki eşit sütun, sıfır sütun veya sütun değişimi determinantı beklenen biçimde etkiler.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Eleme ile Determinant Hesabı</h3>
+        <p>Bu yöntem, determinantı büyük açılımlar yerine pivotlar üzerinden hesaplar.</p>
+        <ol>
+          <li>Matris üzerinde Gauss elemesi yaparak üst üçgensel \(U\) matrisine ulaş.</li>
+          <li>Bir satıra başka satırın katını ekleme veya çıkarma işlemlerinin determinantı değiştirmediğini kullan.</li>
+          <li>Her satır değişimi için determinantın işaretinin değiştiğini kaydet.</li>
+          <li>Üst üçgensel matrisin köşegen girişlerini çarp.</li>
+          <li>Toplam satır değişimi sayısı \(q\) ise sonucu \((-1)^q\) ile çarp.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\det A=(-1)^q d_1d_2\cdots d_n">
+          <div class="equation-content">
+            \[
+            \det A=(-1)^q d_1d_2\cdots d_n
+            \]
+          </div>
+        </div>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: Üçgensel Matris Üzerinden Hesap</h3>
+          <p>Aşağıdaki matris zaten üst üçgenseldir:</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}2&-1&4\\0&3&5\\0&0&-2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              U=
+              \begin{bmatrix}
+              2&-1&4\\
+              0&3&5\\
+              0&0&-2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Determinant köşegen çarpımıdır:</p>
+          <div class="equation-card" data-raw-latex="\det U=2\cdot3\cdot(-2)=-12">
+            <div class="equation-content">
+              \[
+              \det U=2\cdot3\cdot(-2)=-12
+              \]
+            </div>
+          </div>
+        </section>
+
+        <h3>Yaygın Hata Noktaları</h3>
+        <ul>
+          <li>Satır değişimini unutmak: Her satır değişimi determinantın işaretini değiştirir.</li>
+          <li>Bir satırı \(t\) ile çarpmayı yanlış izlemek: Satır \(t\) ile çarpılırsa determinant da \(t\) ile çarpılır.</li>
+          <li>\(\det(A+B)=\det A+\det B\) sanmak: Determinant bütün matris üzerinde toplamsal değildir.</li>
+          <li>Üst üçgensel olmayan bir matriste köşegenleri doğrudan çarpmak: Köşegen çarpımı yalnızca üçgensel matris için doğrudan determinanttır.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Determinantın ilk uygulama bağlantısı tersinirlik testidir. Kare bir sistemin katsayı matrisi için determinant sıfır değilse sistemin tekil olmayan yapısı, eleme sırasında tam pivot sayısı ve ters matrisin varlığı aynı yönde bilgi verir.</p>
+        <p>İkinci bağlantı hacim yorumudur. Bir \(n\times n\) matrisi bütün girişleriyle \(2\) katına çıkarmak, her satırdan bir \(2\) faktörü çıkarmak anlamına gelir:</p>
+        <div class="equation-card" data-raw-latex="\det(2A)=2^n\det A">
+          <div class="equation-content">
+            \[
+            \det(2A)=2^n\det A
+            \]
+          </div>
+        </div>
+        <p>Bu, \(n\) boyutlu hacmin her doğrultuda ölçeklenmesiyle uyumludur. Üç boyutta bütün uzunluklar iki katına çıkarsa hacim \(2^3=8\) katına çıkar.</p>
+        <p>Üçüncü bağlantı özdeğer konusuna hazırlıktır. Determinant, kare matrislerin tekillik ve tersinirlik davranışını tek bir sayı ile izlediği için sonraki kare matris problemlerinde merkezi bir araç olur.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Determinantı her satırda ayrı ayrı doğrusal olmak yerine bütün matris üzerinde doğrusal sanmak. <strong>Neden yanlış?</strong> \(\det(A+B)=\det A+\det B\) genel olarak doğru değildir. <strong>Doğru yaklaşım:</strong> Toplam kuralı yalnızca bir satır değişirken ve diğer satırlar sabitken uygulanır.</p>
+        </section>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Satır değişimlerinin işaret etkisini hesaba katmamak. <strong>Neden yanlış?</strong> Tek sayıda satır değişimi determinantın işaretini tersine çevirir. <strong>Doğru yaklaşım:</strong> Eleme boyunca satır değişimi sayısını kaydet ve sonunda \((-1)^q\) çarpanını uygula.</p>
+        </section>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Bir satıra başka satırın katını eklerken determinantın değiştiğini düşünmek. <strong>Neden yanlış?</strong> Bu işlem determinantı değiştirmez; çünkü eklenen parçadan doğan determinantta iki satır eşit olur. <strong>Doğru yaklaşım:</strong> Bu işlemi elemede serbestçe kullan, fakat satır çarpma ve satır değişimini ayrıca izle.</p>
+        </section>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> \(\det(tA)=t\det A\) yazmak. <strong>Neden yanlış?</strong> \(tA\), \(n\) satırın her birini \(t\) ile çarpar. <strong>Doğru yaklaşım:</strong> \(n\times n\) matris için \(\det(tA)=t^n\det A\) kullanılmalıdır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Determinant: kare matrise bağlı sayı.</li>
+            <li>Temel özellikler: \(\det I=1\), satır değişimi işaret değiştirir, her satırda ayrı doğrusal davranış.</li>
+            <li>Satır sonuçları: iki eşit satır, sıfır satır ve satır toplama işlemleri.</li>
+            <li>Eleme bağlantısı: satır toplama determinantı değiştirmez, satır değişimi işaret değiştirir.</li>
+            <li>Üçgensel matris: determinant pivotların çarpımıdır.</li>
+            <li>Tersinirlik: sıfır olmayan determinant tam pivot sayısı; sıfır determinant tekillik.</li>
+            <li>Çarpım ve transpoz: \(\det(AB)=\det A\det B\), \(\det(A^T)=\det A\).</li>
+            <li>Sütun sonuçları: transpoz özelliği sayesinde satır kuralları sütunlar için de geçerlidir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Birim matris</p>
+        <div class="equation-card" data-raw-latex="\det I=1">
+          <div class="equation-content">
+            \[
+            \det I=1
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Satır değişimi</p>
+        <div class="equation-card" data-raw-latex="\det(\text{iki satırı değişmiş }A)=-\det A">
+          <div class="equation-content">
+            \[
+            \det(\text{iki satırı değişmiş }A)=-\det A
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Satırda skaler çarpan</p>
+        <div class="equation-card" data-raw-latex="\det(\mathbf{r}_k\mapsto t\mathbf{r}_k)=t\det A">
+          <div class="equation-content">
+            \[
+            \det(\mathbf{r}_k\mapsto t\mathbf{r}_k)=t\det A
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Satır toplama işlemi</p>
+        <div class="equation-card" data-raw-latex="\det(\mathbf{r}_k\mapsto \mathbf{r}_k-l\mathbf{r}_i)=\det A">
+          <div class="equation-content">
+            \[
+            \det(\mathbf{r}_k\mapsto \mathbf{r}_k-l\mathbf{r}_i)=\det A
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Üçgensel matris</p>
+        <div class="equation-card" data-raw-latex="\det U=d_1d_2\cdots d_n">
+          <div class="equation-content">
+            \[
+            \det U=d_1d_2\cdots d_n
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Eleme ile determinant</p>
+        <div class="equation-card" data-raw-latex="\det A=(-1)^q d_1d_2\cdots d_n">
+          <div class="equation-content">
+            \[
+            \det A=(-1)^q d_1d_2\cdots d_n
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Çarpım ve transpoz</p>
+        <div class="equation-card" data-raw-latex="\det(AB)=\det A\,\det B,\qquad \det(A^T)=\det A">
+          <div class="equation-content">
+            \[
+            \det(AB)=\det A\,\det B,
+            \qquad
+            \det(A^T)=\det A
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Ters ve skaler kat</p>
+        <div class="equation-card" data-raw-latex="\det(A^{-1})=\frac{1}{\det A},\qquad \det(tA)=t^n\det A">
+          <div class="equation-content">
+            \[
+            \det(A^{-1})=\frac{1}{\det A},
+            \qquad
+            \det(tA)=t^n\det A
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde determinant, kare matrislere bağlı bir sayı olarak üç temel özellikten başlatıldı: \(\det I=1\), satır değişiminin işaret değiştirmesi ve her satırda ayrı ayrı doğrusallık.</p>
+        <p>Bu özelliklerden iki eşit satırın, sıfır satırın ve eleme adımlarının determinant üzerindeki etkileri çıkarıldı. Böylece determinant hesabı, üst üçgensel matrise indirgenip pivotların çarpımıyla yapılabilir hâle geldi.</p>
+        <p>Son olarak determinantın tersinirlik testi, çarpım özelliği, ters matris davranışı, skaler kat kuralı ve transpoz altında değişmemesi ele alındı. Bu sonuçlar, kare matrislerin daha ileri incelemeleri için temel oluşturur.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Soru 1: Temel Satır Özelliği</h3>
+          <p>Aşağıdaki determinantı hesaplayın:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}1&2&3\\4&5&6\\1&2&3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              1&2&3\\
+              4&5&6\\
+              1&2&3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Birinci ve üçüncü satırlar eşittir. Teorem 1.4 gereği determinant sıfırdır.</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}1&2&3\\4&5&6\\1&2&3\end{bmatrix}=0">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              1&2&3\\
+              4&5&6\\
+              1&2&3
+              \end{bmatrix}
+              =0
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Eşit satırlar matrisin satırlarının doğrusal bağımsız olmasını engeller.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 2: Eleme ile Determinant Hesabı</h3>
+          <p>Aşağıdaki determinantı satır toplama işlemleriyle hesaplayın:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}2&1&0\\4&3&1\\0&5&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              2&1&0\\
+              4&3&1\\
+              0&5&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> İkinci satırdan \(2\) kat birinci satırı çıkaralım. Bu işlem determinantı değiştirmez:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2&1&0\\4&3&1\\0&5&2\end{bmatrix}\longrightarrow\begin{bmatrix}2&1&0\\0&1&1\\0&5&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2&1&0\\
+              4&3&1\\
+              0&5&2
+              \end{bmatrix}
+              \longrightarrow
+              \begin{bmatrix}
+              2&1&0\\
+              0&1&1\\
+              0&5&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Üçüncü satırdan \(5\) kat ikinci satırı çıkaralım:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2&1&0\\0&1&1\\0&5&2\end{bmatrix}\longrightarrow\begin{bmatrix}2&1&0\\0&1&1\\0&0&-3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2&1&0\\
+              0&1&1\\
+              0&5&2
+              \end{bmatrix}
+              \longrightarrow
+              \begin{bmatrix}
+              2&1&0\\
+              0&1&1\\
+              0&0&-3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Üst üçgensel matrisin determinantı köşegen çarpımıdır:</p>
+          <div class="equation-card" data-raw-latex="\det A=2\cdot1\cdot(-3)=-6">
+            <div class="equation-content">
+              \[
+              \det A=2\cdot1\cdot(-3)=-6
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Hesap boyunca satır değişimi yapılmadığı için ek bir işaret çarpanı yoktur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 3: Çarpım, Ters ve Transpoz Özellikleri</h3>
+          <p>\(A\) ve \(B\), \(3\times3\) tersinir matrisler olsun. \(\det A=4\) ve \(\det B=-2\) ise aşağıdaki determinantı bulun:</p>
+          <div class="equation-card" data-raw-latex="\det(2A^{-1}B^T)">
+            <div class="equation-content">
+              \[
+              \det(2A^{-1}B^T)
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Matrisler \(3\times3\) olduğu için skaler kat kuralı \(\det(2M)=2^3\det M\) biçimindedir:</p>
+          <div class="equation-card" data-raw-latex="\det(2A^{-1}B^T)=2^3\det(A^{-1}B^T)">
+            <div class="equation-content">
+              \[
+              \det(2A^{-1}B^T)=2^3\det(A^{-1}B^T)
+              \]
+            </div>
+          </div>
+          <p>Çarpım, ters ve transpoz özelliklerini uygulayalım:</p>
+          <div class="equation-card" data-raw-latex="2^3\det(A^{-1}B^T)=8\,\det(A^{-1})\det(B^T)=8\cdot\frac{1}{4}\cdot(-2)=-4">
+            <div class="equation-content">
+              \[
+              2^3\det(A^{-1}B^T)
+              =
+              8\,\det(A^{-1})\det(B^T)
+              =
+              8\cdot\frac{1}{4}\cdot(-2)
+              =
+              -4
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu soru determinantın çarpma ile uyumlu olduğunu, fakat skaler katın boyuta bağlı olduğunu birlikte kullanır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce ve Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Determinant</td>
+                <td>Determinant</td>
+                <td>Kare matrise bağlı, tersinirlik ve eleme bilgisi taşıyan sayı.</td>
+              </tr>
+              <tr>
+                <td>Square matrix</td>
+                <td>Kare matris</td>
+                <td>Satır ve sütun sayısı eşit olan matris.</td>
+              </tr>
+              <tr>
+                <td>Identity matrix</td>
+                <td>Birim matris</td>
+                <td>Köşegeninde \(1\), diğer girişlerinde \(0\) bulunan matris.</td>
+              </tr>
+              <tr>
+                <td>Row exchange</td>
+                <td>Satır değişimi</td>
+                <td>İki satırın yerini değiştirme işlemi; determinantın işaretini değiştirir.</td>
+              </tr>
+              <tr>
+                <td>Triangular matrix</td>
+                <td>Üçgensel matris</td>
+                <td>Bir köşegenin altında veya üstünde sıfırlar bulunan matris.</td>
+              </tr>
+              <tr>
+                <td>Pivot</td>
+                <td>Pivot</td>
+                <td>Eleme sırasında kullanılan köşegen girişleri.</td>
+              </tr>
+              <tr>
+                <td>Singular matrix</td>
+                <td>Tekil matris</td>
+                <td>Tersinir olmayan, determinantı sıfır olan kare matris.</td>
+              </tr>
+              <tr>
+                <td>Invertible matrix</td>
+                <td>Tersinir matris</td>
+                <td>Tersi bulunan, determinantı sıfır olmayan kare matris.</td>
+              </tr>
+              <tr>
+                <td>Transpose</td>
+                <td>Transpoz</td>
+                <td>Satır ve sütunların yer değiştirmesiyle elde edilen matris.</td>
+              </tr>
+              <tr>
+                <td>Permutation matrix</td>
+                <td>Permütasyon matrisi</td>
+                <td>Birim matrisin satır veya sütunlarının yer değiştirmiş hâli.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        var page = document.querySelector(".lesson-page");
+        if (!title || !page) return;
+
+        if (window.matchMedia("(max-width: 768px)").matches) {
+          title.style.fontSize = "";
+          return;
+        }
+
+        title.style.fontSize = "";
+        var computed = window.getComputedStyle(title);
+        var currentSize = parseFloat(computed.fontSize);
+        var minSize = 28;
+        var availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

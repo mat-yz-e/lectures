@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>9. Ders: Bağımsızlık, Baz ve Boyut</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item p {
+      margin-bottom: 0.4rem;
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.55rem, 7vw, 2.2rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" class="active" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">9. Ders: Bağımsızlık, Baz ve Boyut</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, lineer cebirin en temel yapı taşlarından dördünü kesin anlamlarıyla kurar: bir vektör ailesinin bağımsız olması, bir uzayı germesi, o uzay için baz oluşturması ve uzayın boyutunun belirlenmesi.</p>
+        <p>Önceki bölümlerde \(A\mathbf{x}=\mathbf{0}\) ve \(A\mathbf{x}=\mathbf{b}\) denklemlerinin çözüm kümeleri, serbest değişkenler, özel çözümler, sütun uzayı ve sıfır uzayı ele alınmıştı. Bu bölümde bu kavramlar tek bir çerçevede birleşir: bir matrisin sütunlarının bağımsız olup olmadığı, doğrudan \(A\mathbf{x}=\mathbf{0}\) denkleminin sıfırdan farklı çözümü olup olmamasına bağlıdır.</p>
+        <p>Temel soru şudur: Bir vektör ailesi gereksiz tekrar içeriyor mu, yoksa bir uzayı tam olarak ve en ekonomik biçimde mi temsil ediyor? Bu soru baz ve boyut kavramlarına götürür.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Vektörlerin lineer bağımsızlığını ve lineer bağımlılığını tanımlamak.</li>
+          <li>Bir vektör ailesinin bir uzayı germesinin ne anlama geldiğini açıklamak.</li>
+          <li>Bir bazın aynı anda bağımsız ve geren bir vektör ailesi olduğunu kavramak.</li>
+          <li>Boyutun, bir bazdaki vektör sayısı olduğunu ve iyi tanımlı bir sayı verdiğini anlamak.</li>
+          <li>Sütunların bağımsızlığını \(A\mathbf{x}=\mathbf{0}\) denklemiyle ilişkilendirmek.</li>
+          <li>Sütun uzayı ve sıfır uzayı için bazları satır indirgeme yoluyla bulmak.</li>
+          <li>Rank ile sütun uzayı ve sıfır uzayı boyutları arasındaki ilişkiyi kullanmak.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Lineer kombinasyon kavramı.</li>
+          <li>Homojen denklem sistemi \(A\mathbf{x}=\mathbf{0}\).</li>
+          <li>Sütun uzayı \(C(A)\) ve sıfır uzayı \(N(A)\).</li>
+          <li>Pivot sütun, serbest değişken ve rank kavramları.</li>
+          <li>Satır indirgeme ile özel çözümlerin bulunması.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\mathbf{v}_1,\ldots,\mathbf{v}_n\)</td>
+                <td>Vektör ailesi</td>
+                <td>Bağımsızlık, germe ve baz tanımları bu aileler için yapılır.</td>
+              </tr>
+              <tr>
+                <td>\(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\)</td>
+                <td>Sütunları vektör olan matris</td>
+                <td>Sütunların bağımsızlığı \(A\mathbf{x}=\mathbf{0}\) denklemiyle test edilir.</td>
+              </tr>
+              <tr>
+                <td>\(C(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının tüm lineer kombinasyonlarından oluşan uzaydır.</td>
+              </tr>
+              <tr>
+                <td>\(N(A)\)</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan tüm \(\mathbf{x}\) vektörlerinden oluşur.</td>
+              </tr>
+              <tr>
+                <td>\(r\)</td>
+                <td>Rank</td>
+                <td>Pivot sayısıdır; sütun uzayının boyutunu verir.</td>
+              </tr>
+              <tr>
+                <td>\(\dim V\)</td>
+                <td>Boyut</td>
+                <td>\(V\) uzayının herhangi bir bazındaki vektör sayısıdır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Lineer cebirde bir uzayı anlamanın en verimli yolu, o uzayı gereksiz vektörler olmadan temsil eden bir vektör ailesi bulmaktır. Çok az vektör seçilirse uzayın tamamı elde edilemez; çok fazla vektör seçilirse aralarında gereksiz bağımlılıklar oluşur. Baz, bu iki hatanın tam ortasında duran dengeli kavramdır.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Bir baz, bir uzayı hem yeterince geniş hem de gereksiz tekrarsız biçimde temsil eder. Bu nedenle bazdaki vektör sayısı uzayın boyutunu tanımlar.</p>
+        </aside>
+        <p>Bu bölümdeki ana bağlantı şudur: \(A\) matrisinin sütunları bağımsız ise \(A\mathbf{x}=\mathbf{0}\) denkleminin tek çözümü \(\mathbf{x}=\mathbf{0}\) olur. Eğer sıfırdan farklı bir çözüm varsa, bu çözüm sütunlar arasında bir lineer bağımlılık ilişkisi verir.</p>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.1: Denklemden Çok Bilinmeyen Varsa Sıfırdan Farklı Çözüm Vardır</h3>
+          <p><strong>İfade:</strong> \(A\), \(m\times n\) boyutlu bir matris olsun. Eğer \(n&gt;m\) ise \(A\mathbf{x}=\mathbf{0}\) denkleminin \(\mathbf{x}=\mathbf{0}\) dışında en az bir çözümü vardır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bilinmeyen sayısı denklem sayısından fazlaysa tüm değişkenleri pivot değişken yapmak mümkün değildir. En az bir serbest değişken kalır; serbest değişkene sıfırdan farklı bir değer verilince sıfırdan farklı çözüm elde edilir.</p>
+          <p><strong>Formal İspat:</strong> Rank \(r\), pivot sayısıdır ve \(r\leq m\) olur. \(n&gt;m\) olduğundan \(r\leq m&lt;n\), dolayısıyla \(r&lt;n\). Bu durumda \(n-r\geq 1\) serbest değişken vardır. Serbest değişkenlerden birine \(1\), diğerlerine \(0\) verilip pivot değişkenler çözülürse \(\mathbf{x}\neq\mathbf{0}\) ve \(A\mathbf{x}=\mathbf{0}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, bağımsızlık testinin temel dayanağıdır. Çok fazla sütun varsa, sütunlar arasında kaçınılmaz olarak bir bağımlılık ilişkisi oluşur.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Lineer Bağımsızlık</h3>
+          <p>\(\mathbf{v}_1,\ldots,\mathbf{v}_n\) vektörleri için</p>
+          <div class="equation-card" data-raw-latex="c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_n\mathbf{v}_n=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_n\mathbf{v}_n=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>eşitliği yalnızca \(c_1=c_2=\cdots=c_n=0\) iken sağlanıyorsa bu vektörler <strong>lineer bağımsız</strong>dır. Eğer katsayılardan en az biri sıfırdan farklı olduğu hâlde bu eşitlik sağlanabiliyorsa vektörler <strong>lineer bağımlı</strong>dır.</p>
+        </section>
+
+        <h3>Bağımlılık Ne Söyler?</h3>
+        <p>Bağımlılık, vektörlerden en az birinin diğerlerinin lineer kombinasyonu olarak yazılabildiğini gösterir. Böyle bir vektör, gerilen uzayı büyütmez; yalnızca mevcut bilgiyi tekrar eder.</p>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Bir Vektör ve Katı</h3>
+          <p>\(\mathbf{v}\) ve \(2\mathbf{v}\) vektörleri her zaman lineer bağımlıdır. Çünkü</p>
+          <div class="equation-card" data-raw-latex="2\mathbf{v}-1(2\mathbf{v})=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              2\mathbf{v}-1(2\mathbf{v})=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>eşitliği sıfır olmayan katsayılarla kurulmuştur. Bu iki vektör aynı doğrultudadır; ikincisi uzaya yeni bir yön eklemez.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Sıfır Vektörü İçeren Aile</h3>
+          <p>Bir vektör ailesi \(\mathbf{0}\) vektörünü içeriyorsa bağımlıdır. Çünkü sıfır vektörünün katsayısı \(1\), diğer katsayılar \(0\) seçilirse</p>
+          <div class="equation-card" data-raw-latex="1\mathbf{0}+0\mathbf{v}_1+\cdots+0\mathbf{v}_k=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              1\mathbf{0}+0\mathbf{v}_1+\cdots+0\mathbf{v}_k=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>elde edilir ve katsayılardan biri sıfır değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: Düzlemde İki ve Üç Vektör</h3>
+          <p>\(\mathbb{R}^2\) içinde aynı doğru üzerinde olmayan iki vektör bağımsızdır. Buna karşılık \(\mathbb{R}^2\) içinde herhangi üç vektör bağımlıdır. Çünkü bu üç vektörü sütun yapan matris \(2\times 3\) boyutludur; bilinmeyen sayısı denklem sayısından fazladır.</p>
+          <div class="equation-card" data-raw-latex="A=[\mathbf{v}_1\ \mathbf{v}_2\ \mathbf{v}_3]\in\mathbb{R}^{2\times 3}">
+            <div class="equation-content">
+              \[
+              A=[\mathbf{v}_1\ \mathbf{v}_2\ \mathbf{v}_3]\in\mathbb{R}^{2\times 3}
+              \]
+            </div>
+          </div>
+          <p>Teorem 1.1 gereği \(A\mathbf{x}=\mathbf{0}\) denkleminin sıfırdan farklı bir çözümü vardır. Bu çözüm, üç vektör arasında bağımlılık ilişkisi verir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Sütunların Bağımsızlığı ve Sıfır Uzayı</h3>
+          <p><strong>İfade:</strong> \(A=[\mathbf{a}_1\ \cdots\ \mathbf{a}_n]\) olsun. \(A\) matrisinin sütunları lineer bağımsızdır ancak ve ancak \(N(A)=\{\mathbf{0}\}\) olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\mathbf{x}\), sütunların katsayılı toplamıdır. Bu toplamın sıfır olması, sütunların sıfıra götüren bir lineer kombinasyonunu aramak demektir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{x}=(x_1,\ldots,x_n)^T\) için</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n
+              \]
+            </div>
+          </div>
+          <p>Sütunlar bağımsızsa bu toplamın \(\mathbf{0}\) olabilmesi yalnızca \(x_1=\cdots=x_n=0\) ile mümkündür; dolayısıyla \(N(A)=\{\mathbf{0}\}\). Tersine, \(N(A)=\{\mathbf{0}\}\) ise \(A\mathbf{x}=\mathbf{0}\) denkleminin sıfırdan farklı çözümü yoktur; bu da sütunların bağımsız olduğunu söyler.</p>
+          <p><strong>Yorum:</strong> Bağımsızlık, soyut bir vektör ailesi tanımı gibi görünse de satır indirgeme ile doğrudan test edilebilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.7: Bir Uzayı Germek</h3>
+          <p>\(\mathbf{v}_1,\ldots,\mathbf{v}_n\) vektörlerinin tüm lineer kombinasyonlarından oluşan küme</p>
+          <div class="equation-card" data-raw-latex="\operatorname{ger}\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}=\{c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n:\ c_i\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              \operatorname{ger}\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}=\{c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n:\ c_i\in\mathbb{R}\}
+              \]
+            </div>
+          </div>
+          <p>olarak yazılır. Eğer bu küme \(V\) uzayının tamamına eşitse, bu vektörler \(V\) uzayını <strong>gerer</strong>.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.8: Baz</h3>
+          <p>\(V\) uzayındaki bir vektör ailesi hem lineer bağımsız hem de \(V\) uzayını geriyorsa bu aile \(V\) için bir <strong>baz</strong>dır.</p>
+          <div class="equation-card" data-raw-latex="\text{baz}=\text{bağımsızlık}+\text{germe}">
+            <div class="equation-content">
+              \[
+              \text{baz}=\text{bağımsızlık}+\text{germe}
+              \]
+            </div>
+          </div>
+          <p>Bu tanım iki şartın aynı anda sağlanmasını ister. Sadece bağımsız olmak yetmez; vektörler bütün uzayı vermelidir. Sadece uzayı germek de yetmez; gereksiz vektörler bulunmamalıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: \(\mathbb{R}^3\) İçin Standart Baz</h3>
+          <p>\(\mathbb{R}^3\) uzayının standart baz vektörleri</p>
+          <div class="equation-card" data-raw-latex="\mathbf{e}_1=\begin{bmatrix}1\\0\\0\end{bmatrix},\quad \mathbf{e}_2=\begin{bmatrix}0\\1\\0\end{bmatrix},\quad \mathbf{e}_3=\begin{bmatrix}0\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{e}_1=\begin{bmatrix}1\\0\\0\end{bmatrix},\quad
+              \mathbf{e}_2=\begin{bmatrix}0\\1\\0\end{bmatrix},\quad
+              \mathbf{e}_3=\begin{bmatrix}0\\0\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>dir. Bu vektörler bağımsızdır ve \(\mathbb{R}^3\) içindeki her \(\mathbf{x}=(x_1,x_2,x_3)^T\) vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=x_1\mathbf{e}_1+x_2\mathbf{e}_2+x_3\mathbf{e}_3">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=x_1\mathbf{e}_1+x_2\mathbf{e}_2+x_3\mathbf{e}_3
+              \]
+            </div>
+          </div>
+          <p>şeklinde yazılır. Bu nedenle standart vektörler \(\mathbb{R}^3\) için bir bazdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: \(\mathbb{R}^3\) İçin Baz Adayını Test Etme</h3>
+          <p>Aşağıdaki iki vektör bağımsızdır; fakat yalnızca iki vektör \(\mathbb{R}^3\) uzayını germez:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_1=\begin{bmatrix}1\\1\\2\end{bmatrix},\quad \mathbf{v}_2=\begin{bmatrix}2\\2\\5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_1=\begin{bmatrix}1\\1\\2\end{bmatrix},\quad
+              \mathbf{v}_2=\begin{bmatrix}2\\2\\5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Üçüncü vektör olarak \((3,3,7)^T\) seçilirse bağımlılık açıkça ortaya çıkar; çünkü</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3\\3\\7\end{bmatrix}=\begin{bmatrix}1\\1\\2\end{bmatrix}+\begin{bmatrix}2\\2\\5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}3\\3\\7\end{bmatrix}
+              =
+              \begin{bmatrix}1\\1\\2\end{bmatrix}
+              +
+              \begin{bmatrix}2\\2\\5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Üç vektörün \(\mathbb{R}^3\) için baz olup olmadığına karar vermenin güvenilir yolu, bu vektörleri sütun yapan \(3\times 3\) matrisi satır indirgemek ve her sütunun pivot sütun olup olmadığını kontrol etmektir. Kare durumda eşdeğer ölçüt, sütun matrisinin tersinir olmasıdır.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>\(\mathbb{R}^n\) içinde \(n\) vektör varsa, bu vektörlerin bağımsız olması ile \(\mathbb{R}^n\) uzayını germesi birlikte gerçekleşir. Fakat \(n\) sayısından az veya fazla vektör kullanıldığında bu iki koşul ayrı ayrı incelenmelidir.</p>
+        </aside>
+
+        <section class="definition-card">
+          <h3>Tanım 1.11: Boyut</h3>
+          <p>Bir \(V\) uzayının boyutu, \(V\) için seçilen herhangi bir bazdaki vektör sayısıdır ve \(\dim V\) ile gösterilir.</p>
+          <p>Bu tanımın anlamlı olması için aynı uzayın bütün bazlarının aynı sayıda vektör içermesi gerekir. Bu gerçek aşağıdaki teoremle güvence altına alınır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Bir Uzayın Bütün Bazları Aynı Sayıda Vektör İçerir</h3>
+          <p><strong>İfade:</strong> \(V\) sonlu boyutlu bir uzay olsun. \(V\) için seçilen iki bazın vektör sayıları aynıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir baz, uzayı eksiksiz ve gereksizsiz temsil eder. Daha fazla vektör kullanılsa bağımlılık oluşur; daha az vektör kullanılsa uzayın tamamı gerilemez.</p>
+          <p><strong>Formal İspat:</strong> \(V\) için bir baz \(d\) vektörden oluşsun. Bu baz kullanılarak \(V\) içindeki her vektör \(d\) katsayıyla ifade edilir. Eğer \(V\) içinde \(d\) sayısından fazla bağımsız vektör bulunsaydı, bu vektörlerin katsayıları \(d\) satırlı ve daha çok sütunlu bir homojen sisteme yol açardı. Teorem 1.1 gereği bu sistemin sıfırdan farklı çözümü olurdu; bu da vektörlerin bağımlı olduğunu gösterirdi. Dolayısıyla bağımsız bir ailedeki vektör sayısı \(d\) sayısını aşamaz. Aynı akıl yürütme iki baz için karşılıklı uygulanınca iki bazın vektör sayılarının eşit olması gerekir.</p>
+          <p><strong>Yorum:</strong> Boyut, baz seçimine bağlı olmayan bir sayıdır. Baz değişebilir; boyut değişmez.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: Sütun Uzayı İçin Baz</h3>
+          <p>Aşağıdaki matrisin sütunlarını inceleyelim:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&3&1\\1&1&2&1\\1&2&3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              1&2&3&1\\
+              1&1&2&1\\
+              1&2&3&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Sütunları \(\mathbf{a}_1,\mathbf{a}_2,\mathbf{a}_3,\mathbf{a}_4\) ile gösterelim. Üçüncü sütun ilk iki sütunun toplamıdır, dördüncü sütun ise birinci sütuna eşittir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2,\qquad \mathbf{a}_4=\mathbf{a}_1">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2,\qquad \mathbf{a}_4=\mathbf{a}_1
+              \]
+            </div>
+          </div>
+          <p>Bu yüzden dört sütun birlikte bağımsız değildir. Ancak ilk iki sütun bağımsızdır ve bütün sütun uzayını gerer. Dolayısıyla \(C(A)\) için bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1\\1\\1\end{bmatrix},\begin{bmatrix}2\\1\\2\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1\\1\\1\end{bmatrix},
+              \begin{bmatrix}2\\1\\2\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu uzayın boyutu \(2\) dir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Aynı Sütun Uzayı İçin Farklı Bazlar</h3>
+          <p>Örnek 1.13 içindeki \(C(A)\) uzayı için tek baz ilk iki sütundan oluşmak zorunda değildir. Aynı uzayda kalan ve bağımsız olan iki vektör de baz oluşturabilir. Örneğin</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}2\\2\\2\end{bmatrix},\begin{bmatrix}7\\5\\7\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}2\\2\\2\end{bmatrix},
+              \begin{bmatrix}7\\5\\7\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>de aynı sütun uzayı için bir bazdır. İlk vektör \(2\mathbf{a}_1\), ikinci vektör ise sütunların toplamıdır. Bu iki vektör birbirinin katı olmadığı için bağımsızdır ve \(C(A)\) uzayını gerer.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Sıfır Uzayı İçin Baz</h3>
+          <p>Örnek 1.13'teki sütun ilişkileri doğrudan sıfır uzayı vektörleri verir. \(\mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2\) ilişkisinden</p>
+          <div class="equation-card" data-raw-latex="-\mathbf{a}_1-\mathbf{a}_2+\mathbf{a}_3=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              -\mathbf{a}_1-\mathbf{a}_2+\mathbf{a}_3=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu, sıfır uzayında</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_1=\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_1=\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>vektörünü verir. \(\mathbf{a}_4=\mathbf{a}_1\) ilişkisinden de</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_2=\begin{bmatrix}-1\\0\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_2=\begin{bmatrix}-1\\0\\0\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu iki özel çözüm bağımsızdır ve \(N(A)\) uzayını gerer. Böylece</p>
+          <div class="equation-card" data-raw-latex="N(A)=\operatorname{ger}\left\{\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix},\begin{bmatrix}-1\\0\\0\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              N(A)=\operatorname{ger}\left\{
+              \begin{bmatrix}-1\\-1\\1\\0\end{bmatrix},
+              \begin{bmatrix}-1\\0\\0\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>ve \(\dim N(A)=2\) olur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.16: Sütun Uzayının Boyutu Ranktır</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin rankı \(r\) ise \(\dim C(A)=r\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Pivot sütunlar sütun uzayını gereksiz tekrar olmadan temsil eder. Pivot olmayan sütunlar pivot sütunların lineer kombinasyonudur.</p>
+          <p><strong>Formal İspat:</strong> Satır indirgeme sonunda \(r\) pivot sütun bulunur. Pivot sütunlar bağımsızdır; aksi hâlde pivotlardan biri önceki pivot sütunların lineer kombinasyonu olurdu ve yeni pivot oluşturmazdı. Pivot olmayan her sütun, pivot sütunlar cinsinden ifade edilir. Bu nedenle özgün matrisin karşılık gelen pivot sütunları \(C(A)\) uzayını gerer ve bağımsızdır. Dolayısıyla \(C(A)\) için \(r\) vektörlü bir baz elde edilir.</p>
+          <p><strong>Yorum:</strong> Rank yalnızca bir indirgeme sayısı değil, sütun uzayının boyutudur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.17: Sıfır Uzayının Boyutu Serbest Değişken Sayısıdır</h3>
+          <p><strong>İfade:</strong> \(A\), \(m\times n\) boyutlu ve rankı \(r\) olan bir matris ise \(\dim N(A)=n-r\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Homojen sistemde her serbest değişken bir özel çözüm yönü üretir. Sıfır uzayı bu yönlerin tüm lineer kombinasyonlarından oluşur.</p>
+          <p><strong>Formal İspat:</strong> Satır indirgeme sonunda \(r\) pivot değişken ve \(n-r\) serbest değişken vardır. Her serbest değişken sırayla \(1\), diğer serbest değişkenler \(0\) seçilerek \(n-r\) özel çözüm elde edilir. Bu özel çözümler bağımsızdır; çünkü her birinin serbest değişkenler kısmında farklı bir standart yön bulunur. Ayrıca homojen sistemin her çözümü, serbest değişken değerleriyle bu özel çözümlerin lineer kombinasyonu olarak yazılır. Bu nedenle özel çözümler \(N(A)\) için bir bazdır ve boyut \(n-r\) olur.</p>
+          <p><strong>Yorum:</strong> Sütun uzayı boyutu ile sıfır uzayı boyutu birlikte \(n\) sütun sayısını paylaşır: pivotlar sütun uzayını, serbest değişkenler sıfır uzayını belirler.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <strong>Yöntem 1: Vektörlerin Bağımsızlığını Test Etme</strong>
+          <ol>
+            <li>Vektörleri bir matrisin sütunları olarak yaz.</li>
+            <li>\(A\mathbf{x}=\mathbf{0}\) homojen sistemini kur.</li>
+            <li>Satır indirgeme ile serbest değişken olup olmadığını belirle.</li>
+            <li>Serbest değişken yoksa sütunlar bağımsızdır; varsa bağımlıdır.</li>
+          </ol>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1,\ldots,\mathbf{a}_n\ \text{bağımsız}\quad \Longleftrightarrow\quad N(A)=\{\mathbf{0}\}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1,\ldots,\mathbf{a}_n\ \text{bağımsız}
+              \quad \Longleftrightarrow\quad
+              N(A)=\{\mathbf{0}\}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 2: Sütun Uzayı İçin Baz Bulma</strong>
+          <ol>
+            <li>Matrisi satır indirgenmiş biçime getir.</li>
+            <li>Pivot sütunların konumlarını belirle.</li>
+            <li>Özgün matrisin aynı konumdaki sütunlarını seç.</li>
+            <li>Bu sütunlar \(C(A)\) için bir baz oluşturur.</li>
+          </ol>
+          <p>Örnek 1.13'te pivot sütunlar birinci ve ikinci sütunlardır; bu nedenle sütun uzayının boyutu \(2\) dir.</p>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 3: Sıfır Uzayı İçin Baz Bulma</strong>
+          <ol>
+            <li>\(A\mathbf{x}=\mathbf{0}\) sistemini satır indirgeme ile çöz.</li>
+            <li>Her serbest değişken için bir özel çözüm oluştur.</li>
+            <li>Bu özel çözümleri baz adayı olarak yaz.</li>
+            <li>Özel çözümler, serbest değişkenler kısmında standart yönler taşıdığı için bağımsızdır ve \(N(A)\) uzayını gerer.</li>
+          </ol>
+          <p>Örnek 1.15'te iki serbest değişken vardır ve sıfır uzayı iki özel çözümle gerilir.</p>
+        </section>
+
+        <section class="note-card">
+          <strong>Yaygın Hata Noktaları:</strong>
+          <ul>
+            <li>Sütun uzayı bazını indirgenmiş matrisin sütunlarından seçmek. Doğru seçim özgün matrisin pivot konumundaki sütunlarıdır.</li>
+            <li>Bir vektör ailesinin çok sayıda vektör içerdiği için uzayı gerdiğini sanmak. Fazla vektör bağımlılık yaratabilir.</li>
+            <li>Bağımsızlık ile germe koşullarından yalnızca birini kontrol edip baz kararı vermek.</li>
+          </ul>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-yapilan-hatalar">
+        <h2 id="sik-yapilan-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Hata 1: Matrisi Bağımsız Sanmak</h4>
+            <p>Bağımsızlık vektör aileleri için söylenir. Bir matrisin kendisi değil, sütunları veya satırları bağımsız olabilir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 2: Sıfır Vektörünü Gözden Kaçırmak</h4>
+            <p>Bir ailede \(\mathbf{0}\) varsa aile otomatik olarak bağımlıdır. Sıfır vektörü hiçbir yeni yön eklemez.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 3: Geren Aileyi Baz Sanmak</h4>
+            <p>Bir aile uzayı gerse bile bağımlı olabilir. Baz için gereksiz vektörlerin çıkarılması gerekir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 4: Boyutu Vektör Sayısıyla Karıştırmak</h4>
+            <p>Herhangi bir geren ailedeki vektör sayısı boyut değildir. Boyut, bir bazdaki vektör sayısıdır.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Lineer kombinasyonlar, vektör ailelerinin ürettiği tüm olası vektörleri belirler.</li>
+            <li>Bu kombinasyonlar bütün uzayı veriyorsa aile uzayı gerer.</li>
+            <li>Sıfıra giden tek kombinasyon sıfır katsayılarla kuruluyorsa aile bağımsızdır.</li>
+            <li>Bağımsızlık ve germe birlikte sağlanıyorsa aile bazdır.</li>
+            <li>Bir bazdaki vektör sayısı uzayın boyutudur.</li>
+            <li>Bir matrisin pivot sütunları sütun uzayı için baz verir.</li>
+            <li>Serbest değişkenlerden elde edilen özel çözümler sıfır uzayı için baz verir.</li>
+            <li>\(\dim C(A)=r\) ve \(\dim N(A)=n-r\) ilişkileri aynı sütun sayısını iki tamamlayıcı bilgiye ayırır.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <div class="formula-item">
+            <p>Lineer bağımsızlık testi:</p>
+            <div class="equation-card" data-raw-latex="c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n=\mathbf{0}\Rightarrow c_1=\cdots=c_n=0">
+              <div class="equation-content">
+                \[
+                c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n=\mathbf{0}
+                \Rightarrow c_1=\cdots=c_n=0
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Sütunların bağımsızlığı:</p>
+            <div class="equation-card" data-raw-latex="A=[\mathbf{a}_1\ \cdots\ \mathbf{a}_n],\quad \mathbf{a}_1,\ldots,\mathbf{a}_n\ \text{bağımsız}\Longleftrightarrow N(A)=\{\mathbf{0}\}">
+              <div class="equation-content">
+                \[
+                A=[\mathbf{a}_1\ \cdots\ \mathbf{a}_n],\quad
+                \mathbf{a}_1,\ldots,\mathbf{a}_n\ \text{bağımsız}
+                \Longleftrightarrow N(A)=\{\mathbf{0}\}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Gerilen uzay:</p>
+            <div class="equation-card" data-raw-latex="\operatorname{ger}\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}=\{c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n\}">
+              <div class="equation-content">
+                \[
+                \operatorname{ger}\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}
+                =
+                \{c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n\}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Bazın iki şartı:</p>
+            <div class="equation-card" data-raw-latex="\text{baz}\Longleftrightarrow \text{bağımsız ve geren}">
+              <div class="equation-content">
+                \[
+                \text{baz}\Longleftrightarrow \text{bağımsız ve geren}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Sütun uzayı boyutu:</p>
+            <div class="equation-card" data-raw-latex="\dim C(A)=r">
+              <div class="equation-content">
+                \[
+                \dim C(A)=r
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Sıfır uzayı boyutu:</p>
+            <div class="equation-card" data-raw-latex="\dim N(A)=n-r">
+              <div class="equation-content">
+                \[
+                \dim N(A)=n-r
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde vektör ailelerinin bağımsızlığı, bir uzayı germesi, baz oluşturması ve boyut kavramı sistemli biçimde kuruldu. Bağımsızlık, sıfıra giden tek lineer kombinasyonun tüm katsayıları sıfır olan kombinasyon olmasıdır. Bir aile uzayın tamamını veriyorsa o uzayı gerer. Baz, bu iki özelliği aynı anda taşır.</p>
+        <p>Matrisler açısından temel ölçüt \(A\mathbf{x}=\mathbf{0}\) denklemidir. Sütunlar bağımsızsa sıfır uzayı yalnızca \(\mathbf{0}\) vektöründen oluşur. Pivot sütunlar sütun uzayına baz verir; özel çözümler sıfır uzayına baz verir. Rank \(r\), sütun uzayının boyutudur; \(n-r\) ise sıfır uzayının boyutudur.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(\mathbf{v}_1=(1,2)^T\) ve \(\mathbf{v}_2=(2,4)^T\) vektörleri bağımsız mıdır?</p>
+          <p><strong>Çözüm:</strong> \(\mathbf{v}_2=2\mathbf{v}_1\) olduğu için</p>
+          <div class="equation-card" data-raw-latex="2\mathbf{v}_1-\mathbf{v}_2=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              2\mathbf{v}_1-\mathbf{v}_2=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>eşitliği sıfır olmayan katsayılarla sağlanır. Bu nedenle vektörler bağımlıdır.</p>
+          <p><strong>Yorum:</strong> Aynı doğru üzerindeki iki vektör düzleme iki farklı yön kazandırmaz.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>Aşağıdaki matrisin sütun uzayı için bir baz ve bu uzayın boyutunu bulun:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&0&1\\0&1&1\\1&1&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              1&0&1\\
+              0&1&1\\
+              1&1&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Sütunları \(\mathbf{a}_1,\mathbf{a}_2,\mathbf{a}_3\) ile gösterelim. Üçüncü sütun ilk iki sütunun toplamıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2
+              \]
+            </div>
+          </div>
+          <p>İlk iki sütun birbirinin katı değildir ve bağımsızdır. Bu nedenle sütun uzayı için bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1\\0\\1\end{bmatrix},\begin{bmatrix}0\\1\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1\\0\\1\end{bmatrix},
+              \begin{bmatrix}0\\1\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Boyut \(2\) dir.</p>
+          <p><strong>Yorum:</strong> Üçüncü sütun uzayı büyütmez; mevcut iki bağımsız yönün toplamıdır.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>Aşağıdaki matris için \(C(A)\) ve \(N(A)\) uzaylarının boyutlarını ve \(N(A)\) için bir baz bulun:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&3&4\\0&1&1&2\\1&3&4&6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              1&2&3&4\\
+              0&1&1&2\\
+              1&3&4&6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Üçüncü satır ilk iki satırın toplamıdır, bu nedenle en fazla iki pivot vardır. İlk iki sütun bağımsızdır; dolayısıyla rank \(r=2\) olur. Matrisin dört sütunu olduğundan</p>
+          <div class="equation-card" data-raw-latex="\dim C(A)=2,\qquad \dim N(A)=4-2=2">
+            <div class="equation-content">
+              \[
+              \dim C(A)=2,\qquad \dim N(A)=4-2=2
+              \]
+            </div>
+          </div>
+          <p>Şimdi \(A\mathbf{x}=\mathbf{0}\) denklemini çözelim. İlk iki denklem</p>
+          <div class="equation-card" data-raw-latex="x_1+2x_2+3x_3+4x_4=0,\qquad x_2+x_3+2x_4=0">
+            <div class="equation-content">
+              \[
+              x_1+2x_2+3x_3+4x_4=0,\qquad
+              x_2+x_3+2x_4=0
+              \]
+            </div>
+          </div>
+          <p>Serbest değişkenleri \(x_3=s\), \(x_4=t\) seçersek \(x_2=-s-2t\) ve</p>
+          <div class="equation-card" data-raw-latex="x_1+2(-s-2t)+3s+4t=0\Rightarrow x_1=-s">
+            <div class="equation-content">
+              \[
+              x_1+2(-s-2t)+3s+4t=0\Rightarrow x_1=-s
+              \]
+            </div>
+          </div>
+          <p>bulunur. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=s\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix}+t\begin{bmatrix}0\\-2\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}
+              =
+              s\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix}
+              +
+              t\begin{bmatrix}0\\-2\\0\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ve \(N(A)\) için bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix},\begin{bmatrix}0\\-2\\0\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}-1\\-1\\1\\0\end{bmatrix},
+              \begin{bmatrix}0\\-2\\0\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Yorum:</strong> İki pivot sütun sütun uzayının iki boyutlu olduğunu, iki serbest değişken ise sıfır uzayının iki boyutlu olduğunu gösterir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Linear independence</td>
+                <td>Lineer bağımsızlık</td>
+                <td>Sıfır toplamın yalnızca tüm katsayılar sıfır olduğunda elde edilmesi.</td>
+              </tr>
+              <tr>
+                <td>Linear dependence</td>
+                <td>Lineer bağımlılık</td>
+                <td>Sıfırdan farklı katsayılarla sıfır vektörünün elde edilebilmesi.</td>
+              </tr>
+              <tr>
+                <td>Span</td>
+                <td>Gerilen uzay</td>
+                <td>Bir vektör ailesinin tüm lineer kombinasyonlarından oluşan küme.</td>
+              </tr>
+              <tr>
+                <td>Basis</td>
+                <td>Baz</td>
+                <td>Bir uzayı geren ve lineer bağımsız olan vektör ailesi.</td>
+              </tr>
+              <tr>
+                <td>Dimension</td>
+                <td>Boyut</td>
+                <td>Bir uzayın herhangi bir bazındaki vektör sayısı.</td>
+              </tr>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>Matris sütunlarının tüm lineer kombinasyonlarından oluşan uzay.</td>
+              </tr>
+              <tr>
+                <td>Nullspace</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan vektörlerin oluşturduğu uzay.</td>
+              </tr>
+              <tr>
+                <td>Rank</td>
+                <td>Rank</td>
+                <td>Pivot sayısı; sütun uzayının boyutu.</td>
+              </tr>
+              <tr>
+                <td>Free variable</td>
+                <td>Serbest değişken</td>
+                <td>Homojen sistem çözümlerinde özel çözüm yönlerini belirleyen değişken.</td>
+              </tr>
+              <tr>
+                <td>Special solution</td>
+                <td>Özel çözüm</td>
+                <td>Sıfır uzayı bazını kurmak için serbest değişkenlerden elde edilen temel çözüm.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

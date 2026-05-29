@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1. Ders: Lineer Denklemlerin Geometrisi</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .label {
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .lesson-page .formula-item {
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" class="active" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">1. Ders: Lineer Denklemlerin Geometrisi</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölümde lineer cebirin başlangıç problemi incelenir: bir lineer denklem sisteminin çözümünü anlamak ve aynı sistemi farklı geometrik yorumlarla okuyabilmek.</p>
+        <p>Odak noktası, denklem sayısı ile bilinmeyen sayısının eşit olduğu sistemlerdir. İki bilinmeyenli sistemlerde her denklem bir doğruyu, üç bilinmeyenli sistemlerde her denklem bir düzlemi temsil eder. Bu satır yorumu sezgisel bir başlangıç sağlar; ancak lineer cebirin asıl yapıcı bakışı, matrisin sütunlarını vektör olarak okuyup sağ taraf vektörünü bu sütunların doğrusal birleşimi olarak görmektir.</p>
+        <p>Bu bölüm, temel cebirsel denklem çözme bilgisine, koordinat düzleminde doğru fikrine, üç boyutlu koordinat sezgisine ve vektörlerin toplama ile skalerle çarpma işlemlerine dayanır. Burada geliştirilen satır yorumu, sütun yorumu, doğrusal birleşim ve matris-vektör çarpımı fikirleri, sistematik çözüm yöntemlerini ve matrislerin çözülebilirlik davranışını anlamanın temelini oluşturur.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir lineer denklem sistemini katsayı matrisi, bilinmeyenler vektörü ve sağ taraf vektörüyle yazabilmek.</li>
+          <li>\(A\mathbf{x}=\mathbf{b}\) gösteriminde \(A\), \(\mathbf{x}\) ve \(\mathbf{b}\) nesnelerinin rolünü açıklayabilmek.</li>
+          <li>İki bilinmeyenli bir sistemi iki doğrunun kesişimi olarak yorumlayabilmek.</li>
+          <li>Üç bilinmeyenli bir sistemi üç düzlemin ortak kesişimi olarak yorumlayabilmek.</li>
+          <li>Matrisin sütunlarını vektör olarak okuyup çözümü doğrusal birleşim katsayıları olarak görebilmek.</li>
+          <li>Matris-vektör çarpımını hem sütunların doğrusal birleşimi hem de satırların iç çarpımı yoluyla hesaplayabilmek.</li>
+          <li>Bir sistemin her sağ taraf için çözülebilir olup olmadığını sütunların uzayı doldurma davranışıyla ilişkilendirebilmek.</li>
+          <li>Tekil ve tekil olmayan matris ayrımının ilk geometrik sezgisini kurabilmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Birinci dereceden iki bilinmeyenli denklemleri çözebilme.</li>
+          <li>Koordinat düzleminde doğru denklemlerini yorumlayabilme.</li>
+          <li>Üç boyutlu koordinat sisteminde nokta ve düzlem fikrine aşina olma.</li>
+          <li>Vektörlerde toplama ve skalerle çarpma işlemlerini bilme.</li>
+          <li>Matrisin satır ve sütunlardan oluşan sayısal bir düzen olduğunu bilme.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Katsayı matrisi.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}\)</td>
+                <td>Bilinmeyenler vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{b}\)</td>
+                <td>Sağ taraf vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(x,y,z\)</td>
+                <td>İki ve üç bilinmeyenli sistemlerde kullanılan skaler bilinmeyenler.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{a}_1,\mathbf{a}_2,\ldots,\mathbf{a}_n\)</td>
+                <td>\(A\) matrisinin sütun vektörleri.</td>
+              </tr>
+              <tr>
+                <td>\(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\)</td>
+                <td>Matrisin sütunlarıyla yazımı.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbb{R}^2,\mathbb{R}^3,\mathbb{R}^n\)</td>
+                <td>Sırasıyla iki, üç ve \(n\) boyutlu reel vektör uzayları.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{0}\)</td>
+                <td>Sıfır vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(A\mathbf{x}\)</td>
+                <td>Matris-vektör çarpımı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Lineer cebirde temel soru çoğu zaman tek bir biçimde görünür:</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>Bu denklemde amaç, verilen \(A\) ve \(\mathbf{b}\) için uygun \(\mathbf{x}\) vektörünü bulmaktır. Aynı ifade üç farklı biçimde okunabilir. Satır yorumu, her denklemi ayrı bir geometrik koşul olarak görür. Sütun yorumu, matrisin sütunlarını yapı taşları olarak ele alır. Matris gösterimi ise bütün sistemi kısa ve düzenli tek bir denklemde toplar.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>\(A\mathbf{x}\) ifadesi, \(A\) matrisinin sütunlarının \(\mathbf{x}\) vektörünün bileşenleriyle ağırlıklandırılmış doğrusal birleşimidir. Bu nedenle \(A\mathbf{x}=\mathbf{b}\) denklemini çözmek, \(\mathbf{b}\) vektörünü sütunlardan üretmenin katsayılarını bulmaktır.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Lineer Denklem Sistemi</h3>
+          <p>Bir lineer denklem sistemi, bilinmeyenlerin yalnızca birinci dereceden yer aldığı ve bilinmeyenlerin birbirleriyle çarpılmadığı denklem sistemidir. \(m\) denklem ve \(n\) bilinmeyen için genel biçim şöyledir:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned} a_{11}x_1+a_{12}x_2+\cdots+a_{1n}x_n&=b_1\\ a_{21}x_1+a_{22}x_2+\cdots+a_{2n}x_n&=b_2\\ &\vdots\\ a_{m1}x_1+a_{m2}x_2+\cdots+a_{mn}x_n&=b_m. \end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              a_{11}x_1+a_{12}x_2+\cdots+a_{1n}x_n&=b_1\\
+              a_{21}x_1+a_{22}x_2+\cdots+a_{2n}x_n&=b_2\\
+              &\vdots\\
+              a_{m1}x_1+a_{m2}x_2+\cdots+a_{mn}x_n&=b_m.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Bu bölümde özellikle \(m=n\) olan, yani denklem sayısı ile bilinmeyen sayısının eşit olduğu sistemler ele alınır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Katsayı Matrisi ve Matris Biçimi</h3>
+          <p>Katsayılar bir matriste, bilinmeyenler bir vektörde ve sağ taraf değerleri başka bir vektörde toplanırsa sistem tek bir denklem olarak yazılır:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix} a_{11}&a_{12}&\cdots&a_{1n}\\ a_{21}&a_{22}&\cdots&a_{2n}\\ \vdots&\vdots&\ddots&\vdots\\ a_{m1}&a_{m2}&\cdots&a_{mn} \end{bmatrix},\quad \mathbf{x}=\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix},\quad \mathbf{b}=\begin{bmatrix}b_1\\b_2\\\vdots\\b_m\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              a_{11}&a_{12}&\cdots&a_{1n}\\
+              a_{21}&a_{22}&\cdots&a_{2n}\\
+              \vdots&\vdots&\ddots&\vdots\\
+              a_{m1}&a_{m2}&\cdots&a_{mn}
+              \end{bmatrix},
+              \quad
+              \mathbf{x}=
+              \begin{bmatrix}
+              x_1\\x_2\\\vdots\\x_n
+              \end{bmatrix},
+              \quad
+              \mathbf{b}=
+              \begin{bmatrix}
+              b_1\\b_2\\\vdots\\b_m
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=\mathbf{b}.
+              \]
+            </div>
+          </div>
+          <p>Burada \(A\) katsayı matrisi, \(\mathbf{x}\) bilinmeyenler vektörü ve \(\mathbf{b}\) sağ taraf vektörüdür. Sistemin çözümü, bu eşitliği sağlayan \(\mathbf{x}\) vektörüdür.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.3: Satır Yorumu</h3>
+          <p>Satır yorumu, her denklemi ayrı bir geometrik koşul olarak okumaktır. İki bilinmeyenli bir sistemde her denklem \(\mathbb{R}^2\) içinde bir doğruyu temsil eder; çözüm bu doğruların ortak noktasıdır. Üç bilinmeyenli bir sistemde her denklem \(\mathbb{R}^3\) içinde bir düzlemdir; çözüm düzlemlerin ortak kesişimidir.</p>
+          <p>Bu yorum küçük boyutlarda sezgiseldir. Boyut arttığında geometrik nesneleri çizmek zorlaşır; bu nedenle sütun yorumu daha taşınabilir bir düşünme biçimi sağlar.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Doğrusal Birleşim ve Sütun Yorumu</h3>
+          <p>\(\mathbf{v}_1,\mathbf{v}_2,\ldots,\mathbf{v}_k\) vektörleri ve \(c_1,c_2,\ldots,c_k\) skalerleri için aşağıdaki ifade bu vektörlerin doğrusal birleşimidir:</p>
+          <div class="equation-card" data-raw-latex="c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_k\mathbf{v}_k">
+            <div class="equation-content">
+              \[
+              c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_k\mathbf{v}_k.
+              \]
+            </div>
+          </div>
+          <p>Eğer \(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\) ise, sütun yorumu şu eşitliği esas alır:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n.
+              \]
+            </div>
+          </div>
+          <p>Böylece \(A\mathbf{x}=\mathbf{b}\) denklemi, \(\mathbf{b}\) vektörünün \(A\) matrisinin sütunlarından hangi katsayılarla üretileceği sorusuna dönüşür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: İki Denklemli Lineer Sistem</h3>
+          <p>Aşağıdaki sistemi inceleyelim:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned} 2x-y&=0\\ -x+2y&=3. \end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              2x-y&=0\\
+              -x+2y&=3.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Matris biçimi şöyledir:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2&-1\\-1&2\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix}=\begin{bmatrix}0\\3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2&-1\\
+              -1&2
+              \end{bmatrix}
+              \begin{bmatrix}
+              x\\y
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+
+          <h4>Satır Yorumu</h4>
+          <p>Birinci denklem \(2x-y=0\), yani \(y=2x\) doğrusudur. Bu doğru \((0,0)\), \((1,2)\) ve \((\tfrac12,1)\) noktalarından geçer. İkinci denklem \(-x+2y=3\) doğrusudur; örneğin \((-3,0)\), \((-1,1)\) ve \((1,2)\) noktaları bu doğru üzerindedir.</p>
+          <p>İki doğrunun ortak noktası çözümü verir. Cebirsel olarak, \(y=2x\) eşitliğini ikinci denklemde yerine yazalım:</p>
+          <div class="equation-card" data-raw-latex="-x+2(2x)=3,\qquad 3x=3,\qquad x=1">
+            <div class="equation-content">
+              \[
+              -x+2(2x)=3,\qquad 3x=3,\qquad x=1.
+              \]
+            </div>
+          </div>
+          <p>Birinci denklemden \(y=2\) bulunur. Dolayısıyla çözüm:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              \begin{bmatrix}
+              1\\2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+
+          <h4>Sütun Yorumu</h4>
+          <p>Katsayı matrisinin sütunları</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1=\begin{bmatrix}2\\-1\end{bmatrix},\qquad \mathbf{a}_2=\begin{bmatrix}-1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1=
+              \begin{bmatrix}
+              2\\-1
+              \end{bmatrix},
+              \qquad
+              \mathbf{a}_2=
+              \begin{bmatrix}
+              -1\\2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğundan sistem şu vektör eşitliğidir:</p>
+          <div class="equation-card" data-raw-latex="x\begin{bmatrix}2\\-1\end{bmatrix}+y\begin{bmatrix}-1\\2\end{bmatrix}=\begin{bmatrix}0\\3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              x
+              \begin{bmatrix}
+              2\\-1
+              \end{bmatrix}
+              +
+              y
+              \begin{bmatrix}
+              -1\\2
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bulunan çözüm değerlerini kullanalım:</p>
+          <div class="equation-card" data-raw-latex="1\begin{bmatrix}2\\-1\end{bmatrix}+2\begin{bmatrix}-1\\2\end{bmatrix}=\begin{bmatrix}2\\-1\end{bmatrix}+\begin{bmatrix}-2\\4\end{bmatrix}=\begin{bmatrix}0\\3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              1
+              \begin{bmatrix}
+              2\\-1
+              \end{bmatrix}
+              +
+              2
+              \begin{bmatrix}
+              -1\\2
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2\\-1
+              \end{bmatrix}
+              +
+              \begin{bmatrix}
+              -2\\4
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Çözüm vektörü, birinci sütundan \(1\) tane ve ikinci sütundan \(2\) tane alınması gerektiğini söyler. Satır yorumundaki kesişim noktası ile sütun yorumundaki katsayılar aynı çözümü anlatır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Üç Denklemli Lineer Sistem</h3>
+          <p>Şimdi üç denklem ve üç bilinmeyenli sistemi ele alalım:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned} 2x-y+0z&=0\\ -x+2y-z&=-1\\ 0x-3y+4z&=4. \end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              2x-y+0z&=0\\
+              -x+2y-z&=-1\\
+              0x-3y+4z&=4.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&-1&0\\-1&2&-1\\0&-3&4\end{bmatrix},\quad \mathbf{x}=\begin{bmatrix}x\\y\\z\end{bmatrix},\quad \mathbf{b}=\begin{bmatrix}0\\-1\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2&-1&0\\
+              -1&2&-1\\
+              0&-3&4
+              \end{bmatrix},
+              \quad
+              \mathbf{x}=
+              \begin{bmatrix}
+              x\\y\\z
+              \end{bmatrix},
+              \quad
+              \mathbf{b}=
+              \begin{bmatrix}
+              0\\-1\\4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <h4>Satır Yorumu</h4>
+          <p>Üç bilinmeyenli her lineer denklem \(\mathbb{R}^3\) içinde bir düzlemdir. Birinci denklemde \(z\) yer almadığı için \(2x-y=0\) koşulunu sağlayan ve \(z\) yönünde uzanan bir düzlem elde edilir. İkinci denklem \(-x+2y-z=-1\) düzlemidir; \((1,0,0)\), \((0,0,1)\) ve \((0,-\tfrac12,0)\) noktaları bu düzlem üzerindedir. Üçüncü denklem \(-3y+4z=4\) düzlemidir.</p>
+          <p>Satır yorumunda çözüm, bu üç düzlemin ortak kesişim noktasıdır. İki düzlemin kesişimi çoğunlukla bir doğru, üçüncü düzlemin bu doğruyla kesişimi çoğunlukla bir noktadır.</p>
+          <h4>Sütun Yorumu</h4>
+          <p>Matrisin sütunlarıyla sistem şu biçimde yazılır:</p>
+          <div class="equation-card" data-raw-latex="x\begin{bmatrix}2\\-1\\0\end{bmatrix}+y\begin{bmatrix}-1\\2\\-3\end{bmatrix}+z\begin{bmatrix}0\\-1\\4\end{bmatrix}=\begin{bmatrix}0\\-1\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              x
+              \begin{bmatrix}
+              2\\-1\\0
+              \end{bmatrix}
+              +
+              y
+              \begin{bmatrix}
+              -1\\2\\-3
+              \end{bmatrix}
+              +
+              z
+              \begin{bmatrix}
+              0\\-1\\4
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\-1\\4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sağ taraf vektörü üçüncü sütunun aynısıdır. Bu nedenle birinci ve ikinci sütundan hiç almadan, üçüncü sütundan bir tane almak yeterlidir:</p>
+          <div class="equation-card" data-raw-latex="x=0,\qquad y=0,\qquad z=1,\qquad \mathbf{x}=\begin{bmatrix}0\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              x=0,\qquad y=0,\qquad z=1,\qquad
+              \mathbf{x}=
+              \begin{bmatrix}
+              0\\0\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Doğrulama doğrudandır: \(2(0)-0+0(1)=0\), \(-0+2(0)-1=-1\), \(0-3(0)+4(1)=4\). Sütun yorumu burada kesişim noktasını hesaplamadan çözümü görünür kılar.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.7: Aynı Matris, Farklı Sağ Taraf</h3>
+          <p>Aynı katsayı matrisini koruyup sağ taraf vektörünü değiştirelim:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{b}_{\mathrm{yeni}}=\begin{bmatrix}1\\1\\-3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{b}_{\mathrm{yeni}}=
+              \begin{bmatrix}
+              1\\1\\-3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu vektör, ilk iki sütunun toplamıdır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2\\-1\\0\end{bmatrix}+\begin{bmatrix}-1\\2\\-3\end{bmatrix}=\begin{bmatrix}1\\1\\-3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2\\-1\\0
+              \end{bmatrix}
+              +
+              \begin{bmatrix}
+              -1\\2\\-3
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1\\1\\-3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle çözüm sütun yorumundan hemen okunur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}1\\1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              \begin{bmatrix}
+              1\\1\\0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Gerçekten de \(A\begin{bmatrix}1&1&0\end{bmatrix}^{\top}=\begin{bmatrix}1&1&-3\end{bmatrix}^{\top}\) olur. Bu örnek, sağ taraf vektörü sütunların açık bir birleşimi olarak görüldüğünde çözümün doğrudan okunabildiğini gösterir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.8: Tekil ve Tekil Olmayan Davranış</h3>
+          <p>Bir kare matrisin sütunlarının tüm doğrusal birleşimleri, bulundukları uzayın tamamını doldurabiliyorsa matris tekil olmayan davranış gösterir. Bu durumda her sağ taraf vektörü için en az bir çözüm bulunabilir.</p>
+          <p>Sütunlar yeni yönler üretmekte yetersiz kalıyorsa, matris tekil davranış gösterir. Örneğin üç boyutta üçüncü sütun ilk iki sütunun doğrusal birleşimiyse, üç sütunun birleşimleri bütün \(\mathbb{R}^3\) uzayını değil yalnızca bir düzlemi doldurur. Bu düzlemin dışındaki sağ taraf vektörleri için çözüm yoktur.</p>
+          <aside class="note-card">
+            <strong>Dikkat:</strong>
+            <p>Denklem sayısı ile bilinmeyen sayısının eşit olması çözümün otomatik olarak var olduğu anlamına gelmez. Çözülebilirlik, sağ taraf vektörünün sütunlardan üretilebilir olup olmadığına bağlıdır.</p>
+          </aside>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: Yüksek Boyutlarda Aynı Soru</h3>
+          <p>Dokuz denklem ve dokuz bilinmeyenli bir sistemde \(A\) matrisi \(9\times 9\) boyutundadır ve dokuz sütunu \(\mathbb{R}^9\) içindeki vektörlerdir:</p>
+          <div class="equation-card" data-raw-latex="x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_9\mathbf{a}_9=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_9\mathbf{a}_9=\mathbf{b}.
+              \]
+            </div>
+          </div>
+          <p>Soru değişmez: bu dokuz sütunun doğrusal birleşimleri her \(\mathbf{b}\in\mathbb{R}^9\) vektörüne ulaşabilir mi? Eğer dokuzuncu sütun sekizinci sütunla aynıysa, dokuzuncu sütun yeni bir yön katmaz:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_9=\mathbf{a}_8,\qquad x_8\mathbf{a}_8+x_9\mathbf{a}_9=(x_8+x_9)\mathbf{a}_8">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_9=\mathbf{a}_8,\qquad
+              x_8\mathbf{a}_8+x_9\mathbf{a}_9=(x_8+x_9)\mathbf{a}_8.
+              \]
+            </div>
+          </div>
+          <p>Bu durumda iki ayrı sütun gibi görünen nesne, yön bakımından yalnızca tek bir sütun kadar katkı yapar. Yüksek boyutta çizim yapılamasa da sütun yorumu aynı kalır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Matris-Vektör Çarpımının İki Okunuşu</h3>
+          <p>Aşağıdaki çarpımı hesaplayalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&5\\1&3\end{bmatrix},\qquad \mathbf{x}=\begin{bmatrix}1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2&5\\
+              1&3
+              \end{bmatrix},
+              \qquad
+              \mathbf{x}=
+              \begin{bmatrix}
+              1\\2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sütunlara göre:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=1\begin{bmatrix}2\\1\end{bmatrix}+2\begin{bmatrix}5\\3\end{bmatrix}=\begin{bmatrix}2\\1\end{bmatrix}+\begin{bmatrix}10\\6\end{bmatrix}=\begin{bmatrix}12\\7\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}
+              =
+              1
+              \begin{bmatrix}
+              2\\1
+              \end{bmatrix}
+              +
+              2
+              \begin{bmatrix}
+              5\\3
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2\\1
+              \end{bmatrix}
+              +
+              \begin{bmatrix}
+              10\\6
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              12\\7
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Satırlara göre ilk bileşen \(2\cdot1+5\cdot2=12\), ikinci bileşen \(1\cdot1+3\cdot2=7\) olur. İki yöntem aynı sonucu verir; ancak sütun okunuşu çözülebilirlik düşüncesini daha açık taşır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Matris-Vektör Çarpımının Sütunlarla İfadesi</h3>
+          <p><strong>İfade:</strong> \(A\), \(m\times n\) tipinde bir matris ve \(\mathbf{x}\in\mathbb{R}^n\) olsun. \(A\) matrisinin sütunları \(\mathbf{a}_1,\mathbf{a}_2,\ldots,\mathbf{a}_n\) ise</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\mathbf{x}\) vektörünün bileşenleri, matrisin karşılık gelen sütunlarının ne kadar alınacağını belirleyen ağırlıklardır.</p>
+          <p><strong>Formal İspat:</strong> Matris-vektör çarpımının \(i\)-inci bileşeni tanım gereği</p>
+          <div class="equation-card" data-raw-latex="(A\mathbf{x})_i=\sum_{j=1}^{n}a_{ij}x_j">
+            <div class="equation-content">
+              \[
+              (A\mathbf{x})_i=\sum_{j=1}^{n}a_{ij}x_j.
+              \]
+            </div>
+          </div>
+          <p>\(\mathbf{a}_j=(a_{1j},a_{2j},\ldots,a_{mj})^{\top}\) olduğundan \(x_j\mathbf{a}_j\) vektörünün \(i\)-inci bileşeni \(x_ja_{ij}\) olur. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\left(x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\right)_i=\sum_{j=1}^{n}x_ja_{ij}=\sum_{j=1}^{n}a_{ij}x_j=(A\mathbf{x})_i">
+            <div class="equation-content">
+              \[
+              \left(x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\right)_i
+              =
+              \sum_{j=1}^{n}x_ja_{ij}
+              =
+              \sum_{j=1}^{n}a_{ij}x_j
+              =
+              (A\mathbf{x})_i.
+              \]
+            </div>
+          </div>
+          <p>Her bileşen eşit olduğundan vektörler eşittir.</p>
+          <p><strong>Yorum:</strong> Bu teorem, \(A\mathbf{x}\) ifadesini satır hesaplaması olmaktan çıkarıp sütunların doğrusal birleşimi olarak yorumlamayı sağlar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Çözülebilirliğin Sütunlarla Karakterizasyonu</h3>
+          <p><strong>İfade:</strong> \(A\mathbf{x}=\mathbf{b}\) denkleminin bir çözümü vardır ancak ve ancak \(\mathbf{b}\), \(A\) matrisinin sütunlarının doğrusal birleşimi olarak yazılabilir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\mathbf{x}\), Teorem 1.11 gereği sütunların doğrusal birleşimidir. Dolayısıyla \(A\mathbf{x}=\mathbf{b}\) demek, \(\mathbf{b}\) vektörünün bu sütunlardan üretilebilmesi demektir.</p>
+          <p><strong>Formal İspat:</strong> \(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\) olsun. Eğer \(\mathbf{x}=(x_1,\ldots,x_n)^{\top}\) bir çözümse,</p>
+          <div class="equation-card" data-raw-latex="\mathbf{b}=A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{b}=A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n.
+              \]
+            </div>
+          </div>
+          <p>Bu, \(\mathbf{b}\) vektörünün sütunların doğrusal birleşimi olduğunu gösterir. Tersine, bazı \(c_1,\ldots,c_n\) skalerleri için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{b}=c_1\mathbf{a}_1+c_2\mathbf{a}_2+\cdots+c_n\mathbf{a}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{b}=c_1\mathbf{a}_1+c_2\mathbf{a}_2+\cdots+c_n\mathbf{a}_n
+              \]
+            </div>
+          </div>
+          <p>ise \(\mathbf{x}=(c_1,\ldots,c_n)^{\top}\) seçildiğinde Teorem 1.11 gereği \(A\mathbf{x}=\mathbf{b}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Çözülebilirlik sorusu, sağ taraf vektörünün sütunların üretebildiği vektörler arasında yer alıp almadığı sorusuna dönüşür.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Her Sağ Taraf İçin Çözülebilirlik</h3>
+          <p><strong>İfade:</strong> \(A\), \(n\times n\) tipinde bir matris olsun. \(A\mathbf{x}=\mathbf{b}\) denkleminin her \(\mathbf{b}\in\mathbb{R}^n\) için çözülebilir olması, \(A\) matrisinin sütunlarının doğrusal birleşimlerinin \(\mathbb{R}^n\) uzayının tamamını doldurmasına denktir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sütun birleşimleri hangi vektörlere ulaşabiliyorsa, \(A\mathbf{x}\) yalnızca o vektörleri üretebilir. Bu küme bütün uzaysa her sağ taraf ulaşılabilir; değilse bazı sağ taraflar ulaşılamaz.</p>
+          <p><strong>Formal İspat:</strong> \(A\) matrisinin sütunlarının tüm doğrusal birleşimlerini</p>
+          <div class="equation-card" data-raw-latex="S=\{x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n:x_1,\ldots,x_n\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              S=\{x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n:x_1,\ldots,x_n\in\mathbb{R}\}.
+              \]
+            </div>
+          </div>
+          <p>ile gösterelim. Teorem 1.12’ye göre \(A\mathbf{x}=\mathbf{b}\) çözülebilirdir ancak ve ancak \(\mathbf{b}\in S\). Eğer her \(\mathbf{b}\in\mathbb{R}^n\) için çözüm varsa, her \(\mathbf{b}\) bu kümededir; dolayısıyla \(S=\mathbb{R}^n\). Tersine \(S=\mathbb{R}^n\) ise her sağ taraf vektörü sütunların doğrusal birleşimidir ve sistem çözülebilir.</p>
+          <p><strong>Yorum:</strong> Bu teorem, tekil olmayan davranışın geometrik özünü verir: sütunlar bütün uzayı doldurabiliyorsa her sağ taraf için çözüm vardır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+        <section class="note-card">
+          <h3>Yöntem: Matris-Vektör Çarpımını Hesaplama</h3>
+          <p><strong>Ne işe yarar?</strong> \(A\mathbf{x}\) çarpımı, verilen bir \(\mathbf{x}\) vektörünün \(A\) matrisi altında hangi sağ taraf vektörünü ürettiğini hesaplar.</p>
+          <p><strong>Sütun yöntemi:</strong></p>
+          <ol>
+            <li>\(A\) matrisinin sütunlarını \(\mathbf{a}_1,\ldots,\mathbf{a}_n\) olarak ayır.</li>
+            <li>\(\mathbf{x}\) vektörünün bileşenlerini \(x_1,\ldots,x_n\) olarak oku.</li>
+            <li>Her sütunu karşılık gelen bileşenle çarp.</li>
+            <li>Elde edilen vektörleri topla.</li>
+          </ol>
+          <p><strong>Satır yöntemi:</strong></p>
+          <ol>
+            <li>Sonuç vektörünün her bileşeni için, \(A\) matrisinin ilgili satırını al.</li>
+            <li>Bu satırı \(\mathbf{x}\) ile bileşen bileşen çarpıp topla.</li>
+            <li>Bulunan değerleri sonuç vektörünün bileşenleri olarak yaz.</li>
+          </ol>
+          <p><strong>Yaygın hata noktaları:</strong> Sütun yönteminde \(x_j\) daima \(j\)-inci sütunu çarpar. Satır yönteminde \(i\)-inci satır, sonuç vektörünün \(i\)-inci bileşenini üretir. Ayrıca \(A\) matrisinin sütun sayısı ile \(\mathbf{x}\) vektörünün bileşen sayısı eşit olmalıdır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <h3>Satır Yorumu ile Sütun Yorumunu Karıştırmak</h3>
+          <p><strong>Hata:</strong> İki doğrunun kesişim resmini, sütun vektörlerinin toplanması resmiyle aynı nesne sanmak.</p>
+          <p><strong>Neden yanlış?</strong> Satır yorumunda denklemler doğru veya düzlem olarak ele alınır. Sütun yorumunda matrisin sütunları vektördür ve sağ taraf vektörü bu vektörlerin doğrusal birleşimi olarak aranır.</p>
+          <p><strong>Doğru yaklaşım:</strong> Önce hangi yorumla çalışıldığı belirlenmelidir: denklemlerin kesişimi mi, sütunların birleşimi mi?</p>
+        </section>
+        <section class="note-card">
+          <h3>Üç Bilinmeyenli Denklem İçin Doğru Düşünmek</h3>
+          <p><strong>Hata:</strong> Üç bilinmeyenli sistemde her denklemi bir doğru gibi düşünmek.</p>
+          <p><strong>Neden yanlış?</strong> \(\mathbb{R}^3\) içinde tek bir lineer denklem bir düzlem belirler. Üç denklemli sistemde satır yorumu üç düzlemin kesişimiyle ilgilidir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Geometrik nesnenin boyutu bilinmeyen sayısına göre okunmalıdır.</p>
+        </section>
+        <section class="note-card">
+          <h3>Her Kare Sistemin Çözülebilir Olduğunu Sanmak</h3>
+          <p><strong>Hata:</strong> Denklem sayısı ve bilinmeyen sayısı eşitse her \(\mathbf{b}\) için çözüm vardır varsayımı.</p>
+          <p><strong>Neden yanlış?</strong> Sütunlar bütün uzayı doldurmuyorsa bazı sağ taraf vektörleri üretilemez.</p>
+          <p><strong>Doğru yaklaşım:</strong> Önce \(\mathbf{b}\) vektörünün sütunların doğrusal birleşimi olarak yazılıp yazılamadığı düşünülmelidir.</p>
+        </section>
+        <section class="note-card">
+          <h3>Matris-Vektör Çarpımını Yalnızca Satır Hesabı Sanmak</h3>
+          <p><strong>Hata:</strong> \(A\mathbf{x}\) çarpımını yalnızca satırların iç çarpımı olarak ezberlemek.</p>
+          <p><strong>Neden yanlış?</strong> Bu hesap doğru olsa da lineer cebirin temel çözülebilirlik sezgisi sütun birleşiminden gelir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Sayısal hesapta iki yöntemi de bilmek; kavramsal düşünmede sütun yorumunu öne çıkarmak gerekir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Lineer denklem sistemi, \(A\mathbf{x}=\mathbf{b}\) biçiminde yazılır.</li>
+            <li>Satır yorumu, denklemleri geometrik nesneler olarak okur: iki boyutta doğrular, üç boyutta düzlemler.</li>
+            <li>Sütun yorumu, \(A\mathbf{x}\) ifadesini sütunların doğrusal birleşimi olarak okur.</li>
+            <li>Çözüm vektörü \(\mathbf{x}\), sağ taraf vektörünü üretmek için sütunların hangi katsayılarla alınacağını söyler.</li>
+            <li>Matris-vektör çarpımı hem satır iç çarpımlarıyla hem de sütun birleşimiyle hesaplanabilir.</li>
+            <li>Her sağ taraf için çözülebilirlik, sütunların tüm uzayı doldurmasına bağlıdır.</li>
+            <li>Tekil davranış, sütunların yeni yön üretmekte yetersiz kalması ve bazı sağ tarafların ulaşılamaz olmasıdır.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Matris Biçimi</h3>
+            <p>Bir lineer sistemin kısa yazımıdır.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=\mathbf{b}
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Sütun Birleşimi</h3>
+            <p>\(A\mathbf{x}\), matrisin sütunlarının \(\mathbf{x}\) bileşenleriyle ağırlıklandırılmış toplamıdır.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Satır Hesabı</h3>
+            <p>Sonuç vektörünün her bileşeni, ilgili satırın \(\mathbf{x}\) ile iç çarpımıdır.</p>
+            <div class="equation-card" data-raw-latex="(A\mathbf{x})_i=\sum_{j=1}^{n}a_{ij}x_j">
+              <div class="equation-content">
+                \[
+                (A\mathbf{x})_i=\sum_{j=1}^{n}a_{ij}x_j
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Çözülebilirlik</h3>
+            <p>Sağ taraf vektörü sütunlardan üretilebiliyorsa sistem çözülebilirdir.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}\iff \mathbf{b}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\ \text{olacak katsayılar vardır}">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}
+                \iff
+                \mathbf{b}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\ \text{olacak katsayılar vardır}.
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde lineer denklem sistemleri üç tamamlayıcı bakışla ele alındı. Satır yorumu, iki bilinmeyenli sistemlerde doğruların, üç bilinmeyenli sistemlerde düzlemlerin kesişimini inceler. Sütun yorumu, aynı sistemi matrisin sütunlarının doğrusal birleşimi olarak okur. Matris biçimi ise bu iki yorumu \(A\mathbf{x}=\mathbf{b}\) denkleminde birleştirir.</p>
+        <p>İki bilinmeyenli örnekte çözüm hem iki doğrunun \((1,2)\) noktasındaki kesişimi hem de \(\begin{bmatrix}0&3\end{bmatrix}^{\top}\) vektörünü üretmek için sütunlardan \(1\) ve \(2\) katsayılarıyla yararlanılmasıdır. Üç bilinmeyenli örnekte sağ taraf vektörü doğrudan üçüncü sütun olduğu için çözüm \((0,0,1)\) olarak okunur. Aynı matriste sağ taraf ilk iki sütunun toplamına çevrilirse çözüm \((1,1,0)\) olur.</p>
+        <p>Ana fikir şudur: \(A\mathbf{x}\), \(A\) matrisinin sütunlarının doğrusal birleşimidir. Bu nedenle çözülebilirlik, sağ taraf vektörünün bu birleşimlerle üretilebilmesine bağlıdır. Sütunlar bütün uzayı dolduruyorsa her sağ taraf için çözüm vardır; sütunlar daha dar bir bölgede kalıyorsa bazı sağ taraflar ulaşılamaz.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Çalışma Sorusu 1: Kolay</h3>
+          <p>Aşağıdaki matris-vektör çarpımını sütun yöntemiyle hesaplayın:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3&-1\\1&4\end{bmatrix}\begin{bmatrix}2\\5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              3&-1\\
+              1&4
+              \end{bmatrix}
+              \begin{bmatrix}
+              2\\5
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Vektörün bileşenleri sütunların katsayılarıdır:</p>
+          <div class="equation-card" data-raw-latex="2\begin{bmatrix}3\\1\end{bmatrix}+5\begin{bmatrix}-1\\4\end{bmatrix}=\begin{bmatrix}6\\2\end{bmatrix}+\begin{bmatrix}-5\\20\end{bmatrix}=\begin{bmatrix}1\\22\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              2
+              \begin{bmatrix}
+              3\\1
+              \end{bmatrix}
+              +
+              5
+              \begin{bmatrix}
+              -1\\4
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              6\\2
+              \end{bmatrix}
+              +
+              \begin{bmatrix}
+              -5\\20
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1\\22
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Sonuç, birinci sütundan \(2\) tane ve ikinci sütundan \(5\) tane alınarak elde edilen vektördür.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Çalışma Sorusu 2: Orta</h3>
+          <p>Aşağıdaki sistemin neden tek bir çözüme sahip olmadığını sütun yorumu ile açıklayın:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned} x+2y&=3\\ 2x+4y&=6. \end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x+2y&=3\\
+              2x+4y&=6.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Katsayı matrisinin sütunları</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1=\begin{bmatrix}1\\2\end{bmatrix},\qquad \mathbf{a}_2=\begin{bmatrix}2\\4\end{bmatrix}=2\mathbf{a}_1">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1=
+              \begin{bmatrix}
+              1\\2
+              \end{bmatrix},
+              \qquad
+              \mathbf{a}_2=
+              \begin{bmatrix}
+              2\\4
+              \end{bmatrix}
+              =
+              2\mathbf{a}_1.
+              \]
+            </div>
+          </div>
+          <p>İki sütun aynı doğrultudadır. Sağ taraf vektörü de bu doğrultudadır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{b}=\begin{bmatrix}3\\6\end{bmatrix}=3\mathbf{a}_1">
+            <div class="equation-content">
+              \[
+              \mathbf{b}=
+              \begin{bmatrix}
+              3\\6
+              \end{bmatrix}
+              =
+              3\mathbf{a}_1.
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle çözüm vardır; fakat tek değildir. Örneğin \(x=3,y=0\) ve \(x=1,y=1\) iki farklı çözümdür:</p>
+          <div class="equation-card" data-raw-latex="3\mathbf{a}_1+0\mathbf{a}_2=\mathbf{b},\qquad 1\mathbf{a}_1+1\mathbf{a}_2=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              3\mathbf{a}_1+0\mathbf{a}_2=\mathbf{b},
+              \qquad
+              1\mathbf{a}_1+1\mathbf{a}_2=\mathbf{b}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Sütunlar aynı doğru üzerinde olduğu için hedef bu doğru üzerindeyse birden fazla yolla üretilebilir; doğru dışında olsaydı çözüm bulunmazdı.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Çalışma Sorusu 3: İleri</h3>
+          <p>\(M\) matrisinin üç sütunu \(\mathbf{m}_1,\mathbf{m}_2,\mathbf{m}_3\) olsun ve \(\mathbf{m}_3=\mathbf{m}_1+\mathbf{m}_2\) verilsin. \(M\mathbf{x}=\mathbf{b}\) denkleminde \(\mathbf{b}=2\mathbf{m}_1+2\mathbf{m}_2\) ise tek bir çözüm olmadığını gösterin ve iki farklı çözüm vektörü bulun.</p>
+          <p><strong>Çözüm:</strong> Sütun yorumu</p>
+          <div class="equation-card" data-raw-latex="x_1\mathbf{m}_1+x_2\mathbf{m}_2+x_3\mathbf{m}_3=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              x_1\mathbf{m}_1+x_2\mathbf{m}_2+x_3\mathbf{m}_3=\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Üçüncü sütunu kullanmadan bir çözüm hemen elde edilir:</p>
+          <div class="equation-card" data-raw-latex="2\mathbf{m}_1+2\mathbf{m}_2+0\mathbf{m}_3=\mathbf{b},\qquad \mathbf{x}_1=\begin{bmatrix}2\\2\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              2\mathbf{m}_1+2\mathbf{m}_2+0\mathbf{m}_3=\mathbf{b},
+              \qquad
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              2\\2\\0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Öte yandan \(\mathbf{m}_3=\mathbf{m}_1+\mathbf{m}_2\) olduğundan \(2\mathbf{m}_3=2\mathbf{m}_1+2\mathbf{m}_2\). Bu da ikinci bir çözüm verir:</p>
+          <div class="equation-card" data-raw-latex="0\mathbf{m}_1+0\mathbf{m}_2+2\mathbf{m}_3=\mathbf{b},\qquad \mathbf{x}_2=\begin{bmatrix}0\\0\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              0\mathbf{m}_1+0\mathbf{m}_2+2\mathbf{m}_3=\mathbf{b},
+              \qquad
+              \mathbf{x}_2=
+              \begin{bmatrix}
+              0\\0\\2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Üçüncü sütun ilk iki sütuna bağlı olduğundan aynı hedef vektöre farklı katsayı seçimleriyle ulaşılır. Bu, tekil davranışın tipik sonucudur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Linear equation</td>
+                <td>Lineer denklem</td>
+                <td>Bilinmeyenlerin yalnızca birinci dereceden yer aldığı denklem.</td>
+              </tr>
+              <tr>
+                <td>System of linear equations</td>
+                <td>Lineer denklem sistemi</td>
+                <td>Birden fazla lineer denklemin birlikte ele alınması.</td>
+              </tr>
+              <tr>
+                <td>Coefficient matrix</td>
+                <td>Katsayı matrisi</td>
+                <td>Denklem sistemindeki bilinmeyen katsayılarından oluşan matris.</td>
+              </tr>
+              <tr>
+                <td>Row picture</td>
+                <td>Satır yorumu</td>
+                <td>Denklemleri doğru veya düzlem gibi geometrik koşullar olarak okuma.</td>
+              </tr>
+              <tr>
+                <td>Column picture</td>
+                <td>Sütun yorumu</td>
+                <td>Sistemi matris sütunlarının doğrusal birleşimi olarak okuma.</td>
+              </tr>
+              <tr>
+                <td>Matrix form</td>
+                <td>Matris biçimi</td>
+                <td>Sistemin \(A\mathbf{x}=\mathbf{b}\) olarak yazılması.</td>
+              </tr>
+              <tr>
+                <td>Linear combination</td>
+                <td>Doğrusal birleşim</td>
+                <td>Vektörlerin skalerlerle çarpılıp toplanmasıyla elde edilen ifade.</td>
+              </tr>
+              <tr>
+                <td>Matrix-vector product</td>
+                <td>Matris-vektör çarpımı</td>
+                <td>Bir matris ile uygun boyutlu bir vektörün çarpımı.</td>
+              </tr>
+              <tr>
+                <td>Dot product</td>
+                <td>İç çarpım</td>
+                <td>Karşılıklı bileşen çarpımlarının toplamı.</td>
+              </tr>
+              <tr>
+                <td>Singular matrix</td>
+                <td>Tekil matris</td>
+                <td>Sütunları bulundukları uzayın tamamını dolduramayan kare matris.</td>
+              </tr>
+              <tr>
+                <td>Nonsingular matrix</td>
+                <td>Tekil olmayan matris</td>
+                <td>Sütunları bulundukları uzayı dolduran kare matris.</td>
+              </tr>
+              <tr>
+                <td>Plane</td>
+                <td>Düzlem</td>
+                <td>Üç boyutlu uzayda bir lineer denklemin belirlediği iki boyutlu geometrik nesne.</td>
+              </tr>
+              <tr>
+                <td>Origin</td>
+                <td>Orijin</td>
+                <td>Tüm koordinatları sıfır olan nokta.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var computed = window.getComputedStyle(title);
+        var current = parseFloat(computed.fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

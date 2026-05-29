@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>16. Ders: Ortogonal Matrisler ve Gram-Schmidt</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.2vw, 1.85rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" class="active" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, ortogonallik konusunun son halkası olarak ortonormal bazları, ortogonal matrisleri ve Gram-Schmidt yöntemini ele alır.</p>
+        <p>Önce birbirine dik ve uzunluğu \(1\) olan vektörlerin hesapları nasıl sadeleştirdiği açıklanır. Bu vektörler bir matrisin sütunlarına yerleştirildiğinde \(Q^TQ=I\) eşitliği ortaya çıkar. Kare durumda bu eşitlik, \(Q^T=Q^{-1}\) anlamına gelir.</p>
+        <p>Daha sonra genel bağımsız sütunlardan ortonormal sütunlara geçmenin yolu olan Gram-Schmidt yöntemi incelenir. Yöntem, her yeni vektörden daha önce oluşturulmuş dik yönlerdeki izdüşümleri çıkarır; sonunda aynı sütun uzayına sahip fakat hesap açısından daha iyi bir baz elde edilir.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Ortonormal vektör ailesinin tanımını iç çarpım koşullarıyla vermek.</li>
+          <li>\(Q^TQ=I\) eşitliğinin neden bütün sütun iç çarpımlarını özetlediğini açıklamak.</li>
+          <li>Kare ortonormal sütunlu matrislerde \(Q^T=Q^{-1}\) sonucunu yorumlamak.</li>
+          <li>Ortonormal sütunlar için izdüşüm matrisinin \(P=QQ^T\) biçimine sadeleştiğini göstermek.</li>
+          <li>Normal denklemlerin ortonormal durumda \(\hat{\mathbf{x}}=Q^T\mathbf{b}\) biçimine indiğini görmek.</li>
+          <li>Gram-Schmidt yöntemini iki ve üç vektör için adım adım uygulamak.</li>
+          <li>Örnek vektörlerden ortonormal bir baz üretmek.</li>
+          <li>Gram-Schmidt işleminin matris biçimini \(A=QR\) olarak anlamak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Vektörlerde iç çarpım, diklik ve norm bilgisi.</li>
+          <li>Sütun uzayı ve baz kavramı.</li>
+          <li>İzdüşüm formülü ve hata vektörünün dikliği.</li>
+          <li>Normal denklemler ve \(A^TA\) matrisinin rolü.</li>
+          <li>Matris transpozu, ters matris ve üst üçgensel matris kavramları.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\mathbf{q}_1,\ldots,\mathbf{q}_n\)</td>
+                <td>Ortonormal vektörler</td>
+                <td>Birbirine dik ve her biri birim uzunluktadır.</td>
+              </tr>
+              <tr>
+                <td>\(Q\)</td>
+                <td>Ortonormal sütunlu matris</td>
+                <td>Sütunları \(\mathbf{q}_1,\ldots,\mathbf{q}_n\) olan matristir.</td>
+              </tr>
+              <tr>
+                <td>\(I\)</td>
+                <td>Birim matris</td>
+                <td>\(Q^TQ=I\) eşitliğinde bütün iç çarpımları özetler.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>İzdüşüm matrisi</td>
+                <td>Ortonormal sütunlar için \(P=QQ^T\) olur.</td>
+              </tr>
+              <tr>
+                <td>\(\hat{\mathbf{x}}\)</td>
+                <td>İzdüşüm katsayıları</td>
+                <td>Ortonormal durumda \(\hat{\mathbf{x}}=Q^T\mathbf{b}\).</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{a},\mathbf{b},\mathbf{c}\)</td>
+                <td>Başlangıç vektörleri</td>
+                <td>Gram-Schmidt yöntemine verilen bağımsız vektörlerdir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{A},\mathbf{B},\mathbf{C}\)</td>
+                <td>Dikleştirilmiş vektörler</td>
+                <td>Normalleştirilmeden önceki ortogonal vektörlerdir.</td>
+              </tr>
+              <tr>
+                <td>\(R\)</td>
+                <td>Üst üçgensel bağlantı matrisi</td>
+                <td>\(A=QR\) eşitliğinde başlangıç sütunlarını ortonormal sütunlarla ilişkilendirir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Lineer cebirde baz seçimi hesapların zorluğunu belirler. Genel bir bazla çalışırken \(A^TA\) gibi iç çarpım matrisleri oluşur ve sistem çözmek gerekir. Ortonormal baz seçildiğinde bu matris \(I\) olur; böylece birçok formül sadeleşir.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Ortonormal sütunlar, iç çarpım hesaplarını doğrudan koordinat hesabına dönüştürür. Bu nedenle izdüşüm, en küçük kareler ve baz değiştirme hesapları çok daha temiz hâle gelir.</p>
+        </aside>
+        <p>Gram-Schmidt yöntemi, herhangi bir bağımsız sütun ailesini aynı sütun uzayını koruyarak ortonormal bir aileye dönüştürür. Bu, hem geometrik olarak dik açıları geri kazanmak hem de cebirsel olarak \(Q^TQ=I\) avantajını elde etmek demektir.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Ortonormal Vektör Ailesi</h3>
+          <p>\(\mathbf{q}_1,\ldots,\mathbf{q}_n\) vektörleri ortonormal ise farklı vektörlerin iç çarpımı sıfır, her vektörün kendisiyle iç çarpımı birdir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_i^T\mathbf{q}_j=0\ (i\ne j),\qquad \mathbf{q}_i^T\mathbf{q}_i=1">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_i^T\mathbf{q}_j=0\quad (i\ne j),
+              \qquad
+              \mathbf{q}_i^T\mathbf{q}_i=1
+              \]
+            </div>
+          </div>
+          <p>Birinci koşul dikliği, ikinci koşul birim uzunluğu ifade eder.</p>
+        </section>
+
+        <h3>Ortonormal Sütunlu Matrisler</h3>
+        <p>Ortonormal vektörler bir matrisin sütunlarına yerleştirilsin:</p>
+        <div class="equation-card" data-raw-latex="Q=\begin{bmatrix}\mathbf{q}_1&\mathbf{q}_2&\cdots&\mathbf{q}_n\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            Q=
+            \begin{bmatrix}
+            \mathbf{q}_1&\mathbf{q}_2&\cdots&\mathbf{q}_n
+            \end{bmatrix}
+            \]
+          </div>
+        </div>
+        <p>\(Q^TQ\) çarpımı, bütün sütun iç çarpımlarını tek tabloda toplar. Köşegende \(\mathbf{q}_i^T\mathbf{q}_i=1\), köşegen dışında \(\mathbf{q}_i^T\mathbf{q}_j=0\) olduğundan</p>
+        <div class="equation-card" data-raw-latex="Q^TQ=I">
+          <div class="equation-content">
+            \[
+            Q^TQ=I
+            \]
+          </div>
+        </div>
+        <p>elde edilir. Bu eşitlik \(Q\) kare olmasa bile geçerlidir; önemli olan sütunların ortonormal olmasıdır.</p>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Ortogonal Matris</h3>
+          <p>Kare bir \(Q\) matrisinin sütunları ortonormal ise \(Q\) ortogonal matris olarak adlandırılır. Bu durumda</p>
+          <div class="equation-card" data-raw-latex="Q^TQ=I,\qquad Q^T=Q^{-1}">
+            <div class="equation-content">
+              \[
+              Q^TQ=I,
+              \qquad
+              Q^T=Q^{-1}
+              \]
+            </div>
+          </div>
+          <p>olur. Yani ters alma işlemi, transpoz alma kadar basitleşir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Permütasyon Matrisi</h3>
+          <p>Aşağıdaki matrisin sütunları standart baz vektörlerinin yer değiştirmiş hâlidir:</p>
+          <div class="equation-card" data-raw-latex="Q=\begin{bmatrix}0&0&1\\1&0&0\\0&1&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=
+              \begin{bmatrix}
+              0&0&1\\
+              1&0&0\\
+              0&1&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Her sütun birim uzunluktadır ve farklı sütunlar diktir. Dolayısıyla \(Q^TQ=I\) ve \(Q^T=Q^{-1}\).</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Düzlemde Ortogonal Matris</h3>
+          <p>Aşağıdaki matrisin sütunları birbirine dik ve birim uzunluktadır:</p>
+          <div class="equation-card" data-raw-latex="Q=\begin{bmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=
+              \begin{bmatrix}
+              \cos\theta&-\sin\theta\\
+              \sin\theta&\cos\theta
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İlk sütunun uzunluk karesi \(\cos^2\theta+\sin^2\theta=1\), ikinci sütunun uzunluk karesi yine \(1\), iki sütunun iç çarpımı ise sıfırdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: İşaretli Bir \(2\times2\) Matris</h3>
+          <p>\(\begin{bmatrix}1&1\\1&-1\end{bmatrix}\) matrisinin sütunları diktir; fakat uzunlukları \(\sqrt{2}\) olduğu için normalleştirilmelidir:</p>
+          <div class="equation-card" data-raw-latex="Q=\frac{1}{\sqrt{2}}\begin{bmatrix}1&1\\1&-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=
+              \frac{1}{\sqrt{2}}
+              \begin{bmatrix}
+              1&1\\
+              1&-1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu çarpan, her sütunu birim uzunluğa indirir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Dört Boyutlu İşaret Matrisi</h3>
+          <p>Aşağıdaki matrisin sütunları karşılıklı diktir; her sütunun uzunluğu \(2\) olduğu için \(\frac12\) ile çarpılır:</p>
+          <div class="equation-card" data-raw-latex="Q=\frac12\begin{bmatrix}1&1&1&1\\1&1&-1&-1\\1&-1&1&-1\\1&-1&-1&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=
+              \frac12
+              \begin{bmatrix}
+              1&1&1&1\\
+              1&1&-1&-1\\
+              1&-1&1&-1\\
+              1&-1&-1&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu örnek, işaretlerden oluşan ortogonal matrislerin daha büyük boyutlarda da kurulabileceğini gösterir.</p>
+        </section>
+
+        <h3>Ortonormal Sütunların İzdüşüm Hesabını Sadeleştirmesi</h3>
+        <p>Genel durumda sütun uzayına izdüşüm matrisi \(A(A^TA)^{-1}A^T\) idi. Eğer sütunlar ortonormal ise \(A\) yerine \(Q\) yazılır ve \(Q^TQ=I\) olduğundan</p>
+        <div class="equation-card" data-raw-latex="P=Q(Q^TQ)^{-1}Q^T=QQ^T">
+          <div class="equation-content">
+            \[
+            P=Q(Q^TQ)^{-1}Q^T=QQ^T
+            \]
+          </div>
+        </div>
+        <p>Kare durumda sütun uzayı tüm uzay olduğu için \(QQ^T=I\). Dikdörtgen durumda ise \(QQ^T\), \(Q\) sütunlarının gerdiği alt uzaya izdüşüm matrisidir.</p>
+
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Ortonormal sütunlar sayesinde ters matris hesabı kaybolur. Bu yüzden ortonormal bazlar, izdüşüm ve en küçük kareler hesaplarında doğal olarak tercih edilir.</p>
+        </aside>
+
+        <h3>Normal Denklemlerin Sadeleşmesi</h3>
+        <p>Genel normal denklemler \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) idi. \(A=Q\) ve \(Q^TQ=I\) olduğunda bu denklem</p>
+        <div class="equation-card" data-raw-latex="Q^TQ\hat{\mathbf{x}}=Q^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            Q^TQ\hat{\mathbf{x}}=Q^T\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>olur ve doğrudan</p>
+        <div class="equation-card" data-raw-latex="\hat{\mathbf{x}}=Q^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            \hat{\mathbf{x}}=Q^T\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>sonucu elde edilir. Bu sonuç, her katsayının ilgili ortonormal baz vektörüyle alınan iç çarpım olduğunu söyler:</p>
+        <div class="equation-card" data-raw-latex="\hat{x}_i=\mathbf{q}_i^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            \hat{x}_i=\mathbf{q}_i^T\mathbf{b}
+            \]
+          </div>
+        </div>
+
+        <h3>Gram-Schmidt Yöntemi: İki Vektör</h3>
+        <p>Başlangıçta bağımsız iki vektör \(\mathbf{a}\) ve \(\mathbf{b}\) olsun. İlk dikleştirilmiş vektör doğrudan alınır:</p>
+        <div class="equation-card" data-raw-latex="\mathbf{A}=\mathbf{a}">
+          <div class="equation-content">
+            \[
+            \mathbf{A}=\mathbf{a}
+            \]
+          </div>
+        </div>
+        <p>İkinci vektörden \(\mathbf{A}\) yönündeki izdüşüm çıkarılır:</p>
+        <div class="equation-card" data-raw-latex="\mathbf{B}=\mathbf{b}-\frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}">
+          <div class="equation-content">
+            \[
+            \mathbf{B}
+            =
+            \mathbf{b}
+            -
+            \frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}
+            \]
+          </div>
+        </div>
+        <p>Böylece \(\mathbf{A}^T\mathbf{B}=0\). Son adımda her vektör kendi uzunluğuna bölünür:</p>
+        <div class="equation-card" data-raw-latex="\mathbf{q}_1=\frac{\mathbf{A}}{\|\mathbf{A}\|},\qquad \mathbf{q}_2=\frac{\mathbf{B}}{\|\mathbf{B}\|}">
+          <div class="equation-content">
+            \[
+            \mathbf{q}_1=\frac{\mathbf{A}}{\|\mathbf{A}\|},
+            \qquad
+            \mathbf{q}_2=\frac{\mathbf{B}}{\|\mathbf{B}\|}
+            \]
+          </div>
+        </div>
+
+        <h3>Gram-Schmidt Yöntemi: Üç Vektör</h3>
+        <p>Üçüncü vektör için aynı fikir iki önceki yöne karşı uygulanır. \(\mathbf{A}\) ve \(\mathbf{B}\) zaten dikleştirilmiş olsun. O zaman</p>
+        <div class="equation-card" data-raw-latex="\mathbf{C}=\mathbf{c}-\frac{\mathbf{A}^T\mathbf{c}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}-\frac{\mathbf{B}^T\mathbf{c}}{\mathbf{B}^T\mathbf{B}}\mathbf{B}">
+          <div class="equation-content">
+            \[
+            \mathbf{C}
+            =
+            \mathbf{c}
+            -
+            \frac{\mathbf{A}^T\mathbf{c}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}
+            -
+            \frac{\mathbf{B}^T\mathbf{c}}{\mathbf{B}^T\mathbf{B}}\mathbf{B}
+            \]
+          </div>
+        </div>
+        <p>elde edilir. Bu vektör hem \(\mathbf{A}\) hem de \(\mathbf{B}\) vektörüne diktir. Normalleştirildiğinde üçüncü ortonormal vektör olur.</p>
+
+        <section class="example-card">
+          <h3>Örnek 1.7: İki Vektöre Gram-Schmidt Uygulaması</h3>
+          <p>Başlangıç vektörleri</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}=\begin{bmatrix}1\\1\\1\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}1\\0\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}=
+              \begin{bmatrix}
+              1\\1\\1
+              \end{bmatrix},
+              \qquad
+              \mathbf{b}=
+              \begin{bmatrix}
+              1\\0\\2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olsun. İlk vektör \(\mathbf{A}=\mathbf{a}\). Katsayı</p>
+          <div class="equation-card" data-raw-latex="\frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}=\frac{3}{3}=1">
+            <div class="equation-content">
+              \[
+              \frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}
+              =
+              \frac{3}{3}
+              =
+              1
+              \]
+            </div>
+          </div>
+          <p>olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{B}=\mathbf{b}-\mathbf{A}=\begin{bmatrix}0\\-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{B}
+              =
+              \mathbf{b}-\mathbf{A}
+              =
+              \begin{bmatrix}
+              0\\
+              -1\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Gerçekten \(\mathbf{A}^T\mathbf{B}=0\). Normalleştirme sonucunda</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_1=\frac{1}{\sqrt{3}}\begin{bmatrix}1\\1\\1\end{bmatrix},\qquad \mathbf{q}_2=\frac{1}{\sqrt{2}}\begin{bmatrix}0\\-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_1=
+              \frac{1}{\sqrt{3}}
+              \begin{bmatrix}
+              1\\1\\1
+              \end{bmatrix},
+              \qquad
+              \mathbf{q}_2=
+              \frac{1}{\sqrt{2}}
+              \begin{bmatrix}
+              0\\-1\\1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>bulunur. Bu iki sütun aynı düzlemi gerer; fakat artık ortonormaldir.</p>
+        </section>
+
+        <h3>Matris Biçimi: \(A=QR\)</h3>
+        <p>Gram-Schmidt işlemi yalnızca vektör üretmez; aynı zamanda matris düzeyinde bir ayrışım verir. Başlangıç matrisinin bağımsız sütunları ortonormal sütunlara dönüştürülür ve ilişki</p>
+        <div class="equation-card" data-raw-latex="A=QR">
+          <div class="equation-content">
+            \[
+            A=QR
+            \]
+          </div>
+        </div>
+        <p>biçiminde yazılır. Burada \(Q\) ortonormal sütunlu, \(R\) ise üst üçgensel bir matristir. Üst üçgensellik, sonraki ortonormal vektörlerin önceki başlangıç vektörlerine dik olacak şekilde kurulmasından gelir.</p>
+        <section class="example-card">
+          <h3>Örnek 1.8: Örneğin \(A=QR\) Biçimi</h3>
+          <p>Örnek 1.7’deki başlangıç matrisi</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1\\1&0\\1&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1\\
+              1&0\\
+              1&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Üretilen \(Q\) matrisi</p>
+          <div class="equation-card" data-raw-latex="Q=\begin{bmatrix}1/\sqrt{3}&0\\1/\sqrt{3}&-1/\sqrt{2}\\1/\sqrt{3}&1/\sqrt{2}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=
+              \begin{bmatrix}
+              1/\sqrt{3}&0\\
+              1/\sqrt{3}&-1/\sqrt{2}\\
+              1/\sqrt{3}&1/\sqrt{2}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ve</p>
+          <div class="equation-card" data-raw-latex="R=Q^TA=\begin{bmatrix}\sqrt{3}&\sqrt{3}\\0&\sqrt{2}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=Q^TA=
+              \begin{bmatrix}
+              \sqrt{3}&\sqrt{3}\\
+              0&\sqrt{2}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Alt sol girişin sıfır olması, ikinci ortonormal vektörün ilk başlangıç yönüne dik kurulmasının sonucudur.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Ortonormal Sütunlar İçin \(Q^TQ=I\)</h3>
+          <p><strong>İfade:</strong> \(Q=[\mathbf{q}_1\ \cdots\ \mathbf{q}_n]\) matrisinin sütunları ortonormal ise \(Q^TQ=I\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(Q^TQ\) çarpımı, sütunların birbirleriyle bütün iç çarpımlarını toplar. Ortonormal durumda bu tablo birim matristir.</p>
+          <p><strong>Formal İspat:</strong> \(Q^TQ\) matrisinin \((i,j)\) girişi \(\mathbf{q}_i^T\mathbf{q}_j\) olur. Ortonormal koşula göre bu giriş \(i=j\) iken \(1\), \(i\ne j\) iken \(0\)dır. Bu tam olarak birim matrisin girişleridir.</p>
+          <p><strong>Yorum:</strong> Bu eşitlik, bütün ortonormal hesapların temelidir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: Kare Durumda Transpoz Ters Matristir</h3>
+          <p><strong>İfade:</strong> \(Q\) kare ve sütunları ortonormal ise</p>
+          <div class="equation-card" data-raw-latex="Q^T=Q^{-1}">
+            <div class="equation-content">
+              \[
+              Q^T=Q^{-1}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir matrisi tersiyle çarpmak birim matris verir. Burada bu görevi transpoz üstlenir.</p>
+          <p><strong>Formal İspat:</strong> Teorem 1.9’a göre \(Q^TQ=I\). \(Q\) kare olduğundan bu eşitlik \(Q^T\) matrisinin \(Q\) için sol ters olduğunu gösterir; kare matrislerde sol ters aynı zamanda ters matristir. Dolayısıyla \(Q^T=Q^{-1}\).</p>
+          <p><strong>Yorum:</strong> Ortogonal matrislerde ters alma işlemi sayısal ve cebirsel olarak çok basittir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Ortonormal Sütunlar İçin İzdüşüm Matrisi</h3>
+          <p><strong>İfade:</strong> \(Q\) ortonormal sütunlu ise \(\mathcal{C}(Q)\) üzerine izdüşüm matrisi</p>
+          <div class="equation-card" data-raw-latex="P=QQ^T">
+            <div class="equation-content">
+              \[
+              P=QQ^T
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Genel izdüşüm formülündeki zor kısım \((A^TA)^{-1}\)dir. Ortonormal sütunlarda bu kısım \((Q^TQ)^{-1}=I\) olur.</p>
+          <p><strong>Formal İspat:</strong> Genel formülde \(A=Q\) yazılır:</p>
+          <div class="equation-card" data-raw-latex="P=Q(Q^TQ)^{-1}Q^T">
+            <div class="equation-content">
+              \[
+              P=Q(Q^TQ)^{-1}Q^T
+              \]
+            </div>
+          </div>
+          <p>\(Q^TQ=I\) olduğundan \((Q^TQ)^{-1}=I\). Böylece \(P=QQ^T\).</p>
+          <p><strong>Yorum:</strong> Ortonormal bazla çalışmanın izdüşüm hesabındaki en görünür sadeleşmesi budur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Ortonormal Vektörler Bağımsızdır</h3>
+          <p><strong>İfade:</strong> Ortonormal bir vektör ailesi lineer bağımsızdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir vektör diğerlerine dikse, diğerlerinin doğrusal kombinasyonuyla üretilemez.</p>
+          <p><strong>Formal İspat:</strong> \(c_1\mathbf{q}_1+\cdots+c_n\mathbf{q}_n=\mathbf{0}\) olsun. Her iki tarafın \(\mathbf{q}_i\) ile iç çarpımı alınır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_i^T(c_1\mathbf{q}_1+\cdots+c_n\mathbf{q}_n)=c_i=0">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_i^T(c_1\mathbf{q}_1+\cdots+c_n\mathbf{q}_n)=c_i=0
+              \]
+            </div>
+          </div>
+          <p>Bu her \(i\) için geçerli olduğundan bütün katsayılar sıfırdır. Dolayısıyla aile lineer bağımsızdır.</p>
+          <p><strong>Yorum:</strong> Ortonormal sütunlar yalnızca kolay hesap sağlamaz; aynı zamanda iyi bir baz oluşturur.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Bir Matrisin Ortonormal Sütunlu Olduğunu Kontrol Etme</h3>
+        <ol>
+          <li>Sütun uzunluklarını hesapla.</li>
+          <li>Farklı sütunların iç çarpımlarını hesapla.</li>
+          <li>Bütün uzunluk kareleri \(1\), bütün farklı iç çarpımlar \(0\) ise sütunlar ortonormaldir.</li>
+          <li>Eşdeğer olarak \(Q^TQ=I\) çarpımını kontrol et.</li>
+        </ol>
+
+        <h3>Yöntem 2: Gram-Schmidt ile İki Vektörü Ortonormalleştirme</h3>
+        <ol>
+          <li>\(\mathbf{A}=\mathbf{a}\) al.</li>
+          <li>\(\mathbf{B}=\mathbf{b}-\dfrac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}\) hesapla.</li>
+          <li>\(\mathbf{q}_1=\dfrac{\mathbf{A}}{\|\mathbf{A}\|}\), \(\mathbf{q}_2=\dfrac{\mathbf{B}}{\|\mathbf{B}\|}\) ile normalleştir.</li>
+          <li>Kontrol için \(\mathbf{q}_1^T\mathbf{q}_2=0\), \(\|\mathbf{q}_1\|=\|\mathbf{q}_2\|=1\) doğrula.</li>
+        </ol>
+
+        <h3>Yöntem 3: \(A=QR\) Matris Biçimini Kurma</h3>
+        <ol>
+          <li>Gram-Schmidt ile \(Q\) matrisini üret.</li>
+          <li>\(R=Q^TA\) hesapla.</li>
+          <li>\(R\) matrisinin üst üçgensel olduğunu kontrol et.</li>
+          <li>\(A=QR\) eşitliğinin başlangıç sütunlarını geri verdiğini doğrula.</li>
+        </ol>
+        <aside class="note-card">
+          <strong>Yaygın hata noktası:</strong>
+          <p>Dikleştirme ile normalleştirme ayrı adımlardır. Önce izdüşümler çıkarılarak dik vektörler bulunur; sonra bu vektörler uzunluklarına bölünür.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki uygulama bağlantısı, sayısal lineer cebirde ortonormal sütunlarla çalışmanın sağladığı kararlılıktır. Ortonormal vektörler uzunlukları büyütmez veya küçültmez; bu yüzden hesaplarda değerlerin aşırı büyümesi ya da aşırı küçülmesi daha kolay kontrol edilir.</p>
+        <p>İzdüşüm ve en küçük kareler hesapları da ortonormal sütunlarla sadeleşir. \(A^TA\) yerine \(Q^TQ=I\) geldiğinde sistem çözmek yerine doğrudan iç çarpımlar hesaplanır.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <aside class="note-card">
+            <strong>Hata 1:</strong>
+            <p>Dik vektörlerin otomatik olarak ortonormal olduğu sanılabilir. Diklik yetmez; her vektörün uzunluğu da \(1\) olmalıdır.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 2:</strong>
+            <p>\(Q^TQ=I\) ile \(QQ^T=I\) karıştırılabilir. Dikdörtgen \(Q\) için genellikle yalnızca \(Q^TQ=I\) geçerlidir.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 3:</strong>
+            <p>Ortogonal matris terimi kare matrisler için kullanılır. Sütunları ortonormal olan dikdörtgen matrisler aynı özelliğe sahip olsa da ters matris yorumu yapılamaz.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 4:</strong>
+            <p>Gram-Schmidt sırasında yeni vektörden yalnızca son önceki vektörün izdüşümü çıkarılabilir sanılabilir. Üçüncü ve sonraki adımlarda daha önce üretilen bütün dik yönlerin izdüşümleri çıkarılır.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 5:</strong>
+            <p>\(A=QR\) eşitliğinde \(Q\) ve \(A\) aynı sütunlara sahip sanılabilir. Aynı sütun uzayına sahiptirler; sütunların kendileri genellikle farklıdır.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 6:</strong>
+            <p>Normalleştirme sırasında uzunluk karesiyle bölmek yanlıştır. Vektör, uzunluğuna yani normuna bölünmelidir.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li><strong>Ortonormal vektörler:</strong> Karşılıklı dik ve birim uzunluklu vektörlerdir.</li>
+            <li><strong>Ortonormal sütunlu matris:</strong> \(Q^TQ=I\) koşulunu sağlar.</li>
+            <li><strong>Ortogonal matris:</strong> Kare \(Q\) için \(Q^T=Q^{-1}\).</li>
+            <li><strong>İzdüşüm sadeleşmesi:</strong> Genel \(A(A^TA)^{-1}A^T\), ortonormal sütunlarda \(QQ^T\) olur.</li>
+            <li><strong>Normal denklem sadeleşmesi:</strong> \(Q^TQ\hat{\mathbf{x}}=Q^T\mathbf{b}\), \(\hat{\mathbf{x}}=Q^T\mathbf{b}\) verir.</li>
+            <li><strong>Gram-Schmidt:</strong> Bağımsız vektörlerden aynı alt uzayı geren ortonormal vektörler üretir.</li>
+            <li><strong>\(A=QR\):</strong> Gram-Schmidt işleminin matris biçimidir; \(R\) üst üçgenseldir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Ortonormal koşul</p>
+        <div class="equation-card" data-raw-latex="\mathbf{q}_i^T\mathbf{q}_j=\begin{cases}1,&i=j\\0,&i\ne j\end{cases}">
+          <div class="equation-content">
+            \[
+            \mathbf{q}_i^T\mathbf{q}_j=
+            \begin{cases}
+            1,&i=j\\
+            0,&i\ne j
+            \end{cases}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Ortonormal sütunlu matris</p>
+        <div class="equation-card" data-raw-latex="Q^TQ=I">
+          <div class="equation-content">
+            \[
+            Q^TQ=I
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Kare durumda ters matris</p>
+        <div class="equation-card" data-raw-latex="Q^T=Q^{-1}">
+          <div class="equation-content">
+            \[
+            Q^T=Q^{-1}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Ortonormal sütunlarda izdüşüm</p>
+        <div class="equation-card" data-raw-latex="P=QQ^T">
+          <div class="equation-content">
+            \[
+            P=QQ^T
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Ortonormal durumda katsayılar</p>
+        <div class="equation-card" data-raw-latex="\hat{\mathbf{x}}=Q^T\mathbf{b},\qquad \hat{x}_i=\mathbf{q}_i^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            \hat{\mathbf{x}}=Q^T\mathbf{b},
+            \qquad
+            \hat{x}_i=\mathbf{q}_i^T\mathbf{b}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Gram-Schmidt ikinci vektör</p>
+        <div class="equation-card" data-raw-latex="\mathbf{B}=\mathbf{b}-\frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}">
+          <div class="equation-content">
+            \[
+            \mathbf{B}
+            =
+            \mathbf{b}
+            -
+            \frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Gram-Schmidt üçüncü vektör</p>
+        <div class="equation-card" data-raw-latex="\mathbf{C}=\mathbf{c}-\frac{\mathbf{A}^T\mathbf{c}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}-\frac{\mathbf{B}^T\mathbf{c}}{\mathbf{B}^T\mathbf{B}}\mathbf{B}">
+          <div class="equation-content">
+            \[
+            \mathbf{C}
+            =
+            \mathbf{c}
+            -
+            \frac{\mathbf{A}^T\mathbf{c}}{\mathbf{A}^T\mathbf{A}}\mathbf{A}
+            -
+            \frac{\mathbf{B}^T\mathbf{c}}{\mathbf{B}^T\mathbf{B}}\mathbf{B}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Matris biçimi</p>
+        <div class="equation-card" data-raw-latex="A=QR,\qquad R=Q^TA">
+          <div class="equation-content">
+            \[
+            A=QR,
+            \qquad
+            R=Q^TA
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde ortonormal vektörlerin lineer cebir hesaplarını neden sadeleştirdiği incelendi. Sütunları ortonormal olan bir \(Q\) matrisi \(Q^TQ=I\) sağlar; kare olduğunda ise transpozu ters matrisidir.</p>
+        <p>İzdüşüm matrisi ortonormal sütunlarla \(P=QQ^T\) biçimine, normal denklemler ise \(\hat{\mathbf{x}}=Q^T\mathbf{b}\) biçimine iner. Böylece katsayılar yalnızca iç çarpımlarla bulunur.</p>
+        <p>Gram-Schmidt yöntemi, bağımsız vektörlerden aynı sütun uzayını koruyan ortonormal vektörler üretir. Matris düzeyinde bu işlem \(A=QR\) ayrışımı olarak yazılır ve \(R\) üst üçgensel olur.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 1: Ortonormal Kontrolü</h3>
+          <p><strong>Soru:</strong></p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_1=\frac{1}{\sqrt{2}}\begin{bmatrix}1\\1\end{bmatrix},\qquad \mathbf{q}_2=\frac{1}{\sqrt{2}}\begin{bmatrix}1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_1=
+              \frac{1}{\sqrt{2}}
+              \begin{bmatrix}
+              1\\1
+              \end{bmatrix},
+              \qquad
+              \mathbf{q}_2=
+              \frac{1}{\sqrt{2}}
+              \begin{bmatrix}
+              1\\-1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu iki vektörün ortonormal olduğunu gösterin.</p>
+          <p><strong>Çözüm:</strong> Uzunluk kareleri</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_1^T\mathbf{q}_1=1,\qquad \mathbf{q}_2^T\mathbf{q}_2=1">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_1^T\mathbf{q}_1=1,
+              \qquad
+              \mathbf{q}_2^T\mathbf{q}_2=1
+              \]
+            </div>
+          </div>
+          <p>ve iç çarpım</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_1^T\mathbf{q}_2=\frac{1}{2}(1-1)=0">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_1^T\mathbf{q}_2=\frac{1}{2}(1-1)=0
+              \]
+            </div>
+          </div>
+          <p>olduğundan vektörler ortonormaldir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 2: Gram-Schmidt Uygulaması</h3>
+          <p><strong>Soru:</strong> \(\mathbf{a}=(1,0,1)^T\), \(\mathbf{b}=(1,1,0)^T\) vektörlerinden ortonormal iki vektör üretin.</p>
+          <p><strong>Çözüm:</strong> İlk vektör \(\mathbf{A}=\mathbf{a}\). Katsayı</p>
+          <div class="equation-card" data-raw-latex="\frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}=\frac{1}{2}">
+            <div class="equation-content">
+              \[
+              \frac{\mathbf{A}^T\mathbf{b}}{\mathbf{A}^T\mathbf{A}}
+              =
+              \frac{1}{2}
+              \]
+            </div>
+          </div>
+          <p>olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{B}=\begin{bmatrix}1\\1\\0\end{bmatrix}-\frac12\begin{bmatrix}1\\0\\1\end{bmatrix}=\begin{bmatrix}1/2\\1\\-1/2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{B}
+              =
+              \begin{bmatrix}
+              1\\1\\0
+              \end{bmatrix}
+              -
+              \frac12
+              \begin{bmatrix}
+              1\\0\\1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1/2\\1\\-1/2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>bulunur. Normlar \(\|\mathbf{A}\|=\sqrt{2}\) ve \(\|\mathbf{B}\|=\sqrt{3/2}\). Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_1=\frac{1}{\sqrt2}\begin{bmatrix}1\\0\\1\end{bmatrix},\qquad \mathbf{q}_2=\frac{1}{\sqrt{3/2}}\begin{bmatrix}1/2\\1\\-1/2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_1=
+              \frac{1}{\sqrt2}
+              \begin{bmatrix}
+              1\\0\\1
+              \end{bmatrix},
+              \qquad
+              \mathbf{q}_2=
+              \frac{1}{\sqrt{3/2}}
+              \begin{bmatrix}
+              1/2\\1\\-1/2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Yeni sütunlar, başlangıç sütunlarıyla aynı düzlemi gerer fakat artık ortonormaldir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 3: \(A=QR\) Yapısı</h3>
+          <p><strong>Soru:</strong> \(A\) matrisinin bağımsız iki sütunu Gram-Schmidt ile \(Q\) matrisine dönüştürülmüş olsun. \(R=Q^TA\) matrisinin neden üst üçgensel olduğunu açıklayın.</p>
+          <p><strong>Çözüm:</strong> \(R\) matrisinin \((i,j)\) girişi \(\mathbf{q}_i^T\mathbf{a}_j\) olur. Gram-Schmidt sırasında \(\mathbf{q}_2\), \(\mathbf{a}_1\) yönüne dik olacak biçimde kurulur. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="r_{21}=\mathbf{q}_2^T\mathbf{a}_1=0">
+            <div class="equation-content">
+              \[
+              r_{21}=\mathbf{q}_2^T\mathbf{a}_1=0
+              \]
+            </div>
+          </div>
+          <p>olur. Daha fazla sütun olduğunda aynı mantıkla \(\mathbf{q}_i\), kendisinden önce gelen başlangıç yönlerine dik kurulur; bu yüzden alt üçgensel kısımdaki girişler sıfırdır.</p>
+          <p><strong>Yorum:</strong> \(R\) matrisinin üst üçgensel yapısı, Gram-Schmidt yönteminin adım adım önceki yönleri temizlemesinin matris biçimindeki izidir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Orthogonal vectors</td>
+                <td>Dik vektörler</td>
+                <td>İç çarpımları sıfır olan vektörlerdir.</td>
+              </tr>
+              <tr>
+                <td>Orthonormal vectors</td>
+                <td>Ortonormal vektörler</td>
+                <td>Birbirine dik ve her biri birim uzunluklu vektörlerdir.</td>
+              </tr>
+              <tr>
+                <td>Orthogonal matrix</td>
+                <td>Ortogonal matris</td>
+                <td>Kare ve ortonormal sütunlu matristir; transpozu tersine eşittir.</td>
+              </tr>
+              <tr>
+                <td>Gram-Schmidt process</td>
+                <td>Gram-Schmidt yöntemi</td>
+                <td>Bağımsız vektörleri aynı alt uzayı geren ortonormal vektörlere dönüştüren yöntemdir.</td>
+              </tr>
+              <tr>
+                <td>Projection matrix</td>
+                <td>İzdüşüm matrisi</td>
+                <td>Ortonormal sütunlar için \(QQ^T\) biçimindedir.</td>
+              </tr>
+              <tr>
+                <td>QR factorization</td>
+                <td>QR ayrışımı</td>
+                <td>\(A=QR\) biçiminde, ortonormal sütunlu \(Q\) ve üst üçgensel \(R\) içeren ayrışımdır.</td>
+              </tr>
+              <tr>
+                <td>Upper triangular matrix</td>
+                <td>Üst üçgensel matris</td>
+                <td>Köşegenin altındaki girişleri sıfır olan matristir.</td>
+              </tr>
+              <tr>
+                <td>Normalization</td>
+                <td>Normalleştirme</td>
+                <td>Bir vektörü uzunluğuna bölerek birim uzunluklu hâle getirme işlemidir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

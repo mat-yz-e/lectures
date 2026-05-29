@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>27. Ders: Benzer Matrisler ve Jordan Biçimi</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" class="active" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">27. Ders: Benzer Matrisler ve Jordan Biçimi</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, pozitif tanımlı matrislerin bazı temel kapanış özelliklerini tamamladıktan sonra benzer matrisleri ve tekrarlı özdeğerlerde ortaya çıkan Jordan biçimini inceler.</p>
+        <p>Önceki pozitif tanımlılık ölçütleri özdeğerler, pivotlar, determinantlar ve ikinci dereceden biçim üzerinden okunabiliyordu. Burada bu ölçütlerin iki kısa sonucu ele alınır: pozitif tanımlı bir matrisin tersi yine pozitif tanımlıdır; iki pozitif tanımlı matrisin toplamı da pozitif tanımlıdır. Ayrıca en küçük kareler bağlamında ortaya çıkan \(A^TA\) matrisinin neden doğal olarak pozitif yarı tanımlı, uygun koşul altında pozitif tanımlı olduğu açıklanır.</p>
+        <p>Bölümün ana konusu benzerliktir. İki kare matris \(B=M^{-1}AM\) bağıntısıyla bağlanıyorsa aynı lineer dönüşümün farklı bazlardaki temsilleri gibi düşünülebilir. Bu nedenle özdeğerler korunur; fakat özvektörlerin koordinatları değişir. Tekrarlı özdeğerler olduğunda ise her matris köşegenleştirilemez ve Jordan biçimi bu eksikliği en düzenli biçimde gösterir.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Pozitif tanımlı matrislerin ters ve toplam altında nasıl davrandığını açıklamak.</li>
+          <li>\(A^TA\) ifadesinin pozitif yarı tanımlı olduğunu ve sütun bağımsızlığı altında pozitif tanımlı olduğunu göstermek.</li>
+          <li>Benzer matris tanımını \(B=M^{-1}AM\) biçiminde kullanmak.</li>
+          <li>Benzer matrislerin aynı özdeğerlere sahip olduğunu ispatlamak.</li>
+          <li>Köşegenleştirmenin benzerliğin özel bir durumu olduğunu görmek.</li>
+          <li>Tekrarlı özdeğerlerde köşegenleştirilemeyen durumları ayırt etmek.</li>
+          <li>Jordan bloğu ve Jordan biçiminin neyi temsil ettiğini kavramak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Özdeğer ve özvektör denklemi \(A\mathbf{x}=\lambda\mathbf{x}\).</li>
+          <li>Köşegenleştirme bağıntısı \(S^{-1}AS=\Lambda\).</li>
+          <li>Matris tersi ve terslenebilirlik.</li>
+          <li>İz, determinant ve iki boyutlu karakteristik denklem ilişkisi.</li>
+          <li>Sıfır uzayı, rütbe ve bağımsız sütunlar.</li>
+          <li>Pozitif tanımlı matrislerde \(\mathbf{x}^TA\mathbf{x}>0\) ölçütü.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A,B\)</td>
+                <td>Kare matrislerdir; benzerlik bağıntısında karşılaştırılan iki temsili gösterir.</td>
+              </tr>
+              <tr>
+                <td>\(M\)</td>
+                <td>Benzerlik dönüşümünü veren terslenebilir matristir.</td>
+              </tr>
+              <tr>
+                <td>\(S\)</td>
+                <td>Özvektörleri sütun olarak taşıyan matristir.</td>
+              </tr>
+              <tr>
+                <td>\(\Lambda\)</td>
+                <td>Özdeğerleri köşegende taşıyan köşegen matristir.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda\)</td>
+                <td>Bir özdeğerdir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}\)</td>
+                <td>Özvektör veya ikinci dereceden biçimde kullanılan vektördür.</td>
+              </tr>
+              <tr>
+                <td>\(J\)</td>
+                <td>Jordan biçimindeki matristir.</td>
+              </tr>
+              <tr>
+                <td>\(J_i\)</td>
+                <td>Tek bir özdeğere ait Jordan bloğudur.</td>
+              </tr>
+              <tr>
+                <td>\(\operatorname{tr}(A)\)</td>
+                <td>\(A\) matrisinin izidir; köşegen girişlerinin toplamıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\det(A)\)</td>
+                <td>\(A\) matrisinin determinantıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{N}(A)\)</td>
+                <td>\(A\) matrisinin sıfır uzayıdır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Lineer cebirde bir matrisi anlamanın güçlü yollarından biri onu daha basit bir matrise dönüştürmektir. Köşegenleştirme bu fikrin en iyi durumudur: yeterince özvektör varsa matris, özdeğerlerden oluşan bir köşegen matrise benzer olur. Bu durumda \(A\)'nın davranışı \(\Lambda\)'nın davranışına indirgenir.</p>
+        <p>Ancak tekrarlı özdeğerlerde yeterli sayıda bağımsız özvektör bulunmayabilir. O zaman köşegen biçim mümkün değildir; buna rağmen matris tamamen dağınık bırakılmaz. Jordan biçimi, köşegen biçime en yakın düzenli temsil olarak tekrarlı özdeğerleri ve eksik özvektörleri bloklar hâlinde gösterir.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Benzerlik, özdeğerleri değiştirmeden matrisin koordinat temsilini değiştirir. Bu nedenle aynı benzerlik ailesindeki matrisler farklı görünür, fakat aynı özdeğer bilgisini taşır.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Pozitif Tanımlı Matris</h3>
+          <p>Simetrik bir \(A\) matrisi, sıfırdan farklı her \(\mathbf{x}\) vektörü için \(\mathbf{x}^TA\mathbf{x}>0\) koşulunu sağlıyorsa pozitif tanımlıdır.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA\mathbf{x}>0\qquad(\mathbf{x}\ne\mathbf{0})">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA\mathbf{x}>0\qquad(\mathbf{x}\ne\mathbf{0})
+              \]
+            </div>
+          </div>
+          <p>Bu bölümde bu tanım, ters alma, toplama ve \(A^TA\) yapısı için kısa ama önemli sonuçlar verir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.2: Ters Matrisin Pozitif Tanımlılığı</h3>
+          <p><strong>İfade:</strong> \(A\) simetrik ve pozitif tanımlıysa, \(A^{-1}\) de simetrik ve pozitif tanımlıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Pozitif tanımlı bir matrisin özdeğerleri pozitiftir. Ters matrisin özdeğerleri ise bu özdeğerlerin çarpmaya göre tersleridir; pozitif sayıların tersleri yine pozitiftir.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{v}=\lambda\mathbf{v}\) ve \(\lambda>0\) olsun. \(A\) terslenebilir olduğundan</p>
+          <div class="equation-card" data-raw-latex="A^{-1}\mathbf{v}=\frac{1}{\lambda}\mathbf{v}">
+            <div class="equation-content">
+              \[
+              A^{-1}\mathbf{v}=\frac{1}{\lambda}\mathbf{v}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Dolayısıyla \(A^{-1}\)'in özdeğerleri \(1/\lambda\) biçimindedir ve hepsi pozitiftir. Ayrıca \(A^T=A\) olduğundan \((A^{-1})^T=(A^T)^{-1}=A^{-1}\); yani \(A^{-1}\) simetriktir.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, pozitif tanımlılığın ters alma altında korunduğunu gösterir. Özdeğer bakışı burada en hızlı yoldur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Pozitif Tanımlı Matrislerin Toplamı</h3>
+          <p><strong>İfade:</strong> \(A\) ve \(B\) pozitif tanımlı simetrik matrislerse \(A+B\) de pozitif tanımlıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Pozitif tanımlılık, ikinci dereceden biçimin her sıfırdan farklı yönde pozitif olmasıdır. İki pozitif değer toplandığında yine pozitif değer elde edilir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{x}\ne\mathbf{0}\) olsun. \(A\) ve \(B\) pozitif tanımlı olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA\mathbf{x}>0,\qquad \mathbf{x}^TB\mathbf{x}>0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA\mathbf{x}>0,\qquad \mathbf{x}^TB\mathbf{x}>0
+              \]
+            </div>
+          </div>
+          <p>sağlanır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^T(A+B)\mathbf{x}=\mathbf{x}^TA\mathbf{x}+\mathbf{x}^TB\mathbf{x}>0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^T(A+B)\mathbf{x}=\mathbf{x}^TA\mathbf{x}+\mathbf{x}^TB\mathbf{x}>0
+              \]
+            </div>
+          </div>
+          <p>olur. Ayrıca \(A+B\) simetriktir. Böylece \(A+B\) pozitif tanımlıdır.</p>
+          <p><strong>Yorum:</strong> Bu örnekte özdeğer veya pivot hesabı yerine doğrudan ikinci dereceden biçim en uygun araçtır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: \(A^TA\) Matrisinin Pozitifliği</h3>
+          <p><strong>İfade:</strong> \(A\) bir \(m\times n\) matris olsun. \(A^TA\) simetrik ve pozitif yarı tanımlıdır. Eğer \(A\)'nın sütunları bağımsızsa \(A^TA\) pozitif tanımlıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^TA\), bir uzunluk karesini gizler. Uygun parantezleme yapıldığında ikinci dereceden biçim \(\|A\mathbf{x}\|^2\) olur.</p>
+          <p><strong>Formal İspat:</strong> Önce simetri açıktır:</p>
+          <div class="equation-card" data-raw-latex="(A^TA)^T=A^TA">
+            <div class="equation-content">
+              \[
+              (A^TA)^T=A^TA
+              \]
+            </div>
+          </div>
+          <p>Her \(\mathbf{x}\) için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=(A\mathbf{x})^T(A\mathbf{x})=\|A\mathbf{x}\|^2\ge 0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}=(A\mathbf{x})^T(A\mathbf{x})=\|A\mathbf{x}\|^2\ge 0
+              \]
+            </div>
+          </div>
+          <p>Bu, pozitif yarı tanımlılığı verir. Eşitlik yalnızca \(A\mathbf{x}=\mathbf{0}\) olduğunda gerçekleşir. Eğer \(A\)'nın sütunları bağımsızsa sıfır uzayında yalnızca \(\mathbf{0}\) vardır. Bu durumda \(\mathbf{x}\ne\mathbf{0}\) için \(\|A\mathbf{x}\|^2>0\) olur.</p>
+          <p><strong>Yorum:</strong> En küçük kareler denklemlerinde \(A^TA\)'nın ortaya çıkması rastlantı değildir; bağımsız sütunlar olduğunda bu matris terslenebilir ve pozitif tanımlıdır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.5: Benzer Matrisler</h3>
+          <p>\(A\) ve \(B\) aynı boyutta kare matrisler olsun. Terslenebilir bir \(M\) matrisi için \(B=M^{-1}AM\) yazılabiliyorsa \(A\) ve \(B\) benzer matrislerdir.</p>
+          <div class="equation-card" data-raw-latex="B=M^{-1}AM">
+            <div class="equation-content">
+              \[
+              B=M^{-1}AM
+              \]
+            </div>
+          </div>
+          <p>Bu bağıntı, matrisleri benzerlik ailelerine ayırır. Aynı ailedeki matrisler farklı görünebilir; fakat temel özdeğer bilgileri aynıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Aynı Ailede Üç Matris</h3>
+          <p>Aşağıdaki simetrik matrisin özdeğerleri \(3\) ve \(1\)'dir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2 &amp; 1\\1 &amp; 2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}2 &amp; 1\\1 &amp; 2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matris, özvektör matrisi \(S\) kullanıldığında köşegen matrise benzerdir:</p>
+          <div class="equation-card" data-raw-latex="S^{-1}AS=\Lambda=\begin{bmatrix}3 &amp; 0\\0 &amp; 1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              S^{-1}AS=\Lambda=\begin{bmatrix}3 &amp; 0\\0 &amp; 1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Şimdi farklı bir terslenebilir matris seçelim:</p>
+          <div class="equation-card" data-raw-latex="M=\begin{bmatrix}1 &amp; 4\\0 &amp; 1\end{bmatrix},\qquad M^{-1}=\begin{bmatrix}1 &amp; -4\\0 &amp; 1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              M=\begin{bmatrix}1 &amp; 4\\0 &amp; 1\end{bmatrix},\qquad
+              M^{-1}=\begin{bmatrix}1 &amp; -4\\0 &amp; 1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu seçimle</p>
+          <div class="equation-card" data-raw-latex="B=M^{-1}AM=\begin{bmatrix}-2 &amp; -15\\1 &amp; 6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              B=M^{-1}AM=\begin{bmatrix}-2 &amp; -15\\1 &amp; 6\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. \(B\) matrisi \(A\)'ya hiç benzemeyen bir görünüştedir; yine de iz ve determinant aynı özdeğerleri doğrular:</p>
+          <div class="equation-card" data-raw-latex="\operatorname{tr}(B)=4,\qquad \det(B)=3">
+            <div class="equation-content">
+              \[
+              \operatorname{tr}(B)=4,\qquad \det(B)=3
+              \]
+            </div>
+          </div>
+          <p>İki özdeğer toplamı \(4\), çarpımı \(3\) olduğundan \(B\)'nin özdeğerleri de \(3\) ve \(1\)'dir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Benzer Matrislerin Özdeğerleri</h3>
+          <p><strong>İfade:</strong> \(B=M^{-1}AM\) ise \(A\) ve \(B\) aynı özdeğerlere sahiptir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Benzerlik, koordinat sistemini değiştirir; lineer etkinin kendisini değiştirmez. Bu nedenle genişleme veya daralma oranları olan özdeğerler korunur.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}=\lambda\mathbf{x}\) ve \(\mathbf{x}\ne\mathbf{0}\) olsun. Araya \(MM^{-1}\) ekleyelim:</p>
+          <div class="equation-card" data-raw-latex="A M M^{-1}\mathbf{x}=\lambda \mathbf{x}">
+            <div class="equation-content">
+              \[
+              A M M^{-1}\mathbf{x}=\lambda \mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>Sol taraftan \(M^{-1}\) ile çarpınca</p>
+          <div class="equation-card" data-raw-latex="M^{-1}AM(M^{-1}\mathbf{x})=\lambda(M^{-1}\mathbf{x})">
+            <div class="equation-content">
+              \[
+              M^{-1}AM(M^{-1}\mathbf{x})=\lambda(M^{-1}\mathbf{x})
+              \]
+            </div>
+          </div>
+          <p>elde edilir. \(B=M^{-1}AM\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="B(M^{-1}\mathbf{x})=\lambda(M^{-1}\mathbf{x})">
+            <div class="equation-content">
+              \[
+              B(M^{-1}\mathbf{x})=\lambda(M^{-1}\mathbf{x})
+              \]
+            </div>
+          </div>
+          <p>olur. \(M^{-1}\mathbf{x}\ne\mathbf{0}\) olduğu için \(\lambda\), \(B\)'nin de özdeğeridir.</p>
+          <p><strong>Yorum:</strong> Özvektör aynı kalmaz; \(A\)'nın özvektörü \(\mathbf{x}\) ise \(B\)'nin karşılık gelen özvektörü \(M^{-1}\mathbf{x}\) olur.</p>
+        </section>
+
+        <section>
+          <h3>Köşegenleştirme Benzerliğin Özel Durumudur</h3>
+          <p>Bir \(A\) matrisi \(n\) bağımsız özvektöre sahipse, bu özvektörler \(S\) matrisinin sütunlarına yerleştirilir ve</p>
+          <div class="equation-card" data-raw-latex="S^{-1}AS=\Lambda">
+            <div class="equation-content">
+              \[
+              S^{-1}AS=\Lambda
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu, \(A\)'nın \(\Lambda\)'ya benzer olduğunu söyler. Köşegen matris, benzerlik ailesinin en sade temsilidir. Ancak bu temsil yalnızca yeterli sayıda bağımsız özvektör varsa mümkündür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Tekrarlı Özdeğerde Ayrı Aileler</h3>
+          <p>Özdeğerleri \(4\) ve \(4\) olan matrisleri düşünelim. İlk özel matris</p>
+          <div class="equation-card" data-raw-latex="4I=\begin{bmatrix}4 &amp; 0\\0 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              4I=\begin{bmatrix}4 &amp; 0\\0 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisidir. Bu matrisin benzerlik ailesi yalnızca kendisinden oluşur; çünkü her terslenebilir \(M\) için</p>
+          <div class="equation-card" data-raw-latex="M^{-1}(4I)M=4M^{-1}IM=4I">
+            <div class="equation-content">
+              \[
+              M^{-1}(4I)M=4M^{-1}IM=4I
+              \]
+            </div>
+          </div>
+          <p>olur. Buna karşılık</p>
+          <div class="equation-card" data-raw-latex="J=\begin{bmatrix}4 &amp; 1\\0 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              J=\begin{bmatrix}4 &amp; 1\\0 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisi de \(4,4\) özdeğerlerine sahiptir; fakat yalnızca bir bağımsız özvektörü vardır. Bu nedenle \(4I\)'ye benzer değildir.</p>
+          <p>Aynı ailede başka görünümler de vardır. Örneğin</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}5 &amp; 1\\-1 &amp; 3\end{bmatrix},\qquad \begin{bmatrix}4 &amp; 0\\17 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}5 &amp; 1\\-1 &amp; 3\end{bmatrix},\qquad
+              \begin{bmatrix}4 &amp; 0\\17 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrislerinin izi \(8\), determinantı \(16\)'dır. Bu matrisler de \(4,4\) özdeğerlerini taşır ve köşegenleştirilemeyen aileye aittir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.9: Jordan Bloğu</h3>
+          <p>Bir Jordan bloğu, aynı özdeğeri köşegende taşıyan, köşegenin hemen üstünde \(1\)'ler bulunan ve diğer uygun yerlerinde \(0\)'lar bulunan bloktur.</p>
+          <div class="equation-card" data-raw-latex="J_i=\begin{bmatrix}\lambda_i &amp; 1 &amp; 0 &amp; \cdots &amp; 0\\0 &amp; \lambda_i &amp; 1 &amp; \cdots &amp; 0\\0 &amp; 0 &amp; \lambda_i &amp; \ddots &amp; 0\\\vdots &amp; \vdots &amp; \ddots &amp; \ddots &amp; 1\\0 &amp; 0 &amp; 0 &amp; 0 &amp; \lambda_i\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              J_i=\begin{bmatrix}
+              \lambda_i &amp; 1 &amp; 0 &amp; \cdots &amp; 0\\
+              0 &amp; \lambda_i &amp; 1 &amp; \cdots &amp; 0\\
+              0 &amp; 0 &amp; \lambda_i &amp; \ddots &amp; 0\\
+              \vdots &amp; \vdots &amp; \ddots &amp; \ddots &amp; 1\\
+              0 &amp; 0 &amp; 0 &amp; 0 &amp; \lambda_i
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bir Jordan bloğu yalnızca bir bağımsız özvektör verir. Blok büyüdükçe aynı özdeğer için eksik özvektör sayısı artar.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Aynı Özdeğer ve Aynı Sayıda Özvektör Yetmez</h3>
+          <p>Aşağıdaki \(4\times4\) matrisin bütün özdeğerleri \(0\)'dır:</p>
+          <div class="equation-card" data-raw-latex="A_1=\begin{bmatrix}0 &amp; 1 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 1\\0 &amp; 0 &amp; 0 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A_1=\begin{bmatrix}
+              0 &amp; 1 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 1\\
+              0 &amp; 0 &amp; 0 &amp; 0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Rütbe \(2\) olduğundan sıfır uzayının boyutu \(4-2=2\)'dir. Dolayısıyla iki bağımsız özvektörü vardır. Bu yapı iki adet \(2\times2\) Jordan bloğu gibi davranır.</p>
+          <p>Şimdi aşağıdaki matrisi düşünelim:</p>
+          <div class="equation-card" data-raw-latex="A_2=\begin{bmatrix}0 &amp; 1 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A_2=\begin{bmatrix}
+              0 &amp; 1 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 1 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matrisin de bütün özdeğerleri \(0\)'dır ve rütbesi yine \(2\)'dir; dolayısıyla iki bağımsız özvektörü vardır. Fakat bu kez yapı bir \(3\times3\) Jordan bloğu ile bir \(1\times1\) bloktan oluşur. Bu nedenle \(A_1\) ve \(A_2\) benzer değildir.</p>
+          <aside class="note-card">
+            <strong>Dikkat:</strong>
+            <p>Benzerliği anlamak için yalnızca özdeğerleri ve özvektör sayısını saymak yeterli değildir. Jordan bloklarının büyüklükleri de benzerlik ailesini belirler.</p>
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Köşegenleştirilebilir Matrislerin Benzerlik Temsili</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin \(n\) bağımsız özvektörü varsa \(A\), özdeğerlerinden oluşan köşegen matrise benzerdir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Özvektörler baz olarak seçildiğinde \(A\)'nın her baz vektörü üzerindeki etkisi yalnızca o vektörü kendi özdeğeri kadar ölçeklemektir.</p>
+          <p><strong>Formal İspat:</strong> Özvektörleri \(S=[\mathbf{v}_1\ \mathbf{v}_2\ \cdots\ \mathbf{v}_n]\) biçiminde yazalım. O zaman</p>
+          <div class="equation-card" data-raw-latex="AS=A[\mathbf{v}_1\ \mathbf{v}_2\ \cdots\ \mathbf{v}_n]=[\lambda_1\mathbf{v}_1\ \lambda_2\mathbf{v}_2\ \cdots\ \lambda_n\mathbf{v}_n]=S\Lambda">
+            <div class="equation-content">
+              \[
+              AS=A[\mathbf{v}_1\ \mathbf{v}_2\ \cdots\ \mathbf{v}_n]
+              =
+              [\lambda_1\mathbf{v}_1\ \lambda_2\mathbf{v}_2\ \cdots\ \lambda_n\mathbf{v}_n]
+              =
+              S\Lambda
+              \]
+            </div>
+          </div>
+          <p>\(S\) terslenebilir olduğundan sol taraftan \(S^{-1}\) ile çarparız:</p>
+          <div class="equation-card" data-raw-latex="S^{-1}AS=\Lambda">
+            <div class="equation-content">
+              \[
+              S^{-1}AS=\Lambda
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Köşegenleştirme, benzerlik ailesinde en sade temsilin bulunduğu iyi durumdur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Skaler Kimlik Matrisinin Tek Başına Kalması</h3>
+          <p><strong>İfade:</strong> \(\lambda I\) matrisine benzer olan tek matris yine \(\lambda I\)'dir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Kimlik matrisi her bazda aynı görünür. Bu nedenle baz değişimi onu başka bir şekle dönüştüremez.</p>
+          <p><strong>Formal İspat:</strong> Her terslenebilir \(M\) için</p>
+          <div class="equation-card" data-raw-latex="M^{-1}(\lambda I)M=\lambda M^{-1}IM=\lambda M^{-1}M=\lambda I">
+            <div class="equation-content">
+              \[
+              M^{-1}(\lambda I)M=\lambda M^{-1}IM=\lambda M^{-1}M=\lambda I
+              \]
+            </div>
+          </div>
+          <p>olur. Dolayısıyla benzerlik dönüşümü \(\lambda I\)'yi değiştirmez.</p>
+          <p><strong>Yorum:</strong> Tekrarlı özdeğerli matrisler arasında \(\lambda I\) özel bir durumdur: tam sayıda özvektörü vardır ve kendi başına bir benzerlik ailesi oluşturur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Jordan Biçimi</h3>
+          <p><strong>İfade:</strong> Her kare matris \(A\), uygun koşullar altında Jordan bloklarından oluşan bir \(J\) matrisine benzerdir:</p>
+          <div class="equation-card" data-raw-latex="A=MJM^{-1}\qquad\text{veya}\qquad J=M^{-1}AM">
+            <div class="equation-content">
+              \[
+              A=MJM^{-1}\qquad\text{veya}\qquad J=M^{-1}AM
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Köşegenleştirme mümkün değilse sorun, tekrarlı özdeğerler için yeterli sayıda bağımsız özvektör bulunmamasıdır. Jordan blokları, her eksik özvektörü köşegen üstündeki \(1\)'lerle kaydeder.</p>
+          <p><strong>Formal İspat:</strong> Bu bölümde tam inşa algoritması verilmez. Temel yapı şudur: Jordan matrisi blok köşegen biçimindedir ve her blok tek bir özdeğere karşılık gelir:</p>
+          <div class="equation-card" data-raw-latex="J=\begin{bmatrix}J_1 &amp; 0 &amp; \cdots &amp; 0\\0 &amp; J_2 &amp; \cdots &amp; 0\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\0 &amp; 0 &amp; \cdots &amp; J_d\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              J=\begin{bmatrix}
+              J_1 &amp; 0 &amp; \cdots &amp; 0\\
+              0 &amp; J_2 &amp; \cdots &amp; 0\\
+              \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+              0 &amp; 0 &amp; \cdots &amp; J_d
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Her blok bir bağımsız özvektör verir. Bu nedenle blok sayısı, bağımsız özvektör sayısını gösterir.</p>
+          <p><strong>Yorum:</strong> Jordan biçimi, tüm kare matrisleri benzerlik aileleri içinde düzenleyen cebirsel normal biçimdir. Farklı blok büyüklükleri farklı benzerlik ailelerini temsil eder.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Benzer Matris Üretme</h3>
+        <p>Bir \(A\) matrisinden aynı özdeğerlere sahip yeni bir temsil üretmek için terslenebilir bir \(M\) seçilir ve \(B=M^{-1}AM\) hesaplanır.</p>
+        <ol>
+          <li>Terslenebilir bir \(M\) matrisi seç.</li>
+          <li>\(M^{-1}\)'i hesapla.</li>
+          <li>Önce \(AM\), sonra \(M^{-1}(AM)\) çarpımını yap.</li>
+          <li>Ortaya çıkan \(B\)'nin iz ve determinant gibi değişmeyenlerini kontrol et.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2 &amp; 1\\1 &amp; 2\end{bmatrix},\quad M=\begin{bmatrix}1 &amp; 4\\0 &amp; 1\end{bmatrix},\quad B=M^{-1}AM=\begin{bmatrix}-2 &amp; -15\\1 &amp; 6\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            A=\begin{bmatrix}2 &amp; 1\\1 &amp; 2\end{bmatrix},\quad
+            M=\begin{bmatrix}1 &amp; 4\\0 &amp; 1\end{bmatrix},\quad
+            B=M^{-1}AM=\begin{bmatrix}-2 &amp; -15\\1 &amp; 6\end{bmatrix}
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 2: İki Boyutta Özdeğer Kontrolü</h3>
+        <p>İki boyutlu matrislerde özdeğer toplamı iz, özdeğer çarpımı determinanttır. Bu nedenle benzerlik için gerekli özdeğer kontrolü hızlı yapılabilir.</p>
+        <div class="equation-card" data-raw-latex="\lambda_1+\lambda_2=\operatorname{tr}(A),\qquad \lambda_1\lambda_2=\det(A)">
+          <div class="equation-content">
+            \[
+            \lambda_1+\lambda_2=\operatorname{tr}(A),\qquad
+            \lambda_1\lambda_2=\det(A)
+            \]
+          </div>
+        </div>
+        <p>Ancak yalnızca iz ve determinant eşitliği benzerliği her durumda kanıtlamaz; özellikle tekrarlı özdeğerlerde özvektör yapısı da incelenmelidir.</p>
+
+        <h3>Yöntem 3: Tekrarlı Özdeğerde Köşegenleştirilebilirliği Test Etme</h3>
+        <p>Tekrarlı bir \(\lambda\) özdeğeri için \((A-\lambda I)\mathbf{x}=\mathbf{0}\) denkleminin bağımsız çözüm sayısı hesaplanır.</p>
+        <ol>
+          <li>\(A-\lambda I\) matrisini oluştur.</li>
+          <li>Sıfır uzayının boyutunu bul.</li>
+          <li>Bu boyut, özdeğerin tekrar sayısı kadar değilse matris köşegenleştirilemez.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="J=\begin{bmatrix}4 &amp; 1\\0 &amp; 4\end{bmatrix},\qquad J-4I=\begin{bmatrix}0 &amp; 1\\0 &amp; 0\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            J=\begin{bmatrix}4 &amp; 1\\0 &amp; 4\end{bmatrix},\qquad
+            J-4I=\begin{bmatrix}0 &amp; 1\\0 &amp; 0\end{bmatrix}
+            \]
+          </div>
+        </div>
+        <p>Burada sıfır uzayının boyutu \(1\)'dir; fakat özdeğerin tekrar sayısı \(2\)'dir. Bu nedenle matris köşegenleştirilemez.</p>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki uygulama bağlantısı iki noktada görünür. Birincisi, en küçük kareler denklemlerinde \(A^TA\) matrisinin ortaya çıkmasıdır. Bağımsız sütunlar olduğunda bu matris pozitif tanımlıdır ve çözüm sistemi iyi davranır.</p>
+        <p>İkincisi, pozitif tanımlı matrislerle hesap yaparken pivot değişimi gerekmemesidir. Pozitif pivotlar, sıfır veya uygunsuz pivot sorunlarını engeller. Buna karşılık Jordan biçimi cebirsel olarak güçlü olsa da tekrarlı özdeğerlerde çok hassas olduğu için hesaplama açısından daha kırılgan bir yapıdır.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Benzerliği eşitlikle karıştırmak:</strong> \(A\) ve \(B\) benzer olabilir ama aynı matris olmak zorunda değildir. Benzerlik, \(B=M^{-1}AM\) biçiminde bir temsil değişimidir.</li>
+          <li><strong>Özvektörlerin de aynı kalacağını sanmak:</strong> Benzer matrislerin özdeğerleri aynıdır; özvektörler ise \(M^{-1}\mathbf{x}\) biçiminde değişir.</li>
+          <li><strong>Tekrarlı özdeğeri otomatik köşegenleştirilebilir sanmak:</strong> \(\lambda,\lambda\) özdeğerleri tek başına yeterli değildir. Bağımsız özvektör sayısı kontrol edilmelidir.</li>
+          <li><strong>\(\lambda I\) ile Jordan bloğunu aynı aileye koymak:</strong> \(\lambda I\) her benzerlik dönüşümünde kendisine döner. Oysa \(\begin{bmatrix}\lambda &amp; 1\\0 &amp; \lambda\end{bmatrix}\) yalnızca bir özvektöre sahiptir.</li>
+          <li><strong>Jordan biçiminde sadece özdeğerleri saymak:</strong> Aynı özdeğer ve aynı özvektör sayısı bile blok büyüklüklerini belirlemek için yeterli olmayabilir.</li>
+          <li><strong>\(A^TA\)'yı her zaman pozitif tanımlı sanmak:</strong> \(A^TA\) her zaman pozitif yarı tanımlıdır; pozitif tanımlılık için \(A\)'nın sütunları bağımsız olmalıdır.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Pozitif tanımlılık \(\rightarrow\) özdeğerler, toplam ve ters alma altında korunma</span>
+          <span>Dikdörtgen matris \(A\) \(\rightarrow\) simetrik matris \(A^TA\) \(\rightarrow\) \(\|A\mathbf{x}\|^2\)</span>
+          <span>Benzerlik \(\rightarrow\) \(B=M^{-1}AM\) \(\rightarrow\) aynı özdeğerler</span>
+          <span>Köşegenleştirme \(\rightarrow\) \(S^{-1}AS=\Lambda\) \(\rightarrow\) yeterli bağımsız özvektör</span>
+          <span>Tekrarlı özdeğer \(\rightarrow\) eksik özvektör olasılığı \(\rightarrow\) köşegenleştirilememe</span>
+          <span>Jordan bloğu \(\rightarrow\) bir özvektör \(\rightarrow\) blok büyüklüğü benzerlik ailesini belirler</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Pozitif Tanımlılık</h3>
+            <p>Sıfırdan farklı her vektör için ikinci dereceden biçimin pozitif olması gerekir.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{x}^TA\mathbf{x}>0\qquad(\mathbf{x}\ne\mathbf{0})">
+              <div class="equation-content">
+                \[
+                \mathbf{x}^TA\mathbf{x}>0\qquad(\mathbf{x}\ne\mathbf{0})
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>\(A^TA\) Biçimi</h3>
+            <p>Bu kimlik, pozitif yarı tanımlılığı doğrudan gösterir.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=\|A\mathbf{x}\|^2">
+              <div class="equation-content">
+                \[
+                \mathbf{x}^TA^TA\mathbf{x}=\|A\mathbf{x}\|^2
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Benzerlik</h3>
+            <p>Benzerlik, terslenebilir bir \(M\) ile tanımlanır.</p>
+            <div class="equation-card" data-raw-latex="B=M^{-1}AM">
+              <div class="equation-content">
+                \[
+                B=M^{-1}AM
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Köşegenleştirme</h3>
+            <p>Bağımsız özvektörler varsa benzer matris köşegen olur.</p>
+            <div class="equation-card" data-raw-latex="S^{-1}AS=\Lambda">
+              <div class="equation-content">
+                \[
+                S^{-1}AS=\Lambda
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Özvektör Dönüşümü</h3>
+            <p>\(A\)'nın özvektörü \(\mathbf{x}\) ise benzer matrisin karşılık gelen özvektörü \(M^{-1}\mathbf{x}\)'tir.</p>
+            <div class="equation-card" data-raw-latex="B(M^{-1}\mathbf{x})=\lambda(M^{-1}\mathbf{x})">
+              <div class="equation-content">
+                \[
+                B(M^{-1}\mathbf{x})=\lambda(M^{-1}\mathbf{x})
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Jordan Matrisi</h3>
+            <p>Jordan biçimi, Jordan bloklarının blok köşegen birleşimidir.</p>
+            <div class="equation-card" data-raw-latex="J=\begin{bmatrix}J_1 &amp; 0 &amp; \cdots &amp; 0\\0 &amp; J_2 &amp; \cdots &amp; 0\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\0 &amp; 0 &amp; \cdots &amp; J_d\end{bmatrix}">
+              <div class="equation-content">
+                \[
+                J=\begin{bmatrix}
+                J_1 &amp; 0 &amp; \cdots &amp; 0\\
+                0 &amp; J_2 &amp; \cdots &amp; 0\\
+                \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+                0 &amp; 0 &amp; \cdots &amp; J_d
+                \end{bmatrix}
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde önce pozitif tanımlı matrislerin tersi ve toplamı altında pozitif tanımlılığın korunduğu görüldü. Ayrıca \(A^TA\) matrisinin \(\|A\mathbf{x}\|^2\) kimliği nedeniyle pozitif yarı tanımlı olduğu, sütunlar bağımsızsa pozitif tanımlı olduğu açıklandı.</p>
+        <p>Ana konu, benzer matrislerdi. \(B=M^{-1}AM\) bağıntısı aynı özdeğerleri korur; özvektörler ise \(M^{-1}\) ile taşınır. Köşegenleştirme, benzerlik ailesinde köşegen temsilin bulunabildiği iyi durumdur.</p>
+        <p>Tekrarlı özdeğerlerde yeterli sayıda bağımsız özvektör bulunmayabilir. Bu durumda Jordan biçimi devreye girer: köşegen blokların üstündeki \(1\)'ler eksik özvektör yapısını kaydeder ve matrisleri benzerlik ailelerine daha ince biçimde ayırır.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Kolay Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matrisin \(A=\begin{bmatrix}2 &amp; 1\\1 &amp; 2\end{bmatrix}\) matrisine benzer olduğunu bilerek özdeğerlerini bulun.</p>
+          <div class="equation-card" data-raw-latex="B=\begin{bmatrix}-2 &amp; -15\\1 &amp; 6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              B=\begin{bmatrix}-2 &amp; -15\\1 &amp; 6\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Benzer matrislerin özdeğerleri aynıdır. \(A\)'nın özdeğerleri \(3\) ve \(1\)'dir. Dolayısıyla \(B\)'nin özdeğerleri de \(3\) ve \(1\)'dir.</p>
+          <p>Kontrol için \(\operatorname{tr}(B)=4\) ve \(\det(B)=3\). Bu değerler \(3+1=4\) ve \(3\cdot1=3\) ile uyumludur.</p>
+          <p><strong>Yorum:</strong> Benzerlik, özdeğerleri koruduğu için zor görünen bir matris daha kolay bir temsil üzerinden okunabilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Orta Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matrisin köşegenleştirilebilir olup olmadığını belirleyin.</p>
+          <div class="equation-card" data-raw-latex="J=\begin{bmatrix}4 &amp; 1\\0 &amp; 4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              J=\begin{bmatrix}4 &amp; 1\\0 &amp; 4\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Tek özdeğer \(4\)'tür ve iki kez tekrarlanır. Özvektörleri bulmak için \(J-4I\) matrisine bakılır:</p>
+          <div class="equation-card" data-raw-latex="J-4I=\begin{bmatrix}0 &amp; 1\\0 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              J-4I=\begin{bmatrix}0 &amp; 1\\0 &amp; 0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\((J-4I)\mathbf{x}=\mathbf{0}\) denklemi \(x_2=0\) koşulunu verir; \(x_1\) serbesttir. Sıfır uzayının boyutu \(1\)'dir. İki boyutlu bir matrisi köşegenleştirmek için iki bağımsız özvektör gerekir. Burada yalnızca bir tane vardır.</p>
+          <p><strong>Sonuç:</strong> \(J\) köşegenleştirilemez.</p>
+          <p><strong>Yorum:</strong> Tekrarlı özdeğer, köşegenleştirme için yeterli değildir; bağımsız özvektör sayısı belirleyicidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: İleri Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Aşağıdaki iki matrisin özdeğerleri ve bağımsız özvektör sayıları aynıdır. Buna rağmen neden benzer olmadıklarını Jordan bloklarıyla açıklayın.</p>
+          <div class="equation-card" data-raw-latex="A_1=\begin{bmatrix}0 &amp; 1 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 1\\0 &amp; 0 &amp; 0 &amp; 0\end{bmatrix},\qquad A_2=\begin{bmatrix}0 &amp; 1 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0\\0 &amp; 0 &amp; 0 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A_1=\begin{bmatrix}
+              0 &amp; 1 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 1\\
+              0 &amp; 0 &amp; 0 &amp; 0
+              \end{bmatrix},\qquad
+              A_2=\begin{bmatrix}
+              0 &amp; 1 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 1 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 0\\
+              0 &amp; 0 &amp; 0 &amp; 0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Her iki matris de üst üçgenseldir ve köşegen girişleri sıfırdır; dolayısıyla bütün özdeğerleri \(0\)'dır. Her ikisinin rütbesi \(2\)'dir; bu nedenle sıfır uzayı boyutu \(4-2=2\)'dir. Yani her ikisinin de iki bağımsız özvektörü vardır.</p>
+          <p>Fark Jordan bloklarındadır. \(A_1\), iki ayrı \(2\times2\) blok yapısına karşılık gelir:</p>
+          <div class="equation-card" data-raw-latex="A_1\sim J_2(0)\oplus J_2(0)">
+            <div class="equation-content">
+              \[
+              A_1\sim J_2(0)\oplus J_2(0)
+              \]
+            </div>
+          </div>
+          <p>\(A_2\) ise bir \(3\times3\) blok ve bir \(1\times1\) blok yapısına karşılık gelir:</p>
+          <div class="equation-card" data-raw-latex="A_2\sim J_3(0)\oplus J_1(0)">
+            <div class="equation-content">
+              \[
+              A_2\sim J_3(0)\oplus J_1(0)
+              \]
+            </div>
+          </div>
+          <p><strong>Sonuç:</strong> Blok büyüklükleri farklı olduğu için \(A_1\) ve \(A_2\) benzer değildir.</p>
+          <p><strong>Yorum:</strong> Jordan biçimi, özdeğer ve özvektör sayısından daha ince bir bilgi taşır; benzerlik ailesini blok büyüklükleri belirler.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>similar matrices</td>
+                <td>benzer matrisler</td>
+                <td>\(B=M^{-1}AM\) bağıntısıyla bağlanan kare matrisler.</td>
+              </tr>
+              <tr>
+                <td>similarity transformation</td>
+                <td>benzerlik dönüşümü</td>
+                <td>Bir matrisi \(M^{-1}AM\) biçiminde yeni bir temsile taşıma işlemi.</td>
+              </tr>
+              <tr>
+                <td>eigenvalue</td>
+                <td>özdeğer</td>
+                <td>\(A\mathbf{x}=\lambda\mathbf{x}\) denklemindeki skaler \(\lambda\).</td>
+              </tr>
+              <tr>
+                <td>eigenvector</td>
+                <td>özvektör</td>
+                <td>Matris tarafından yalnızca ölçeklenen sıfırdan farklı vektör.</td>
+              </tr>
+              <tr>
+                <td>diagonalization</td>
+                <td>köşegenleştirme</td>
+                <td>Bir matrisi benzerlik yoluyla köşegen matrise dönüştürme.</td>
+              </tr>
+              <tr>
+                <td>Jordan form</td>
+                <td>Jordan biçimi</td>
+                <td>Jordan bloklarından oluşan blok köşegen temsil.</td>
+              </tr>
+              <tr>
+                <td>Jordan block</td>
+                <td>Jordan bloğu</td>
+                <td>Aynı özdeğeri köşegende, \(1\)'leri köşegen üstünde taşıyan blok.</td>
+              </tr>
+              <tr>
+                <td>repeated eigenvalue</td>
+                <td>tekrarlı özdeğer</td>
+                <td>Karakteristik denklemde birden fazla kez görünen özdeğer.</td>
+              </tr>
+              <tr>
+                <td>null space</td>
+                <td>sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan vektörlerin kümesi.</td>
+              </tr>
+              <tr>
+                <td>positive definite matrix</td>
+                <td>pozitif tanımlı matris</td>
+                <td>Sıfırdan farklı her \(\mathbf{x}\) için \(\mathbf{x}^TA\mathbf{x}>0\) veren simetrik matris.</td>
+              </tr>
+              <tr>
+                <td>positive semidefinite matrix</td>
+                <td>pozitif yarı tanımlı matris</td>
+                <td>Her \(\mathbf{x}\) için \(\mathbf{x}^TA\mathbf{x}\ge0\) veren simetrik matris.</td>
+              </tr>
+              <tr>
+                <td>least squares</td>
+                <td>en küçük kareler</td>
+                <td>Dikdörtgen sistemlerde \(A^TA\) matrisinin doğal biçimde ortaya çıktığı çözüm yaklaşımı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) {
+          const minMobileSize = 18;
+          let mobileSize = parseFloat(window.getComputedStyle(title).fontSize);
+          let mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+
+          while (
+            Math.round(title.getBoundingClientRect().height / mobileLineHeight) > 2 &&
+            mobileSize > minMobileSize
+          ) {
+            mobileSize -= 1;
+            title.style.fontSize = mobileSize + "px";
+            mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+          }
+
+          return;
+        }
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

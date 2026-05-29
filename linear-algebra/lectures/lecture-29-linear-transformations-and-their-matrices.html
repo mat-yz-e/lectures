@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>29. Ders: Lineer Dönüşümler ve Matrisleri</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" class="active" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">29. Ders: Lineer Dönüşümler ve Matrisleri</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, matrislerden bir adım geri çekilerek lineer dönüşüm fikrini doğrudan ele alır ve her lineer dönüşümün baz seçimi yapıldığında bir matrisle temsil edildiğini gösterir.</p>
+        <p>Bir lineer dönüşüm, vektörleri başka vektörlere götüren ve vektör toplamı ile skaler çarpımı koruyan bir kuraldır. Bu fikir koordinatlardan bağımsız olarak tanımlanabilir. Ancak hesap yapmak için baz seçilir; baz seçildiği anda vektörler koordinatlara, dönüşüm de bir matrise dönüşür.</p>
+        <p>Bu bölümde izdüşüm ve döndürme gibi geometrik dönüşümler, düzlemi sabit bir vektör kadar öteleme ve uzunluk alma gibi lineer olmayan örneklerle karşılaştırılır. Daha sonra bir dönüşümün matrisinin, baz vektörlerinin görüntülerinden nasıl kurulduğu açıklanır. Son örnek olarak türev alma dönüşümünün matrisi hesaplanır.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Lineer dönüşüm tanımını toplama ve skaler çarpım kurallarıyla ifade etmek.</li>
+          <li>İzdüşüm, döndürme ve matrisle çarpma dönüşümlerinin neden lineer olduğunu açıklamak.</li>
+          <li>Öteleme ve uzunluk alma dönüşümlerinin neden lineer olmadığını görmek.</li>
+          <li>Bir baz üzerindeki görüntüler bilindiğinde dönüşümün tüm vektörler üzerinde belirlendiğini ispatlamak.</li>
+          <li>Girdi ve çıktı bazları seçildiğinde dönüşüm matrisinin sütunlarını kurmak.</li>
+          <li>İzdüşüm dönüşümünün farklı bazlarda farklı matrislerle temsil edildiğini karşılaştırmak.</li>
+          <li>Türev alma dönüşümünün matrisini verilen polinom bazlarında hesaplamak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Vektör toplamı ve skaler çarpım.</li>
+          <li>Baz, koordinat ve doğrusal kombinasyon kavramları.</li>
+          <li>Matris-vektör çarpımı.</li>
+          <li>Standart baz vektörleri.</li>
+          <li>İzdüşüm matrisi ve özvektör fikri.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(T\)</td>
+                <td>Bir lineer dönüşümü gösterir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{v},\mathbf{w}\)</td>
+                <td>Girdi uzayındaki vektörlerdir.</td>
+              </tr>
+              <tr>
+                <td>\(c\)</td>
+                <td>Skalerdir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{v}_1,\ldots,\mathbf{v}_n\)</td>
+                <td>Girdi uzayı için seçilen baz vektörleridir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{w}_1,\ldots,\mathbf{w}_m\)</td>
+                <td>Çıktı uzayı için seçilen baz vektörleridir.</td>
+              </tr>
+              <tr>
+                <td>\([\,\mathbf{x}\,]_V\)</td>
+                <td>\(\mathbf{x}\) vektörünün \(V\) bazı içindeki koordinat sütunudur.</td>
+              </tr>
+              <tr>
+                <td>\(A\)</td>
+                <td>Seçilen bazlara göre \(T\) dönüşümünü temsil eden matristir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{e}_1,\mathbf{e}_2,\ldots\)</td>
+                <td>Standart baz vektörleridir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Matrisler, lineer dönüşümlerin koordinatlara dökülmüş biçimidir. Dönüşümün kendisi daha temel bir fikirdir: bir uzaydaki her vektöre başka bir uzayda bir vektör karşılık getirir. Eğer bu karşılık getirme lineerlik kurallarını sağlıyorsa, baz seçildikten sonra bu dönüşüm tek bir matrisle hesaplanabilir.</p>
+        <p>Bu bölümdeki ana köprü şudur: önce soyut dönüşüm \(T\) verilir; sonra girdi ve çıktı uzayları için bazlar seçilir; son olarak \(T\)'nin baz vektörleri üzerindeki etkisi matrisin sütunlarını belirler. Böylece koordinatsız fikir, hesaplanabilir bir matrise dönüşür.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Bir lineer dönüşümü bilmek için her vektörün görüntüsünü ayrı ayrı bilmek gerekmez. Bir bazdaki vektörlerin görüntülerini bilmek yeterlidir.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Lineer Dönüşüm</h3>
+          <p>\(T\), bir vektör uzayından başka bir vektör uzayına giden bir dönüşüm olsun. Her \(\mathbf{v},\mathbf{w}\) vektörü ve her \(c\) skaleri için aşağıdaki iki koşul sağlanıyorsa \(T\) lineerdir:</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v}+\mathbf{w})=T(\mathbf{v})+T(\mathbf{w})">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v}+\mathbf{w})=T(\mathbf{v})+T(\mathbf{w})
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="T(c\mathbf{v})=cT(\mathbf{v})">
+            <div class="equation-content">
+              \[
+              T(c\mathbf{v})=cT(\mathbf{v})
+              \]
+            </div>
+          </div>
+          <p>Bu iki kural tek bir doğrusal kombinasyon kuralı olarak da yazılabilir:</p>
+          <div class="equation-card" data-raw-latex="T(c\mathbf{v}+d\mathbf{w})=cT(\mathbf{v})+dT(\mathbf{w})">
+            <div class="equation-content">
+              \[
+              T(c\mathbf{v}+d\mathbf{w})=cT(\mathbf{v})+dT(\mathbf{w})
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.2: Bir Doğru Üzerine İzdüşüm</h3>
+          <p>Düzlemdeki her vektörü sabit bir doğru üzerine izdüşürme işlemi lineer bir dönüşümdür. Bir vektör iki katına çıkarılırsa izdüşümü de iki katına çıkar. İki vektör önce toplanıp sonra izdüşürüldüğünde, ayrı ayrı izdüşürülüp toplanmalarıyla aynı sonuç elde edilir.</p>
+          <p>Bu dönüşüm koordinat kullanılmadan tanımlanabilir: her vektör, seçilen doğru üzerindeki en yakın bileşenine gönderilir. Bu aşamada henüz belirli bir matris yoktur; matris ancak baz seçildikten sonra ortaya çıkar.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Öteleme Lineer Değildir</h3>
+          <p>Düzlemde her vektöre sabit bir \(\mathbf{v}_0\) vektörü ekleyen dönüşümü düşünelim:</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v})=\mathbf{v}+\mathbf{v}_0">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v})=\mathbf{v}+\mathbf{v}_0
+              \]
+            </div>
+          </div>
+          <p>Bu dönüşüm geometrik olarak basittir; fakat lineer değildir. Çünkü \(T(2\mathbf{v})=2\mathbf{v}+\mathbf{v}_0\), oysa \(2T(\mathbf{v})=2\mathbf{v}+2\mathbf{v}_0\)'dır. \(\mathbf{v}_0\ne\mathbf{0}\) ise bu iki ifade eşit değildir.</p>
+          <p>Ayrıca lineer bir dönüşümde sıfır vektörü sıfır vektörüne gitmelidir. Burada \(T(\mathbf{0})=\mathbf{v}_0\) olduğundan bu koşul da bozulur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: Sıfır Vektörünün Görüntüsü</h3>
+          <p><strong>İfade:</strong> \(T\) lineer ise \(T(\mathbf{0})=\mathbf{0}\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Lineer dönüşüm ölçeklemeyi korur. Sıfır vektörü herhangi bir skalerle çarpıldığında yine sıfır kalır; bu nedenle görüntüsünün de aynı kararlılığı göstermesi gerekir.</p>
+          <p><strong>Formal İspat:</strong> Lineerlikten \(T(3\mathbf{0})=3T(\mathbf{0})\) olur. Ancak \(3\mathbf{0}=\mathbf{0}\), dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{0})=3T(\mathbf{0})">
+            <div class="equation-content">
+              \[
+              T(\mathbf{0})=3T(\mathbf{0})
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Buradan \(2T(\mathbf{0})=\mathbf{0}\) ve dolayısıyla \(T(\mathbf{0})=\mathbf{0}\) çıkar.</p>
+          <p><strong>Yorum:</strong> Bu basit test, birçok dönüşümün lineer olmadığını hızlıca ayırt eder.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: Uzunluk Alma Lineer Değildir</h3>
+          <p>\(\mathbb{R}^3\)'teki her vektörü uzunluğuna gönderen dönüşümü düşünelim:</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v})=\|\mathbf{v}\|">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v})=\|\mathbf{v}\|
+              \]
+            </div>
+          </div>
+          <p>Bu dönüşüm sıfır vektörünü sıfıra gönderir ve pozitif skalerlerle uyumlu görünür. Ancak negatif skalerlerde lineerlik bozulur. Örneğin</p>
+          <div class="equation-card" data-raw-latex="T(-2\mathbf{v})=2\|\mathbf{v}\|\ne -2\|\mathbf{v}\|">
+            <div class="equation-content">
+              \[
+              T(-2\mathbf{v})=2\|\mathbf{v}\|\ne -2\|\mathbf{v}\|
+              \]
+            </div>
+          </div>
+          <p>olduğu için bu dönüşüm lineer değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Düzlemde Döndürme</h3>
+          <p>Düzlemdeki her vektörü \(45^\circ\) döndüren dönüşüm lineerdir. Bir vektör iki katına çıkarılırsa döndürülmüş vektör de iki katına çıkar. İki vektörün toplamı döndürüldüğünde, döndürülmüş vektörlerin toplamı elde edilir.</p>
+          <p>Bu dönüşüm de önce koordinatsız olarak anlaşılabilir: her vektör aynı açı kadar döndürülür. Seçilen baz standart baz olursa bu dönüşümün bir matris temsili yazılabilir; fakat dönüşüm fikri matristen önce gelir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.7: Matrisle Çarpma Dönüşümü</h3>
+          <p>Her \(A\) matrisi, \(\mathbf{v}\mapsto A\mathbf{v}\) kuralıyla bir lineer dönüşüm üretir:</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v})=A\mathbf{v}">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v})=A\mathbf{v}
+              \]
+            </div>
+          </div>
+          <p>Matris çarpımı toplama ve skaler çarpımla uyumlu olduğu için</p>
+          <div class="equation-card" data-raw-latex="A(\mathbf{v}+\mathbf{w})=A\mathbf{v}+A\mathbf{w},\qquad A(c\mathbf{v})=cA\mathbf{v}">
+            <div class="equation-content">
+              \[
+              A(\mathbf{v}+\mathbf{w})=A\mathbf{v}+A\mathbf{w},\qquad
+              A(c\mathbf{v})=cA\mathbf{v}
+              \]
+            </div>
+          </div>
+          <p>sağlanır. Böylece her matris bir lineer dönüşüm verir. Bu bölümün ana sonucu, ters yönde de geçerlidir: baz seçildiğinde her lineer dönüşüm bir matris verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Yansıma Matrisi</h3>
+          <p>Aşağıdaki matris düzlemde \(x\) bileşenini korur, \(y\) bileşeninin işaretini değiştirir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1 &amp; 0\\0 &amp; -1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}1 &amp; 0\\0 &amp; -1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu dönüşüm düzlemdeki her noktayı \(x\)-ekseni boyunca yansıtır. Örneğin \(\begin{bmatrix}x\\y\end{bmatrix}\) vektörü</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1 &amp; 0\\0 &amp; -1\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix}=\begin{bmatrix}x\\-y\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}1 &amp; 0\\0 &amp; -1\end{bmatrix}
+              \begin{bmatrix}x\\y\end{bmatrix}
+              =
+              \begin{bmatrix}x\\-y\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>vektörüne gider.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Bir Baz Üzerindeki Görüntüler Dönüşümü Belirler</h3>
+          <p><strong>İfade:</strong> \(V\) uzayının bir bazı \(\mathbf{v}_1,\ldots,\mathbf{v}_n\) olsun. Lineer bir \(T\) dönüşümü için \(T(\mathbf{v}_1),\ldots,T(\mathbf{v}_n)\) biliniyorsa, \(T(\mathbf{v})\) her \(\mathbf{v}\in V\) için belirlenmiştir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Her vektör baz vektörlerinin tek bir doğrusal kombinasyonudur. Lineer dönüşüm bu kombinasyonu aynı katsayılarla görüntülere taşır.</p>
+          <p><strong>Formal İspat:</strong> Her \(\mathbf{v}\in V\) için tekil katsayılar \(c_1,\ldots,c_n\) vardır ve</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}=c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_n\mathbf{v}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{v}=c_1\mathbf{v}_1+c_2\mathbf{v}_2+\cdots+c_n\mathbf{v}_n
+              \]
+            </div>
+          </div>
+          <p>yazılır. Lineerlikten</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v})=c_1T(\mathbf{v}_1)+c_2T(\mathbf{v}_2)+\cdots+c_nT(\mathbf{v}_n)">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v})=c_1T(\mathbf{v}_1)+c_2T(\mathbf{v}_2)+\cdots+c_nT(\mathbf{v}_n)
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Sağ taraf, baz vektörlerinin görüntüleri bilindiğinde tamamen belirlenmiştir.</p>
+          <p><strong>Yorum:</strong> Bu teorem, dönüşüm matrisinin neden sütun sütun baz vektörlerinin görüntülerinden kurulduğunu açıklar.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.10: Koordinatlar</h3>
+          <p>Bir baz \(\mathbf{v}_1,\ldots,\mathbf{v}_n\) seçildiğinde, her \(\mathbf{v}\) vektörü tek biçimde</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}=c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{v}=c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n
+              \]
+            </div>
+          </div>
+          <p>şeklinde yazılır. \(c_1,\ldots,c_n\) sayıları, \(\mathbf{v}\)'nin bu bazdaki koordinatlarıdır.</p>
+          <p>Standart baz kullanıldığında koordinatlar vektörün alışılmış bileşenleri olarak görünür. Başka bir baz seçildiğinde aynı vektörün koordinatları değişir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Bir Lineer Dönüşümün Matrisini Kurma</h3>
+          <p><strong>İfade:</strong> \(T:\mathbb{R}^n\to\mathbb{R}^m\) lineer olsun. Girdi bazı \(\mathbf{v}_1,\ldots,\mathbf{v}_n\), çıktı bazı \(\mathbf{w}_1,\ldots,\mathbf{w}_m\) seçilsin. \(T(\mathbf{v}_j)\)'nin çıktı bazındaki koordinatları, \(T\)'nin matrisinin \(j\). sütununu oluşturur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Matrisin \(j\). sütunu, standart koordinat sütunu \(\mathbf{e}_j\) ile çarpıldığında ortaya çıkar. Girdi koordinatlarında \(\mathbf{e}_j\), \(j\). baz vektörü \(\mathbf{v}_j\)'yi temsil eder.</p>
+          <p><strong>Formal İspat:</strong> Her \(j\) için</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v}_j)=a_{1j}\mathbf{w}_1+a_{2j}\mathbf{w}_2+\cdots+a_{mj}\mathbf{w}_m">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v}_j)=a_{1j}\mathbf{w}_1+a_{2j}\mathbf{w}_2+\cdots+a_{mj}\mathbf{w}_m
+              \]
+            </div>
+          </div>
+          <p>yazılsın. Bu katsayılar \(A\) matrisinin \(j\). sütununa yerleştirilir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n}\\a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n}\\\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\a_{m1} &amp; a_{m2} &amp; \cdots &amp; a_{mn}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n}\\
+              a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n}\\
+              \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+              a_{m1} &amp; a_{m2} &amp; \cdots &amp; a_{mn}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>O zaman her \(\mathbf{x}\) için</p>
+          <div class="equation-card" data-raw-latex="[T(\mathbf{x})]_W=A[\mathbf{x}]_V">
+            <div class="equation-content">
+              \[
+              [T(\mathbf{x})]_W=A[\mathbf{x}]_V
+              \]
+            </div>
+          </div>
+          <p>olur. Burada \([\mathbf{x}]_V\) girdi bazındaki, \([T(\mathbf{x})]_W\) çıktı bazındaki koordinat sütunudur.</p>
+          <p><strong>Yorum:</strong> Bu formül, dönüşüm ile matris arasındaki kesin bağı kurar: matris, dönüşümün seçilen bazlardaki koordinat temsilidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.12: \(\mathbb{R}^3\)'ten \(\mathbb{R}^2\)'ye Dönüşüm</h3>
+          <p>\(\mathbb{R}^3\)'ten \(\mathbb{R}^2\)'ye giden bir lineer dönüşüm standart bazlarda bir \(2\times3\) matrisle temsil edilir. Çünkü girdi koordinat sütununun üç bileşeni, çıktı koordinat sütununun iki bileşeni vardır.</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}a_{11} &amp; a_{12} &amp; a_{13}\\a_{21} &amp; a_{22} &amp; a_{23}\end{bmatrix},\qquad T(\mathbf{v})=A\mathbf{v}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              a_{11} &amp; a_{12} &amp; a_{13}\\
+              a_{21} &amp; a_{22} &amp; a_{23}
+              \end{bmatrix},\qquad
+              T(\mathbf{v})=A\mathbf{v}
+              \]
+            </div>
+          </div>
+          <p>Bu örnek, matris boyutunun dönüşümün girdi ve çıktı uzaylarının boyutlarından geldiğini gösterir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: İzdüşüm İçin Uygun Baz</h3>
+          <p>Düzlemde bir doğru üzerine izdüşüm dönüşümünü ele alalım. Girdi ve çıktı bazını aynı seçelim: \(\mathbf{v}_1\) doğru üzerinde bir birim vektör, \(\mathbf{v}_2\) ise ona dik bir birim vektör olsun.</p>
+          <p>İzdüşüm \(\mathbf{v}_1\)'i değiştirmez, \(\mathbf{v}_2\)'yi sıfıra gönderir:</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v}_1)=\mathbf{v}_1,\qquad T(\mathbf{v}_2)=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v}_1)=\mathbf{v}_1,\qquad T(\mathbf{v}_2)=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>Bu bazda matris</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1 &amp; 0\\0 &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}1 &amp; 0\\0 &amp; 0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu baz, izdüşümün özvektörlerinden oluştuğu için matris köşegendir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: \(45^\circ\) Doğrusuna İzdüşümün Standart Bazdaki Matrisi</h3>
+          <p>Aynı izdüşüm dönüşümünü bu kez standart bazda yazalım. İzdüşüm doğrusu \(y=x\) olsun. Standart baz vektörleri \(\mathbf{e}_1=\begin{bmatrix}1\\0\end{bmatrix}\) ve \(\mathbf{e}_2=\begin{bmatrix}0\\1\end{bmatrix}\)'dir.</p>
+          <p>Her iki standart baz vektörünün izdüşümü \(\frac12\begin{bmatrix}1\\1\end{bmatrix}\)'dir. Bu nedenle matrisin sütunları aynıdır:</p>
+          <div class="equation-card" data-raw-latex="P=\begin{bmatrix}1/2 &amp; 1/2\\1/2 &amp; 1/2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              P=\begin{bmatrix}1/2 &amp; 1/2\\1/2 &amp; 1/2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Standart baz daha alışıldık olsa da bu dönüşüm için en sade baz değildir. Özvektör bazında aynı dönüşüm \(\begin{bmatrix}1&amp;0\\0&amp;0\end{bmatrix}\) gibi köşegen görünür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Türev Alma Dönüşümünün Matrisi</h3>
+          <p>Girdi uzayı, \(1,x,x^2\) bazına göre yazılan ikinci dereceye kadar polinomlardan oluşsun:</p>
+          <div class="equation-card" data-raw-latex="p(x)=c_1+c_2x+c_3x^2">
+            <div class="equation-content">
+              \[
+              p(x)=c_1+c_2x+c_3x^2
+              \]
+            </div>
+          </div>
+          <p>Dönüşüm \(T(p)=p'\) olsun. Çıktı uzayı \(1,x\) bazına göre yazılan birinci dereceye kadar polinomlardan oluşur. Türev</p>
+          <div class="equation-card" data-raw-latex="T(p)=p'(x)=c_2+2c_3x">
+            <div class="equation-content">
+              \[
+              T(p)=p'(x)=c_2+2c_3x
+              \]
+            </div>
+          </div>
+          <p>olduğundan girdi koordinatları \(\begin{bmatrix}c_1\\c_2\\c_3\end{bmatrix}\), çıktı koordinatları \(\begin{bmatrix}c_2\\2c_3\end{bmatrix}\)'dir. Bu koordinat dönüşümünü veren matris</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Matris \(2\times3\) boyutundadır; çünkü dönüşüm üç boyutlu bir polinom uzayından iki boyutlu bir polinom uzayına gider.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.16: Matrisle Çarpma Lineerdir</h3>
+          <p><strong>İfade:</strong> Sabit bir \(A\) matrisi için \(T(\mathbf{v})=A\mathbf{v}\) dönüşümü lineerdir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Matris çarpımı, sütunların doğrusal kombinasyonudur. Bu nedenle girdi vektörlerinin doğrusal kombinasyonları aynı katsayılarla çıktı uzayına taşınır.</p>
+          <p><strong>Formal İspat:</strong> Her \(\mathbf{v},\mathbf{w}\) ve \(c\) için</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{v}+\mathbf{w})=A(\mathbf{v}+\mathbf{w})=A\mathbf{v}+A\mathbf{w}=T(\mathbf{v})+T(\mathbf{w})">
+            <div class="equation-content">
+              \[
+              T(\mathbf{v}+\mathbf{w})=A(\mathbf{v}+\mathbf{w})=A\mathbf{v}+A\mathbf{w}=T(\mathbf{v})+T(\mathbf{w})
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="T(c\mathbf{v})=A(c\mathbf{v})=cA\mathbf{v}=cT(\mathbf{v})">
+            <div class="equation-content">
+              \[
+              T(c\mathbf{v})=A(c\mathbf{v})=cA\mathbf{v}=cT(\mathbf{v})
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu sonuç, matrislerin lineer dönüşüm üretmesini sağlar. Bölümün diğer yönü ise her lineer dönüşümün baz seçilince matris üretmesidir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.17: Dönüşüm Matrisi Sütunlarla Belirlenir</h3>
+          <p><strong>İfade:</strong> Seçilen girdi ve çıktı bazlarına göre \(T(\mathbf{v}_j)\)'nin koordinatları, dönüşüm matrisinin \(j\). sütunudur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Girdi koordinatlarında \(\mathbf{v}_j\), standart koordinat sütunu \(\mathbf{e}_j\) ile temsil edilir. Bir matris \(\mathbf{e}_j\) ile çarpıldığında kendi \(j\). sütununu verir.</p>
+          <p><strong>Formal İspat:</strong> \([\mathbf{v}_j]_V=\mathbf{e}_j\) olduğundan, temsil matrisi \(A\) için</p>
+          <div class="equation-card" data-raw-latex="[T(\mathbf{v}_j)]_W=A[\mathbf{v}_j]_V=A\mathbf{e}_j">
+            <div class="equation-content">
+              \[
+              [T(\mathbf{v}_j)]_W=A[\mathbf{v}_j]_V=A\mathbf{e}_j
+              \]
+            </div>
+          </div>
+          <p>olur. \(A\mathbf{e}_j\), \(A\)'nın \(j\). sütunudur. Dolayısıyla sütun, \(T(\mathbf{v}_j)\)'nin çıktı bazındaki koordinatlarıdır.</p>
+          <p><strong>Yorum:</strong> Bu teorem, dönüşüm matrisini hesaplamanın temel algoritmasını verir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Bir Dönüşümün Lineer Olup Olmadığını Test Etme</h3>
+        <ol>
+          <li>\(T(\mathbf{0})=\mathbf{0}\) koşulunu kontrol et.</li>
+          <li>\(T(c\mathbf{v})=cT(\mathbf{v})\) koşulunu test et.</li>
+          <li>\(T(\mathbf{v}+\mathbf{w})=T(\mathbf{v})+T(\mathbf{w})\) koşulunu test et.</li>
+          <li>Bu kurallardan biri bozuluyorsa dönüşüm lineer değildir.</li>
+        </ol>
+
+        <h3>Yöntem 2: Dönüşüm Matrisinin Sütunlarını Bulma</h3>
+        <ol>
+          <li>Girdi bazı \(\mathbf{v}_1,\ldots,\mathbf{v}_n\) seçilir.</li>
+          <li>Çıktı bazı \(\mathbf{w}_1,\ldots,\mathbf{w}_m\) seçilir.</li>
+          <li>Her \(\mathbf{v}_j\) için \(T(\mathbf{v}_j)\) hesaplanır.</li>
+          <li>\(T(\mathbf{v}_j)\), çıktı bazında koordinatlara ayrılır.</li>
+          <li>Bu koordinatlar \(A\)'nın \(j\). sütununa yerleştirilir.</li>
+        </ol>
+
+        <h3>Yöntem 3: Türev Dönüşümünü Matrise Çevirme</h3>
+        <p>Polinom bazları verildiğinde her baz polinomunun türevi alınır ve çıktı bazına göre yazılır:</p>
+        <div class="equation-card" data-raw-latex="T(1)=0,\qquad T(x)=1,\qquad T(x^2)=2x">
+          <div class="equation-content">
+            \[
+            T(1)=0,\qquad T(x)=1,\qquad T(x^2)=2x
+            \]
+          </div>
+        </div>
+        <p>Çıktı bazı \(1,x\) ise bu üç görüntünün koordinatları sırasıyla \(\begin{bmatrix}0\\0\end{bmatrix}\), \(\begin{bmatrix}1\\0\end{bmatrix}\), \(\begin{bmatrix}0\\2\end{bmatrix}\)'dir. Bunlar matrisin sütunlarını oluşturur.</p>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki açık uygulama, türev alma işleminin lineer dönüşüm olarak görülmesidir. Bir polinomun türevini almak, katsayılar üzerinde lineer bir işlem yapar. Bu nedenle polinom uzayları için baz seçildiğinde türev alma işlemi bir matrisle temsil edilir.</p>
+        <p>Ayrıca izdüşüm ve döndürme gibi geometrik işlemler, koordinatlara bağlı olmadan tanımlanabilir; fakat hesap yapmak istendiğinde uygun baz seçimi dönüşümü daha sade bir matrise dönüştürür.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Her geometrik dönüşümü lineer sanmak:</strong> Öteleme geometrik olarak basittir; fakat sıfır vektörünü sıfıra göndermediği için lineer değildir.</li>
+          <li><strong>Sadece \(T(\mathbf{0})=\mathbf{0}\) koşulunu yeterli sanmak:</strong> Uzunluk alma dönüşümü sıfırı sıfıra gönderir; ancak negatif skalerlerle uyumlu olmadığı için lineer değildir.</li>
+          <li><strong>Baz seçimini unutmak:</strong> Bir dönüşümün matrisi, seçilen girdi ve çıktı bazlarına bağlıdır. Aynı dönüşüm farklı bazlarda farklı matrislerle temsil edilir.</li>
+          <li><strong>Matrisin sütunlarını yanlış yorumlamak:</strong> \(j\). sütun, \(\mathbf{v}_j\)'nin değil, \(T(\mathbf{v}_j)\)'nin çıktı bazındaki koordinatlarıdır.</li>
+          <li><strong>Girdi ve çıktı bazlarını karıştırmak:</strong> Girdi koordinatları \(\mathbf{v}\) bazında, çıktı koordinatları \(\mathbf{w}\) bazında yazılır.</li>
+          <li><strong>Standart bazın zorunlu olduğunu düşünmek:</strong> Standart baz yalnızca bir seçimdir. Özvektör bazları gibi başka bazlar dönüşümü daha sade gösterebilir.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Lineer dönüşüm \(\rightarrow\) toplama ve skaler çarpımı korur</span>
+          <span>Baz seçimi \(\rightarrow\) koordinatların belirlenmesi</span>
+          <span>Baz vektörlerinin görüntüleri \(\rightarrow\) dönüşümün tamamı</span>
+          <span>Girdi bazı ve çıktı bazı \(\rightarrow\) temsil matrisi</span>
+          <span>Matrisin sütunları \(\rightarrow\) \(T(\mathbf{v}_j)\)'nin çıktı koordinatları</span>
+          <span>İzdüşüm \(\rightarrow\) uygun bazda köşegen matris</span>
+          <span>Türev alma \(\rightarrow\) polinom bazlarında \(2\times3\) matris</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Lineerlik</h3>
+            <p>Dönüşüm doğrusal kombinasyonları korur.</p>
+            <div class="equation-card" data-raw-latex="T(c\mathbf{v}+d\mathbf{w})=cT(\mathbf{v})+dT(\mathbf{w})">
+              <div class="equation-content">
+                \[
+                T(c\mathbf{v}+d\mathbf{w})=cT(\mathbf{v})+dT(\mathbf{w})
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Koordinat Gösterimi</h3>
+            <p>Bir vektör seçilen bazda tek bir doğrusal kombinasyonla yazılır.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{v}=c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n">
+              <div class="equation-content">
+                \[
+                \mathbf{v}=c_1\mathbf{v}_1+\cdots+c_n\mathbf{v}_n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Temsil Matrisi</h3>
+            <p>Matris, girdi koordinatlarını çıktı koordinatlarına taşır.</p>
+            <div class="equation-card" data-raw-latex="[T(\mathbf{x})]_W=A[\mathbf{x}]_V">
+              <div class="equation-content">
+                \[
+                [T(\mathbf{x})]_W=A[\mathbf{x}]_V
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sütun Kuralı</h3>
+            <p>\(j\). sütun, \(j\). girdi baz vektörünün görüntüsüdür.</p>
+            <div class="equation-card" data-raw-latex="T(\mathbf{v}_j)=a_{1j}\mathbf{w}_1+\cdots+a_{mj}\mathbf{w}_m">
+              <div class="equation-content">
+                \[
+                T(\mathbf{v}_j)=a_{1j}\mathbf{w}_1+\cdots+a_{mj}\mathbf{w}_m
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Matrisle Çarpma Dönüşümü</h3>
+            <p>Her matris doğal olarak bir lineer dönüşüm verir.</p>
+            <div class="equation-card" data-raw-latex="T(\mathbf{v})=A\mathbf{v}">
+              <div class="equation-content">
+                \[
+                T(\mathbf{v})=A\mathbf{v}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Türev Matrisi</h3>
+            <p>\(1,x,x^2\) bazından \(1,x\) bazına türev alma dönüşümü.</p>
+            <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 2\end{bmatrix}">
+              <div class="equation-content">
+                \[
+                A=\begin{bmatrix}0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 2\end{bmatrix}
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde lineer dönüşüm kavramı matristen bağımsız olarak tanımlandı. Bir dönüşümün lineer olması, vektör toplamını ve skaler çarpımı koruması anlamına gelir. İzdüşüm ve döndürme lineer dönüşüm örnekleridir; öteleme ve uzunluk alma lineer değildir.</p>
+        <p>Bir bazdaki vektörlerin görüntülerini bilmek, lineer dönüşümü tamamen belirler. Baz seçildiğinde her vektör koordinatlarla temsil edilir ve dönüşüm, girdi koordinatlarını çıktı koordinatlarına götüren bir matrisle yazılır.</p>
+        <p>Dönüşüm matrisinin sütunları, girdi baz vektörlerinin görüntülerinin çıktı bazındaki koordinatlarıdır. Bu fikir, izdüşümün uygun bazda köşegen matris olmasını ve türev alma işleminin polinom bazlarında \(2\times3\) matrisle temsil edilmesini açıklar.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.18: Kolay Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> \(T(\mathbf{v})=\mathbf{v}+\mathbf{v}_0\) dönüşümü için \(\mathbf{v}_0\ne\mathbf{0}\) olsun. Bu dönüşümün lineer olmadığını gösterin.</p>
+          <p><strong>Çözüm:</strong> Lineer bir dönüşümde \(T(\mathbf{0})=\mathbf{0}\) olmalıdır. Ancak</p>
+          <div class="equation-card" data-raw-latex="T(\mathbf{0})=\mathbf{0}+\mathbf{v}_0=\mathbf{v}_0\ne\mathbf{0}">
+            <div class="equation-content">
+              \[
+              T(\mathbf{0})=\mathbf{0}+\mathbf{v}_0=\mathbf{v}_0\ne\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu nedenle dönüşüm lineer değildir.</p>
+          <p><strong>Yorum:</strong> Sıfır vektörü testi, öteleme türü dönüşümleri hemen ayırır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.19: Orta Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> \(y=x\) doğrusu üzerine izdüşüm dönüşümünün standart bazdaki matrisini bulun.</p>
+          <p><strong>Çözüm:</strong> Standart baz vektörleri \(\mathbf{e}_1=\begin{bmatrix}1\\0\end{bmatrix}\) ve \(\mathbf{e}_2=\begin{bmatrix}0\\1\end{bmatrix}\)'dir. Her ikisinin \(y=x\) doğrusu üzerindeki izdüşümü</p>
+          <div class="equation-card" data-raw-latex="\frac12\begin{bmatrix}1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \frac12\begin{bmatrix}1\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğundan matrisin iki sütunu da bu vektördür:</p>
+          <div class="equation-card" data-raw-latex="P=\begin{bmatrix}1/2 &amp; 1/2\\1/2 &amp; 1/2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              P=\begin{bmatrix}1/2 &amp; 1/2\\1/2 &amp; 1/2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Aynı dönüşüm, uygun özvektör bazında \(\begin{bmatrix}1&amp;0\\0&amp;0\end{bmatrix}\) gibi daha sade görünür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.20: İleri Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> Girdi bazı \(1,x,x^2\), çıktı bazı \(1,x\) olsun. \(T(p)=p'\) dönüşümünün matrisini sütun kuralıyla bulun.</p>
+          <p><strong>Çözüm:</strong> Önce baz polinomlarının görüntüleri hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="T(1)=0,\qquad T(x)=1,\qquad T(x^2)=2x">
+            <div class="equation-content">
+              \[
+              T(1)=0,\qquad T(x)=1,\qquad T(x^2)=2x
+              \]
+            </div>
+          </div>
+          <p>Çıktı bazı \(1,x\) olduğundan bu görüntülerin koordinatları sırasıyla</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}0\\0\end{bmatrix},\qquad \begin{bmatrix}1\\0\end{bmatrix},\qquad \begin{bmatrix}0\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}0\\0\end{bmatrix},\qquad
+              \begin{bmatrix}1\\0\end{bmatrix},\qquad
+              \begin{bmatrix}0\\2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu koordinatlar matrisin sütunlarıdır:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Türev alma dönüşümü, baz seçildiğinde katsayılar üzerinde çalışan basit bir matris hâline gelir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>linear transformation</td>
+                <td>lineer dönüşüm</td>
+                <td>Toplama ve skaler çarpımı koruyan dönüşüm.</td>
+              </tr>
+              <tr>
+                <td>mapping</td>
+                <td>eşleme</td>
+                <td>Her girdiye bir çıktı atayan kural.</td>
+              </tr>
+              <tr>
+                <td>projection</td>
+                <td>izdüşüm</td>
+                <td>Vektörü belirli bir doğru veya alt uzay üzerindeki bileşenine götüren dönüşüm.</td>
+              </tr>
+              <tr>
+                <td>rotation</td>
+                <td>döndürme</td>
+                <td>Vektörleri sabit bir açı kadar döndüren dönüşüm.</td>
+              </tr>
+              <tr>
+                <td>basis</td>
+                <td>baz</td>
+                <td>Uzaydaki her vektörü tek biçimde ifade eden bağımsız vektör kümesi.</td>
+              </tr>
+              <tr>
+                <td>coordinates</td>
+                <td>koordinatlar</td>
+                <td>Bir vektörün seçilen bazdaki katsayıları.</td>
+              </tr>
+              <tr>
+                <td>input basis</td>
+                <td>girdi bazı</td>
+                <td>Dönüşümün etki ettiği uzay için seçilen baz.</td>
+              </tr>
+              <tr>
+                <td>output basis</td>
+                <td>çıktı bazı</td>
+                <td>Dönüşüm sonucunun yazıldığı uzay için seçilen baz.</td>
+              </tr>
+              <tr>
+                <td>standard basis</td>
+                <td>standart baz</td>
+                <td>\(\mathbf{e}_1,\mathbf{e}_2,\ldots\) vektörlerinden oluşan alışılmış baz.</td>
+              </tr>
+              <tr>
+                <td>matrix representation</td>
+                <td>matris temsili</td>
+                <td>Bir dönüşümün seçilen bazlara göre yazılan matrisi.</td>
+              </tr>
+              <tr>
+                <td>derivative</td>
+                <td>türev</td>
+                <td>Polinom örneğinde lineer dönüşüm olarak ele alınan işlem.</td>
+              </tr>
+              <tr>
+                <td>nonlinear transformation</td>
+                <td>lineer olmayan dönüşüm</td>
+                <td>Lineerlik kurallarından en az birini sağlamayan dönüşüm.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) {
+          const minMobileSize = 18;
+          let mobileSize = parseFloat(window.getComputedStyle(title).fontSize);
+          let mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+
+          while (
+            Math.round(title.getBoundingClientRect().height / mobileLineHeight) > 2 &&
+            mobileSize > minMobileSize
+          ) {
+            mobileSize -= 1;
+            title.style.fontSize = mobileSize + "px";
+            mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+          }
+
+          return;
+        }
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

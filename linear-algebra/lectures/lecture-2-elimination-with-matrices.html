@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2. Ders: Matrislerle Eliminasyon</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .lesson-page .formula-item {
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" class="active" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">2. Ders: Matrislerle Eliminasyon</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, lineer denklem sistemlerini yalnızca yorumlamakla kalmayıp sistematik biçimde çözmenin ilk yöntemini kurar: eliminasyon.</p>
+        <p>Bir lineer sistem \(A\mathbf{x}=\mathbf{b}\) biçiminde yazıldığında, temel amaç \(\mathbf{x}\) bilinmeyenler vektörünü bulmaktır. Önceki geometrik bakış, çözümün ne anlama geldiğini açıklamıştı; burada ise çözümün hesaplanması için satır işlemleri kullanılır. Eliminasyonun ana fikri, denklemleri birbirinden uygun katsayılarla çıkararak alt satırlardaki bilinmeyenleri sırayla yok etmek ve sistemi üst üçgensel biçime dönüştürmektir.</p>
+        <p>Bu konu, matris-vektör çarpımı, satır işlemleri, doğrusal birleşim ve matris çarpımı kavramlarına dayanır. Aynı zamanda eliminasyon matrisleri, permütasyon matrisleri ve ters matris fikrine ilk kapıyı açar. Bu bölümde ele alınan araçlar yalnızca aynı ders kapsamındaki satır indirgeme, üçgensel sistem çözme ve matris işlemleriyle sınırlıdır.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir lineer sistemi ileri eliminasyonla üst üçgensel forma dönüştürebilmek.</li>
+          <li>Pivot, çarpan ve pivot satır kavramlarını doğru kullanabilmek.</li>
+          <li>Sıfır pivot durumunda geçici ve gerçek başarısızlığı ayırt edebilmek.</li>
+          <li>Genişletilmiş matris üzerinde sağ tarafı da eş zamanlı dönüştürebilmek.</li>
+          <li>Üst üçgensel sistemden geri yerine koyma ile çözüm elde edebilmek.</li>
+          <li>Bir eliminasyon adımını soldan çarpılan bir eliminasyon matrisiyle ifade edebilmek.</li>
+          <li>Matris çarpımının birleşme özelliğini eliminasyon adımlarını tek matriste toplamak için kullanabilmek.</li>
+          <li>Matris çarpımının genel olarak değişmeli olmadığını eliminasyon sırası üzerinden açıklayabilmek.</li>
+          <li>Permütasyon matrislerinin satır ve sütun değiş tokuşundaki rolünü ayırt edebilmek.</li>
+          <li>Bir eliminasyon matrisinin tersini, ilgili satır işlemini geri alma fikriyle yazabilmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>\(A\mathbf{x}=\mathbf{b}\) biçimindeki lineer sistem gösterimini bilme.</li>
+          <li>Matrisin satır ve sütun yapısını okuyabilme.</li>
+          <li>Bir denklemin katını başka bir denklemden çıkarma cebirine hâkim olma.</li>
+          <li>Matris-vektör çarpımının temel anlamını ve doğrusal birleşim fikrini bilme.</li>
+          <li>İki ve üç bilinmeyenli lineer sistemlerde çözüm kontrolü yapabilme.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>\(A\)</td><td>Katsayı matrisi.</td></tr>
+              <tr><td>\(\mathbf{x}\)</td><td>Bilinmeyenler vektörü.</td></tr>
+              <tr><td>\(\mathbf{b}\)</td><td>Sağ taraf vektörü.</td></tr>
+              <tr><td>\(U\)</td><td>Eliminasyon sonrası elde edilen üst üçgensel matris.</td></tr>
+              <tr><td>\(\mathbf{c}\)</td><td>Eliminasyon sonrası dönüşmüş sağ taraf vektörü.</td></tr>
+              <tr><td>\([A\mid \mathbf{b}]\)</td><td>Katsayı matrisi ve sağ tarafın birlikte yazıldığı genişletilmiş matris.</td></tr>
+              <tr><td>\(\ell_{ik}\)</td><td>\(k\)-inci pivot kullanılarak \(i\)-inci satırdaki girdiyi yok etmek için kullanılan çarpan.</td></tr>
+              <tr><td>\(E_{ij}\)</td><td>\((i,j)\) konumundaki girdiyi sıfırlayan eliminasyon matrisi.</td></tr>
+              <tr><td>\(E\)</td><td>Birden fazla eliminasyon adımının çarpımıyla oluşan toplam eliminasyon matrisi.</td></tr>
+              <tr><td>\(P\)</td><td>Satır veya sütun değiş tokuşunu yapan permütasyon matrisi.</td></tr>
+              <tr><td>\(I\)</td><td>Birim matris.</td></tr>
+              <tr><td>\(E^{-1}\)</td><td>Bir eliminasyon matrisinin ters matrisi.</td></tr>
+              <tr><td>\(\mathbf{e}_i\)</td><td>\(i\)-inci standart baz vektörü.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Eliminasyon, karmaşık görünen bir lineer sistemi daha kolay çözülen bir sisteme dönüştürür. Amaç, \(A\mathbf{x}=\mathbf{b}\) sistemini çözüm kümesini değiştirmeden şu biçime getirmektir:</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}\quad \longrightarrow \quad U\mathbf{x}=\mathbf{c}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\mathbf{b}\quad \longrightarrow \quad U\mathbf{x}=\mathbf{c}.
+            \]
+          </div>
+        </div>
+        <p>Burada \(U\) üst üçgensel bir matristir. Üst üçgensel sistemler kolay çözülür; çünkü en alttaki denklem yalnızca son bilinmeyeni içerir. Bu bilinmeyen bulunduktan sonra yukarı çıkılarak diğerleri sırayla hesaplanır.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Eliminasyonun her satır işlemi, soldan çarpılan bir matrisle ifade edilebilir. Bu nedenle eliminasyon yalnızca bir hesaplama yöntemi değil, aynı zamanda satır işlemleriyle matris çarpımı arasında kurulan temel bir sözlüktür.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="example-card">
+          <h3>Örnek 2.1: Çalışma Sistemi</h3>
+          <p>Bu bölüm boyunca ana örnek olarak şu üç bilinmeyenli sistem kullanılacaktır:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned} x+2y+z&=2\\ 3x+8y+z&=12\\ 4y+z&=2. \end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x+2y+z&=2\\
+              3x+8y+z&=12\\
+              4y+z&=2.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Matris biçimi şöyledir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&1\\3&8&1\\0&4&1\end{bmatrix},\quad \mathbf{x}=\begin{bmatrix}x\\y\\z\end{bmatrix},\quad \mathbf{b}=\begin{bmatrix}2\\12\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&2&1\\
+              3&8&1\\
+              0&4&1
+              \end{bmatrix},
+              \quad
+              \mathbf{x}=
+              \begin{bmatrix}
+              x\\y\\z
+              \end{bmatrix},
+              \quad
+              \mathbf{b}=
+              \begin{bmatrix}
+              2\\12\\2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Üçüncü denklemde \(x\) katsayısı \(0\) olduğu için birinci sütundaki üçüncü girdi zaten temizdir. Eliminasyon, ikinci satırdaki \(x\) terimini ve ardından üçüncü satırdaki \(y\) terimini yok edecektir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 2.2: Eliminasyon</h3>
+          <p>Eliminasyon, lineer denklem sistemini çözüm kümesini değiştirmeden üst üçgensel biçime dönüştüren satır işlemleri yöntemidir. Temel işlem, bir satırdan başka bir satırın uygun katını çıkarmaktır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 2.3: Pivot ve Çarpan</h3>
+          <p>Eliminasyon sırasında bir sütunun altındaki girdileri sıfırlamak için kullanılan köşegen girdiye pivot denir. \(k\)-inci adımda pivot \(a_{kk}\) ise, \(i>k\) satırındaki \(a_{ik}\) girdisini yok etmek için kullanılan çarpan</p>
+          <div class="equation-card" data-raw-latex="\ell_{ik}=\frac{a_{ik}}{a_{kk}}">
+            <div class="equation-content">
+              \[
+              \ell_{ik}=\frac{a_{ik}}{a_{kk}}
+              \]
+            </div>
+          </div>
+          <p>olur. Daha sonra \(i\)-inci satırdan \(k\)-inci satırın \(\ell_{ik}\) katı çıkarılır. Pivot sıfır olamaz; sıfır pivot görülürse önce satır değiş tokuşu olasılığı araştırılır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.4: İleri Eliminasyon</h3>
+          <p>Başlangıç matrisi</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&1\\3&8&1\\0&4&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&2&1\\
+              3&8&1\\
+              0&4&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Birinci pivot \(1\)'dir. İkinci satırdaki \(3\) değerini yok etmek için çarpan \(\ell_{21}=3/1=3\) alınır ve ikinci satırdan birinci satırın \(3\) katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="[3,8,1]-3[1,2,1]=[0,2,-2]">
+            <div class="equation-content">
+              \[
+              [3,8,1]-3[1,2,1]=[0,2,-2].
+              \]
+            </div>
+          </div>
+          <p>Üçüncü satırdaki birinci sütun girdisi zaten \(0\) olduğundan \((3,1)\) adımında işlem gerekmez. Ara matris:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&2&1\\0&2&-2\\0&4&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&2&1\\
+              0&2&-2\\
+              0&4&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İkinci pivot \(2\)'dir. Üçüncü satırdaki \(4\) değerini yok etmek için \(\ell_{32}=4/2=2\) alınır ve üçüncü satırdan ikinci satırın \(2\) katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="[0,4,1]-2[0,2,-2]=[0,0,5]">
+            <div class="equation-content">
+              \[
+              [0,4,1]-2[0,2,-2]=[0,0,5].
+              \]
+            </div>
+          </div>
+          <p>Sonuç üst üçgensel matristir:</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}1&2&1\\0&2&-2\\0&0&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              U=
+              \begin{bmatrix}
+              1&2&1\\
+              0&2&-2\\
+              0&0&5
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Pivotlar \(1,2,5\)'tir. Hiçbiri sıfır olmadığı için eliminasyon kesintisiz tamamlanır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 2.5: Genişletilmiş Matris ve Geri Yerine Koyma</h3>
+          <p>Katsayı matrisi ile sağ taraf vektörü yan yana yazılırsa genişletilmiş matris elde edilir. Eliminasyon, katsayılarla birlikte sağ tarafa da uygulanır:</p>
+          <div class="equation-card" data-raw-latex="[A\mid\mathbf{b}]\longrightarrow[U\mid\mathbf{c}]">
+            <div class="equation-content">
+              \[
+              [A\mid\mathbf{b}]\longrightarrow[U\mid\mathbf{c}].
+              \]
+            </div>
+          </div>
+          <p>Üst üçgensel \(U\mathbf{x}=\mathbf{c}\) sistemi elde edildiğinde çözüm, en alttaki denklemden başlanarak yukarı doğru bulunur. Bu işleme geri yerine koyma denir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.6: Sağ Tarafla Birlikte Eliminasyon</h3>
+          <p>Çalışma sistemi genişletilmiş matris olarak yazılsın:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{ccc|c}1&2&1&2\\3&8&1&12\\0&4&1&2\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{ccc|c}
+              1&2&1&2\\
+              3&8&1&12\\
+              0&4&1&2
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>İlk adımda ikinci satırdan birinci satırın \(3\) katı çıkarılır. Sağ taraf \(12-3\cdot2=6\) olur:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{ccc|c}1&2&1&2\\0&2&-2&6\\0&4&1&2\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{ccc|c}
+              1&2&1&2\\
+              0&2&-2&6\\
+              0&4&1&2
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Son adımda üçüncü satırdan ikinci satırın \(2\) katı çıkarılır. Sağ taraf \(2-2\cdot6=-10\) olur:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{ccc|c}1&2&1&2\\0&2&-2&6\\0&0&5&-10\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{ccc|c}
+              1&2&1&2\\
+              0&2&-2&6\\
+              0&0&5&-10
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Böylece çözülmesi gereken üst üçgensel sistem şudur:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}x+2y+z&=2\\2y-2z&=6\\5z&=-10.\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x+2y+z&=2\\
+              2y-2z&=6\\
+              5z&=-10.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Geri yerine koyma:</p>
+          <div class="equation-card" data-raw-latex="z=-2,\qquad 2y-2(-2)=6\Rightarrow y=1,\qquad x+2(1)-2=2\Rightarrow x=2">
+            <div class="equation-content">
+              \[
+              z=-2,\qquad
+              2y-2(-2)=6\Rightarrow y=1,\qquad
+              x+2(1)-2=2\Rightarrow x=2.
+              \]
+            </div>
+          </div>
+          <p>Çözüm:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}2\\1\\-2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              \begin{bmatrix}
+              2\\1\\-2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.7: Eliminasyonun Başarısızlık Biçimleri</h3>
+          <h4>Geçici Başarısızlık</h4>
+          <p>Pivot konumunda sıfır görünür fakat aynı sütunda daha aşağıda sıfırdan farklı bir girdi varsa, satır değiş tokuşu yapılarak devam edilebilir. Örneğin çalışma matrisindeki \(8\) yerine \(6\) yazılsaydı, ilk eliminasyon sonrası ikinci satır \([0,0,-2]\) olurdu:</p>
+          <div class="equation-card" data-raw-latex="[3,6,1]-3[1,2,1]=[0,0,-2]">
+            <div class="equation-content">
+              \[
+              [3,6,1]-3[1,2,1]=[0,0,-2].
+              \]
+            </div>
+          </div>
+          <p>Bu durumda \((2,2)\) pivot konumu sıfırdır; ancak üçüncü satırın ikinci sütununda \(4\) vardır. İkinci ve üçüncü satırlar değiştirilirse eliminasyon sürdürülebilir.</p>
+          <h4>Gerçek Başarısızlık</h4>
+          <p>Pivot konumunda sıfır varsa ve aynı sütunda aşağıda sıfırdan farklı hiçbir girdi yoksa satır değiş tokuşu işe yaramaz. Örneğin üçüncü satırın son girdisi \(1\) yerine \(-4\) olsaydı, son adım üçüncü satırı sıfır satırına dönüştürürdü:</p>
+          <div class="equation-card" data-raw-latex="[0,4,-4]-2[0,2,-2]=[0,0,0]">
+            <div class="equation-content">
+              \[
+              [0,4,-4]-2[0,2,-2]=[0,0,0].
+              \]
+            </div>
+          </div>
+          <p>Bu durumda üçüncü pivot yoktur. Matris tekil davranır; sistem sağ tarafa bağlı olarak çözümsüz veya sonsuz çözümlü olabilir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 2.8: Satır Vektörünün Matrisle Çarpımı</h3>
+          <p><strong>İfade:</strong> \(\mathbf{r}=[r_1\ r_2\ \cdots\ r_m]\) bir satır vektörü, \(M\) ise \(m\times n\) tipinde bir matris olsun. \(M\) matrisinin satırları \(\mathbf{m}_1,\ldots,\mathbf{m}_m\) ise</p>
+          <div class="equation-card" data-raw-latex="\mathbf{r}M=r_1\mathbf{m}_1+r_2\mathbf{m}_2+\cdots+r_m\mathbf{m}_m">
+            <div class="equation-content">
+              \[
+              \mathbf{r}M=r_1\mathbf{m}_1+r_2\mathbf{m}_2+\cdots+r_m\mathbf{m}_m.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır vektörü, matrisin satırlarının hangi katsayılarla toplanacağını belirler.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{r}M\) çarpımının \(j\)-inci bileşeni</p>
+          <div class="equation-card" data-raw-latex="(\mathbf{r}M)_j=\sum_{i=1}^{m}r_iM_{ij}=\left(\sum_{i=1}^{m}r_i\mathbf{m}_i\right)_j">
+            <div class="equation-content">
+              \[
+              (\mathbf{r}M)_j
+              =
+              \sum_{i=1}^{m}r_iM_{ij}
+              =
+              \left(\sum_{i=1}^{m}r_i\mathbf{m}_i\right)_j.
+              \]
+            </div>
+          </div>
+          <p>Her \(j\) için aynı eşitlik geçerli olduğundan vektör eşitliği elde edilir.</p>
+          <p><strong>Yorum:</strong> Eliminasyon matrisleri soldan çarpılır; çünkü soldan çarpım, satırları doğrusal birleşimlerle yeniden üretir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 2.9: Eliminasyon Matrisi</h3>
+          <p>\(i\)-inci satırdan \(j\)-inci satırın \(\ell\) katını çıkaran satır işlemini soldan çarpım olarak yapan matrise eliminasyon matrisi denir. Birim matrisin \((i,j)\) konumuna \(-\ell\) yazılarak elde edilir:</p>
+          <div class="equation-card" data-raw-latex="E_{ij}=I-\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}">
+            <div class="equation-content">
+              \[
+              E_{ij}=I-\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.10: \(E_{21}\) ve \(E_{32}\) Matrisleri</h3>
+          <p>İlk eliminasyon adımı, ikinci satırdan birinci satırın \(3\) katını çıkarmaktır. Buna karşılık gelen matris:</p>
+          <div class="equation-card" data-raw-latex="E_{21}=\begin{bmatrix}1&0&0\\-3&1&0\\0&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{21}=
+              \begin{bmatrix}
+              1&0&0\\
+              -3&1&0\\
+              0&0&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Soldan çarpım, ilk eliminasyon adımını üretir:</p>
+          <div class="equation-card" data-raw-latex="E_{21}A=\begin{bmatrix}1&2&1\\0&2&-2\\0&4&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{21}A=
+              \begin{bmatrix}
+              1&2&1\\
+              0&2&-2\\
+              0&4&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Son eliminasyon adımı, üçüncü satırdan ikinci satırın \(2\) katını çıkarmaktır:</p>
+          <div class="equation-card" data-raw-latex="E_{32}=\begin{bmatrix}1&0&0\\0&1&0\\0&-2&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{32}=
+              \begin{bmatrix}
+              1&0&0\\
+              0&1&0\\
+              0&-2&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu matris ara matrise uygulandığında \(U\) elde edilir:</p>
+          <div class="equation-card" data-raw-latex="E_{32}(E_{21}A)=U=\begin{bmatrix}1&2&1\\0&2&-2\\0&0&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{32}(E_{21}A)=U=
+              \begin{bmatrix}
+              1&2&1\\
+              0&2&-2\\
+              0&0&5
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 2.11: Matris Çarpımının Birleşme Özelliği</h3>
+          <p><strong>İfade:</strong> Uygun boyutlu matrisler için</p>
+          <div class="equation-card" data-raw-latex="A(BC)=(AB)C">
+            <div class="equation-content">
+              \[
+              A(BC)=(AB)C.
+              \]
+            </div>
+          </div>
+          <p>Özellikle eliminasyon adımları için</p>
+          <div class="equation-card" data-raw-latex="E_{32}(E_{21}A)=(E_{32}E_{21})A">
+            <div class="equation-content">
+              \[
+              E_{32}(E_{21}A)=(E_{32}E_{21})A.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Önce bir matrise işlem uygulayıp sonra ikinci işlemi uygulamak ile, işlemleri önce tek bir matris hâline getirip sonra uygulamak aynı sonucu verir; yeter ki işlem sırası korunmuş olsun.</p>
+          <p><strong>Formal İspat:</strong> Çarpımın \((i,j)\) girdileri karşılaştırılır:</p>
+          <div class="equation-card" data-raw-latex="\left(A(BC)\right)_{ij}=\sum_k\sum_{\ell}A_{ik}B_{k\ell}C_{\ell j},\qquad \left((AB)C\right)_{ij}=\sum_{\ell}\sum_k A_{ik}B_{k\ell}C_{\ell j}">
+            <div class="equation-content">
+              \[
+              \left(A(BC)\right)_{ij}
+              =
+              \sum_k\sum_{\ell}A_{ik}B_{k\ell}C_{\ell j},
+              \qquad
+              \left((AB)C\right)_{ij}
+              =
+              \sum_{\ell}\sum_k A_{ik}B_{k\ell}C_{\ell j}.
+              \]
+            </div>
+          </div>
+          <p>Sonlu toplamlarda toplama sırası değiştirilebildiği için iki ifade eşittir.</p>
+          <p><strong>Yorum:</strong> Bu özellik sayesinde tüm eliminasyon adımları tek bir matriste toplanabilir: \(E=E_{32}E_{21}\) ve \(EA=U\).</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.12: Çarpım Sırasının Önemi</h3>
+          <p>Eliminasyon adımları doğru sırada uygulanmalıdır. Birleşme özelliği parantezleri değiştirmeye izin verir; fakat çarpanların sırasını değiştirmez. Genel olarak</p>
+          <div class="equation-card" data-raw-latex="AB\ne BA">
+            <div class="equation-content">
+              \[
+              AB\ne BA.
+              \]
+            </div>
+          </div>
+          <p>Örneğin</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1\\0&1\end{bmatrix},\quad B=\begin{bmatrix}1&0\\1&1\end{bmatrix},\quad AB=\begin{bmatrix}2&1\\1&1\end{bmatrix},\quad BA=\begin{bmatrix}1&1\\1&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}1&1\\0&1\end{bmatrix},
+              \quad
+              B=
+              \begin{bmatrix}1&0\\1&1\end{bmatrix},
+              \quad
+              AB=
+              \begin{bmatrix}2&1\\1&1\end{bmatrix},
+              \quad
+              BA=
+              \begin{bmatrix}1&1\\1&2\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu iki sonuç eşit değildir. Eliminasyonda da \(A\)'ya en yakın matris en önce uygulanır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 2.13: Permütasyon Matrisi</h3>
+          <p>Satırları veya sütunları yeniden sıralayan, birim matrisin satırlarının değiştirilmesiyle elde edilen kare matrise permütasyon matrisi denir. Pivot konumunda sıfır görüldüğünde satır değiş tokuşunu matris diliyle ifade etmek için kullanılır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.14: \(2\times2\) Permütasyon Matrisi</h3>
+          <p>\(M=\begin{bmatrix}a&b\\c&d\end{bmatrix}\) matrisinin satırlarını değiştirmek için</p>
+          <div class="equation-card" data-raw-latex="P=\begin{bmatrix}0&1\\1&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              P=
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>kullanılır. Soldan çarpım satırları değiştirir:</p>
+          <div class="equation-card" data-raw-latex="PM=\begin{bmatrix}0&1\\1&0\end{bmatrix}\begin{bmatrix}a&b\\c&d\end{bmatrix}=\begin{bmatrix}c&d\\a&b\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              PM=
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              c&d\\
+              a&b
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Aynı matris sağdan çarpılırsa sütunlar değişir:</p>
+          <div class="equation-card" data-raw-latex="MP=\begin{bmatrix}a&b\\c&d\end{bmatrix}\begin{bmatrix}0&1\\1&0\end{bmatrix}=\begin{bmatrix}b&a\\d&c\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              MP=
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              b&a\\
+              d&c
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 2.15: Ters Matris</h3>
+          <p>Kare bir \(A\) matrisi için \(A^{-1}A=I=AA^{-1}\) eşitliklerini sağlayan \(A^{-1}\) matrisi varsa, \(A^{-1}\) matrisine \(A\)'nın tersi denir. Tersi olan matrisler tekil olmayan matrislerdir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 2.16: Bir Eliminasyon Matrisinin Tersi</h3>
+          <p>\(E_{21}\), ikinci satırdan birinci satırın \(3\) katını çıkarıyordu:</p>
+          <div class="equation-card" data-raw-latex="E_{21}=\begin{bmatrix}1&0&0\\-3&1&0\\0&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{21}=
+              \begin{bmatrix}
+              1&0&0\\
+              -3&1&0\\
+              0&0&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu işlemi geri almak için ikinci satıra birinci satırın \(3\) katı eklenir:</p>
+          <div class="equation-card" data-raw-latex="E_{21}^{-1}=\begin{bmatrix}1&0&0\\3&1&0\\0&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{21}^{-1}=
+              \begin{bmatrix}
+              1&0&0\\
+              3&1&0\\
+              0&0&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Çarpım birim matrisi verir:</p>
+          <div class="equation-card" data-raw-latex="E_{21}^{-1}E_{21}=\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}=I">
+            <div class="equation-content">
+              \[
+              E_{21}^{-1}E_{21}=
+              \begin{bmatrix}
+              1&0&0\\
+              0&1&0\\
+              0&0&1
+              \end{bmatrix}
+              =I.
+              \]
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+        <section class="theorem-card">
+          <h3>Teorem 2.17: Eliminasyon Matrisinin Tersi</h3>
+          <p><strong>İfade:</strong> Eğer \(E_{ij}=I-\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}\) matrisi \(i\)-inci satırdan \(j\)-inci satırın \(\ell\) katını çıkarıyorsa, tersi</p>
+          <div class="equation-card" data-raw-latex="E_{ij}^{-1}=I+\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}">
+            <div class="equation-content">
+              \[
+              E_{ij}^{-1}=I+\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir satırdan \(\ell\) kat çıkarma işlemini geri almak için aynı satıra \(\ell\) kat eklemek gerekir.</p>
+          <p><strong>Formal İspat:</strong> \(j\)-inci satır işlem sırasında değişmeyen satırdır. Önce \(i\)-inci satırdan \(\ell\) kez \(j\)-inci satır çıkarılır; ardından aynı satıra \(\ell\) kez \(j\)-inci satır eklenirse \(i\)-inci satır eski hâline döner. Diğer satırlar her iki işlemde de değişmez. Bu nedenle bileşik işlem hiçbir satırı değiştirmez ve birim matris etkisi yapar.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, ters matris fikrini somut bir satır işlemi üzerinden açıklar: ters işlem, yapılan işlemi geri alan işlemdir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 2.18: Eliminasyonun Tek Matrisle İfadesi</h3>
+          <p><strong>İfade:</strong> \(A\) matrisine sırayla \(E_{21}\) ve \(E_{32}\) eliminasyon matrisleri uygulanıyorsa, toplam etki tek bir matrisle yazılabilir:</p>
+          <div class="equation-card" data-raw-latex="E_{32}(E_{21}A)=(E_{32}E_{21})A=EA=U">
+            <div class="equation-content">
+              \[
+              E_{32}(E_{21}A)=(E_{32}E_{21})A=EA=U.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Sıralı satır işlemleri, tek tek yapılabileceği gibi önce tek bir toplam işlem matrisi içinde birleştirilebilir.</p>
+          <p><strong>Formal İspat:</strong> Matris çarpımının birleşme özelliği doğrudan uygulanır: \(E_{32}(E_{21}A)=(E_{32}E_{21})A\). \(E=E_{32}E_{21}\) tanımlanırsa sonuç \(EA=U\) olur.</p>
+          <p><strong>Yorum:</strong> Parantezler taşınabilir; fakat matrislerin sırası korunmalıdır. Bu, eliminasyon adımlarının neden dikkatle sıralandığını açıklar.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <h3>Yöntem 1: İleri Eliminasyon</h3>
+          <p><strong>Ne işe yarar?</strong> \(A\mathbf{x}=\mathbf{b}\) sistemini \(U\mathbf{x}=\mathbf{c}\) üst üçgensel sistemine dönüştürür.</p>
+          <ol>
+            <li>Genişletilmiş matrisi yaz: \([A\mid\mathbf{b}]\).</li>
+            <li>Her pivot sütununda köşegen girdiyi kontrol et.</li>
+            <li>Pivot sıfırsa, aynı sütunda aşağıdaki satırlarda sıfırdan farklı girdi ara ve gerekirse satır değiştir.</li>
+            <li>Pivot \(a_{kk}\) sıfırdan farklıysa, her \(i>k\) için \(\ell_{ik}=a_{ik}/a_{kk}\) çarpanını hesapla.</li>
+            <li>\(i\)-inci satırdan \(k\)-inci satırın \(\ell_{ik}\) katını çıkar; sağ tarafı da aynı işlemle güncelle.</li>
+            <li>Tüm pivot sütunları işlendiğinde \([U\mid\mathbf{c}]\) elde edilir.</li>
+          </ol>
+          <p><strong>Yaygın hata noktaları:</strong> Sağ tarafı güncellemeyi unutmak, çarpanın işaretini ters almak, sıfır pivotta satır değiş tokuşu olasılığını denemeden başarısızlık ilan etmek.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Yöntem 2: Geri Yerine Koyma</h3>
+          <p><strong>Ne işe yarar?</strong> Üst üçgensel sistemden bilinmeyenleri en alttan başlayarak bulur.</p>
+          <div class="equation-card" data-raw-latex="x_n=\frac{c_n}{u_{nn}},\qquad x_k=\frac{1}{u_{kk}}\left(c_k-\sum_{j=k+1}^{n}u_{kj}x_j\right)">
+            <div class="equation-content">
+              \[
+              x_n=\frac{c_n}{u_{nn}},
+              \qquad
+              x_k=\frac{1}{u_{kk}}\left(c_k-\sum_{j=k+1}^{n}u_{kj}x_j\right).
+              \]
+            </div>
+          </div>
+          <p><strong>Yaygın hata noktaları:</strong> Önceden bulunan bilinmeyenleri yanlış işaretle yerine koymak ve köşegen girdisiyle bölmeyi unutmak.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Yöntem 3: Eliminasyon Matrisini Yazma</h3>
+          <p><strong>Ne işe yarar?</strong> Satır işlemlerini matris çarpımı olarak ifade eder.</p>
+          <ol>
+            <li>İşlemi belirle: \(i\)-inci satırdan \(j\)-inci satırın \(\ell\) katı çıkarılıyor mu?</li>
+            <li>Birim matrisi yaz.</li>
+            <li>\((i,j)\) konumundaki sıfırın yerine \(-\ell\) yaz.</li>
+            <li>Adım soldan çarpılarak uygulanır: \(E_{ij}A\).</li>
+          </ol>
+          <p><strong>Yaygın hata noktaları:</strong> \(-\ell\) yerine \(+\ell\) yazmak ve eliminasyon matrislerini yanlış sırada çarpmak.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <h3>Sıfır Pivotu Hemen Gerçek Başarısızlık Sanmak</h3>
+          <p><strong>Hata:</strong> Pivot konumunda sıfır görülür görülmez sistemin tekil olduğunu söylemek.</p>
+          <p><strong>Neden yanlış?</strong> Aşağıda aynı sütunda sıfırdan farklı bir girdi varsa satır değiş tokuşu ile geçerli pivot elde edilebilir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Önce satır değiş tokuşu olanağı aranmalı; ancak aşağıda uygun satır yoksa gerçek başarısızlık sonucuna gidilmelidir.</p>
+        </section>
+        <section class="note-card">
+          <h3>Sağ Tarafı Güncellemeyi Unutmak</h3>
+          <p><strong>Hata:</strong> \(A\) üzerinde eliminasyon yapıp \(\mathbf{b}\) vektörünü eski hâliyle bırakmak.</p>
+          <p><strong>Neden yanlış?</strong> Satır işlemi denklemin her iki tarafına uygulanmalıdır. Aksi hâlde dönüştürülen sistem orijinal sistemle eşdeğer olmaz.</p>
+          <p><strong>Doğru yaklaşım:</strong> Genişletilmiş matrisle çalışmak, sağ tarafı unutma riskini azaltır.</p>
+        </section>
+        <section class="note-card">
+          <h3>Eliminasyon Matrisinde İşareti Yanlış Yazmak</h3>
+          <p><strong>Hata:</strong> \(i\)-inci satırdan \(j\)-inci satırın \(\ell\) katını çıkarmak için \(E_{ij}\)'nin \((i,j)\) konumuna \(+\ell\) yazmak.</p>
+          <p><strong>Neden yanlış?</strong> \(+\ell\) yazmak çıkarma değil ekleme işlemi yapar.</p>
+          <p><strong>Doğru yaklaşım:</strong> Çıkarma için \((i,j)\) konumuna \(-\ell\) yazılır.</p>
+        </section>
+        <section class="note-card">
+          <h3>Matris Çarpımında Sırayı Değiştirmek</h3>
+          <p><strong>Hata:</strong> \(E_{32}E_{21}A\) yerine \(E_{21}E_{32}A\) yazmak.</p>
+          <p><strong>Neden yanlış?</strong> Matris çarpımı genel olarak değişmeli değildir. Önce uygulanan işlem \(A\)'ya en yakın olan çarpandır.</p>
+          <p><strong>Doğru yaklaşım:</strong> Eliminasyon adımlarının uygulama sırası korunmalıdır; yalnızca parantezler birleşme özelliğiyle taşınabilir.</p>
+        </section>
+        <section class="note-card">
+          <h3>Soldan ve Sağdan Çarpımı Karıştırmak</h3>
+          <p><strong>Hata:</strong> Soldan çarpım ile sağdan çarpımın aynı satır etkisini oluşturduğunu sanmak.</p>
+          <p><strong>Neden yanlış?</strong> Soldan çarpım satırları, sağdan çarpım sütunları değiştirir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Eliminasyon bir satır işlemi olduğu için eliminasyon matrisleri soldan çarpılır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Lineer sistem \(A\mathbf{x}=\mathbf{b}\) biçimindedir.</li>
+            <li>Eliminasyon, sistemi \([A\mid\mathbf{b}]\) biçiminden \([U\mid\mathbf{c}]\) biçimine dönüştürür.</li>
+            <li>Pivot, altındaki girdileri sıfırlamak için kullanılan ana katsayıdır.</li>
+            <li>Çarpan \(\ell_{ik}=a_{ik}/a_{kk}\), hangi satır katının çıkarılacağını belirler.</li>
+            <li>Geri yerine koyma, \(U\mathbf{x}=\mathbf{c}\) sisteminden çözümü elde eder.</li>
+            <li>Sıfır pivot geçici olabilir; satır değiş tokuşu mümkün değilse gerçek başarısızlıktır.</li>
+            <li>Eliminasyon matrisi \(E_{ij}\), tek bir satır işlemini soldan çarpım olarak yapar.</li>
+            <li>Birleşme özelliği, adımları tek bir \(E\) matrisinde toplamayı sağlar.</li>
+            <li>Permütasyon matrisi \(P\), satır veya sütun değiş tokuşunu cebirsel olarak temsil eder.</li>
+            <li>Ters matris, yapılan işlemi geri alan matristir; eliminasyon matrislerinin tersleri bu fikrin ilk örnekleridir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Üst Üçgensel Forma Dönüşüm</h3>
+            <p>Eliminasyon katsayıları ve sağ tarafı birlikte dönüştürür.</p>
+            <div class="equation-card" data-raw-latex="[A\mid\mathbf{b}]\longrightarrow[U\mid\mathbf{c}]">
+              <div class="equation-content">
+                \[
+                [A\mid\mathbf{b}]\longrightarrow[U\mid\mathbf{c}]
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Eliminasyon Çarpanı</h3>
+            <p>Pivotun altındaki girdiyi sıfırlamak için kullanılan oran.</p>
+            <div class="equation-card" data-raw-latex="\ell_{ik}=\frac{a_{ik}}{a_{kk}}">
+              <div class="equation-content">
+                \[
+                \ell_{ik}=\frac{a_{ik}}{a_{kk}}
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Eliminasyon Matrisi</h3>
+            <p>\(i\)-inci satırdan \(j\)-inci satırın \(\ell\) katını çıkarır.</p>
+            <div class="equation-card" data-raw-latex="E_{ij}=I-\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}">
+              <div class="equation-content">
+                \[
+                E_{ij}=I-\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Toplam Eliminasyon</h3>
+            <p>Sıralı eliminasyon adımları tek bir matrisle ifade edilebilir.</p>
+            <div class="equation-card" data-raw-latex="E=E_{n,n-1}\cdots E_{32}E_{31}E_{21},\qquad EA=U">
+              <div class="equation-content">
+                \[
+                E=E_{n,n-1}\cdots E_{32}E_{31}E_{21},
+                \qquad
+                EA=U
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Birleşme Özelliği</h3>
+            <p>Parantezler değişebilir; çarpanların sırası değişmez.</p>
+            <div class="equation-card" data-raw-latex="A(BC)=(AB)C">
+              <div class="equation-content">
+                \[
+                A(BC)=(AB)C
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Eliminasyon Matrisinin Tersi</h3>
+            <p>Çıkarma işlemini ekleme işlemi geri alır.</p>
+            <div class="equation-card" data-raw-latex="E_{ij}^{-1}=I+\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}">
+              <div class="equation-content">
+                \[
+                E_{ij}^{-1}=I+\ell\,\mathbf{e}_i\mathbf{e}_j^{\top}
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Geri Yerine Koyma</h3>
+            <p>Üst üçgensel sistem en alttan başlayarak çözülür.</p>
+            <div class="equation-card" data-raw-latex="x_n=\frac{c_n}{u_{nn}},\qquad x_k=\frac{1}{u_{kk}}\left(c_k-\sum_{j=k+1}^{n}u_{kj}x_j\right)">
+              <div class="equation-content">
+                \[
+                x_n=\frac{c_n}{u_{nn}},
+                \qquad
+                x_k=\frac{1}{u_{kk}}\left(c_k-\sum_{j=k+1}^{n}u_{kj}x_j\right)
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde lineer sistemleri çözmek için eliminasyon yöntemi geliştirildi. İleri eliminasyon, katsayı matrisini üst üçgensel \(U\) matrisine dönüştürür; sağ taraf da aynı satır işlemleriyle \(\mathbf{c}\) vektörüne dönüşür. Ardından geri yerine koyma ile çözüm elde edilir.</p>
+        <p>Pivotlar ve çarpanlar eliminasyonun hesaplama omurgasını oluşturur. Pivot konumunda sıfır görülürse önce satır değiş tokuşu denenir; bu mümkün değilse gerçek başarısızlık ortaya çıkar ve matris tekil davranır.</p>
+        <p>Eliminasyonun matris dili, her satır işlemini soldan çarpılan bir eliminasyon matrisiyle ifade eder. Matris çarpımının birleşme özelliği, bu adımları tek bir matriste toplamayı sağlar. Ancak matris çarpımı genel olarak değişmeli değildir; bu nedenle işlem sırası korunmalıdır. Permütasyon matrisleri satır değişimlerini, ters matris fikri ise işlemleri geri almayı cebirsel olarak ifade eder.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Çalışma Sorusu 1: Kolay</h3>
+          <p>Aşağıdaki sistemi ileri eliminasyon ve geri yerine koyma ile çözün:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}x+y&=5\\2x+3y&=13.\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x+y&=5\\
+              2x+3y&=13.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Genişletilmiş matris:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|c}1&1&5\\2&3&13\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|c}
+              1&1&5\\
+              2&3&13
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Çarpan \(\ell_{21}=2\)'dir. İkinci satırdan birinci satırın \(2\) katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="[2,3\mid13]-2[1,1\mid5]=[0,1\mid3]">
+            <div class="equation-content">
+              \[
+              [2,3\mid13]-2[1,1\mid5]=[0,1\mid3].
+              \]
+            </div>
+          </div>
+          <p>Buradan \(y=3\), ardından \(x+3=5\) denkleminden \(x=2\) bulunur.</p>
+          <p><strong>Yorum:</strong> İki pivot da sıfırdan farklıdır; sistem tek çözüme sahiptir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Çalışma Sorusu 2: Orta</h3>
+          <p>Aşağıdaki matris için eliminasyonu uygulayın ve \(E_{21}\), \(E_{31}\), \(E_{32}\) matrislerini yazın:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&1&1\\4&3&3\\8&7&9\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2&1&1\\
+              4&3&3\\
+              8&7&9
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Birinci pivot \(2\)'dir. Çarpanlar \(\ell_{21}=2\), \(\ell_{31}=4\) olur:</p>
+          <div class="equation-card" data-raw-latex="[4,3,3]-2[2,1,1]=[0,1,1],\qquad [8,7,9]-4[2,1,1]=[0,3,5]">
+            <div class="equation-content">
+              \[
+              [4,3,3]-2[2,1,1]=[0,1,1],
+              \qquad
+              [8,7,9]-4[2,1,1]=[0,3,5].
+              \]
+            </div>
+          </div>
+          <p>İkinci pivot \(1\)'dir. \(\ell_{32}=3\) ile üçüncü satırdan ikinci satırın \(3\) katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="[0,3,5]-3[0,1,1]=[0,0,2]">
+            <div class="equation-content">
+              \[
+              [0,3,5]-3[0,1,1]=[0,0,2].
+              \]
+            </div>
+          </div>
+          <p>Sonuç:</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}2&1&1\\0&1&1\\0&0&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              U=
+              \begin{bmatrix}
+              2&1&1\\
+              0&1&1\\
+              0&0&2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Eliminasyon matrisleri:</p>
+          <div class="equation-card" data-raw-latex="E_{21}=\begin{bmatrix}1&0&0\\-2&1&0\\0&0&1\end{bmatrix},\quad E_{31}=\begin{bmatrix}1&0&0\\0&1&0\\-4&0&1\end{bmatrix},\quad E_{32}=\begin{bmatrix}1&0&0\\0&1&0\\0&-3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E_{21}=
+              \begin{bmatrix}1&0&0\\-2&1&0\\0&0&1\end{bmatrix},
+              \quad
+              E_{31}=
+              \begin{bmatrix}1&0&0\\0&1&0\\-4&0&1\end{bmatrix},
+              \quad
+              E_{32}=
+              \begin{bmatrix}1&0&0\\0&1&0\\0&-3&1\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Toplam matris \(E=E_{32}E_{31}E_{21}\) biçimindedir ve \(EA=U\) olur.</p>
+          <p><strong>Yorum:</strong> \(A\)'ya en yakın olan matris en önce uygulandığı için çarpım sırası önemlidir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Çalışma Sorusu 3: İleri</h3>
+          <p>Aşağıdaki matris için eliminasyonun neden gerçek başarısızlık verdiğini açıklayın:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1&1\\2&2&3\\3&3&a\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1&1\\
+              2&2&3\\
+              3&3&a
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Birinci pivot \(1\)'dir. İlk sütun temizlenir:</p>
+          <div class="equation-card" data-raw-latex="[2,2,3]-2[1,1,1]=[0,0,1],\qquad [3,3,a]-3[1,1,1]=[0,0,a-3]">
+            <div class="equation-content">
+              \[
+              [2,2,3]-2[1,1,1]=[0,0,1],
+              \qquad
+              [3,3,a]-3[1,1,1]=[0,0,a-3].
+              \]
+            </div>
+          </div>
+          <p>Ara matris</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&1&1\\0&0&1\\0&0&a-3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&1&1\\
+              0&0&1\\
+              0&0&a-3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. İkinci pivot konumu \((2,2)\) sıfırdır ve altında aynı sütunda sıfırdan farklı bir girdi yoktur. Bu nedenle satır değiş tokuşu ile kurtarılamaz; gerçek başarısızlık vardır.</p>
+          <p>Sütunlar açısından bakıldığında ilk iki sütun aynıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1=\begin{bmatrix}1\\2\\3\end{bmatrix},\qquad \mathbf{a}_2=\begin{bmatrix}1\\2\\3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1=
+              \begin{bmatrix}
+              1\\2\\3
+              \end{bmatrix},
+              \qquad
+              \mathbf{a}_2=
+              \begin{bmatrix}
+              1\\2\\3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> İki sütun aynı olduğunda sütunlar \(\mathbb{R}^3\)'ün tamamını dolduramaz. Bu yüzden matris tekildir ve eliminasyon bunu eksik pivot olarak ortaya çıkarır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Elimination</td><td>Eliminasyon</td><td>Sistemi üst üçgensel forma indirgeyen satır işlemleri yöntemi.</td></tr>
+              <tr><td>Pivot</td><td>Pivot</td><td>Bir eliminasyon adımında altındaki girdileri sıfırlamak için kullanılan ana katsayı.</td></tr>
+              <tr><td>Pivot row</td><td>Pivot satır</td><td>Pivotu içeren ve alt satırlardaki girdileri yok etmekte kullanılan satır.</td></tr>
+              <tr><td>Forward elimination</td><td>İleri eliminasyon</td><td>Köşegen altındaki girdileri sıfırlayan eliminasyon aşaması.</td></tr>
+              <tr><td>Back substitution</td><td>Geri yerine koyma</td><td>Üst üçgensel sistemden çözümü en alttan başlayarak bulma işlemi.</td></tr>
+              <tr><td>Upper triangular matrix</td><td>Üst üçgensel matris</td><td>Köşegen altındaki tüm girdileri sıfır olan kare matris.</td></tr>
+              <tr><td>Augmented matrix</td><td>Genişletilmiş matris</td><td>Katsayı matrisi ile sağ taraf vektörünün yan yana yazılmış biçimi.</td></tr>
+              <tr><td>Multiplier</td><td>Çarpan</td><td>Bir satırdan pivot satırın kaç katının çıkarılacağını belirleyen oran.</td></tr>
+              <tr><td>Elimination matrix</td><td>Eliminasyon matrisi</td><td>Tek bir eliminasyon adımını soldan çarpım olarak yapan matris.</td></tr>
+              <tr><td>Identity matrix</td><td>Birim matris</td><td>Çarpımda etkisiz olan, köşegeni \(1\), diğer girdileri \(0\) olan kare matris.</td></tr>
+              <tr><td>Row exchange</td><td>Satır değiş tokuşu</td><td>Sıfır pivot durumunda iki satırın yer değiştirmesi.</td></tr>
+              <tr><td>Permutation matrix</td><td>Permütasyon matrisi</td><td>Satır veya sütun değiş tokuşunu matris çarpımıyla yapan matris.</td></tr>
+              <tr><td>Associative law</td><td>Birleşme özelliği</td><td>Matris çarpımında \(A(BC)=(AB)C\) özelliği.</td></tr>
+              <tr><td>Commutative law</td><td>Değişmeli özellik</td><td>Çarpım sırasının değiştirilebilmesi özelliği; matris çarpımında genel olarak geçerli değildir.</td></tr>
+              <tr><td>Inverse matrix</td><td>Ters matris</td><td>Bir matrisin etkisini geri alan ve birim matrisi veren kare matris.</td></tr>
+              <tr><td>Singular matrix</td><td>Tekil matris</td><td>Tersi olmayan ve eliminasyonda gerçek pivot başarısızlığı veren kare matris.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var current = parseFloat(window.getComputedStyle(title).fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

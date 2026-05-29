@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .lesson-page .formula-item {
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" class="active" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, eliminasyonda satır değiş tokuşlarını temsil eden permütasyon matrislerini, devrik işlemini ve vektör uzayları fikrinin ilk büyük adımını bir araya getirir.</p>
+        <p>Önce satır değiş tokuşlarıyla tamamlanan eliminasyonun genel biçimi \(PA=LU\) olarak yazılır. Ardından permütasyon matrislerinin sayısı, tersleri ve devrikleriyle ilişkisi incelenir. Devrik kavramı, simetrik matrisler ve \(R^TR\) biçimindeki çarpımlar üzerinden somutlaştırılır.</p>
+        <p>Bölümün ana kavramsal geçişi, tek tek vektörlerden vektör uzaylarına ve alt uzaylara geçiştir. \(\mathbb{R}^n\), toplama ve skalerle çarpma işlemleri altında kapalı olduğu için temel vektör uzayıdır. Bir matrisin sütunlarının tüm doğrusal birleşimleri ise aynı fikrin matristen doğan ilk önemli örneğini, sütun uzayını verir.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Satır değiş tokuşlarının \(PA=LU\) biçimindeki rolünü açıklayabilmek.</li>
+          <li>Permütasyon matrislerinin birim matrisin satırlarının yeniden sıralanmasıyla oluştuğunu bilmek.</li>
+          <li>\(n\times n\) permütasyon matrislerinin sayısını \(n!\) olarak yorumlayabilmek.</li>
+          <li>Permütasyon matrisleri için \(P^{-1}=P^T\) eşitliğini kullanabilmek.</li>
+          <li>Devrik işlemini girdi düzeyinde tanımlayabilmek.</li>
+          <li>Simetrik matrisleri \(A^T=A\) koşuluyla tanıyabilmek.</li>
+          <li>\(R^TR\) biçimindeki matrislerin neden simetrik olduğunu gösterebilmek.</li>
+          <li>\(\mathbb{R}^n\) uzayını gerçek bileşenli sütun vektörleri kümesi olarak anlamak.</li>
+          <li>Vektör uzayı ve alt uzay kavramlarında kapanış koşulunun önemini açıklamak.</li>
+          <li>Bir matrisin sütun uzayını sütunların tüm doğrusal birleşimleri olarak kurabilmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Matris çarpımı, ters matris ve birim matris kavramlarını bilme.</li>
+          <li>Eliminasyon ve satır değiş tokuşu fikrine aşina olma.</li>
+          <li>Matrisin satır ve sütunlarını okuyabilme.</li>
+          <li>Vektör toplama ve skalerle çarpma işlemlerini bileşen bileşen yapabilme.</li>
+          <li>Doğrusal birleşim kavramını temel düzeyde tanıma.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>\(A\)</td><td>Matris; eliminasyon, devrik ve sütun uzayı bağlamında kullanılır.</td></tr>
+              <tr><td>\(P\)</td><td>Permütasyon matrisi; satır değiş tokuşlarını temsil eder.</td></tr>
+              <tr><td>\(L\)</td><td>Alt üçgensel matris; eliminasyon çarpanlarını taşır.</td></tr>
+              <tr><td>\(U\)</td><td>Üst üçgensel matris; eliminasyon sonucu oluşur.</td></tr>
+              <tr><td>\(A^T\)</td><td>\(A\) matrisinin devriği.</td></tr>
+              <tr><td>\(a_{ij}\)</td><td>\(A\) matrisinin \(i\)-inci satır, \(j\)-inci sütun girdisi.</td></tr>
+              <tr><td>\(R\)</td><td>Dikdörtgen matris örneği için kullanılan matris.</td></tr>
+              <tr><td>\(\mathbb{R}^n\)</td><td>\(n\) gerçek bileşenli sütun vektörlerinin uzayı.</td></tr>
+              <tr><td>\(\mathbf{v},\mathbf{w}\)</td><td>Vektörler.</td></tr>
+              <tr><td>\(\mathbf{0}\)</td><td>Sıfır vektörü.</td></tr>
+              <tr><td>\(c,d\)</td><td>Skaler katsayılar.</td></tr>
+              <tr><td>\(C(A)\)</td><td>\(A\) matrisinin sütun uzayı.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Eliminasyonun önceki biçimi, satır değiş tokuşu gerekmediğinde \(A=LU\) idi. Sıfır pivot ortaya çıktığında satırlar uygun sıraya alınmalıdır. Bu durumda doğru genel biçim şudur:</p>
+        <div class="equation-card" data-raw-latex="PA=LU">
+          <div class="equation-content">
+            \[
+            PA=LU.
+            \]
+          </div>
+        </div>
+        <p>Bu formülde \(P\), \(A\)'nın satırlarını iyi pivot sırasına getiren permütasyon matrisidir. Böylece eliminasyonun cebirsel resmi tamamlanır. Sonrasında devrik ve simetrik matrisler, matrislerin yapısını okumak için yeni bir araç sağlar.</p>
+        <p>Dersin ikinci büyük fikri, vektörleri tek başına değil, işlemler altında kapalı kümeler olarak görmektir. Bu bakış, \(\mathbb{R}^n\), alt uzay ve sütun uzayı kavramlarına götürür.</p>
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Bir vektör uzayı yalnızca vektörlerden oluşan herhangi bir küme değildir. Toplama ve skalerle çarpma işlemleri yapıldığında kümenin dışına çıkılmaması gerekir.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 5.1: Permütasyon Matrisi</h3>
+          <p>Permütasyon matrisi, birim matrisin satırlarının yeniden sıralanmasıyla elde edilen matristir. Soldan çarpıldığında bir matrisin satırlarını aynı yeniden sıralamaya göre değiştirir.</p>
+          <p>\(n\times n\) boyutunda toplam permütasyon matrisi sayısı</p>
+          <div class="equation-card" data-raw-latex="n!=n(n-1)(n-2)\cdots 3\cdot 2\cdot 1">
+            <div class="equation-content">
+              \[
+              n!=n(n-1)(n-2)\cdots 3\cdot 2\cdot 1.
+              \]
+            </div>
+          </div>
+          <p>Örneğin \(4\times 4\) durumda \(24\), \(5\times 5\) durumda \(120\) permütasyon matrisi vardır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.2: Satır Değiş Tokuşlarıyla Genel Eliminasyon</h3>
+          <p>Eliminasyon sırasında pivot konumunda sıfır görülürse, uygun bir alt satırla yer değiştirerek sıfır olmayan pivot elde edilir. Bu satır değiş tokuşları bir permütasyon matrisi \(P\) ile temsil edilir ve genel ayrıştırma</p>
+          <div class="equation-card" data-raw-latex="PA=LU">
+            <div class="equation-content">
+              \[
+              PA=LU
+              \]
+            </div>
+          </div>
+          <p>biçimini alır. Satır değiş tokuşu gerekmezse \(P=I\) olur ve formül \(A=LU\)'ya indirgenir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 5.3: Permütasyon Matrisinin Tersi</h3>
+          <p><strong>İfade:</strong> Her permütasyon matrisi \(P\) için</p>
+          <div class="equation-card" data-raw-latex="P^{-1}=P^T">
+            <div class="equation-content">
+              \[
+              P^{-1}=P^T.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(P\), satırları yeniden sıralar. Bu sıralamayı geri almak için aynı yer değiştirmelerin ters sırası gerekir. Permütasyon matrisinin devriği, satır ve sütunlardaki \(1\)'lerin konumunu tam bu geri alma işlemine çevirir.</p>
+          <p><strong>Formal İspat:</strong> Bir permütasyon matrisinin her satırında ve her sütununda tam olarak bir tane \(1\), diğer yerlerde \(0\) vardır. \(P^TP\) çarpımının \((i,j)\) girdisi, \(P\)'nin \(i\)-inci ve \(j\)-inci sütunlarının iç çarpımıdır. Aynı sütun için bu iç çarpım \(1\), farklı sütunlar için \(0\)'dır. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="P^TP=I">
+            <div class="equation-content">
+              \[
+              P^TP=I.
+              \]
+            </div>
+          </div>
+          <p>Benzer biçimde \(PP^T=I\) olur. Bu nedenle \(P^T\), \(P\)'nin tersidir.</p>
+          <p><strong>Yorum:</strong> Permütasyon matrisleri, devriği tersi olan özel matrislerin ilk örnekleridir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.4: Üç Boyutlu Satır Değiş Tokuşu</h3>
+          <p>Birinci ve ikinci satırları değiştiren permütasyon matrisi şöyledir:</p>
+          <div class="equation-card" data-raw-latex="P_{12}=\begin{bmatrix}0&1&0\\1&0&0\\0&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              P_{12}=
+              \begin{bmatrix}
+              0&1&0\\
+              1&0&0\\
+              0&0&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu matris soldan çarpıldığında hedef matrisin birinci ve ikinci satırlarını yer değiştirir. Aynı satır değiş tokuşu tekrar uygulanırsa eski sıra geri gelir; bu nedenle \(P_{12}^{-1}=P_{12}\) olur. Ayrıca bu matris simetriktir, yani \(P_{12}^T=P_{12}\).</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.5: Devrik Matris</h3>
+          <p>Bir \(A\) matrisinin devriği \(A^T\), satırların sütunlara ve sütunların satırlara dönüştürülmesiyle elde edilir. Girdi düzeyinde kural</p>
+          <div class="equation-card" data-raw-latex="(A^T)_{ij}=a_{ji}">
+            <div class="equation-content">
+              \[
+              (A^T)_{ij}=a_{ji}.
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Yani satır ve sütun indisleri yer değiştirir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.6: Dikdörtgen Bir Matrisin Devriği</h3>
+          <p>Üç satır ve iki sütundan oluşan matris</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2\\4&3\\3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&2\\
+              4&3\\
+              3&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ise devriği iki satır ve üç sütundan oluşur:</p>
+          <div class="equation-card" data-raw-latex="A^T=\begin{bmatrix}1&4&3\\2&3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^T=
+              \begin{bmatrix}
+              1&4&3\\
+              2&3&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Devrik alma işlemi dikdörtgen matrisin boyutlarını da değiştirir: \(3\times 2\) matrisin devriği \(2\times 3\) olur.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.7: Simetrik Matris</h3>
+          <p>Kare bir matris devriğiyle aynıysa simetrik matris denir:</p>
+          <div class="equation-card" data-raw-latex="A^T=A">
+            <div class="equation-content">
+              \[
+              A^T=A.
+              \]
+            </div>
+          </div>
+          <p>Simetrik bir matriste ana köşegenin iki tarafındaki karşılıklı girdiler eşittir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.8: Simetrik Matris Örneği</h3>
+          <p>Aşağıdaki matris simetriktir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&1&7\\1&5&9\\7&9&4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2&1&7\\
+              1&5&9\\
+              7&9&4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Çünkü \((1,2)\) ve \((2,1)\) girdileri \(1\), \((1,3)\) ve \((3,1)\) girdileri \(7\), \((2,3)\) ve \((3,2)\) girdileri \(9\)'dur. Devrik alındığında matris değişmez.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 5.9: \(R^TR\) Simetriktir</h3>
+          <p><strong>İfade:</strong> Boyutları uygun herhangi bir gerçek matris \(R\) için \(R^TR\) simetriktir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(R^TR\) matrisinin \((i,j)\) girdisi, \(R\)'nin \(i\)-inci ve \(j\)-inci sütunlarının iç çarpımıdır. İç çarpımda sıra değişse de sonuç değişmediği için \((i,j)\) ve \((j,i)\) girdileri eşit olur.</p>
+          <p><strong>Formal İspat:</strong> Devrik çarpım kuralını kullanalım:</p>
+          <div class="equation-card" data-raw-latex="(R^TR)^T=R^T(R^T)^T=R^TR">
+            <div class="equation-content">
+              \[
+              (R^TR)^T=R^T(R^T)^T=R^TR.
+              \]
+            </div>
+          </div>
+          <p>Matris devriğiyle aynı olduğundan \(R^TR\) simetriktir.</p>
+          <p><strong>Yorum:</strong> Simetrik matrisler, devrik işleminin yapıyı değiştirmediği matrislerdir. \(R^TR\) biçimi bu matrislerin doğal olarak ortaya çıktığı temel yollardan biridir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.10: \(R^TR\) Hesabı</h3>
+          <p>Şu dikdörtgen matris alınsın:</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}1&2&4\\3&3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=
+              \begin{bmatrix}
+              1&2&4\\
+              3&3&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>O zaman</p>
+          <div class="equation-card" data-raw-latex="R^T=\begin{bmatrix}1&3\\2&3\\4&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R^T=
+              \begin{bmatrix}
+              1&3\\
+              2&3\\
+              4&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Çarpım</p>
+          <div class="equation-card" data-raw-latex="R^TR=\begin{bmatrix}10&11&7\\11&13&11\\7&11&17\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R^TR=
+              \begin{bmatrix}
+              10&11&7\\
+              11&13&11\\
+              7&11&17
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Sonuçta \((1,2)\) ve \((2,1)\) girdileri \(11\), \((1,3)\) ve \((3,1)\) girdileri \(7\), \((2,3)\) ve \((3,2)\) girdileri \(11\)'dir; matris simetriktir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.11: Vektör Uzayı</h3>
+          <p>Bir vektör uzayı, vektörlerin toplama ve skalerle çarpma işlemlerine izin veren ve bu işlemlerden sonra yine aynı kümenin içinde kalınan bir vektörler kümesidir. Bu temel kapanış koşulu şöyle özetlenir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v},\mathbf{w}\in V,\ c,d\in\mathbb{R}\quad \Longrightarrow\quad c\mathbf{v}+d\mathbf{w}\in V">
+            <div class="equation-content">
+              \[
+              \mathbf{v},\mathbf{w}\in V,\quad c,d\in\mathbb{R}
+              \quad \Longrightarrow\quad
+              c\mathbf{v}+d\mathbf{w}\in V.
+              \]
+            </div>
+          </div>
+          <p>Bu ifade, vektör uzayında doğrusal birleşimlerin yine aynı uzayda kalması gerektiğini söyler.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.12: \(\mathbb{R}^n\)</h3>
+          <p>\(\mathbb{R}^n\), \(n\) gerçek bileşenli sütun vektörlerinin tümünden oluşan vektör uzayıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbb{R}^n=\left\{\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix}:x_1,\ldots,x_n\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              \mathbb{R}^n=
+              \left\{
+              \begin{bmatrix}
+              x_1\\x_2\\\vdots\\x_n
+              \end{bmatrix}
+              :
+              x_1,\ldots,x_n\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+          <p>\(\mathbb{R}^2\) düzlemdeki iki bileşenli vektörleri, \(\mathbb{R}^3\) üç bileşenli vektörleri içerir. Örneğin \(\begin{bmatrix}3&2&0\end{bmatrix}^T\), üçüncü bileşeni sıfır olsa bile \(\mathbb{R}^3\)'ün bir vektörüdür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.13: \(\mathbb{R}^2\) ve Sıfır Vektörü</h3>
+          <p>\(\mathbb{R}^2\), tüm iki bileşenli gerçek sütun vektörlerinden oluşur:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3\\2\end{bmatrix},\quad \begin{bmatrix}0\\0\end{bmatrix},\quad \begin{bmatrix}\pi\\e\end{bmatrix}\in \mathbb{R}^2">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              3\\2
+              \end{bmatrix},
+              \quad
+              \begin{bmatrix}
+              0\\0
+              \end{bmatrix},
+              \quad
+              \begin{bmatrix}
+              \pi\\e
+              \end{bmatrix}
+              \in \mathbb{R}^2.
+              \]
+            </div>
+          </div>
+          <p>Sıfır vektörü her vektör uzayında bulunmak zorundadır. Çünkü herhangi bir \(\mathbf{v}\) vektörü için \(0\mathbf{v}=\mathbf{0}\) olur; skalerle çarpma uzayın dışına çıkarmamalıdır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.14: Alt Uzay</h3>
+          <p>Bir \(V\) vektör uzayının alt kümesi \(W\), kendi başına vektör uzayı koşullarını sağlıyorsa \(V\)'nin alt uzayıdır. Bu ders kapsamında temel test şudur: \(W\), toplama ve skalerle çarpma altında kapalı olmalıdır.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v},\mathbf{w}\in W,\ c,d\in\mathbb{R}\quad \Longrightarrow\quad c\mathbf{v}+d\mathbf{w}\in W">
+            <div class="equation-content">
+              \[
+              \mathbf{v},\mathbf{w}\in W,\quad c,d\in\mathbb{R}
+              \quad \Longrightarrow\quad
+              c\mathbf{v}+d\mathbf{w}\in W.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.15: Alt Uzay Olmayan Bölge</h3>
+          <p>\(\mathbb{R}^2\)'de yalnızca iki bileşeni de negatif olmayan vektörlerden oluşan bölgeyi düşünelim. Bu bölgede toplama sorun çıkarmaz; iki negatif olmayan vektörün toplamı yine negatif olmayan bileşenlere sahiptir. Ancak skalerle çarpma kapalı değildir.</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3\\2\end{bmatrix}\quad \xrightarrow{\ -5\ }\quad \begin{bmatrix}-15\\-10\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              3\\2
+              \end{bmatrix}
+              \quad \xrightarrow{\ -5\ }\quad
+              \begin{bmatrix}
+              -15\\-10
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sonuç bölgenin dışında kaldığı için bu bölge bir alt uzay değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.16: \(\mathbb{R}^2\)'nin Alt Uzayları</h3>
+          <p>\(\mathbb{R}^2\)'nin alt uzayları üç türdedir:</p>
+          <ul>
+            <li>Bütün \(\mathbb{R}^2\) uzayı.</li>
+            <li>Orijinden geçen doğrular.</li>
+            <li>Yalnızca sıfır vektöründen oluşan uzay.</li>
+          </ul>
+          <p>Orijinden geçmeyen bir doğru alt uzay değildir. Çünkü böyle bir doğru sıfır vektörünü içermez ve üzerindeki bir vektör sıfırla çarpıldığında doğru üzerinde kalmaz.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.17: \(\mathbb{R}^3\)'ün Alt Uzayları</h3>
+          <p>\(\mathbb{R}^3\)'te alt uzay olarak şu biçimler ortaya çıkar:</p>
+          <ul>
+            <li>Bütün \(\mathbb{R}^3\) uzayı.</li>
+            <li>Orijinden geçen düzlemler.</li>
+            <li>Orijinden geçen doğrular.</li>
+            <li>Yalnızca \(\mathbf{0}\) vektöründen oluşan uzay.</li>
+          </ul>
+          <p>Her durumda sıfır vektörünün bulunması zorunludur; kapanış koşulu bunu dayatır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 5.18: Sütun Uzayı</h3>
+          <p>\(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\) matrisinin sütun uzayı, sütunlarının tüm doğrusal birleşimlerinden oluşur:</p>
+          <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+c_2\mathbf{a}_2+\cdots+c_n\mathbf{a}_n:\ c_1,\ldots,c_n\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              C(A)=
+              \{c_1\mathbf{a}_1+c_2\mathbf{a}_2+\cdots+c_n\mathbf{a}_n:
+              c_1,\ldots,c_n\in\mathbb{R}\}.
+              \]
+            </div>
+          </div>
+          <p>Eğer \(A\)'nın sütunları \(\mathbb{R}^m\) içindeyse, sütun uzayı \(\mathbb{R}^m\)'nin bir alt uzayıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 5.19: İki Sütundan Doğan Sütun Uzayı</h3>
+          <p>Şu matrisin sütunlarını ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&3\\2&3\\4&1\end{bmatrix},\qquad \mathbf{a}_1=\begin{bmatrix}1\\2\\4\end{bmatrix},\quad \mathbf{a}_2=\begin{bmatrix}3\\3\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&3\\
+              2&3\\
+              4&1
+              \end{bmatrix},
+              \qquad
+              \mathbf{a}_1=
+              \begin{bmatrix}
+              1\\2\\4
+              \end{bmatrix},
+              \quad
+              \mathbf{a}_2=
+              \begin{bmatrix}
+              3\\3\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu iki sütun \(\mathbb{R}^3\) içindedir. Sütun uzayı bütün</p>
+          <div class="equation-card" data-raw-latex="c_1\begin{bmatrix}1\\2\\4\end{bmatrix}+c_2\begin{bmatrix}3\\3\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              c_1
+              \begin{bmatrix}
+              1\\2\\4
+              \end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}
+              3\\3\\1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindeki vektörlerden oluşur. Örneğin iki sütunun toplamı</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\2\\4\end{bmatrix}+\begin{bmatrix}3\\3\\1\end{bmatrix}=\begin{bmatrix}4\\5\\5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1\\2\\4
+              \end{bmatrix}
+              +
+              \begin{bmatrix}
+              3\\3\\1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              4\\5\\5
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>bu sütun uzayındadır. Bu örnekte iki sütun aynı doğru üzerinde değildir; bu nedenle tüm doğrusal birleşimler \(\mathbb{R}^3\) içinde orijinden geçen bir düzlem oluşturur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 5.20: Sütun Uzayı Bir Alt Uzaydır</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin sütun uzayı, sütunların yaşadığı \(\mathbb{R}^m\) uzayının bir alt uzayıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sütun uzayı zaten tüm doğrusal birleşimleri içerir. İki doğrusal birleşim toplanırsa veya bir skalerle çarpılırsa yine sütunların bir doğrusal birleşimi elde edilir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{u},\mathbf{v}\in C(A)\) olsun. O zaman bazı katsayılar için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}=\sum_{j=1}^{n}c_j\mathbf{a}_j,\qquad \mathbf{v}=\sum_{j=1}^{n}d_j\mathbf{a}_j">
+            <div class="equation-content">
+              \[
+              \mathbf{u}=\sum_{j=1}^{n}c_j\mathbf{a}_j,
+              \qquad
+              \mathbf{v}=\sum_{j=1}^{n}d_j\mathbf{a}_j.
+              \]
+            </div>
+          </div>
+          <p>Her \(s,t\in\mathbb{R}\) için</p>
+          <div class="equation-card" data-raw-latex="s\mathbf{u}+t\mathbf{v}=\sum_{j=1}^{n}(sc_j+td_j)\mathbf{a}_j">
+            <div class="equation-content">
+              \[
+              s\mathbf{u}+t\mathbf{v}
+              =
+              \sum_{j=1}^{n}(sc_j+td_j)\mathbf{a}_j.
+              \]
+            </div>
+          </div>
+          <p>Bu yine \(A\)'nın sütunlarının doğrusal birleşimidir; dolayısıyla \(C(A)\)'dedir. Kapanış sağlanır.</p>
+          <p><strong>Yorum:</strong> Sütun uzayı, matrislerden doğal biçimde doğan ilk temel alt uzaydır ve \(A\mathbf{x}\) ifadelerinin hangi vektörleri üretebileceğini anlatır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+        <p>Bu bölümdeki ana ispatlar permütasyon matrislerinin tersleri, \(R^TR\)'nin simetrikliği ve sütun uzayının alt uzay oluşu üzerinde yoğunlaşır. Aşağıdaki sonuç, vektör uzayı kapanışının en özlü biçimini kaydeder.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 5.21: Kapanış Koşulu ve Sıfır Vektörü</h3>
+          <p><strong>İfade:</strong> Bir vektör uzayı veya alt uzay boş değilse ve skalerle çarpma altında kapalıysa, sıfır vektörünü içerir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Uzayda bir vektör varsa, bu vektörü \(0\) ile çarpmak serbest olmalıdır. Bu işlem her zaman sıfır vektörünü üretir.</p>
+          <p><strong>Formal İspat:</strong> \(W\) içinde bir \(\mathbf{v}\) vektörü bulunsun. Skalerle çarpma altında kapanıştan, \(0\mathbf{v}\in W\) olmalıdır. Ancak</p>
+          <div class="equation-card" data-raw-latex="0\mathbf{v}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              0\mathbf{v}=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\mathbf{0}\in W\).</p>
+          <p><strong>Yorum:</strong> Orijinden geçmeyen doğruların alt uzay olmamasının temel nedeni budur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section>
+          <h3>Yöntem 1: Devrik Alma</h3>
+          <p>Bir matrisin devriğini almak için satırlar sütunlara dönüştürülür.</p>
+          <ol>
+            <li>Matrisin \((i,j)\) girdisini belirle.</li>
+            <li>Bu girdiyi devrikte \((j,i)\) konumuna yaz.</li>
+            <li>Matris \(m\times n\) ise devriğin boyutu \(n\times m\) olur.</li>
+          </ol>
+          <div class="equation-card" data-raw-latex="(A^T)_{ij}=a_{ji}">
+            <div class="equation-content">
+              \[
+              (A^T)_{ij}=a_{ji}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yaygın hata noktası:</strong> Dikdörtgen matrislerde boyut değişimini unutmak. \(3\times2\) bir matrisin devriği \(2\times3\)'tür.</p>
+        </section>
+
+        <section>
+          <h3>Yöntem 2: Alt Uzay Testi</h3>
+          <p>Bir kümenin alt uzay olup olmadığını kontrol etmek için şu adımlar izlenir:</p>
+          <ol>
+            <li>Sıfır vektörünün kümede bulunup bulunmadığını kontrol et.</li>
+            <li>Kümedeki iki vektörün toplamının yine kümede kalıp kalmadığını kontrol et.</li>
+            <li>Kümedeki bir vektörün herhangi bir gerçek skalerle çarpımının yine kümede kalıp kalmadığını kontrol et.</li>
+          </ol>
+          <p>Bu dersin dilinde bu üç kontrol, doğrusal birleşimler altında kapanış fikrinde birleşir.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v},\mathbf{w}\in W,\ c,d\in\mathbb{R}\Rightarrow c\mathbf{v}+d\mathbf{w}\in W">
+            <div class="equation-content">
+              \[
+              \mathbf{v},\mathbf{w}\in W,\quad c,d\in\mathbb{R}
+              \Rightarrow c\mathbf{v}+d\mathbf{w}\in W.
+              \]
+            </div>
+          </div>
+          <p><strong>Yaygın hata noktası:</strong> Yalnızca toplamaya bakmak yeterli değildir; negatif skalerlerle çarpma da kümenin içinde kalmalıdır.</p>
+        </section>
+
+        <section>
+          <h3>Yöntem 3: Sütun Uzayını Kurma</h3>
+          <p>Bir matrisin sütun uzayını yazmak için:</p>
+          <ol>
+            <li>Matrisin sütunlarını \(\mathbf{a}_1,\ldots,\mathbf{a}_n\) olarak ayır.</li>
+            <li>Keyfi katsayılarla \(c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n\) doğrusal birleşimini yaz.</li>
+            <li>Bu doğrusal birleşimlerin tümünü sütun uzayı olarak adlandır.</li>
+          </ol>
+          <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n:\ c_j\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              C(A)=\{c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n:\ c_j\in\mathbb{R}\}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yaygın hata noktası:</strong> Sütun uzayını yalnızca sütunların kendisi sanmak. Sütun uzayı, bu sütunlardan yapılabilen bütün doğrusal birleşimlerdir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>\(PA=LU\) Yerine \(A=LU\) Yazmak</h4>
+            <p>Satır değiş tokuşu gerekiyorsa \(P\) göz ardı edilemez. \(P=I\) yalnızca satırlar zaten uygun sıradaysa geçerlidir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Permütasyon Tersini Yanlış Yazmak</h4>
+            <p>Permütasyon matrislerinde ters, devriktir: \(P^{-1}=P^T\). Bu özellik her matris için geçerli değildir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Devrikte Boyut Değişimini Unutmak</h4>
+            <p>Dikdörtgen matris devrik alınca yön değiştirir. \(m\times n\) matrisin devriği \(n\times m\)'dir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Simetrikliği Kare Olmadan Aramak</h4>
+            <p>\(A^T=A\) eşitliği yalnızca kare matrislerde mümkün olabilir; dikdörtgen bir matrisin devriği farklı boyuttadır.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Alt Uzayda Sıfır Vektörünü Unutmak</h4>
+            <p>Her alt uzay sıfır vektörünü içerir. Orijinden geçmeyen doğrular bu yüzden alt uzay değildir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sütun Uzayını Sütun Listesi Sanmak</h4>
+            <p>Sütun uzayı iki veya üç vektörden ibaret değildir; bu vektörlerin tüm doğrusal birleşimlerinden oluşur.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <p><strong>Satır değiş tokuşu</strong> → permütasyon matrisi \(P\) → genel eliminasyon biçimi \(PA=LU\).</p>
+          <p><strong>Permütasyon matrisi</strong> → birim matrisin satırlarının yeniden sıralanması → \(P^{-1}=P^T\).</p>
+          <p><strong>Devrik</strong> → satır-sütun değişimi → \((A^T)_{ij}=a_{ji}\).</p>
+          <p><strong>Simetrik matris</strong> → \(A^T=A\) → \(R^TR\) biçimiyle doğal örnek.</p>
+          <p><strong>Vektör uzayı</strong> → toplama ve skalerle çarpma altında kapanış → doğrusal birleşimler.</p>
+          <p><strong>Alt uzay</strong> → daha büyük bir vektör uzayı içinde kapanış koşulunu sağlayan küme.</p>
+          <p><strong>Sütun uzayı</strong> → matris sütunlarının tüm doğrusal birleşimleri → matristen doğan temel alt uzay.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Satır Değiş Tokuşlu Eliminasyon</h3>
+            <p>Satır değiş tokuşları permütasyon matrisiyle temsil edilir.</p>
+            <div class="equation-card" data-raw-latex="PA=LU">
+              <div class="equation-content">
+                \[
+                PA=LU.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Permütasyon Sayısı</h3>
+            <p>\(n\) satırın yeniden sıralanma sayısı \(n!\)'dir.</p>
+            <div class="equation-card" data-raw-latex="n!=n(n-1)(n-2)\cdots 2\cdot 1">
+              <div class="equation-content">
+                \[
+                n!=n(n-1)(n-2)\cdots 2\cdot 1.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Permütasyon Tersi</h3>
+            <p>Permütasyon matrisinin tersi devriğidir.</p>
+            <div class="equation-card" data-raw-latex="P^{-1}=P^T,\qquad P^TP=I">
+              <div class="equation-content">
+                \[
+                P^{-1}=P^T,\qquad P^TP=I.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Devrik Girdi Kuralı</h3>
+            <p>Devrik, satır ve sütun indislerini değiştirir.</p>
+            <div class="equation-card" data-raw-latex="(A^T)_{ij}=a_{ji}">
+              <div class="equation-content">
+                \[
+                (A^T)_{ij}=a_{ji}.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Simetrik Matris</h3>
+            <p>Matris devriğiyle aynıysa simetriktir.</p>
+            <div class="equation-card" data-raw-latex="A^T=A">
+              <div class="equation-content">
+                \[
+                A^T=A.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Vektör Uzayı Kapanışı</h3>
+            <p>Doğrusal birleşimler uzayın içinde kalmalıdır.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{v},\mathbf{w}\in V,\ c,d\in\mathbb{R}\Rightarrow c\mathbf{v}+d\mathbf{w}\in V">
+              <div class="equation-content">
+                \[
+                \mathbf{v},\mathbf{w}\in V,\quad c,d\in\mathbb{R}
+                \Rightarrow c\mathbf{v}+d\mathbf{w}\in V.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Sütun Uzayı</h3>
+            <p>Sütun uzayı, sütunların tüm doğrusal birleşimlerinden oluşur.</p>
+            <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n:\ c_j\in\mathbb{R}\}">
+              <div class="equation-content">
+                \[
+                C(A)=\{c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n:\ c_j\in\mathbb{R}\}.
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde satır değiş tokuşlarını içeren eliminasyonun \(PA=LU\) biçimiyle tamamlandığı görüldü. Permütasyon matrisleri birim matrisin satırlarının yeniden sıralanmasıyla oluşur; sayıları \(n!\)'dir ve tersleri devriklerine eşittir.</p>
+        <p>Devrik işlemi satırlarla sütunları değiştirir. Simetrik matrisler devrik alınca değişmeyen kare matrislerdir; \(R^TR\) biçimindeki matrisler doğal olarak simetriktir. Son olarak vektör uzayı ve alt uzay kavramları, doğrusal birleşimler altında kapanış fikriyle kuruldu. Bir matrisin sütun uzayı, sütunlarının tüm doğrusal birleşimlerinden oluşan temel alt uzaydır.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>Aşağıdaki matrisin devriğini bulun:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&5\\1&0\\4&3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2&5\\
+              1&0\\
+              4&3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Satırlar sütunlara dönüşür:</p>
+          <div class="equation-card" data-raw-latex="A^T=\begin{bmatrix}2&1&4\\5&0&3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^T=
+              \begin{bmatrix}
+              2&1&4\\
+              5&0&3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Başlangıç matrisi \(3\times2\), devriği \(2\times3\) boyutludur.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>\(\mathbb{R}^2\)'de orijinden geçen \(y=2x\) doğrusu bir alt uzay mıdır?</p>
+          <p><strong>Çözüm:</strong> Bu doğrudaki vektörler</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}x\\2x\end{bmatrix}=x\begin{bmatrix}1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              x\\2x
+              \end{bmatrix}
+              =
+              x
+              \begin{bmatrix}
+              1\\2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. İki böyle vektörün toplamı yine aynı biçimdedir ve herhangi bir skalerle çarpım da yine aynı biçimde kalır:</p>
+          <div class="equation-card" data-raw-latex="c\left(x\begin{bmatrix}1\\2\end{bmatrix}\right)=(cx)\begin{bmatrix}1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              c\left(x
+              \begin{bmatrix}
+              1\\2
+              \end{bmatrix}\right)
+              =
+              (cx)
+              \begin{bmatrix}
+              1\\2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Sonuç:</strong> Evet, bu doğru \(\mathbb{R}^2\)'nin bir alt uzayıdır.</p>
+          <p><strong>Yorum:</strong> Orijinden geçen her doğru, skalerle çarpma ve toplama altında kapalıdır.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>Aşağıdaki matrisin sütun uzayını doğrusal birleşim biçiminde yazın ve hangi büyük uzayın alt uzayı olduğunu belirtin:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&0\\2&1\\3&4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&0\\
+              2&1\\
+              3&4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Sütunlar</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1=\begin{bmatrix}1\\2\\3\end{bmatrix},\qquad \mathbf{a}_2=\begin{bmatrix}0\\1\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1=
+              \begin{bmatrix}
+              1\\2\\3
+              \end{bmatrix},
+              \qquad
+              \mathbf{a}_2=
+              \begin{bmatrix}
+              0\\1\\4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sütun uzayı bu iki sütunun tüm doğrusal birleşimleridir:</p>
+          <div class="equation-card" data-raw-latex="C(A)=\left\{c_1\begin{bmatrix}1\\2\\3\end{bmatrix}+c_2\begin{bmatrix}0\\1\\4\end{bmatrix}:c_1,c_2\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              C(A)=
+              \left\{
+              c_1
+              \begin{bmatrix}
+              1\\2\\3
+              \end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}
+              0\\1\\4
+              \end{bmatrix}
+              :
+              c_1,c_2\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+          <p>Her sütun üç bileşenli olduğu için \(C(A)\), \(\mathbb{R}^3\)'ün bir alt uzayıdır.</p>
+          <p><strong>Yorum:</strong> Sütun sayısı iki olsa bile sütun uzayı \(\mathbb{R}^2\)'de değildir; çünkü vektörlerin bileşen sayısı üçtür.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Permutation matrix</td><td>Permütasyon matrisi</td><td>Birim matrisin satırlarının yeniden sıralanmasıyla oluşan ve satır değiş tokuşu yapan matris.</td></tr>
+              <tr><td>Row exchange</td><td>Satır değiş tokuşu</td><td>Bir matrisin iki satırının yer değiştirmesi.</td></tr>
+              <tr><td>Transpose</td><td>Devrik</td><td>Bir matrisin satır ve sütunlarının yer değiştirmiş biçimi.</td></tr>
+              <tr><td>Symmetric matrix</td><td>Simetrik matris</td><td>Devriği kendisine eşit olan kare matris.</td></tr>
+              <tr><td>Vector space</td><td>Vektör uzayı</td><td>Toplama ve skalerle çarpma altında kapalı vektörler kümesi.</td></tr>
+              <tr><td>Subspace</td><td>Alt uzay</td><td>Bir vektör uzayının içinde bulunan ve kendi başına vektör uzayı olan küme.</td></tr>
+              <tr><td>Scalar</td><td>Skaler</td><td>Vektörleri çarpmakta kullanılan gerçek sayı.</td></tr>
+              <tr><td>Linear combination</td><td>Doğrusal birleşim</td><td>Vektörlerin skaler katlarının toplamı.</td></tr>
+              <tr><td>Closure</td><td>Kapanış</td><td>Bir işlem yapıldığında sonucun aynı kümede kalması özelliği.</td></tr>
+              <tr><td>Zero vector</td><td>Sıfır vektörü</td><td>Bütün bileşenleri sıfır olan vektör.</td></tr>
+              <tr><td>Column space</td><td>Sütun uzayı</td><td>Bir matrisin sütunlarının tüm doğrusal birleşimlerinden oluşan alt uzay.</td></tr>
+              <tr><td>Real coordinate space</td><td>Gerçek koordinat uzayı</td><td>\(\mathbb{R}^n\) ile gösterilen, \(n\) gerçek bileşenli vektörlerin uzayı.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var current = parseFloat(window.getComputedStyle(title).fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>13. Ders: Ortogonal Vektörler ve Alt Uzaylar</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item p {
+      margin-bottom: 0.4rem;
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.3vw, 1.75rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" class="active" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, lineer cebirde ortogonallik fikrini vektörlerden alt uzaylara taşır ve dört temel alt uzayın geometrisini daha keskin biçimde açıklar.</p>
+        <p>Önce iki vektörün ortogonal olması için iç çarpımın sıfır olması gerektiği gösterilir. Ardından alt uzayların ortogonalliği tanımlanır ve satır uzayının sıfır uzayına, sütun uzayının da sol sıfır uzayına ortogonal olduğu ispatlanır.</p>
+        <p>Bölümün son kısmı, fazla denklemli ve genellikle tam çözülemeyen sistemler için hazırlanır. Bu amaçla \(A^TA\) matrisi incelenir; kare, simetrik ve \(A\) ile aynı sıfır uzayına sahip olması vurgulanır.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>İki vektörün ortogonal olup olmadığını iç çarpım ile test etmek.</li>
+          <li>Uzunluk karesini \(\mathbf{x}^T\mathbf{x}\) biçiminde yorumlamak.</li>
+          <li>Pisagor bağıntısı ile iç çarpım testinin eşdeğerliğini açıklamak.</li>
+          <li>İki alt uzayın ortogonal olmasının ne anlama geldiğini tanımlamak.</li>
+          <li>Satır uzayı ile sıfır uzayının ortogonal olduğunu ispatlamak.</li>
+          <li>Sütun uzayı ile sol sıfır uzayının ortogonal olduğunu görmek.</li>
+          <li>Ortogonal tümleyen kavramını boyut toplamı ile birlikte yorumlamak.</li>
+          <li>\(A^TA\) matrisinin simetrik olduğunu ve hangi durumda tersinir olduğunu belirlemek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Vektör, matris çarpımı ve transpoz işlemi.</li>
+          <li>İç çarpım ve satır-sütun çarpımı.</li>
+          <li>Satır uzayı, sütun uzayı, sıfır uzayı ve sol sıfır uzayı.</li>
+          <li>Rank-nullity bağıntısı.</li>
+          <li>Lineer bağımsızlık ve baz kavramı.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\mathbf{x},\mathbf{y}\)</td>
+                <td>Vektörler</td>
+                <td>İç çarpım ve uzunluk hesaplarında kullanılan sütun vektörleri.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}^T\mathbf{y}\)</td>
+                <td>İç çarpım</td>
+                <td>Gerçek vektörler için \(\sum_i x_i y_i\).</td>
+              </tr>
+              <tr>
+                <td>\(\|\mathbf{x}\|^2\)</td>
+                <td>Uzunluk karesi</td>
+                <td>\(\mathbf{x}^T\mathbf{x}\) değerine eşittir.</td>
+              </tr>
+              <tr>
+                <td>\(S,T\)</td>
+                <td>Alt uzaylar</td>
+                <td>Ortogonallik tanımında kullanılan iki vektör uzayı.</td>
+              </tr>
+              <tr>
+                <td>\(A\)</td>
+                <td>Matris</td>
+                <td>Satır, sütun ve sıfır uzayları incelenen matris.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{R}(A)\)</td>
+                <td>Satır uzayı</td>
+                <td>\(A\) matrisinin satırlarının oluşturduğu alt uzay.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{C}(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının oluşturduğu alt uzay.</td>
+              </tr>
+              <tr>
+                <td>\(N(A)\)</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan vektörlerin uzayı.</td>
+              </tr>
+              <tr>
+                <td>\(N(A^T)\)</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{y}=\mathbf{0}\) denklemini sağlayan vektörlerin uzayı.</td>
+              </tr>
+              <tr>
+                <td>\(\hat{\mathbf{x}}\)</td>
+                <td>En iyi çözüm adayı</td>
+                <td>Tam çözüm olmadığında normal denklemi sağlayan vektör.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Dört temel alt uzayın boyutları daha önce belirlenmişti: satır uzayı ve sıfır uzayı \(\mathbb{R}^n\) içinde, sütun uzayı ve sol sıfır uzayı ise \(\mathbb{R}^m\) içinde yaşar. Bu bölümde bu alt uzayların yalnızca boyutları değil, birbirlerine göre açıları da anlaşılır.</p>
+        <p>Ana geometrik sonuç şudur: satır uzayı ve sıfır uzayı birbirini dik biçimde tamamlar; aynı şekilde sütun uzayı ve sol sıfır uzayı da birbirini dik biçimde tamamlar. Bu, lineer cebirin cebirsel denklemlerini doğrudan geometrik bir resme bağlar.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>\(A\mathbf{x}=\mathbf{0}\) denklemi, \(\mathbf{x}\) vektörünün \(A\) matrisinin her satırına ortogonal olduğunu söyler. Böylece sıfır uzayı, satır uzayının ortogonal tümleyenidir.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Ortogonal Vektörler</h3>
+          <p>Gerçek vektörler \(\mathbf{x},\mathbf{y}\in\mathbb{R}^n\) için \(\mathbf{x}\) ve \(\mathbf{y}\) vektörleri, iç çarpımları sıfırsa ortogonaldir.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^T\mathbf{y}=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^T\mathbf{y}=0
+              \]
+            </div>
+          </div>
+          <p>Bu koşul, iki vektör arasındaki açının doksan derece olması anlamına gelir. Sıfır vektörü, bu tanıma göre her vektöre ortogonaldir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Uzunluk Karesi</h3>
+          <p>Bir vektörün uzunluk karesi, vektörün kendisiyle iç çarpımıdır:</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{x}\|^2=\mathbf{x}^T\mathbf{x}=x_1^2+x_2^2+\cdots+x_n^2">
+            <div class="equation-content">
+              \[
+              \|\mathbf{x}\|^2=\mathbf{x}^T\mathbf{x}
+              =x_1^2+x_2^2+\cdots+x_n^2
+              \]
+            </div>
+          </div>
+          <p>Bu değer her zaman sıfırdan büyük veya sıfıra eşittir; yalnızca \(\mathbf{x}=\mathbf{0}\) olduğunda sıfırdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Pisagor Bağıntısı ve İç Çarpım Testi</h3>
+          <p><strong>İfade:</strong> Gerçek vektörler için</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{x}\|^2+\|\mathbf{y}\|^2=\|\mathbf{x}+\mathbf{y}\|^2\quad\Longleftrightarrow\quad \mathbf{x}^T\mathbf{y}=0">
+            <div class="equation-content">
+              \[
+              \|\mathbf{x}\|^2+\|\mathbf{y}\|^2=\|\mathbf{x}+\mathbf{y}\|^2
+              \quad\Longleftrightarrow\quad
+              \mathbf{x}^T\mathbf{y}=0
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> İki vektör dik olduğunda, oluşturdukları üçgende hipotenüs \(\mathbf{x}+\mathbf{y}\) olur ve uzunluk kareleri Pisagor bağıntısını sağlar.</p>
+          <p><strong>Formal İspat:</strong> Sağ taraftaki uzunluk karesi açılır:</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{x}+\mathbf{y}\|^2=(\mathbf{x}+\mathbf{y})^T(\mathbf{x}+\mathbf{y})=\mathbf{x}^T\mathbf{x}+2\mathbf{x}^T\mathbf{y}+\mathbf{y}^T\mathbf{y}">
+            <div class="equation-content">
+              \[
+              \|\mathbf{x}+\mathbf{y}\|^2
+              =(\mathbf{x}+\mathbf{y})^T(\mathbf{x}+\mathbf{y})
+              =\mathbf{x}^T\mathbf{x}+2\mathbf{x}^T\mathbf{y}+\mathbf{y}^T\mathbf{y}
+              \]
+            </div>
+          </div>
+          <p>Burada \(\mathbf{x}^T\mathbf{y}=\mathbf{y}^T\mathbf{x}\) kullanılmıştır. Bu ifade \(\|\mathbf{x}\|^2+\|\mathbf{y}\|^2\) değerine eşitse geriye \(2\mathbf{x}^T\mathbf{y}=0\) kalır; bu da \(\mathbf{x}^T\mathbf{y}=0\) demektir.</p>
+          <p><strong>Yorum:</strong> İç çarpım testi, dikliği cebirsel olarak ölçen en kısa yoldur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Ortogonal İki Vektör</h3>
+          <p>\(\mathbf{x}=(1,2,3)^T\) ve \(\mathbf{y}=(2,-1,0)^T\) olsun. İç çarpım</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^T\mathbf{y}=1\cdot2+2\cdot(-1)+3\cdot0=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^T\mathbf{y}=1\cdot2+2\cdot(-1)+3\cdot0=0
+              \]
+            </div>
+          </div>
+          <p>olduğu için vektörler ortogonaldir. Uzunluk kareleri</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{x}\|^2=1^2+2^2+3^2=14,\qquad \|\mathbf{y}\|^2=2^2+(-1)^2+0^2=5">
+            <div class="equation-content">
+              \[
+              \|\mathbf{x}\|^2=1^2+2^2+3^2=14,\qquad
+              \|\mathbf{y}\|^2=2^2+(-1)^2+0^2=5
+              \]
+            </div>
+          </div>
+          <p>Ayrıca \(\mathbf{x}+\mathbf{y}=(3,1,3)^T\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{x}+\mathbf{y}\|^2=3^2+1^2+3^2=19=14+5">
+            <div class="equation-content">
+              \[
+              \|\mathbf{x}+\mathbf{y}\|^2=3^2+1^2+3^2=19=14+5
+              \]
+            </div>
+          </div>
+          <p>Bu hesap, iç çarpım testinin Pisagor bağıntısıyla uyumunu gösterir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.5: Ortogonal Alt Uzaylar</h3>
+          <p>\(S\) ve \(T\) aynı \(\mathbb{R}^n\) uzayının alt uzayları olsun. \(S\) ve \(T\) alt uzayları, \(S\) içindeki her vektör \(T\) içindeki her vektöre ortogonalse ortogonal alt uzaylardır.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}^T\mathbf{t}=0\quad\text{her }\mathbf{s}\in S\text{ ve her }\mathbf{t}\in T\text{ için}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}^T\mathbf{t}=0
+              \quad\text{her }\mathbf{s}\in S\text{ ve her }\mathbf{t}\in T\text{ için}
+              \]
+            </div>
+          </div>
+          <p>Bu tanım, yalnızca iki alt uzayın görsel olarak dik görünmesini değil, tüm vektör çiftlerinin iç çarpımının sıfır olmasını ister.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: İki Düzlemin Ortogonal Olmaması</h3>
+          <p>\(\mathbb{R}^3\) içinde iki farklı düzlem görsel olarak dik kesişebilir. Ancak bu düzlemler bir doğru boyunca ortak vektörler içeriyorsa ortogonal alt uzaylar değildir.</p>
+          <p>Gerçekten, sıfırdan farklı bir \(\mathbf{v}\) vektörü hem \(S\) hem \(T\) içinde ise ortogonallik tanımı \(\mathbf{v}^T\mathbf{v}=0\) olmasını gerektirir. Fakat sıfırdan farklı bir vektör için \(\mathbf{v}^T\mathbf{v}>0\) olur.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}\neq\mathbf{0}\quad\Longrightarrow\quad \mathbf{v}^T\mathbf{v}>0">
+            <div class="equation-content">
+              \[
+              \mathbf{v}\neq\mathbf{0}
+              \quad\Longrightarrow\quad
+              \mathbf{v}^T\mathbf{v}>0
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla ortogonal iki alt uzayın kesişimi yalnızca \(\mathbf{0}\) vektörünü içerebilir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Satır Uzayı ve Sıfır Uzayının Ortogonalliği</h3>
+          <p><strong>İfade:</strong> Her \(A\) matrisi için \(A\)'nın satır uzayı, \(N(A)\) sıfır uzayına ortogonaldir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\mathbf{x}\in N(A)\) olmak, \(A\)'nın her satırının \(\mathbf{x}\) ile iç çarpımının sıfır olması demektir.</p>
+          <p><strong>Formal İspat:</strong> \(A\)'nın satırları \(\mathbf{r}_1,\ldots,\mathbf{r}_m\) olsun. \(\mathbf{x}\in N(A)\) ise</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\begin{bmatrix}\mathbf{r}_1^T\mathbf{x}\\\mathbf{r}_2^T\mathbf{x}\\\vdots\\\mathbf{r}_m^T\mathbf{x}\end{bmatrix}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=
+              \begin{bmatrix}
+              \mathbf{r}_1^T\mathbf{x}\\
+              \mathbf{r}_2^T\mathbf{x}\\
+              \vdots\\
+              \mathbf{r}_m^T\mathbf{x}
+              \end{bmatrix}
+              =\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle her \(i\) için \(\mathbf{r}_i^T\mathbf{x}=0\). Satır uzayındaki herhangi bir vektör \(\mathbf{w}=c_1\mathbf{r}_1+\cdots+c_m\mathbf{r}_m\) biçimindedir. O hâlde</p>
+          <div class="equation-card" data-raw-latex="\mathbf{w}^T\mathbf{x}=(c_1\mathbf{r}_1+\cdots+c_m\mathbf{r}_m)^T\mathbf{x}=c_1\mathbf{r}_1^T\mathbf{x}+\cdots+c_m\mathbf{r}_m^T\mathbf{x}=0">
+            <div class="equation-content">
+              \[
+              \mathbf{w}^T\mathbf{x}
+              =(c_1\mathbf{r}_1+\cdots+c_m\mathbf{r}_m)^T\mathbf{x}
+              =c_1\mathbf{r}_1^T\mathbf{x}+\cdots+c_m\mathbf{r}_m^T\mathbf{x}=0
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Sıfır uzayı, yalnızca tek tek satırlara değil, satırların tüm doğrusal kombinasyonlarına diktir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: Sütun Uzayı ve Sol Sıfır Uzayının Ortogonalliği</h3>
+          <p><strong>İfade:</strong> Her \(A\) matrisi için \(A\)'nın sütun uzayı, \(N(A^T)\) sol sıfır uzayına ortogonaldir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bu sonuç, Teorem 1.7'nin \(A^T\) matrisine uygulanmış hâlidir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{y}\in N(A^T)\) ise \(A^T\mathbf{y}=\mathbf{0}\). Bu, \(A\)'nın her sütununun \(\mathbf{y}\) ile iç çarpımının sıfır olduğunu söyler. Sütun uzayındaki her vektör sütunların doğrusal kombinasyonu olduğundan, bu kombinasyon da \(\mathbf{y}\)'ye ortogonaldir.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{y}\in N(A^T)\quad\Longrightarrow\quad \mathbf{a}_j^T\mathbf{y}=0\quad(j=1,\ldots,n)">
+            <div class="equation-content">
+              \[
+              \mathbf{y}\in N(A^T)
+              \quad\Longrightarrow\quad
+              \mathbf{a}_j^T\mathbf{y}=0\quad(j=1,\ldots,n)
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Böylece \(\mathbb{R}^m\) içinde sütun uzayı ile sol sıfır uzayı birbirine dik iki tamamlayıcı yapı olarak görünür.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.9: Ortogonal Tümleyen</h3>
+          <p>Bir alt uzayın ortogonal tümleyeni, o alt uzaydaki her vektöre ortogonal olan tüm vektörlerden oluşur. Bu derste temel örnekler şunlardır:</p>
+          <div class="equation-card" data-raw-latex="N(A)=\mathcal{R}(A)^\perp,\qquad N(A^T)=\mathcal{C}(A)^\perp">
+            <div class="equation-content">
+              \[
+              N(A)=\mathcal{R}(A)^\perp,\qquad
+              N(A^T)=\mathcal{C}(A)^\perp
+              \]
+            </div>
+          </div>
+          <p>Burada yalnızca ortogonallik değil, boyutların tüm uzayı tamamlaması da önemlidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Bir Satırın Dik Düzlemi</h3>
+          <p>\(A=\begin{bmatrix}1&2&5\end{bmatrix}\) olsun. Bu matrisin satır uzayı \((1,2,5)^T\) doğrultusundaki bir doğrudur. Sıfır uzayı ise</p>
+          <div class="equation-card" data-raw-latex="x_1+2x_2+5x_3=0">
+            <div class="equation-content">
+              \[
+              x_1+2x_2+5x_3=0
+              \]
+            </div>
+          </div>
+          <p>denklemini sağlayan vektörlerden oluşur. Bu, \(\mathbb{R}^3\) içinde normal vektörü \((1,2,5)^T\) olan bir düzlemdir.</p>
+          <div class="equation-card" data-raw-latex="\mathcal{R}(A)=\operatorname{span}\left\{\begin{bmatrix}1\\2\\5\end{bmatrix}\right\},\qquad N(A)=\left\{\mathbf{x}\in\mathbb{R}^3:\begin{bmatrix}1&2&5\end{bmatrix}\mathbf{x}=0\right\}">
+            <div class="equation-content">
+              \[
+              \mathcal{R}(A)=\operatorname{span}\left\{
+              \begin{bmatrix}1\\2\\5\end{bmatrix}
+              \right\},\qquad
+              N(A)=\left\{\mathbf{x}\in\mathbb{R}^3:
+              \begin{bmatrix}1&2&5\end{bmatrix}\mathbf{x}=0
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>Bu örnekte bir doğru ve ona dik bir düzlem birlikte \(\mathbb{R}^3\)'ü tamamlar.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Ortogonal Tümleyenlerde Boyutların Toplamı</h3>
+          <p><strong>İfade:</strong> \(A\) matrisi \(m\times n\) boyutlu ve rankı \(r\) ise \(\mathbb{R}^n\) içinde</p>
+          <div class="equation-card" data-raw-latex="\dim\mathcal{R}(A)+\dim N(A)=r+(n-r)=n">
+            <div class="equation-content">
+              \[
+              \dim\mathcal{R}(A)+\dim N(A)=r+(n-r)=n
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır uzayı ve sıfır uzayı yalnızca birbirine dik değildir; birlikte tüm \(\mathbb{R}^n\) uzayını dolduracak kadar boyuta sahiptir.</p>
+          <p><strong>Formal İspat:</strong> Satır uzayının boyutu ranktır, yani \(r\). Rank-nullity bağıntısına göre \(\dim N(A)=n-r\). Toplam \(n\) eder.</p>
+          <p><strong>Yorum:</strong> Bu nedenle satır uzayı ile sıfır uzayı, \(\mathbb{R}^n\) içinde ortogonal tümleyenlerdir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: \(A^TA\) Matrisinin Simetrisi</h3>
+          <p><strong>İfade:</strong> Her gerçek \(A\) matrisi için \(A^TA\) kare ve simetriktir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^T\) soldan, \(A\) sağdan geldiği için iç boyutlar kapanır ve sonuç sütun sayısı kadar kare bir matris olur.</p>
+          <p><strong>Formal İspat:</strong> Eğer \(A\) matrisi \(m\times n\) boyutluysa \(A^T\) matrisi \(n\times m\) boyutludur. Dolayısıyla \(A^TA\), \(n\times n\) boyutludur. Simetri için transpoz alınır:</p>
+          <div class="equation-card" data-raw-latex="(A^TA)^T=A^T(A^T)^T=A^TA">
+            <div class="equation-content">
+              \[
+              (A^TA)^T=A^T(A^T)^T=A^TA
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Tam çözülemeyen sistemleri incelemede \(A^TA\)'nın kare ve simetrik olması merkezi bir avantajdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: \(A^TA\) ve \(A\) Aynı Sıfır Uzayına Sahiptir</h3>
+          <p><strong>İfade:</strong> Gerçek matrisler için</p>
+          <div class="equation-card" data-raw-latex="N(A^TA)=N(A)">
+            <div class="equation-content">
+              \[
+              N(A^TA)=N(A)
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A^TA\mathbf{x}=\mathbf{0}\) ise bu vektör \(A\mathbf{x}\)'in uzunluk karesini sıfıra zorlar; dolayısıyla \(A\mathbf{x}\) sıfır olmalıdır.</p>
+          <p><strong>Formal İspat:</strong> Önce \(\mathbf{x}\in N(A)\) ise \(A\mathbf{x}=\mathbf{0}\), dolayısıyla \(A^TA\mathbf{x}=A^T\mathbf{0}=\mathbf{0}\). Bu, \(N(A)\subseteq N(A^TA)\) verir.</p>
+          <p>Ters yönde \(\mathbf{x}\in N(A^TA)\) olsun. O zaman \(A^TA\mathbf{x}=\mathbf{0}\). Soldan \(\mathbf{x}^T\) ile çarpalım:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=(A\mathbf{x})^T(A\mathbf{x})=\|A\mathbf{x}\|^2=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}
+              =(A\mathbf{x})^T(A\mathbf{x})
+              =\|A\mathbf{x}\|^2=0
+              \]
+            </div>
+          </div>
+          <p>Bir uzunluk karesi yalnızca vektör sıfırsa sıfır olur. Bu nedenle \(A\mathbf{x}=\mathbf{0}\), yani \(\mathbf{x}\in N(A)\).</p>
+          <p><strong>Yorum:</strong> \(A^TA\) yeni bir sıfır uzayı üretmez; \(A\)'nın sütun bağımlılıklarını aynen korur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.14: \(A^TA\)'nın Tersinirlik Ölçütü</h3>
+          <p><strong>İfade:</strong> \(A^TA\) tersinirdir ancak ve ancak \(A\)'nın sütunları lineer bağımsızdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Kare bir matrisin tersinir olması, sıfır uzayında yalnızca sıfır vektörünün bulunması demektir. Teorem 1.13, \(A^TA\)'nın sıfır uzayının \(A\)'nın sıfır uzayıyla aynı olduğunu söyler.</p>
+          <p><strong>Formal İspat:</strong> \(A^TA\) tersinirdir ancak ve ancak \(N(A^TA)=\{\mathbf{0}\}\). Teorem 1.13'e göre bu, \(N(A)=\{\mathbf{0}\}\) ile eşdeğerdir. \(N(A)=\{\mathbf{0}\}\) olması ise \(A\)'nın sütunlarının lineer bağımsız olması demektir.</p>
+          <div class="equation-card" data-raw-latex="A^TA\text{ tersinir}\quad\Longleftrightarrow\quad N(A)=\{\mathbf{0}\}\quad\Longleftrightarrow\quad A\text{ sütunları bağımsız}">
+            <div class="equation-content">
+              \[
+              A^TA\text{ tersinir}
+              \quad\Longleftrightarrow\quad
+              N(A)=\{\mathbf{0}\}
+              \quad\Longleftrightarrow\quad
+              A\text{ sütunları bağımsız}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Fazla denklemli sistemlerde \(A^TA\)'nın çözülebilir bir kare sistem üretmesi için gereken temel koşul budur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: İç Çarpımla Ortogonallik Kontrolü</h3>
+          <p>İki vektör verildiğinde şu adımlar uygulanır:</p>
+          <ol>
+            <li>Karşılık gelen bileşenleri çarp.</li>
+            <li>Çarpımları topla.</li>
+            <li>Sonuç sıfırsa vektörler ortogonaldir.</li>
+          </ol>
+          <p>\(\mathbf{x}=(1,2,3)^T\) ve \(\mathbf{y}=(2,-1,0)^T\) için hesap</p>
+          <div class="equation-card" data-raw-latex="1\cdot2+2\cdot(-1)+3\cdot0=0">
+            <div class="equation-content">
+              \[
+              1\cdot2+2\cdot(-1)+3\cdot0=0
+              \]
+            </div>
+          </div>
+          <p>olduğundan bu vektörler ortogonaldir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: Satır Uzayına Dik Sıfır Uzayı Bulma</h3>
+          <p>\(A=\begin{bmatrix}1&2&5\end{bmatrix}\) için sıfır uzayı</p>
+          <div class="equation-card" data-raw-latex="x_1+2x_2+5x_3=0">
+            <div class="equation-content">
+              \[
+              x_1+2x_2+5x_3=0
+              \]
+            </div>
+          </div>
+          <p>denkleminden bulunur. \(x_2=s\), \(x_3=t\) seçilirse \(x_1=-2s-5t\) olur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=s\begin{bmatrix}-2\\1\\0\end{bmatrix}+t\begin{bmatrix}-5\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              s\begin{bmatrix}-2\\1\\0\end{bmatrix}
+              +t\begin{bmatrix}-5\\0\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu iki baz vektörünün her biri \((1,2,5)^T\) vektörüne ortogonaldir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.17: \(A^TA\) Hesabı</h3>
+          <p>Şu dikdörtgen matris verilsin:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1\\1&2\\1&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1\\
+              1&2\\
+              1&5
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu durumda</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}1&1&1\\1&2&5\end{bmatrix}\begin{bmatrix}1&1\\1&2\\1&5\end{bmatrix}=\begin{bmatrix}3&8\\8&30\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              1&1&1\\
+              1&2&5
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&1\\
+              1&2\\
+              1&5
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              3&8\\
+              8&30
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Sonuç kare ve simetriktir. Ayrıca sütunlar bağımsız olduğu için bu matris tersinirdir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.18: Bağımlı Sütunlarda \(A^TA\)'nın Tersinir Olmaması</h3>
+          <p>Sütunları bağımlı olan</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&3\\1&3\\1&3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&3\\
+              1&3\\
+              1&3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisi için</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}3&9\\9&27\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              3&9\\
+              9&27
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. İkinci sütun birinci sütunun üç katıdır; dolayısıyla \(A^TA\) tersinir değildir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="uygulama-baglantilari">
+        <h2 id="uygulama-baglantilari">Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki ortogonallik fikri, tam çözümü olmayan fazla denklemli sistemlere hazırlık yapar. Böyle sistemlerde \(\mathbf{b}\), çoğu zaman \(A\)'nın sütun uzayında değildir; bu yüzden \(A\mathbf{x}=\mathbf{b}\) tam olarak çözülemez.</p>
+        <p>Ölçüm verileri çoğu zaman hata içerir ve denklem sayısı bilinmeyen sayısından fazladır. Amaç, tüm ölçümleri kullanarak mümkün olan en iyi \(\hat{\mathbf{x}}\) değerini bulmaktır. Bu yaklaşımın merkezi denklemi</p>
+        <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>biçimindedir. Bu denklem, \(A^TA\)'nın özelliklerini anlamayı zorunlu kılar.</p>
+      </section>
+
+      <section aria-labelledby="sik-yapilan-hatalar">
+        <h2 id="sik-yapilan-hatalar">Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <h3>Hata 1: Ortogonal Alt Uzayları Sadece Görsel Dikliğe İndirgemek</h3>
+          <p>İki alt uzayın ortogonal olması için her vektör çiftinin iç çarpımı sıfır olmalıdır. İki düzlem dik kesişiyor gibi görünse bile ortak sıfırdan farklı vektör içeriyorsa ortogonal değildir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Tanımı her vektör çifti üzerinden kontrol edin.</p>
+        </section>
+        <section class="note-card">
+          <h3>Hata 2: Sıfır Uzayını Satır Uzayının İçinde Sanmak</h3>
+          <p>Sıfır uzayı, satır uzayının içinde değil, ona ortogonaldir. Bu iki uzay aynı \(\mathbb{R}^n\) içinde birbirini tamamlar.</p>
+          <p><strong>Doğru yaklaşım:</strong> \(A\mathbf{x}=\mathbf{0}\) denklemini satırların \(\mathbf{x}\) ile iç çarpımı olarak okuyun.</p>
+        </section>
+        <section class="note-card">
+          <h3>Hata 3: \(A^TA\)'nın Her Zaman Tersinir Olduğunu Varsaymak</h3>
+          <p>\(A^TA\) kare ve simetriktir, fakat bu tersinir olduğu anlamına gelmez. Tersinirlik için \(A\)'nın sütunlarının bağımsız olması gerekir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Önce \(N(A)\) uzayının yalnızca \(\mathbf{0}\) içerip içermediğini kontrol edin.</p>
+        </section>
+        <section class="note-card">
+          <h3>Hata 4: \(A^TA\) ile \(AA^T\)'yi Karıştırmak</h3>
+          <p>\(A^TA\) sütun sayısı kadar kare bir matristir; \(AA^T\) ise satır sayısı kadar kare bir matristir. Bu bölümde normal denkleme hazırlık için \(A^TA\) kullanılır.</p>
+          <p><strong>Doğru yaklaşım:</strong> Boyutları yazarak çarpımın hangi uzayda yaşadığını kontrol edin.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>İç çarpım \(\rightarrow\) ortogonal vektör testi \(\mathbf{x}^T\mathbf{y}=0\)</li>
+            <li>Uzunluk karesi \(\rightarrow\) \(\|\mathbf{x}\|^2=\mathbf{x}^T\mathbf{x}\)</li>
+            <li>Pisagor bağıntısı \(\rightarrow\) ortogonalliğin geometrik anlamı</li>
+            <li>Alt uzay ortogonalliği \(\rightarrow\) tüm vektör çiftleri için sıfır iç çarpım</li>
+            <li>Satır uzayı \(\perp\) sıfır uzayı \(\rightarrow\) \(A\mathbf{x}=\mathbf{0}\)</li>
+            <li>Sütun uzayı \(\perp\) sol sıfır uzayı \(\rightarrow\) \(A^T\mathbf{y}=\mathbf{0}\)</li>
+            <li>\(A^TA\) \(\rightarrow\) kare, simetrik, \(A\) ile aynı sıfır uzayı</li>
+            <li>Bağımsız sütunlar \(\rightarrow\) \(A^TA\) tersinir</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <div class="formula-item">
+            <p>Ortogonal vektör testi:</p>
+            <div class="equation-card" data-raw-latex="\mathbf{x}^T\mathbf{y}=0">
+              <div class="equation-content">
+                \[
+                \mathbf{x}^T\mathbf{y}=0
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Uzunluk karesi:</p>
+            <div class="equation-card" data-raw-latex="\|\mathbf{x}\|^2=\mathbf{x}^T\mathbf{x}">
+              <div class="equation-content">
+                \[
+                \|\mathbf{x}\|^2=\mathbf{x}^T\mathbf{x}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Pisagor bağıntısı:</p>
+            <div class="equation-card" data-raw-latex="\|\mathbf{x}\|^2+\|\mathbf{y}\|^2=\|\mathbf{x}+\mathbf{y}\|^2\iff \mathbf{x}^T\mathbf{y}=0">
+              <div class="equation-content">
+                \[
+                \|\mathbf{x}\|^2+\|\mathbf{y}\|^2=\|\mathbf{x}+\mathbf{y}\|^2
+                \iff
+                \mathbf{x}^T\mathbf{y}=0
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Satır uzayı ile sıfır uzayı:</p>
+            <div class="equation-card" data-raw-latex="N(A)=\mathcal{R}(A)^\perp">
+              <div class="equation-content">
+                \[
+                N(A)=\mathcal{R}(A)^\perp
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Sütun uzayı ile sol sıfır uzayı:</p>
+            <div class="equation-card" data-raw-latex="N(A^T)=\mathcal{C}(A)^\perp">
+              <div class="equation-content">
+                \[
+                N(A^T)=\mathcal{C}(A)^\perp
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Normal denkleme hazırlık:</p>
+            <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+              <div class="equation-content">
+                \[
+                A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>\(A^TA\) sıfır uzayı:</p>
+            <div class="equation-card" data-raw-latex="N(A^TA)=N(A)">
+              <div class="equation-content">
+                \[
+                N(A^TA)=N(A)
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>\(A^TA\) tersinirlik ölçütü:</p>
+            <div class="equation-card" data-raw-latex="A^TA\text{ tersinir}\iff A\text{ sütunları bağımsız}">
+              <div class="equation-content">
+                \[
+                A^TA\text{ tersinir}\iff A\text{ sütunları bağımsız}
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde ortogonallik önce vektörler için, sonra alt uzaylar için tanımlandı. İki vektörün ortogonal olması, iç çarpımlarının sıfır olmasıyla eşdeğerdir; bu koşul Pisagor bağıntısıyla uyumludur.</p>
+        <p>Dört temel alt uzayın geometrisi ortogonallik üzerinden netleşti: satır uzayı sıfır uzayına, sütun uzayı sol sıfır uzayına ortogonaldir. Bu çiftler yalnızca dik değildir, boyutları da içinde yaşadıkları tüm uzayı tamamlar.</p>
+        <p>Son olarak \(A^TA\) matrisi tanıtıldı. Bu matris kare ve simetriktir, \(A\) ile aynı sıfır uzayına sahiptir ve \(A\)'nın sütunları bağımsız olduğunda tersinirdir. Bu özellikler, tam çözülemeyen sistemlerin en iyi çözümünü bulmaya hazırlık oluşturur.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(\mathbf{u}=(3,-1,2)^T\) ve \(\mathbf{v}=(1,5,1)^T\) vektörleri ortogonal midir?</p>
+          <p><strong>Çözüm:</strong> İç çarpımı hesaplayalım:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}^T\mathbf{v}=3\cdot1+(-1)\cdot5+2\cdot1=3-5+2=0">
+            <div class="equation-content">
+              \[
+              \mathbf{u}^T\mathbf{v}=3\cdot1+(-1)\cdot5+2\cdot1=3-5+2=0
+              \]
+            </div>
+          </div>
+          <p>Sonuç sıfır olduğu için vektörler ortogonaldir.</p>
+          <p><strong>Yorum:</strong> Ortogonallik için uzunlukları bilmek gerekmez; iç çarpımın sıfır olması yeterlidir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>\(A=\begin{bmatrix}2&-1&1\end{bmatrix}\) olsun. \(N(A)\) için bir baz bulun ve bu baz vektörlerinin satır uzayına ortogonal olduğunu kontrol edin.</p>
+          <p><strong>Çözüm:</strong> Sıfır uzayı denklemi</p>
+          <div class="equation-card" data-raw-latex="2x_1-x_2+x_3=0">
+            <div class="equation-content">
+              \[
+              2x_1-x_2+x_3=0
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. \(x_1=s\), \(x_3=t\) seçilirse \(x_2=2s+t\) olur. Böylece</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=s\begin{bmatrix}1\\2\\0\end{bmatrix}+t\begin{bmatrix}0\\1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}
+              =s\begin{bmatrix}1\\2\\0\end{bmatrix}
+              +t\begin{bmatrix}0\\1\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1\\2\\0\end{bmatrix},\begin{bmatrix}0\\1\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1\\2\\0\end{bmatrix},
+              \begin{bmatrix}0\\1\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Satır vektörü \((2,-1,1)^T\) ile iç çarpımlar</p>
+          <div class="equation-card" data-raw-latex="2\cdot1+(-1)\cdot2+1\cdot0=0,\qquad 2\cdot0+(-1)\cdot1+1\cdot1=0">
+            <div class="equation-content">
+              \[
+              2\cdot1+(-1)\cdot2+1\cdot0=0,\qquad
+              2\cdot0+(-1)\cdot1+1\cdot1=0
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu hesap satır uzayı ile sıfır uzayının ortogonalliğini somutlaştırır.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>\(A=\begin{bmatrix}1&0\\2&1\\3&1\end{bmatrix}\) olsun. \(A^TA\)'yı hesaplayın ve tersinir olup olmadığını belirleyin.</p>
+          <p><strong>Çözüm:</strong> Önce transpozla çarpımı yazalım:</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}1&2&3\\0&1&1\end{bmatrix}\begin{bmatrix}1&0\\2&1\\3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              1&2&3\\
+              0&1&1
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&0\\
+              2&1\\
+              3&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Girdiler iç çarpımlar olarak hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}1^2+2^2+3^2&1\cdot0+2\cdot1+3\cdot1\\0\cdot1+1\cdot2+1\cdot3&0^2+1^2+1^2\end{bmatrix}=\begin{bmatrix}14&5\\5&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              1^2+2^2+3^2&1\cdot0+2\cdot1+3\cdot1\\
+              0\cdot1+1\cdot2+1\cdot3&0^2+1^2+1^2
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              14&5\\
+              5&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Determinant</p>
+          <div class="equation-card" data-raw-latex="\det(A^TA)=14\cdot2-5\cdot5=28-25=3">
+            <div class="equation-content">
+              \[
+              \det(A^TA)=14\cdot2-5\cdot5=28-25=3
+              \]
+            </div>
+          </div>
+          <p>olduğu için \(A^TA\) tersinirdir.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, \(A\)'nın iki sütununun bağımsız olmasıyla uyumludur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Orthogonal vectors</td>
+                <td>Ortogonal vektörler</td>
+                <td>İç çarpımları sıfır olan vektörler.</td>
+              </tr>
+              <tr>
+                <td>Dot product</td>
+                <td>İç çarpım</td>
+                <td>Karşılık gelen bileşenlerin çarpımlarının toplamı.</td>
+              </tr>
+              <tr>
+                <td>Length squared</td>
+                <td>Uzunluk karesi</td>
+                <td>Bir vektörün kendisiyle iç çarpımı.</td>
+              </tr>
+              <tr>
+                <td>Orthogonal subspaces</td>
+                <td>Ortogonal alt uzaylar</td>
+                <td>Birindeki her vektörün diğerindeki her vektöre ortogonal olduğu alt uzaylar.</td>
+              </tr>
+              <tr>
+                <td>Row space</td>
+                <td>Satır uzayı</td>
+                <td>Matris satırlarının doğrusal kombinasyonlarıyla oluşan uzay.</td>
+              </tr>
+              <tr>
+                <td>Nullspace</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denkleminin çözüm uzayı.</td>
+              </tr>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>Matris sütunlarının doğrusal kombinasyonlarıyla oluşan uzay.</td>
+              </tr>
+              <tr>
+                <td>Left nullspace</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{y}=\mathbf{0}\) denkleminin çözüm uzayı.</td>
+              </tr>
+              <tr>
+                <td>Orthogonal complement</td>
+                <td>Ortogonal tümleyen</td>
+                <td>Bir alt uzaydaki bütün vektörlere ortogonal olan vektörlerin oluşturduğu uzay.</td>
+              </tr>
+              <tr>
+                <td>Normal equation</td>
+                <td>Normal denklem</td>
+                <td>Tam çözüm olmadığında kullanılan \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) denklemi.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

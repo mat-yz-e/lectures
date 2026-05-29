@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10. Ders: Dört Temel Alt Uzay</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item p {
+      margin-bottom: 0.4rem;
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.55rem, 7vw, 2.2rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" class="active" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">10. Ders: Dört Temel Alt Uzay</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, bir \(m\times n\) matrisle doğal olarak gelen dört temel alt uzayı birlikte ele alır: sütun uzayı, sıfır uzayı, satır uzayı ve sol sıfır uzayı.</p>
+        <p>Daha önce \(C(A)\) ve \(N(A)\) uzayları üzerinde duruldu. Bu bölümde iki yeni uzay da sisteme eklenir: satır uzayı \(C(A^T)\) ve sol sıfır uzayı \(N(A^T)\). Böylece bir matris yalnızca bir denklem sistemi değil, iki farklı ortamda yer alan dört ilişkili alt uzayın merkezi hâline gelir.</p>
+        <p>Temel amaç, bu dört uzayın nerede yaşadığını, bazlarının nasıl bulunduğunu ve boyutlarının rank ile nasıl belirlendiğini açık biçimde kurmaktır.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir \(m\times n\) matrisin dört temel alt uzayını tanımlamak.</li>
+          <li>Sütun uzayı ve sol sıfır uzayının \(\mathbb{R}^m\) içinde, satır uzayı ve sıfır uzayının \(\mathbb{R}^n\) içinde yer aldığını ayırt etmek.</li>
+          <li>Sütun uzayı için özgün matrisin pivot sütunlarından baz seçmek.</li>
+          <li>Satır uzayı için indirgenmiş biçimin sıfır olmayan satırlarını kullanmak.</li>
+          <li>Sıfır uzayı için özel çözümleri baz olarak yazmak.</li>
+          <li>Sol sıfır uzayını \(A^T\mathbf{y}=\mathbf{0}\) ve \(\mathbf{y}^TA=\mathbf{0}^T\) ilişkileriyle yorumlamak.</li>
+          <li>Dört temel boyut formülünü rank cinsinden kullanmak.</li>
+          <li>Matrislerden oluşan vektör uzayını ve bu uzayın doğal alt uzaylarını tanımak.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Sütun uzayı ve sıfır uzayı kavramları.</li>
+          <li>Rank, pivot sütun, serbest değişken ve özel çözüm.</li>
+          <li>Satır indirgenmiş biçim \(R\).</li>
+          <li>Matris transpozu ve çarpım transpozu kuralı.</li>
+          <li>Baz ve boyut kavramları.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\in\mathbb{R}^{m\times n}\)</td>
+                <td>Matris</td>
+                <td>\(m\) satırlı, \(n\) sütunlu gerçek matris.</td>
+              </tr>
+              <tr>
+                <td>\(C(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının tüm lineer kombinasyonları; \(\mathbb{R}^m\) içindedir.</td>
+              </tr>
+              <tr>
+                <td>\(N(A)\)</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan \(\mathbf{x}\) vektörleri; \(\mathbb{R}^n\) içindedir.</td>
+              </tr>
+              <tr>
+                <td>\(C(A^T)\)</td>
+                <td>Satır uzayı</td>
+                <td>\(A\) matrisinin satırlarının lineer kombinasyonları; \(\mathbb{R}^n\) içindedir.</td>
+              </tr>
+              <tr>
+                <td>\(N(A^T)\)</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{y}=\mathbf{0}\) denklemini sağlayan \(\mathbf{y}\) vektörleri; \(\mathbb{R}^m\) içindedir.</td>
+              </tr>
+              <tr>
+                <td>\(r\)</td>
+                <td>Rank</td>
+                <td>Pivot sayısı; sütun uzayı ve satır uzayının ortak boyutudur.</td>
+              </tr>
+              <tr>
+                <td>\(R\)</td>
+                <td>Satır indirgenmiş biçim</td>
+                <td>Satır işlemleriyle \(A\) matrisinden elde edilen temiz biçim.</td>
+              </tr>
+              <tr>
+                <td>\(E\)</td>
+                <td>Satır işlem matrisi</td>
+                <td>Satır indirgeme işlemlerinin toplam etkisini temsil eder; \(EA=R\).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Bir matrisin dört temel alt uzayı, denklem çözmenin arkasındaki yapıyı gösterir. Sütun uzayı, hangi \(\mathbf{b}\) vektörleri için \(A\mathbf{x}=\mathbf{b}\) denkleminin çözülebileceğini anlatır. Sıfır uzayı, homojen sistemin serbestliklerini verir. Satır uzayı, pivot değişkenlerin yaşadığı ana yönleri taşır. Sol sıfır uzayı ise satırlar arasındaki bağımlılık ilişkilerini ölçer.</p>
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Dört temel alt uzay iki ortama ayrılır: \(C(A)\) ve \(N(A^T)\) vektörleri \(\mathbb{R}^m\) içindedir; \(C(A^T)\) ve \(N(A)\) vektörleri \(\mathbb{R}^n\) içindedir.</p>
+        </aside>
+        <p>Bu iki ortamda boyutlar tamamlayıcı biçimde davranır. \(\mathbb{R}^n\) tarafında satır uzayı \(r\) boyutlu, sıfır uzayı \(n-r\) boyutludur. \(\mathbb{R}^m\) tarafında sütun uzayı \(r\) boyutlu, sol sıfır uzayı \(m-r\) boyutludur.</p>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.1: Baz Adayındaki Gizli Bağımlılık</h3>
+          <p>\(\mathbb{R}^3\) içinde şu üç vektörün baz adayı olduğunu düşünelim:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_1=\begin{bmatrix}1\\1\\2\end{bmatrix},\quad \mathbf{v}_2=\begin{bmatrix}2\\2\\5\end{bmatrix},\quad \mathbf{v}_3=\begin{bmatrix}3\\3\\8\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_1=\begin{bmatrix}1\\1\\2\end{bmatrix},\quad
+              \mathbf{v}_2=\begin{bmatrix}2\\2\\5\end{bmatrix},\quad
+              \mathbf{v}_3=\begin{bmatrix}3\\3\\8\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu vektörler sütun yapılırsa</p>
+          <div class="equation-card" data-raw-latex="B=\begin{bmatrix}1&2&3\\1&2&3\\2&5&8\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              B=\begin{bmatrix}
+              1&2&3\\
+              1&2&3\\
+              2&5&8
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu matrisin ilk iki satırı aynıdır; dolayısıyla satırlar bağımlıdır ve matris tersinir değildir. Kare bir matris tersinir değilse sütunları da bağımsız değildir. Nitekim üçüncü sütun ilk iki sütunun şu kombinasyonudur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}_3=-\mathbf{v}_1+2\mathbf{v}_2">
+            <div class="equation-content">
+              \[
+              \mathbf{v}_3=-\mathbf{v}_1+2\mathbf{v}_2
+              \]
+            </div>
+          </div>
+          <p>Bu örnek, satır uzayının sütunlar hakkında bilgi taşıdığını gösterir. Dört temel alt uzay tam da bu ilişkileri sistemli hâle getirir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Dört Temel Alt Uzay</h3>
+          <p>\(A\in\mathbb{R}^{m\times n}\) için dört temel alt uzay şunlardır:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Alt uzay</th>
+                  <th>Tanım</th>
+                  <th>Bulunduğu ortam</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>\(C(A)\)</td>
+                  <td>\(A\) sütunlarının tüm lineer kombinasyonları</td>
+                  <td>\(\mathbb{R}^m\)</td>
+                </tr>
+                <tr>
+                  <td>\(N(A)\)</td>
+                  <td>\(A\mathbf{x}=\mathbf{0}\) denkleminin çözümleri</td>
+                  <td>\(\mathbb{R}^n\)</td>
+                </tr>
+                <tr>
+                  <td>\(C(A^T)\)</td>
+                  <td>\(A\) satırlarının tüm lineer kombinasyonları</td>
+                  <td>\(\mathbb{R}^n\)</td>
+                </tr>
+                <tr>
+                  <td>\(N(A^T)\)</td>
+                  <td>\(A^T\mathbf{y}=\mathbf{0}\) denkleminin çözümleri</td>
+                  <td>\(\mathbb{R}^m\)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.3: Satır Uzayı</h3>
+          <p>\(A\) matrisinin satır uzayı, satırların tüm lineer kombinasyonlarından oluşur. Satırları sütun vektörleri olarak görmek için \(A^T\) kullanılır; bu nedenle satır uzayı \(C(A^T)\) biçiminde yazılır.</p>
+          <div class="equation-card" data-raw-latex="\text{Satır uzayı}=C(A^T)">
+            <div class="equation-content">
+              \[
+              \text{Satır uzayı}=C(A^T)
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Sol Sıfır Uzayı</h3>
+          <p>Sol sıfır uzayı, \(A^T\mathbf{y}=\mathbf{0}\) denklemini sağlayan \(\mathbf{y}\in\mathbb{R}^m\) vektörlerinden oluşur. Bu denklemin transpozu alınırsa</p>
+          <div class="equation-card" data-raw-latex="A^T\mathbf{y}=\mathbf{0}\quad \Longleftrightarrow\quad \mathbf{y}^TA=\mathbf{0}^T">
+            <div class="equation-content">
+              \[
+              A^T\mathbf{y}=\mathbf{0}
+              \quad \Longleftrightarrow\quad
+              \mathbf{y}^TA=\mathbf{0}^T
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle bu uzay, \(A\) matrisini soldan çarpınca sıfır satırını üreten vektörleri temsil eder.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Dört Temel Alt Uzayın Boyutları</h3>
+          <p><strong>İfade:</strong> \(A\in\mathbb{R}^{m\times n}\) matrisinin rankı \(r\) ise</p>
+          <div class="equation-card" data-raw-latex="\dim C(A)=r,\quad \dim C(A^T)=r,\quad \dim N(A)=n-r,\quad \dim N(A^T)=m-r">
+            <div class="equation-content">
+              \[
+              \dim C(A)=r,\quad
+              \dim C(A^T)=r,\quad
+              \dim N(A)=n-r,\quad
+              \dim N(A^T)=m-r
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Pivot sayısı hem bağımsız sütun yönlerini hem de bağımsız satır yönlerini sayar. Serbest değişkenler ise sıfır uzayını oluşturur. Aynı düşünce \(A^T\) için uygulanınca sol sıfır uzayının boyutu bulunur.</p>
+          <p><strong>Formal İspat:</strong> Satır indirgeme sonucunda \(r\) pivot sütun ve \(n-r\) serbest değişken vardır. Özgün matrisin pivot sütunları \(C(A)\) için baz verdiğinden \(\dim C(A)=r\). İndirgenmiş biçimin sıfır olmayan \(r\) satırı satır uzayı için baz verdiğinden \(\dim C(A^T)=r\). Homojen sistemde her serbest değişken bir özel çözüm ürettiği için \(\dim N(A)=n-r\). Aynı rank \(A^T\) için de \(r\) olduğundan \(A^T\) matrisinin \(m\) bilinmeyenli homojen sisteminde \(m-r\) serbest değişken vardır; bu nedenle \(\dim N(A^T)=m-r\).</p>
+          <p><strong>Yorum:</strong> Rank, yalnızca pivot sayısı değil; dört temel alt uzayın boyutlarını belirleyen ana sayıdır.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Boyutların Yerleşimi:</strong>
+          <p>\(\mathbb{R}^n\) içinde \(\dim C(A^T)+\dim N(A)=r+(n-r)=n\). \(\mathbb{R}^m\) içinde \(\dim C(A)+\dim N(A^T)=r+(m-r)=m\).</p>
+        </aside>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Dört Alt Uzayı Aynı Matris Üzerinde Bulmak</h3>
+          <p>Şu matrisi ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&3&1\\1&1&2&1\\1&2&3&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              1&2&3&1\\
+              1&1&2&1\\
+              1&2&3&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Satır indirgeme şu biçimi verir:</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}1&0&1&1\\0&1&1&0\\0&0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=\begin{bmatrix}
+              1&0&1&1\\
+              0&1&1&0\\
+              0&0&0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İki pivot vardır; dolayısıyla \(r=2\), \(m=3\), \(n=4\).</p>
+
+          <h4>Sütun Uzayı</h4>
+          <p>Pivot sütunlar birinci ve ikinci sütunlardır. Baz, özgün matrisin bu sütunlarından seçilir:</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1\\1\\1\end{bmatrix},\begin{bmatrix}2\\1\\2\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1\\1\\1\end{bmatrix},
+              \begin{bmatrix}2\\1\\2\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle \(\dim C(A)=2\).</p>
+
+          <h4>Satır Uzayı</h4>
+          <p>Satır işlemleri satır uzayını değiştirmez. Bu yüzden \(R\) matrisinin sıfır olmayan satırları satır uzayı için temiz bir baz verir:</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1\\0\\1\\1\end{bmatrix},\begin{bmatrix}0\\1\\1\\0\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1\\0\\1\\1\end{bmatrix},
+              \begin{bmatrix}0\\1\\1\\0\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>Bu baz \(\mathbb{R}^4\) içindedir ve \(\dim C(A^T)=2\).</p>
+
+          <h4>Sıfır Uzayı</h4>
+          <p>\(R\mathbf{x}=\mathbf{0}\) denklemi</p>
+          <div class="equation-card" data-raw-latex="x_1+x_3+x_4=0,\qquad x_2+x_3=0">
+            <div class="equation-content">
+              \[
+              x_1+x_3+x_4=0,\qquad x_2+x_3=0
+              \]
+            </div>
+          </div>
+          <p>eşitliklerini verir. Serbest değişkenleri \(x_3=s\), \(x_4=t\) seçersek</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=s\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix}+t\begin{bmatrix}-1\\0\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}
+              =
+              s\begin{bmatrix}-1\\-1\\1\\0\end{bmatrix}
+              +
+              t\begin{bmatrix}-1\\0\\0\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Dolayısıyla \(N(A)\) için bir baz bu iki özel çözümdür ve \(\dim N(A)=2\).</p>
+
+          <h4>Sol Sıfır Uzayı</h4>
+          <p>Bu matriste birinci ve üçüncü satırlar aynıdır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="-\text{satır}_1+\text{satır}_3=\mathbf{0}^T">
+            <div class="equation-content">
+              \[
+              -\text{satır}_1+\text{satır}_3=\mathbf{0}^T
+              \]
+            </div>
+          </div>
+          <p>ve sol sıfır uzayı için bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}-1\\0\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}-1\\0\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Boyut \(m-r=3-2=1\) ile uyumludur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Satır İşlemleri Satır Uzayını Korur</h3>
+          <p><strong>İfade:</strong> \(A\) matrisi satır işlemleriyle \(R\) biçimine indirgenirse \(A\) ve \(R\) aynı satır uzayına sahiptir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır işlemleri yeni satırları eski satırların lineer kombinasyonu olarak üretir. Bu yüzden satırların gerdiği uzayın dışına çıkılmaz.</p>
+          <p><strong>Formal İspat:</strong> Her temel satır işlemi, satırları lineer kombinasyonlarla değiştirir. Dolayısıyla \(R\) matrisinin her satırı \(A\) matrisinin satırlarının bir lineer kombinasyonudur; bu, \(C(R^T)\subseteq C(A^T)\) verir. Satır işlemleri tersine çevrilebilir olduğundan \(A\) matrisinin satırları da \(R\) matrisinin satırlarının lineer kombinasyonudur; bu da \(C(A^T)\subseteq C(R^T)\) verir. İki içerme birlikte eşitliği gösterir.</p>
+          <p><strong>Yorum:</strong> Satır uzayı için indirgenmiş biçimin sıfır olmayan satırları kullanılabilir; ancak sütun uzayı için özgün matrisin pivot sütunları kullanılmalıdır.</p>
+        </section>
+
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p>Satır işlemleri satır uzayını korur fakat genellikle sütun uzayını değiştirebilir. Bu nedenle \(C(A)\) için baz seçerken \(R\) matrisinin sütunları değil, \(A\) matrisinin pivot konumundaki sütunları alınır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Satır İşlem Matrisi ve Sol Sıfır Uzayı</h3>
+          <p>Örnek 1.6'daki indirgeme işlemleri tek bir matrisle ifade edilebilir:</p>
+          <div class="equation-card" data-raw-latex="EA=R">
+            <div class="equation-content">
+              \[
+              EA=R
+              \]
+            </div>
+          </div>
+          <p>Bu örnekte satır işlem matrisi</p>
+          <div class="equation-card" data-raw-latex="E=\begin{bmatrix}-1&2&0\\1&-1&0\\-1&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              E=\begin{bmatrix}
+              -1&2&0\\
+              1&-1&0\\
+              -1&0&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olarak yazılabilir. \(R\) matrisinin son satırı sıfır olduğundan \(E\) matrisinin son satırı \(A\) matrisini soldan çarpınca sıfır satırı verir:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}-1&0&1\end{bmatrix}A=\mathbf{0}^T">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}-1&0&1\end{bmatrix}A=\mathbf{0}^T
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle \((-1,0,1)^T\), \(N(A^T)\) için baz vektörüdür.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.9: Matrislerden Oluşan Vektör Uzayı</h3>
+          <p>Sabit boyutlu matrisler de vektör uzayı oluşturur. Örneğin tüm \(3\times3\) matrislerin kümesi, matris toplamı ve skalerle çarpma işlemleri altında bir vektör uzayıdır.</p>
+          <div class="equation-card" data-raw-latex="M=\{A:\ A\in\mathbb{R}^{3\times3}\}">
+            <div class="equation-content">
+              \[
+              M=\{A:\ A\in\mathbb{R}^{3\times3}\}
+              \]
+            </div>
+          </div>
+          <p>Bu uzayda matrisler, vektör rolündedir. Matris çarpımı bu vektör uzayı yapısı için gerekli değildir; yalnızca toplama ve skalerle çarpma kullanılır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: \(3\times3\) Matris Uzayında Alt Uzaylar</h3>
+          <p>Tüm \(3\times3\) matrislerin uzayında bazı doğal alt uzaylar vardır:</p>
+          <ul>
+            <li>Üst üçgensel matrisler.</li>
+            <li>Simetrik matrisler.</li>
+            <li>Köşegen matrisler.</li>
+          </ul>
+          <p>Bir matris hem üst üçgensel hem simetrikse köşegen dışındaki bütün girdileri sıfır olmak zorundadır. Bu nedenle üst üçgensel matrisler ile simetrik matrislerin kesişimi köşegen matrislerdir.</p>
+          <div class="equation-card" data-raw-latex="\{\text{üst üçgensel matrisler}\}\cap\{\text{simetrik matrisler}\}=\{\text{köşegen matrisler}\}">
+            <div class="equation-content">
+              \[
+              \{\text{üst üçgensel matrisler}\}\cap\{\text{simetrik matrisler}\}
+              =
+              \{\text{köşegen matrisler}\}
+              \]
+            </div>
+          </div>
+          <p>Köşegen matrisler uzayı için bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1&0&0\\0&0&0\\0&0&0\end{bmatrix},\begin{bmatrix}0&0&0\\0&1&0\\0&0&0\end{bmatrix},\begin{bmatrix}0&0&0\\0&0&0\\0&0&1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1&0&0\\0&0&0\\0&0&0\end{bmatrix},
+              \begin{bmatrix}0&0&0\\0&1&0\\0&0&0\end{bmatrix},
+              \begin{bmatrix}0&0&0\\0&0&0\\0&0&1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Dolayısıyla köşegen matrisler uzayının boyutu \(3\) tür.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Satır Uzayı ve Sütun Uzayının Boyutları Eşittir</h3>
+          <p><strong>İfade:</strong> Her \(A\) matrisi için \(\dim C(A)=\dim C(A^T)=r\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır indirgeme, aynı sayıda pivotu hem sütunlarda hem satırlarda görünür kılar. Pivot sayısı matrisin bağımsız satır ve bağımsız sütun sayısını ortak biçimde ölçer.</p>
+          <p><strong>Formal İspat:</strong> \(A\) matrisi \(R\) biçimine indirgensin. \(R\) içinde tam olarak \(r\) sıfır olmayan satır vardır; bunlar birbirinden bağımsızdır ve satır uzayını gerer. Satır işlemleri satır uzayını değiştirmediğinden \(C(A^T)\) boyutu \(r\) olur. Öte yandan özgün matrisin pivot sütunları \(C(A)\) için \(r\) vektörlü bir baz verir. Bu nedenle iki uzayın boyutları eşittir ve ortak değer ranktır.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, satırlardan sütunlar hakkında bilgi çıkarılmasını sağlar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Sıfır Uzaylarının Boyutları Serbest Değişken Sayılarıdır</h3>
+          <p><strong>İfade:</strong> \(A\in\mathbb{R}^{m\times n}\) ve \(\operatorname{rank}(A)=r\) ise \(\dim N(A)=n-r\) ve \(\dim N(A^T)=m-r\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Homojen sistemde her serbest değişken bağımsız bir çözüm yönü üretir. \(A\) için bilinmeyen sayısı \(n\), \(A^T\) için bilinmeyen sayısı \(m\) olduğundan serbest değişken sayıları farklı ortamlarda tamamlayıcı boyutları verir.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}=\mathbf{0}\) sisteminde \(r\) pivot değişken ve \(n-r\) serbest değişken vardır. Her serbest değişkenden bir özel çözüm elde edilir; bu özel çözümler \(N(A)\) için bazdır. Dolayısıyla \(\dim N(A)=n-r\). Aynı argüman \(A^T\mathbf{y}=\mathbf{0}\) sistemine uygulanır. \(A^T\) matrisinin sütun sayısı \(m\), rankı yine \(r\) olduğundan \(\dim N(A^T)=m-r\).</p>
+          <p><strong>Yorum:</strong> Sıfır uzayları, pivot dışı serbestlikleri görünür kılar.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <strong>Yöntem 1: Sütun Uzayı İçin Baz</strong>
+          <ol>
+            <li>\(A\) matrisini satır indirgenmiş biçime getir.</li>
+            <li>Pivot sütun konumlarını belirle.</li>
+            <li>Bu konumlardaki özgün \(A\) sütunlarını seç.</li>
+            <li>Seçilen sütunlar \(C(A)\) için bazdır.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 2: Satır Uzayı İçin Baz</strong>
+          <ol>
+            <li>\(A\) matrisini \(R\) biçimine indir.</li>
+            <li>\(R\) matrisinin sıfır olmayan satırlarını al.</li>
+            <li>Bu satırları \(\mathbb{R}^n\) içinde vektörler olarak yorumla.</li>
+            <li>Bu vektörler \(C(A^T)\) için bazdır.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 3: Sıfır Uzayı İçin Baz</strong>
+          <ol>
+            <li>\(R\mathbf{x}=\mathbf{0}\) sistemini çöz.</li>
+            <li>Her serbest değişken için bir özel çözüm oluştur.</li>
+            <li>Özel çözümleri baz olarak yaz.</li>
+            <li>Bu bazdaki vektör sayısı \(n-r\) olur.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 4: Sol Sıfır Uzayı İçin Baz</strong>
+          <ol>
+            <li>\([A\ I_m]\) genişletilmiş matrisini oluştur.</li>
+            <li>Aynı satır işlemleriyle \([R\ E]\) biçimine indir.</li>
+            <li>\(R\) matrisindeki sıfır satırlarına karşılık gelen \(E\) satırlarını seç.</li>
+            <li>Bu satırların transpozları \(N(A^T)\) için baz verir.</li>
+          </ol>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-yapilan-hatalar">
+        <h2 id="sik-yapilan-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Hata 1: Alt Uzayların Ortamını Karıştırmak</h4>
+            <p>\(C(A)\) ve \(N(A^T)\), \(\mathbb{R}^m\) içindedir. \(C(A^T)\) ve \(N(A)\), \(\mathbb{R}^n\) içindedir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 2: Sütun Uzayı Bazını \(R\) Sütunlarından Seçmek</h4>
+            <p>Satır indirgeme sütun uzayını değiştirebilir. Sütun uzayı için baz özgün matrisin pivot sütunlarından seçilmelidir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 3: Sol Sıfır Uzayını Atlamak</h4>
+            <p>Sol sıfır uzayı satırlar arasındaki bağımlılıkları verir ve boyutu \(m-r\) dir. Dört uzaydan biridir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 4: Satır İşlemlerinin Etkisini Yanlış Yorumlamak</h4>
+            <p>Satır işlemleri satır uzayını korur; ancak sütun uzayını genellikle korumaz. Bu ayrım baz seçiminde belirleyicidir.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>\(A\in\mathbb{R}^{m\times n}\), iki ortamı birbirine bağlar: \(\mathbb{R}^n\) ve \(\mathbb{R}^m\).</li>
+            <li>\(\mathbb{R}^n\) tarafında satır uzayı \(C(A^T)\) ve sıfır uzayı \(N(A)\) bulunur.</li>
+            <li>\(\mathbb{R}^m\) tarafında sütun uzayı \(C(A)\) ve sol sıfır uzayı \(N(A^T)\) bulunur.</li>
+            <li>Rank \(r\), sütun uzayı ve satır uzayının ortak boyutudur.</li>
+            <li>Serbest değişkenler \(N(A)\) boyutunu \(n-r\) olarak verir.</li>
+            <li>\(A^T\) için aynı düşünce sol sıfır uzayı boyutunu \(m-r\) olarak verir.</li>
+            <li>Satır indirgeme satır uzayını korur; bu yüzden \(R\) matrisinin sıfır olmayan satırları satır uzayının doğal bazıdır.</li>
+            <li>Matrislerin kendileri de uygun işlemler altında vektör uzayı oluşturabilir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <div class="formula-item">
+            <p>Dört temel alt uzay:</p>
+            <div class="equation-card" data-raw-latex="C(A),\quad N(A),\quad C(A^T),\quad N(A^T)">
+              <div class="equation-content">
+                \[
+                C(A),\quad N(A),\quad C(A^T),\quad N(A^T)
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Uzayların bulunduğu ortamlar:</p>
+            <div class="equation-card" data-raw-latex="C(A),N(A^T)\subseteq\mathbb{R}^m,\qquad C(A^T),N(A)\subseteq\mathbb{R}^n">
+              <div class="equation-content">
+                \[
+                C(A),N(A^T)\subseteq\mathbb{R}^m,\qquad
+                C(A^T),N(A)\subseteq\mathbb{R}^n
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Boyut formülleri:</p>
+            <div class="equation-card" data-raw-latex="\dim C(A)=r,\quad \dim C(A^T)=r,\quad \dim N(A)=n-r,\quad \dim N(A^T)=m-r">
+              <div class="equation-content">
+                \[
+                \dim C(A)=r,\quad
+                \dim C(A^T)=r,\quad
+                \dim N(A)=n-r,\quad
+                \dim N(A^T)=m-r
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Sol sıfır uzayı yorumu:</p>
+            <div class="equation-card" data-raw-latex="A^T\mathbf{y}=\mathbf{0}\Longleftrightarrow \mathbf{y}^TA=\mathbf{0}^T">
+              <div class="equation-content">
+                \[
+                A^T\mathbf{y}=\mathbf{0}\Longleftrightarrow \mathbf{y}^TA=\mathbf{0}^T
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Satır indirgeme matrisi:</p>
+            <div class="equation-card" data-raw-latex="EA=R">
+              <div class="equation-content">
+                \[
+                EA=R
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde bir \(m\times n\) matrisin dört temel alt uzayı sistemli biçimde kuruldu. Sütun uzayı \(C(A)\) ve sol sıfır uzayı \(N(A^T)\), \(\mathbb{R}^m\) içinde; satır uzayı \(C(A^T)\) ve sıfır uzayı \(N(A)\), \(\mathbb{R}^n\) içinde yer alır.</p>
+        <p>Rank \(r\), sütun uzayı ve satır uzayının ortak boyutudur. Sıfır uzayının boyutu \(n-r\), sol sıfır uzayının boyutu ise \(m-r\) olur. Sütun uzayı için özgün matrisin pivot sütunları, satır uzayı için indirgenmiş biçimin sıfır olmayan satırları, sıfır uzayı için özel çözümler ve sol sıfır uzayı için satır işlem matrisi kullanılır.</p>
+        <p>Bölümün sonunda, vektör uzayı kavramının yalnızca \(\mathbb{R}^n\) ile sınırlı olmadığı; \(3\times3\) matrislerden oluşan kümenin de vektör uzayı olarak ele alınabileceği görüldü.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(A\) matrisi \(5\times 8\) boyutlu ve rankı \(3\) olsun. Dört temel alt uzayın boyutlarını bulun.</p>
+          <p><strong>Çözüm:</strong> Burada \(m=5\), \(n=8\), \(r=3\) tür. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\dim C(A)=3,\quad \dim C(A^T)=3,\quad \dim N(A)=8-3=5,\quad \dim N(A^T)=5-3=2">
+            <div class="equation-content">
+              \[
+              \dim C(A)=3,\quad
+              \dim C(A^T)=3,\quad
+              \dim N(A)=8-3=5,\quad
+              \dim N(A^T)=5-3=2
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> \(\mathbb{R}^8\) tarafında \(3+5=8\), \(\mathbb{R}^5\) tarafında \(3+2=5\) olur.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>Aşağıdaki satır indirgenmiş biçim için satır uzayı ve sıfır uzayı bazlarını bulun:</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}1&0&2&-1\\0&1&3&4\\0&0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=\begin{bmatrix}
+              1&0&2&-1\\
+              0&1&3&4\\
+              0&0&0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Satır uzayı için baz, sıfır olmayan satırların sütun vektörü olarak yazılmış hâlidir:</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1\\0\\2\\-1\end{bmatrix},\begin{bmatrix}0\\1\\3\\4\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1\\0\\2\\-1\end{bmatrix},
+              \begin{bmatrix}0\\1\\3\\4\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>Sıfır uzayı için \(R\mathbf{x}=\mathbf{0}\) denklemi</p>
+          <div class="equation-card" data-raw-latex="x_1+2x_3-x_4=0,\qquad x_2+3x_3+4x_4=0">
+            <div class="equation-content">
+              \[
+              x_1+2x_3-x_4=0,\qquad x_2+3x_3+4x_4=0
+              \]
+            </div>
+          </div>
+          <p>olur. \(x_3=s\), \(x_4=t\) seçilirse \(x_1=-2s+t\), \(x_2=-3s-4t\). Böylece</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=s\begin{bmatrix}-2\\-3\\1\\0\end{bmatrix}+t\begin{bmatrix}1\\-4\\0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}
+              =
+              s\begin{bmatrix}-2\\-3\\1\\0\end{bmatrix}
+              +
+              t\begin{bmatrix}1\\-4\\0\\1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ve sıfır uzayı bazı bu iki özel çözümden oluşur.</p>
+          <p><strong>Yorum:</strong> Rank \(2\), sütun sayısı \(4\) olduğundan sıfır uzayı boyutu \(2\) dir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>Aşağıdaki matris için \(N(A^T)\) uzayına bir baz bulun:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&0\\2&4&0\\0&1&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              1&2&0\\
+              2&4&0\\
+              0&1&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Sol sıfır uzayı için \(\mathbf{y}^TA=\mathbf{0}^T\) koşulunu kullanabiliriz. Satırlar arasında ikinci satırın birinci satırın iki katı olduğu görülür:</p>
+          <div class="equation-card" data-raw-latex="\text{satır}_2=2\,\text{satır}_1">
+            <div class="equation-content">
+              \[
+              \text{satır}_2=2\,\text{satır}_1
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="-2\,\text{satır}_1+\text{satır}_2=\mathbf{0}^T">
+            <div class="equation-content">
+              \[
+              -2\,\text{satır}_1+\text{satır}_2=\mathbf{0}^T
+              \]
+            </div>
+          </div>
+          <p>olur. Buna karşılık gelen sol sıfır uzayı vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{y}=\begin{bmatrix}-2\\1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{y}=\begin{bmatrix}-2\\1\\0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>dir. Rank \(2\) olduğundan \(m-r=3-2=1\); bu tek vektör \(N(A^T)\) için bazdır.</p>
+          <p><strong>Yorum:</strong> Sol sıfır uzayı, satırlar arasındaki bağımlılık ilişkisini katsayı vektörü olarak kaydeder.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>Matris sütunlarının tüm lineer kombinasyonlarından oluşan uzay.</td>
+              </tr>
+              <tr>
+                <td>Nullspace</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) denkleminin çözüm uzayı.</td>
+              </tr>
+              <tr>
+                <td>Row space</td>
+                <td>Satır uzayı</td>
+                <td>Matris satırlarının tüm lineer kombinasyonlarından oluşan uzay.</td>
+              </tr>
+              <tr>
+                <td>Left nullspace</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{y}=\mathbf{0}\) koşulunu sağlayan vektörlerin uzayı.</td>
+              </tr>
+              <tr>
+                <td>Rank</td>
+                <td>Rank</td>
+                <td>Pivot sayısı; sütun ve satır uzaylarının ortak boyutu.</td>
+              </tr>
+              <tr>
+                <td>Pivot columns</td>
+                <td>Pivot sütunlar</td>
+                <td>Sütun uzayı için özgün matristen seçilen baz sütunları.</td>
+              </tr>
+              <tr>
+                <td>Reduced row echelon form</td>
+                <td>Satır indirgenmiş biçim</td>
+                <td>Satır uzayı ve sıfır uzayını temiz biçimde gösteren matris biçimi.</td>
+              </tr>
+              <tr>
+                <td>Matrix space</td>
+                <td>Matris uzayı</td>
+                <td>Sabit boyutlu matrislerin toplama ve skalerle çarpma altında oluşturduğu vektör uzayı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

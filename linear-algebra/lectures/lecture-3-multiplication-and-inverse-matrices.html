@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3. Ders: Matris Çarpımı ve Ters Matrisler</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .lesson-page .formula-item {
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" class="active" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">3. Ders: Matris Çarpımı ve Ters Matrisler</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, matris çarpımının birden fazla eşdeğer yorumunu ve kare matrislerde ters matris kavramını birlikte ele alır.</p>
+        <p>Lineer cebirde matris çarpımı yalnızca girdileri tek tek hesaplama kuralı değildir. Aynı işlem satırlar, sütunlar, sütun-satır çarpımları ve bloklar üzerinden de okunabilir. Bu farklı bakışlar, matrislerin lineer sistemleri ve lineer dönüşümleri nasıl taşıdığını anlamak için temel oluşturur.</p>
+        <p>Bölümün ikinci ana konusu ters matristir. Kare bir matrisin tersi varsa, bu ters matris \(A\)'nın yaptığı işlemi geri alır. Tersin varlığı doğrudan sütunların birbirinden bağımsız davranmasıyla ve \(A\mathbf{x}=\mathbf{0}\) denkleminin yalnızca sıfır çözümüne sahip olmasıyla ilişkilidir. Tersin bulunması ise Gauss-Jordan yöntemiyle, \([A\mid I]\) genişletilmiş matrisinin \([I\mid A^{-1}]\) biçimine dönüştürülmesiyle yapılır.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Matris çarpımında boyut uyumluluğunu doğru belirlemek.</li>
+          <li>\(C=AB\) çarpımının \(c_{ij}\) girdisini satır-sütun iç çarpımıyla hesaplamak.</li>
+          <li>Matris çarpımını sütunlara göre, satırlara göre, sütun-satır toplamı olarak ve bloklara göre yorumlamak.</li>
+          <li>Sütun-satır çarpımının neden tam boyutlu fakat özel yapılı bir matris verdiğini açıklamak.</li>
+          <li>Ters matrisin tanımını ve kare matrislerle sınırlı temel anlamını kullanmak.</li>
+          <li>Tekil matrisin tersinin neden olamayacağını \(A\mathbf{x}=\mathbf{0}\) denklemiyle göstermek.</li>
+          <li>Gauss-Jordan yöntemiyle \(2\times 2\) bir matrisin tersini adım adım bulmak.</li>
+          <li>\([A\mid I]\to[I\mid A^{-1}]\) dönüşümünün eliminasyon matrisleriyle neden doğru olduğunu ispatlamak.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Matrisin satır ve sütunlarını ayırt edebilme.</li>
+          <li>Matris-vektör çarpımını sütunların doğrusal birleşimi olarak yorumlayabilme.</li>
+          <li>Lineer sistemleri \(A\mathbf{x}=\mathbf{b}\) biçiminde yazabilme.</li>
+          <li>Eliminasyon ve satır işlemlerinin temel mantığını bilme.</li>
+          <li>Birim matrisin çarpımdaki etkisiz rolünü tanıma.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>\(A,B,C\)</td><td>Matrisler; çoğunlukla \(C=AB\) çarpımında kullanılır.</td></tr>
+              <tr><td>\(a_{ij}\)</td><td>\(A\) matrisinin \(i\)-inci satır, \(j\)-inci sütun girdisi.</td></tr>
+              <tr><td>\(b_{ij}\)</td><td>\(B\) matrisinin \(i\)-inci satır, \(j\)-inci sütun girdisi.</td></tr>
+              <tr><td>\(c_{ij}\)</td><td>\(C=AB\) matrisinin \(i\)-inci satır, \(j\)-inci sütun girdisi.</td></tr>
+              <tr><td>\(\mathbf{a}_k\)</td><td>\(A\) matrisinin \(k\)-inci sütunu.</td></tr>
+              <tr><td>\(\mathbf{b}_j\)</td><td>\(B\) matrisinin \(j\)-inci sütunu.</td></tr>
+              <tr><td>\(\mathbf{r}_i\)</td><td>Bağlama göre bir matrisin \(i\)-inci satır vektörü.</td></tr>
+              <tr><td>\(I\)</td><td>Birim matris.</td></tr>
+              <tr><td>\(A^{-1}\)</td><td>\(A\) matrisinin tersi; varsa \(A^{-1}A=I\) ve \(AA^{-1}=I\).</td></tr>
+              <tr><td>\(\mathbf{x}\)</td><td>Bilinmeyen veya test vektörü.</td></tr>
+              <tr><td>\(\mathbf{0}\)</td><td>Sıfır vektörü.</td></tr>
+              <tr><td>\([A\mid I]\)</td><td>Ters matris bulmak için \(A\) ile \(I\)'nin yan yana yazılmış biçimi.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Bu bölümde iki soru merkezîdir. Birincisi, \(AB\) çarpımının tam olarak ne yaptığıdır. İkincisi, bir kare matrisin yaptığı işlemin geri alınıp alınamayacağıdır. İlk soru matris çarpımının yapısını, ikinci soru ters matris kavramını doğurur.</p>
+        <div class="equation-card" data-raw-latex="A_{m\times n}B_{n\times p}=C_{m\times p}">
+          <div class="equation-content">
+            \[
+            A_{m\times n}B_{n\times p}=C_{m\times p}.
+            \]
+          </div>
+        </div>
+        <p>Çarpımın iç boyutları eşleşir; sonuç dış boyutları taşır. Aynı işlem dört ayrı bakışla okunabilir: tek tek girdiler, \(C\)'nin sütunları, \(C\)'nin satırları ve sütun-satır çarpımlarının toplamı. Bu bakışlar, ters matrisin neden lineer sistem çözmeye bağlı olduğunu da açıklar.</p>
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Bir matrisin tersi, tek bir sağ taraf için çözüm bulmaktan daha güçlü bir bilgidir. \(A^{-1}\), aynı katsayı matrisiyle bütün temel sağ tarafları aynı anda çözer ve böylece \(A\)'nın etkisini sistematik olarak geri alır.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 3.1: Matris Çarpımında Boyut Uyumluluğu</h3>
+          <p>\(A\) matrisi \(m\times n\), \(B\) matrisi \(n\times p\) boyutluysa \(AB\) çarpımı tanımlıdır ve sonuç \(m\times p\) boyutlu bir matristir. Buradaki kritik koşul, \(A\)'nın sütun sayısının \(B\)'nin satır sayısına eşit olmasıdır.</p>
+          <div class="equation-card" data-raw-latex="A\in \mathbb{R}^{m\times n},\quad B\in \mathbb{R}^{n\times p}\quad \Longrightarrow\quad AB\in \mathbb{R}^{m\times p}">
+            <div class="equation-content">
+              \[
+              A\in \mathbb{R}^{m\times n},\quad
+              B\in \mathbb{R}^{n\times p}
+              \quad \Longrightarrow\quad
+              AB\in \mathbb{R}^{m\times p}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 3.2: Girdi Bazlı Çarpım Kuralı</h3>
+          <p>\(C=AB\) olsun. \(C\)'nin \(i\)-inci satır, \(j\)-inci sütun girdisi, \(A\)'nın \(i\)-inci satırı ile \(B\)'nin \(j\)-inci sütununun iç çarpımıdır:</p>
+          <div class="equation-card" data-raw-latex="c_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}">
+            <div class="equation-content">
+              \[
+              c_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}.
+              \]
+            </div>
+          </div>
+          <p>Toplamdaki \(k\) indisi, \(A\)'nın ilgili satırı boyunca ilerlerken aynı anda \(B\)'nin ilgili sütunu boyunca ilerler. Bu nedenle toplam \(n\) terim içerir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 3.3: \(c_{34}\) Girdisinin Hesaplanması</h3>
+          <p>\(C=AB\) çarpımında \(c_{34}\), \(A\)'nın üçüncü satırı ile \(B\)'nin dördüncü sütunundan gelir:</p>
+          <div class="equation-card" data-raw-latex="c_{34}=a_{31}b_{14}+a_{32}b_{24}+\cdots+a_{3n}b_{n4}=\sum_{k=1}^{n}a_{3k}b_{k4}">
+            <div class="equation-content">
+              \[
+              c_{34}
+              =a_{31}b_{14}+a_{32}b_{24}+\cdots+a_{3n}b_{n4}
+              =\sum_{k=1}^{n}a_{3k}b_{k4}.
+              \]
+            </div>
+          </div>
+          <p>Bu formül, satır numarasının \(A\)'dan, sütun numarasının \(B\)'den geldiğini açıkça gösterir. Ortak indeks \(k\) ise çarpımı mümkün kılan ortak boyutu dolaşır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 3.4: Sütunlara Göre Matris Çarpımı</h3>
+          <p>\(B=[\mathbf{b}_1\ \mathbf{b}_2\ \cdots\ \mathbf{b}_p]\) biçiminde sütunlarına ayrılırsa, \(AB\) çarpımının sütunları \(A\)'nın bu sütunlarla ayrı ayrı çarpılmasıyla elde edilir:</p>
+          <div class="equation-card" data-raw-latex="AB=A[\mathbf{b}_1\ \mathbf{b}_2\ \cdots\ \mathbf{b}_p]=[A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_p]">
+            <div class="equation-content">
+              \[
+              AB
+              =A[\mathbf{b}_1\ \mathbf{b}_2\ \cdots\ \mathbf{b}_p]
+              =[A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_p].
+              \]
+            </div>
+          </div>
+          <p>Bu yorum, matris-vektör çarpımının doğrudan uzantısıdır. \(C\)'nin her sütunu, \(A\)'nın sütunlarının bir doğrusal birleşimidir; birleşimin katsayıları \(B\)'nin ilgili sütunundan gelir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 3.5: Satırlara Göre Matris Çarpımı</h3>
+          <p>\(A\)'nın bir satırı \(B\)'yi soldan çarptığında, sonuç \(B\)'nin satırlarının bir doğrusal birleşimi olur. Bu nedenle \(C=AB\) matrisinin her satırı, \(B\)'nin satırlarının uygun katsayılarla karıştırılmasıdır.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{r}_i(C)=\mathbf{r}_i(A)B">
+            <div class="equation-content">
+              \[
+              \mathbf{r}_i(C)=\mathbf{r}_i(A)B.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 3.6: Sütun-Satır Çarpımı</h3>
+          <p>Bir \(m\times 1\) sütun vektörü ile bir \(1\times p\) satır vektörünün çarpımı, \(m\times p\) boyutlu tam bir matristir. Bu çarpım bir sayı değil, her satırı aynı satır vektörünün bir katı olan özel yapılı bir matris üretir.</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}u_1\\u_2\\\vdots\\u_m\end{bmatrix}\begin{bmatrix}v_1&v_2&\cdots&v_p\end{bmatrix}=\begin{bmatrix}u_1v_1&u_1v_2&\cdots&u_1v_p\\u_2v_1&u_2v_2&\cdots&u_2v_p\\\vdots&\vdots&\ddots&\vdots\\u_mv_1&u_mv_2&\cdots&u_mv_p\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              u_1\\u_2\\\vdots\\u_m
+              \end{bmatrix}
+              \begin{bmatrix}
+              v_1&v_2&\cdots&v_p
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              u_1v_1&u_1v_2&\cdots&u_1v_p\\
+              u_2v_1&u_2v_2&\cdots&u_2v_p\\
+              \vdots&\vdots&\ddots&\vdots\\
+              u_mv_1&u_mv_2&\cdots&u_mv_p
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 3.7: Bir Sütun ile Bir Satırın Çarpımı</h3>
+          <p>Sütun vektörü \(\begin{bmatrix}2&3&4\end{bmatrix}^{T}\) ve satır vektörü \(\begin{bmatrix}1&6\end{bmatrix}\) çarpılırsa sonuç \(3\times 2\) boyutlu bir matristir:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2\\3\\4\end{bmatrix}\begin{bmatrix}1&6\end{bmatrix}=\begin{bmatrix}2&12\\3&18\\4&24\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2\\3\\4
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&6
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2&12\\
+              3&18\\
+              4&24
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sonuç matrisinin sütunları \(\begin{bmatrix}2&3&4\end{bmatrix}^{T}\) vektörünün katlarıdır; satırları ise \(\begin{bmatrix}1&6\end{bmatrix}\) satırının katlarıdır. Bu nedenle satırların tüm doğrusal birleşimleri tek bir doğru üzerinde, sütunların tüm doğrusal birleşimleri de tek bir doğru üzerinde kalır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 3.8: Sütun-Satır Toplamı Olarak Matris Çarpımı</h3>
+          <p><strong>İfade:</strong> \(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\) ve \(B\)'nin \(k\)-inci satırı \(\mathbf{r}_k\) olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="AB=\mathbf{a}_1\mathbf{r}_1+\mathbf{a}_2\mathbf{r}_2+\cdots+\mathbf{a}_n\mathbf{r}_n=\sum_{k=1}^{n}\mathbf{a}_k\mathbf{r}_k">
+            <div class="equation-content">
+              \[
+              AB
+              =
+              \mathbf{a}_1\mathbf{r}_1+
+              \mathbf{a}_2\mathbf{r}_2+\cdots+
+              \mathbf{a}_n\mathbf{r}_n
+              =
+              \sum_{k=1}^{n}\mathbf{a}_k\mathbf{r}_k.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır-sütun kuralında her \(c_{ij}\) girdisi, aynı \(k\) indisi üzerinden \(a_{ik}b_{kj}\) terimlerini toplar. Sabit bir \(k\), \(A\)'nın \(k\)-inci sütunu ile \(B\)'nin \(k\)-inci satırından oluşan bir tam matris katkısı verir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{a}_k\mathbf{r}_k\) matrisinin \((i,j)\) girdisi \(a_{ik}b_{kj}\)'dir. Bu matrisler \(k=1,\ldots,n\) için toplandığında \((i,j)\) girdisi</p>
+          <div class="equation-card" data-raw-latex="\sum_{k=1}^{n}a_{ik}b_{kj}=c_{ij}">
+            <div class="equation-content">
+              \[
+              \sum_{k=1}^{n}a_{ik}b_{kj}=c_{ij}
+              \]
+            </div>
+          </div>
+          <p>olur. Her \((i,j)\) girdisi \(AB\)'nin ilgili girdisiyle aynı olduğundan matrisler eşittir.</p>
+          <p><strong>Yorum:</strong> Bu teorem, matris çarpımını küçük sayıların toplamı yerine tam boyutlu matrislerin toplamı olarak görmeyi sağlar. Sütun uzayı ve satır uzayı fikirlerinin doğal olarak ortaya çıkmasının nedeni budur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 3.9: Sütun-Satır Toplamının Kullanılması</h3>
+          <p>Aşağıdaki çarpımda \(A\)'nın iki sütunu ve \(B\)'nin iki satırı vardır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2&7\\3&8\\4&9\end{bmatrix}\begin{bmatrix}1&6\\0&0\end{bmatrix}=\begin{bmatrix}2\\3\\4\end{bmatrix}\begin{bmatrix}1&6\end{bmatrix}+\begin{bmatrix}7\\8\\9\end{bmatrix}\begin{bmatrix}0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2&7\\
+              3&8\\
+              4&9
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&6\\
+              0&0
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2\\3\\4
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&6
+              \end{bmatrix}
+              +
+              \begin{bmatrix}
+              7\\8\\9
+              \end{bmatrix}
+              \begin{bmatrix}
+              0&0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İkinci sütun-satır çarpımı sıfır matris verdiği için sonuç yalnızca ilk katkıdan oluşur:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}2&7\\3&8\\4&9\end{bmatrix}\begin{bmatrix}1&6\\0&0\end{bmatrix}=\begin{bmatrix}2&12\\3&18\\4&24\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              2&7\\
+              3&8\\
+              4&9
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&6\\
+              0&0
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2&12\\
+              3&18\\
+              4&24
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 3.10: Bloklara Göre Çarpım</h3>
+          <p>Matrisler uyumlu boyutlarda alt bloklara ayrılabiliyorsa, bloklar da satır-sütun kuralıyla çarpılır. Örneğin</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}A_1&A_2\\A_3&A_4\end{bmatrix},\quad B=\begin{bmatrix}B_1&B_2\\B_3&B_4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              A_1&A_2\\
+              A_3&A_4
+              \end{bmatrix},
+              \quad
+              B=
+              \begin{bmatrix}
+              B_1&B_2\\
+              B_3&B_4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ise çarpımın blok biçimi</p>
+          <div class="equation-card" data-raw-latex="AB=\begin{bmatrix}A_1B_1+A_2B_3&A_1B_2+A_2B_4\\A_3B_1+A_4B_3&A_3B_2+A_4B_4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              AB=
+              \begin{bmatrix}
+              A_1B_1+A_2B_3&A_1B_2+A_2B_4\\
+              A_3B_1+A_4B_3&A_3B_2+A_4B_4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Özellikle sol üst blok, birinci blok satır ile birinci blok sütunun çarpımıdır: \(A_1B_1+A_2B_3\).</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 3.11: Ters Matris</h3>
+          <p>Kare bir \(A\) matrisi için \(A^{-1}\) matrisi varsa ve</p>
+          <div class="equation-card" data-raw-latex="A^{-1}A=I\quad \text{ve}\quad AA^{-1}=I">
+            <div class="equation-content">
+              \[
+              A^{-1}A=I
+              \quad \text{ve}\quad
+              AA^{-1}=I
+              \]
+            </div>
+          </div>
+          <p>eşitlikleri sağlanıyorsa \(A^{-1}\)'e \(A\)'nın ters matrisi denir. Böyle bir matris varsa \(A\) terslenebilirdir; yoksa \(A\) tekildir.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Kare matrislerde soldan ters ve sağdan ters aynı nesneye karşılık gelir. Dikdörtgen matrislerde ise boyutlar aynı simetriyi sağlamaz; bu nedenle bu bölümde ters kavramı kare matrislerle ele alınır.</p>
+        </aside>
+
+        <section class="example-card">
+          <h3>Örnek 3.12: Tersi Olmayan Bir Matris</h3>
+          <p>Aşağıdaki matrisin sütunları aynı doğrultudadır:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&3\\2&6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&3\\
+              2&6
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İkinci sütun birinci sütunun üç katıdır. Bu nedenle sütunların doğrusal birleşimleri yalnızca aynı doğru üzerinde kalır; birim matrisin \(\begin{bmatrix}1&0\end{bmatrix}^{T}\) ve \(\begin{bmatrix}0&1\end{bmatrix}^{T}\) sütunlarının ikisini birden üretmek mümkün değildir.</p>
+          <p>Aynı tekillik, sıfır sağ taraflı denklemle de görülür:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&3\\2&6\end{bmatrix}\begin{bmatrix}3\\-1\end{bmatrix}=\begin{bmatrix}0\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&3\\
+              2&6
+              \end{bmatrix}
+              \begin{bmatrix}
+              3\\-1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Buradaki \(\mathbf{x}=\begin{bmatrix}3&-1\end{bmatrix}^{T}\) sıfır vektörü değildir; buna rağmen \(A\mathbf{x}=\mathbf{0}\) olur. Bu, tersin varlığıyla çelişir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 3.13: Sıfıra Giden Sıfırdan Farklı Vektör Tersi Engeller</h3>
+          <p><strong>İfade:</strong> Kare bir \(A\) matrisi için sıfırdan farklı bir \(\mathbf{x}\) vektörü \(A\mathbf{x}=\mathbf{0}\) eşitliğini sağlıyorsa \(A\)'nın tersi yoktur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\) sıfırdan farklı bir vektörü \(\mathbf{0}\)'a gönderiyorsa, bu bilgi geri alınamaz. Çünkü \(\mathbf{0}\) üzerine ters matris uygulansa bile yalnızca \(\mathbf{0}\) elde edilir.</p>
+          <p><strong>Formal İspat:</strong> Tersinin var olduğunu varsayalım. \(A\mathbf{x}=\mathbf{0}\) eşitliğinin iki tarafını soldan \(A^{-1}\) ile çarpalım:</p>
+          <div class="equation-card" data-raw-latex="A^{-1}A\mathbf{x}=A^{-1}\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A^{-1}A\mathbf{x}=A^{-1}\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Sol taraf \(I\mathbf{x}=\mathbf{x}\), sağ taraf \(\mathbf{0}\) olur. Dolayısıyla \(\mathbf{x}=\mathbf{0}\) sonucu çıkar. Bu sonuç \(\mathbf{x}\neq\mathbf{0}\) varsayımıyla çelişir. O hâlde \(A^{-1}\) var olamaz.</p>
+          <p><strong>Yorum:</strong> Terslenebilir bir matris, yalnızca sıfır vektörünü sıfıra gönderebilir. Sıfırdan farklı bir vektörün sıfıra gitmesi, sütunlar arasında yok edici bir doğrusal birleşim bulunduğunu gösterir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 3.14: Gauss-Jordan ile Ters Matris Bulma</h3>
+          <p>Tersi bulunacak matris</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&3\\2&7\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&3\\
+              2&7
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Gauss-Jordan yöntemi, \(A\)'nın yanına birim matrisi ekleyerek başlar:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&3&1&0\\2&7&0&1\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&3&1&0\\
+              2&7&0&1
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Önce ikinci satırdan birinci satırın iki katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="R_2\leftarrow R_2-2R_1">
+            <div class="equation-content">
+              \[
+              R_2\leftarrow R_2-2R_1.
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&3&1&0\\0&1&-2&1\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&3&1&0\\
+              0&1&-2&1
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Sonra birinci satırdan ikinci satırın üç katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="R_1\leftarrow R_1-3R_2">
+            <div class="equation-content">
+              \[
+              R_1\leftarrow R_1-3R_2.
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&0&7&-3\\0&1&-2&1\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&0&7&-3\\
+              0&1&-2&1
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Sol taraf birim matrise dönüştüğü için sağ taraf \(A^{-1}\)'dir:</p>
+          <div class="equation-card" data-raw-latex="A^{-1}=\begin{bmatrix}7&-3\\-2&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^{-1}=
+              \begin{bmatrix}
+              7&-3\\
+              -2&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Kontrol doğrudan çarpımla yapılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}7&-3\\-2&1\end{bmatrix}\begin{bmatrix}1&3\\2&7\end{bmatrix}=\begin{bmatrix}1&0\\0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              7&-3\\
+              -2&1
+              \end{bmatrix}
+              \begin{bmatrix}
+              1&3\\
+              2&7
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1&0\\
+              0&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 3.15: Sütun Yorumu</h3>
+          <p><strong>İfade:</strong> \(C=AB\) ise \(C\)'nin \(j\)-inci sütunu \(A\mathbf{b}_j\)'dir. Bu nedenle \(C\)'nin her sütunu \(A\)'nın sütunlarının bir doğrusal birleşimidir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(B\)'nin sütunları yan yana duran ayrı vektörler olarak düşünülebilir. \(A\), bu vektörlerin her birine aynı matris-vektör çarpımını uygular.</p>
+          <p><strong>Formal İspat:</strong> \(B=[\mathbf{b}_1\ \cdots\ \mathbf{b}_p]\) yazılsın. Matris çarpımının \(j\)-inci sütunu, \(B\)'nin yalnızca \(j\)-inci sütunuyla hesaplanır. Bu sütunun \(i\)-inci girdisi</p>
+          <div class="equation-card" data-raw-latex="\sum_{k=1}^{n}a_{ik}(\mathbf{b}_j)_k">
+            <div class="equation-content">
+              \[
+              \sum_{k=1}^{n}a_{ik}(\mathbf{b}_j)_k
+              \]
+            </div>
+          </div>
+          <p>olup bu, \(A\mathbf{b}_j\) vektörünün \(i\)-inci girdisidir. Dolayısıyla \(C\)'nin \(j\)-inci sütunu \(A\mathbf{b}_j\)'dir.</p>
+          <p><strong>Yorum:</strong> Bu teorem, ters matris ararken neden \(A\)'nın aynı anda birden fazla sağ tarafla çözülmesi gerektiğini açıklar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 3.16: Gauss-Jordan Yönteminin Tersi Üretmesi</h3>
+          <p><strong>İfade:</strong> Satır işlemleriyle \([A\mid I]\) genişletilmiş matrisi \([I\mid E]\) biçimine indirgenirse ve bu işlemler soldan aynı toplam eliminasyon matrisiyle temsil ediliyorsa, \(E=A^{-1}\) olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır işlemleri \(A\)'yı \(I\)'ye dönüştürüyorsa, bu işlemlerin toplam etkisi \(A\)'nın yaptığı işlemi geri alıyor demektir. Aynı etki sağdaki \(I\)'ye uygulanınca ters matris ortaya çıkar.</p>
+          <p><strong>Formal İspat:</strong> Bütün satır işlemlerinin toplam etkisini soldan çarpılan \(E\) matrisiyle gösterelim. \([A\mid I]\) üzerine bu işlemler uygulandığında</p>
+          <div class="equation-card" data-raw-latex="E[A\mid I]=[EA\mid EI]">
+            <div class="equation-content">
+              \[
+              E[A\mid I]=[EA\mid EI].
+              \]
+            </div>
+          </div>
+          <p>Sol tarafın \(I\)'ye dönüştüğü varsayımından \(EA=I\) elde edilir. Kare matrisler için bu eşitlik \(E\)'nin \(A\)'nın tersi olduğunu gösterir. Ayrıca \(EI=E\) olduğundan sağdaki blok \(E=A^{-1}\)'dir.</p>
+          <p><strong>Yorum:</strong> Gauss-Jordan yöntemi, ters matrisi ayrı bir formülle değil, \(A\)'yı birim matrise çeviren satır işlemlerinin toplam etkisi olarak üretir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section>
+          <h3>Yöntem 1: Girdi Bazlı Matris Çarpımı</h3>
+          <p>Bu yöntem tek bir girdiyi veya bütün çarpımı hesaplamak için kullanılır.</p>
+          <ol>
+            <li>\(A\)'nın sütun sayısı ile \(B\)'nin satır sayısının eşit olduğunu kontrol et.</li>
+            <li>Hesaplanacak \(c_{ij}\) girdisi için \(A\)'nın \(i\)-inci satırını ve \(B\)'nin \(j\)-inci sütununu al.</li>
+            <li>Karşılıklı girdileri çarp ve topla.</li>
+          </ol>
+          <div class="equation-card" data-raw-latex="c_{ij}=a_{i1}b_{1j}+a_{i2}b_{2j}+\cdots+a_{in}b_{nj}">
+            <div class="equation-content">
+              \[
+              c_{ij}=a_{i1}b_{1j}+a_{i2}b_{2j}+\cdots+a_{in}b_{nj}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yaygın hata noktası:</strong> \(a_{ik}b_{jk}\) gibi iki satırdan veya iki sütundan gelen yanlış indeksleri çarpmak. Ortak indeks \(A\)'da sütun, \(B\)'de satır indisi olmalıdır.</p>
+        </section>
+
+        <section>
+          <h3>Yöntem 2: Sütunlara Göre Çarpım</h3>
+          <p>Bu yöntem, \(AB\)'nin bütün sütunlarını ayrı matris-vektör çarpımları olarak bulur.</p>
+          <ol>
+            <li>\(B\)'yi sütunlarına ayır.</li>
+            <li>Her sütunu \(A\) ile çarp.</li>
+            <li>Elde edilen sütunları yan yana yazarak \(C\)'yi oluştur.</li>
+          </ol>
+          <div class="equation-card" data-raw-latex="C=[A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_p]">
+            <div class="equation-content">
+              \[
+              C=[A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_p].
+              \]
+            </div>
+          </div>
+          <p><strong>Yaygın hata noktası:</strong> \(C\)'nin sütunlarının \(A\)'nın sütunlarının doğrusal birleşimleri olduğunu unutmak. Bir sütunu hesaplarken katsayılar \(B\)'nin ilgili sütunundan gelir.</p>
+        </section>
+
+        <section>
+          <h3>Yöntem 3: Gauss-Jordan ile Ters Bulma</h3>
+          <p>Bu yöntem, kare bir matrisin tersini bulmak için kullanılır.</p>
+          <ol>
+            <li>\([A\mid I]\) genişletilmiş matrisini oluştur.</li>
+            <li>Satır işlemleriyle sol bloğu birim matrise dönüştür.</li>
+            <li>Sol blok \(I\) olursa sağ blok \(A^{-1}\)'dir.</li>
+            <li>Sol blok \(I\)'ye dönüştürülemezse matris tekildir ve tersi yoktur.</li>
+          </ol>
+          <p>Örnek 3.14'te</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&3&1&0\\2&7&0&1\end{array}\right]\longrightarrow\left[\begin{array}{cc|cc}1&0&7&-3\\0&1&-2&1\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&3&1&0\\
+              2&7&0&1
+              \end{array}
+              \right]
+              \longrightarrow
+              \left[
+              \begin{array}{cc|cc}
+              1&0&7&-3\\
+              0&1&-2&1
+              \end{array}
+              \right]
+              \]
+            </div>
+          </div>
+          <p>elde edilmiştir. Dolayısıyla \(A^{-1}=\begin{bmatrix}7&-3\\-2&1\end{bmatrix}\).</p>
+          <p><strong>Yaygın hata noktası:</strong> Sol bloğa yapılan satır işlemlerini sağdaki birim matrise de aynen uygulamamak. Sağ taraf, ters matrisi taşıdığı için bütün satır işlemleri iki bloğa birlikte uygulanmalıdır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Boyutları Kontrol Etmeden Çarpmak</h4>
+            <p>\(m\times n\) bir matris ancak \(n\times p\) bir matrisle sağdan çarpılabilir. İç boyutlar eşleşmezse çarpım tanımlı değildir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Satır-Sütun Yerine Sütun-Sütun Çarpmak</h4>
+            <p>\(c_{ij}\) girdisi, \(A\)'nın \(i\)-inci satırı ile \(B\)'nin \(j\)-inci sütunundan gelir. Aynı yönlü iki sütunu doğrudan çarpmak bu kuralı vermez.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sütun Yorumu ile Satır Yorumunu Karıştırmak</h4>
+            <p>\(C\)'nin sütunları \(A\)'nın sütunlarından, \(C\)'nin satırları \(B\)'nin satırlarından oluşan doğrusal birleşimlerdir. Kaynak matrisler farklıdır.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sütun-Satır Çarpımını Sayı Sanmak</h4>
+            <p>Satır-sütun çarpımı bir sayı verir; sütun-satır çarpımı ise tam boyutlu bir matris verir. Bu iki işlem aynı değildir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sıfır Olmayan Çözümü Gözden Kaçırmak</h4>
+            <p>\(A\mathbf{x}=\mathbf{0}\) denkleminde sıfırdan farklı bir çözüm varsa \(A\)'nın tersi yoktur. Sıfır çözümünün varlığı tek başına bilgi vermez; o her zaman vardır.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Gauss-Jordan'da Sağ Bloğu Unutmak</h4>
+            <p>\([A\mid I]\) üzerinde yapılan her satır işlemi iki tarafa da uygulanmalıdır. Sağ blok, sol bloğu birim matrise dönüştüren işlemlerin toplam etkisini kaydeder.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <p><strong>Matris çarpımı</strong> → boyut uyumluluğu → satır-sütun kuralı → girdi formülü.</p>
+          <p><strong>Satır-sütun kuralı</strong> → sütun yorumu: \(C\)'nin sütunları \(A\)'nın sütunlarının doğrusal birleşimleri.</p>
+          <p><strong>Satır-sütun kuralı</strong> → satır yorumu: \(C\)'nin satırları \(B\)'nin satırlarının doğrusal birleşimleri.</p>
+          <p><strong>Sütun-satır çarpımı</strong> → tam boyutlu özel matris → sütun-satır toplamı \(AB=\sum \mathbf{a}_k\mathbf{r}_k\).</p>
+          <p><strong>Blok çarpım</strong> → aynı satır-sütun kuralının alt matrislere uygulanması.</p>
+          <p><strong>Ters matris</strong> → \(A^{-1}A=I\) ve \(AA^{-1}=I\) → sıfıra giden sıfırdan farklı vektör yokluğu.</p>
+          <p><strong>Gauss-Jordan yöntemi</strong> → \([A\mid I]\to[I\mid A^{-1}]\) → tersin satır işlemleriyle hesaplanması.</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Boyut Uyumluluğu</h3>
+            <p>\(A\)'nın sütun sayısı \(B\)'nin satır sayısına eşit olmalıdır.</p>
+            <div class="equation-card" data-raw-latex="(m\times n)(n\times p)=m\times p">
+              <div class="equation-content">
+                \[
+                (m\times n)(n\times p)=m\times p.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Girdi Formülü</h3>
+            <p>\(AB\)'nin her girdisi bir satır-sütun iç çarpımıdır.</p>
+            <div class="equation-card" data-raw-latex="c_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}">
+              <div class="equation-content">
+                \[
+                c_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Sütun Yorumu</h3>
+            <p>\(AB\)'nin sütunları, \(A\)'nın \(B\)'nin sütunlarıyla çarpılmasıdır.</p>
+            <div class="equation-card" data-raw-latex="AB=[A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_p]">
+              <div class="equation-content">
+                \[
+                AB=[A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_p].
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Sütun-Satır Toplamı</h3>
+            <p>Çarpım, \(A\)'nın sütunları ile \(B\)'nin satırlarından gelen matrislerin toplamıdır.</p>
+            <div class="equation-card" data-raw-latex="AB=\sum_{k=1}^{n}\mathbf{a}_k\mathbf{r}_k">
+              <div class="equation-content">
+                \[
+                AB=\sum_{k=1}^{n}\mathbf{a}_k\mathbf{r}_k.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Ters Matris Eşitliği</h3>
+            <p>Ters matris, soldan ve sağdan çarpıldığında birim matrisi verir.</p>
+            <div class="equation-card" data-raw-latex="A^{-1}A=I,\qquad AA^{-1}=I">
+              <div class="equation-content">
+                \[
+                A^{-1}A=I,\qquad AA^{-1}=I.
+                \]
+              </div>
+            </div>
+          </section>
+          <section class="formula-item">
+            <h3>Gauss-Jordan Şeması</h3>
+            <p>Ters matris, sol blok birim matrise indirgenince sağ blokta ortaya çıkar.</p>
+            <div class="equation-card" data-raw-latex="[A\mid I]\longrightarrow[I\mid A^{-1}]">
+              <div class="equation-content">
+                \[
+                [A\mid I]\longrightarrow[I\mid A^{-1}].
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde matris çarpımının tek bir kuraldan ibaret olmadığı görüldü. Girdi bazlı formül, sütun yorumu, satır yorumu, sütun-satır toplamı ve blok çarpım aynı işlemin farklı ama eşdeğer yüzleridir.</p>
+        <p>Ters matris kavramı, kare bir matrisin etkisini geri alma fikridir. Bir matris sıfırdan farklı bir vektörü sıfıra gönderiyorsa terslenebilir değildir. Tersi olan bir matris için Gauss-Jordan yöntemi, \([A\mid I]\) genişletilmiş matrisini \([I\mid A^{-1}]\) biçimine dönüştürerek ters matrisi hesaplar.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(A\) matrisi \(4\times 3\), \(B\) matrisi \(3\times 2\) boyutlu olsun. \(AB\) tanımlı mıdır? Sonuç hangi boyuttadır?</p>
+          <p><strong>Çözüm:</strong> İç boyutlar \(3\) ve \(3\) olduğu için çarpım tanımlıdır. Sonuç dış boyutları taşır:</p>
+          <div class="equation-card" data-raw-latex="(4\times 3)(3\times 2)=4\times 2">
+            <div class="equation-content">
+              \[
+              (4\times 3)(3\times 2)=4\times 2.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Matris çarpımında sonuç boyutu, soldaki matrisin satır sayısı ile sağdaki matrisin sütun sayısından oluşur.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>Aşağıdaki sütun-satır çarpımını hesaplayın:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\-2\\3\end{bmatrix}\begin{bmatrix}4&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1\\-2\\3
+              \end{bmatrix}
+              \begin{bmatrix}
+              4&5
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Her satır, \(\begin{bmatrix}4&5\end{bmatrix}\) satırının soldaki sütundaki ilgili katsayıyla çarpılmasıdır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\-2\\3\end{bmatrix}\begin{bmatrix}4&5\end{bmatrix}=\begin{bmatrix}4&5\\-8&-10\\12&15\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1\\-2\\3
+              \end{bmatrix}
+              \begin{bmatrix}
+              4&5
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              4&5\\
+              -8&-10\\
+              12&15
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Sonuç bir sayı değil, \(3\times 2\) boyutlu bir matristir. Bu, satır-sütun çarpımı ile sütun-satır çarpımının farklı olduğunu gösterir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>\(A=\begin{bmatrix}2&5\\1&3\end{bmatrix}\) için Gauss-Jordan yöntemiyle \(A^{-1}\)'i bulun.</p>
+          <p><strong>Çözüm:</strong> Genişletilmiş matrisle başlayalım:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}2&5&1&0\\1&3&0&1\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              2&5&1&0\\
+              1&3&0&1
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Hesabı sade tutmak için önce satırlar yer değiştirilir:</p>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&3&0&1\\2&5&1&0\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&3&0&1\\
+              2&5&1&0
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>İkinci satırdan birinci satırın iki katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="R_2\leftarrow R_2-2R_1">
+            <div class="equation-content">
+              \[
+              R_2\leftarrow R_2-2R_1.
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&3&0&1\\0&-1&1&-2\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&3&0&1\\
+              0&-1&1&-2
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>İkinci satır \(-1\) ile çarpılır:</p>
+          <div class="equation-card" data-raw-latex="R_2\leftarrow -R_2">
+            <div class="equation-content">
+              \[
+              R_2\leftarrow -R_2.
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&3&0&1\\0&1&-1&2\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&3&0&1\\
+              0&1&-1&2
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Birinci satırdan ikinci satırın üç katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="R_1\leftarrow R_1-3R_2">
+            <div class="equation-content">
+              \[
+              R_1\leftarrow R_1-3R_2.
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="\left[\begin{array}{cc|cc}1&0&3&-5\\0&1&-1&2\end{array}\right]">
+            <div class="equation-content">
+              \[
+              \left[
+              \begin{array}{cc|cc}
+              1&0&3&-5\\
+              0&1&-1&2
+              \end{array}
+              \right].
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="A^{-1}=\begin{bmatrix}3&-5\\-1&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^{-1}=
+              \begin{bmatrix}
+              3&-5\\
+              -1&2
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Satır değiş tokuşu ters bulma yönteminin dışına çıkmaz; yalnızca sol bloğu birim matrise daha kolay ulaştıran geçerli bir satır işlemidir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Matrix multiplication</td><td>Matris çarpımı</td><td>İki uyumlu boyutlu matristen yeni bir matris üretme işlemi.</td></tr>
+              <tr><td>Entry</td><td>Girdi</td><td>Bir matrisin belirli satır ve sütun konumundaki sayısı.</td></tr>
+              <tr><td>Row</td><td>Satır</td><td>Bir matrisin yatay vektörlerinden biri.</td></tr>
+              <tr><td>Column</td><td>Sütun</td><td>Bir matrisin düşey vektörlerinden biri.</td></tr>
+              <tr><td>Dot product</td><td>İç çarpım</td><td>İki aynı uzunluklu vektörün karşılıklı girdilerinin çarpılıp toplanması.</td></tr>
+              <tr><td>Block multiplication</td><td>Bloklara göre çarpım</td><td>Matrislerin alt matrislere ayrılarak satır-sütun kuralıyla çarpılması.</td></tr>
+              <tr><td>Outer product</td><td>Sütun-satır çarpımı</td><td>Bir sütun vektörü ile bir satır vektörünün tam boyutlu matris veren çarpımı.</td></tr>
+              <tr><td>Inverse matrix</td><td>Ters matris</td><td>Bir kare matrisle çarpıldığında birim matrisi veren matris.</td></tr>
+              <tr><td>Invertible matrix</td><td>Terslenebilir matris</td><td>Ters matrisi bulunan kare matris.</td></tr>
+              <tr><td>Singular matrix</td><td>Tekil matris</td><td>Ters matrisi bulunmayan kare matris.</td></tr>
+              <tr><td>Identity matrix</td><td>Birim matris</td><td>Köşegeninde \(1\), diğer yerlerinde \(0\) bulunan ve çarpımda etkisiz olan kare matris.</td></tr>
+              <tr><td>Gauss-Jordan elimination</td><td>Gauss-Jordan eliminasyonu</td><td>Satır işlemleriyle sol bloğu birim matrise dönüştürerek ters matrisi bulma yöntemi.</td></tr>
+              <tr><td>Augmented matrix</td><td>Genişletilmiş matris</td><td>Bir matrisin yanına sağ taraf veya birim matris eklenmiş biçimi.</td></tr>
+              <tr><td>Row operation</td><td>Satır işlemi</td><td>Bir satırı başka satırlarla değiştiren veya ölçekleyen temel işlem.</td></tr>
+              <tr><td>Zero vector</td><td>Sıfır vektörü</td><td>Bütün girdileri sıfır olan vektör.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var current = parseFloat(window.getComputedStyle(title).fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

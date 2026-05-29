@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>23. Ders: Markov Matrisleri ve Fourier Serileri</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.35rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0.5rem 0 0;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.45rem, 6vw, 2.1rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" class="active" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">23. Ders: Markov Matrisleri ve Fourier Serileri</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölümde özdeğerler ve özvektörler iki farklı ama aynı çizgide ilerleyen problemde kullanılır: Markov matrislerinin uzun dönem davranışı ve ortonormal bazlara göre katsayı bulma problemi. İlk kısım, matris kuvvetlerinin kararlı duruma nasıl yaklaştığını inceler. İkinci kısım, dik izdüşüm fikrinin sonlu boyutlu uzaylardan fonksiyon uzaylarına geçişini ve Fourier serilerinin temel katsayı formülünü açıklar.</p>
+        <p>Markov matrisleri, negatif olmayan girdiler ve sütun toplamlarının \(1\) olması koşullarıyla belirlenir. Bu iki koşul, toplam miktarın korunmasını ve olasılık yorumu yapılabilmesini sağlar. Bu nedenle \(A^k\mathbf{u}_0\) dizisinin uzun dönem davranışı özdeğerler aracılığıyla okunabilir.</p>
+        <p>Fourier serileri tarafında ise önce şu sonlu boyutlu fikir hatırlanır: Bir vektör ortonormal bazda yazıldığında katsayılar iç çarpımlarla bulunur. Aynı fikir, fonksiyonlar için toplam yerine integral kullanılarak devam eder.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir Markov matrisinin tanımını ve sütun toplamı koşulunun anlamını açıklamak.</li>
+          <li>Markov matrislerinde \(\lambda=1\) özdeğerinin neden ortaya çıktığını göstermek.</li>
+          <li>Matris kuvvetlerinin özdeğer-özvektör ayrışımıyla nasıl hesaplandığını yorumlamak.</li>
+          <li>Kararlı durumun \(\lambda=1\) özvektörüyle ilişkisini kurmak.</li>
+          <li>Ortonormal bazlarda katsayıların iç çarpımla bulunduğunu göstermek.</li>
+          <li>Fonksiyonlar için iç çarpımın integral olarak tanımlandığını anlamak.</li>
+          <li>Temel Fourier katsayısı formülünü ortogonallik fikrinden türetmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Matris-vektör çarpımı ve matris kuvvetleri.</li>
+          <li>Özdeğer, özvektör ve \(A\mathbf{x}=\lambda\mathbf{x}\) denklemi.</li>
+          <li>Köşegenleştirme ve \(A^k\mathbf{u}_0\) ifadesinin özvektörler cinsinden açılması.</li>
+          <li>Dik vektörler, ortonormal bazlar ve iç çarpım.</li>
+          <li>Basit trigonometrik fonksiyonlar ve temel belirli integral bilgisi.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Markov matrisi veya genel kare matris.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{u}_k\)</td>
+                <td>\(k\). adımda durum vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{u}_0\)</td>
+                <td>Başlangıç durum vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda_i\)</td>
+                <td>Matrisin özdeğerleri.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}_i\)</td>
+                <td>Özdeğer \(\lambda_i\)'ye karşılık gelen özvektör.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{q}_i\)</td>
+                <td>Ortonormal baz vektörü.</td>
+              </tr>
+              <tr>
+                <td>\(Q\)</td>
+                <td>Sütunları ortonormal vektörlerden oluşan kare matris.</td>
+              </tr>
+              <tr>
+                <td>\(f(x), g(x)\)</td>
+                <td>Fonksiyon uzayındaki vektör rolünü üstlenen fonksiyonlar.</td>
+              </tr>
+              <tr>
+                <td>\(\langle f,g\rangle\)</td>
+                <td>Fonksiyonlar arasındaki iç çarpım.</td>
+              </tr>
+              <tr>
+                <td>\(a_0,a_1,b_1,\ldots\)</td>
+                <td>Fourier açılımındaki katsayılar.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Özdeğerler, bir matrisin tekrar tekrar uygulanması durumunda hangi yönlerin kalıcı, hangi yönlerin sönümlü olduğunu belirler. Markov matrislerinde özel rolü \(\lambda=1\) oynar: bu özdeğere ait özvektör, uzun dönem kararlı dağılımı verir. Diğer özdeğerlerin mutlak değerleri \(1\)'den küçükse, onların katkıları \(k\) büyüdükçe kaybolur.</p>
+        <p>Fourier serilerinde benzer bir mantık katsayı bulma probleminde görülür. Ortonormal bazda bir vektörü çözümlemek için her baz vektörüyle iç çarpım almak yeterlidir. Fonksiyonlar için bu iç çarpım bir integraldir; sinüs ve kosinüs fonksiyonlarının ortogonalliği Fourier katsayılarını hesaplanabilir hâle getirir.</p>
+
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Bu bölümün ortak fikri şudur: Uygun bir baz seçildiğinde karmaşık görünen davranış basit katsayılara ayrılır. Markov matrislerinde bu baz özvektörlerden, Fourier serilerinde ise ortogonal trigonometrik fonksiyonlardan oluşur.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Markov Matrisi</h3>
+          <p>Bir kare matris \(A\), aşağıdaki iki koşulu sağlıyorsa Markov matrisi olarak adlandırılır:</p>
+          <ul>
+            <li>Tüm girdiler negatif değildir: \(a_{ij}\geq 0\).</li>
+            <li>Her sütunun girdileri toplamı \(1\)'dir.</li>
+          </ul>
+          <div class="equation-card" data-raw-latex="a_{ij}\geq 0,\qquad \sum_i a_{ij}=1\ \text{her }j\text{ için}">
+            <div class="equation-content">
+              \[
+              a_{ij}\geq 0,\qquad \sum_i a_{ij}=1\ \text{her }j\text{ için}
+              \]
+            </div>
+          </div>
+          <p>Bu koşullar, matrisin her sütununun bir dağılım gibi yorumlanmasını sağlar. Sütundaki girdiler, o sütuna karşılık gelen mevcut durumun bir sonraki adımda hangi durumlara geçeceğini ifade eder.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.2: Üç Durumlu Markov Matrisi</h3>
+          <p>Aşağıdaki matrisin tüm girdileri negatif değildir ve her sütun toplamı \(1\)'dir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0.1&amp;0.01&amp;0.3\\0.2&amp;0.99&amp;0.3\\0.7&amp;0&amp;0.4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              0.1 & 0.01 & 0.3\\
+              0.2 & 0.99 & 0.3\\
+              0.7 & 0 & 0.4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Sütun toplamları doğrudan kontrol edilir:</p>
+          <div class="equation-card" data-raw-latex="0.1+0.2+0.7=1,\qquad 0.01+0.99+0=1,\qquad 0.3+0.3+0.4=1">
+            <div class="equation-content">
+              \[
+              0.1+0.2+0.7=1,\qquad
+              0.01+0.99+0=1,\qquad
+              0.3+0.3+0.4=1
+              \]
+            </div>
+          </div>
+          <p>\(\lambda=1\) özvektörünü görmek için \(A-I\) matrisine bakılır:</p>
+          <div class="equation-card" data-raw-latex="A-I=\begin{bmatrix}-0.9&amp;0.01&amp;0.3\\0.2&amp;-0.01&amp;0.3\\0.7&amp;0&amp;-0.6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-I=
+              \begin{bmatrix}
+              -0.9 & 0.01 & 0.3\\
+              0.2 & -0.01 & 0.3\\
+              0.7 & 0 & -0.6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matrisin null uzayında pozitif bileşenli bir vektör bulunur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1=\begin{bmatrix}0.6\\33\\0.7\end{bmatrix},\qquad (A-I)\mathbf{x}_1=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              0.6\\
+              33\\
+              0.7
+              \end{bmatrix},
+              \qquad
+              (A-I)\mathbf{x}_1=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>Böylece \(\mathbf{x}_1\), \(\lambda=1\) özdeğerine karşılık gelen kararlı durum yönünü verir. Bu örnek, kararlı durum özvektörünün bileşenlerinin çok farklı büyüklüklerde olabileceğini de gösterir.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>Bir matrisin yalnızca sütun toplamlarının \(1\) olması Markov matrisi olmak için yeterli değildir; girdilerin de negatif olmaması gerekir. Olasılık yorumunu mümkün kılan koşul bu ikisinin birlikte sağlanmasıdır.</p>
+        </aside>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Markov Matrisinde \(\lambda=1\) Özdeğeri</h3>
+          <p><strong>İfade:</strong> \(A\) bir Markov matrisi ise \(\lambda=1\), \(A\) matrisinin bir özdeğeridir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sütun toplamlarının \(1\) olması, \(A-I\) matrisinin sütun toplamlarının \(0\) olması demektir. Bu da satırların bağımlı olmasına yol açar; dolayısıyla \(A-I\) tekildir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{1}=(1,1,\ldots,1)^T\) olsun. Her sütun toplamı \(1\) olduğundan \(A^T\mathbf{1}=\mathbf{1}\). Böylece</p>
+          <div class="equation-card" data-raw-latex="(A^T-I)\mathbf{1}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              (A^T-I)\mathbf{1}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Demek ki \(A^T-I\) tekildir. Bir kare matrisin tekil olması transpozunun da tekil olmasıyla eşdeğerdir; dolayısıyla \(A-I\) de tekildir. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\det(A-I)=0">
+            <div class="equation-content">
+              \[
+              \det(A-I)=0
+              \]
+            </div>
+          </div>
+          <p>olur. Bu da \(\lambda=1\)'in \(A\) için özdeğer olduğunu gösterir.</p>
+          <p><strong>Yorum:</strong> \(\lambda=1\), matris kuvvetleri altında kaybolmayan bileşeni temsil eder. Bu bileşen uzun dönem kararlı duruma karşılık gelir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: Transpoz Matrisin Özdeğerleri</h3>
+          <p><strong>İfade:</strong> Bir kare matris \(A\) ile transpozu \(A^T\) aynı özdeğerlere sahiptir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Özdeğerler karakteristik determinanttan gelir; determinant ise transpoz altında değişmez.</p>
+          <p><strong>Formal İspat:</strong> \(A\)'nın özdeğerleri</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=0">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=0
+              \]
+            </div>
+          </div>
+          <p>denkleminin kökleridir. Determinant transpoz altında değişmediğinden</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det((A-\lambda I)^T)=\det(A^T-\lambda I)">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=\det((A-\lambda I)^T)=\det(A^T-\lambda I)
+              \]
+            </div>
+          </div>
+          <p>olur. Dolayısıyla aynı \(\lambda\) değerleri \(A^T\) için de karakteristik denklemi sağlar.</p>
+          <p><strong>Yorum:</strong> Markov matrislerinde \(\mathbf{1}\) vektörü doğrudan \(A^T\) için özvektör olarak görünür. Bu bilgi, \(\lambda=1\)'in \(A\) için de özdeğer olduğunu hızlıca gösterir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Markov Matrisinde Diğer Özdeğerlerin Sınırı</h3>
+          <p><strong>İfade:</strong> Bir Markov matrisinin hiçbir özdeğerinin mutlak değeri \(1\)'den büyük olamaz.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Markov matrisi toplam miktarı büyütmez; yalnızca mevcut miktarı durumlar arasında yeniden dağıtır. Bu nedenle tekrarlı uygulama altında \(1\)'den büyük büyüme çarpanı ortaya çıkmaz.</p>
+          <p><strong>Formal İspat:</strong> \(A\) sütun-toplamlı Markov matrisi olsun. O hâlde \(A^T\)'nin satır toplamları \(1\)'dir ve \(A\) ile \(A^T\) aynı özdeğerlere sahiptir. \(A^T\mathbf{y}=\lambda\mathbf{y}\) olsun ve \(|y_j|\) bileşenleri içinde en büyük değeri \(|y_m|\) versin. \(A^T\)'nin \(m\). satırı negatif olmayan ve toplamı \(1\) olan girdilerden oluştuğu için</p>
+          <div class="equation-card" data-raw-latex="|\lambda|\,|y_m|=\left|\sum_j (A^T)_{mj}y_j\right|\leq \sum_j (A^T)_{mj}|y_j|\leq |y_m|\sum_j (A^T)_{mj}=|y_m|">
+            <div class="equation-content">
+              \[
+              |\lambda|\,|y_m|
+              =
+              \left|\sum_j (A^T)_{mj}y_j\right|
+              \leq
+              \sum_j (A^T)_{mj}|y_j|
+              \leq
+              |y_m|\sum_j (A^T)_{mj}
+              =
+              |y_m|
+              \]
+            </div>
+          </div>
+          <p>\(\mathbf{y}\neq\mathbf{0}\) olduğundan \(|y_m|>0\), dolayısıyla \(|\lambda|\leq 1\).</p>
+          <p><strong>Yorum:</strong> Dersin düzenli durumlarında \(\lambda=1\) dışındaki özdeğerlerin mutlak değeri \(1\)'den küçüktür; bu durumda ilgili terimler \(k\to\infty\) iken yok olur. Bazı özel durumlarda başka özdeğerlerin mutlak değeri \(1\) olabilir; temel uzun dönem yorumu bu istisnaların ayrıca incelenmesini gerektirir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.6: Markov Süreci ve Kararlı Durum</h3>
+          <p>Bir Markov matrisinin tekrarlı uygulanması</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_{k+1}=A\mathbf{u}_k">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_{k+1}=A\mathbf{u}_k
+              \]
+            </div>
+          </div>
+          <p>biçiminde yazılır. Buradan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_k=A^k\mathbf{u}_0">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_k=A^k\mathbf{u}_0
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Eğer \(\mathbf{u}_k\) uzun dönemde sabit bir vektöre yaklaşıyorsa bu vektöre kararlı durum denir. Markov matrislerinde kararlı durum, \(\lambda=1\) özdeğerine karşılık gelen özvektör yönündedir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Matris Kuvvetlerinde Özvektör Açılımı</h3>
+          <p><strong>İfade:</strong> \(A\) yeterli sayıda bağımsız özvektöre sahip olsun ve başlangıç vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_0=c_1\mathbf{x}_1+c_2\mathbf{x}_2+\cdots+c_n\mathbf{x}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_0=c_1\mathbf{x}_1+c_2\mathbf{x}_2+\cdots+c_n\mathbf{x}_n
+              \]
+            </div>
+          </div>
+          <p>şeklinde yazılsın. \(A\mathbf{x}_i=\lambda_i\mathbf{x}_i\) ise</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_k=A^k\mathbf{u}_0=c_1\lambda_1^k\mathbf{x}_1+c_2\lambda_2^k\mathbf{x}_2+\cdots+c_n\lambda_n^k\mathbf{x}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_k=A^k\mathbf{u}_0
+              =
+              c_1\lambda_1^k\mathbf{x}_1+c_2\lambda_2^k\mathbf{x}_2+\cdots+c_n\lambda_n^k\mathbf{x}_n
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Özvektör yönleri, matris tarafından yalnızca ölçeklenir. Bu nedenle aynı matris tekrarlandığında ölçekleme katsayıları kuvvet hâline gelir.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}_i=\lambda_i\mathbf{x}_i\) olduğundan tümevarımla \(A^k\mathbf{x}_i=\lambda_i^k\mathbf{x}_i\). Başlangıç açılımına \(A^k\) uygulanırsa lineerlikten</p>
+          <div class="equation-card" data-raw-latex="A^k\mathbf{u}_0=A^k\left(\sum_i c_i\mathbf{x}_i\right)=\sum_i c_iA^k\mathbf{x}_i=\sum_i c_i\lambda_i^k\mathbf{x}_i">
+            <div class="equation-content">
+              \[
+              A^k\mathbf{u}_0
+              =
+              A^k\left(\sum_i c_i\mathbf{x}_i\right)
+              =
+              \sum_i c_iA^k\mathbf{x}_i
+              =
+              \sum_i c_i\lambda_i^k\mathbf{x}_i
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Markov matrislerinde \(\lambda_1=1\) terimi kalır; \(|\lambda_i|<1\) olan diğer terimler sönümlenir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: İki Durumlu Markov Modeli</h3>
+          <p>İki durumlu bir modelde durum vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_k=\begin{bmatrix}u_{\mathrm{C},k}\\u_{\mathrm{M},k}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_k=
+              \begin{bmatrix}
+              u_{\mathrm{C},k}\\
+              u_{\mathrm{M},k}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olsun. Geçiş matrisi şu şekilde verilsin:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0.9&amp;0.2\\0.1&amp;0.8\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              0.9 & 0.2\\
+              0.1 & 0.8
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Her iki sütun toplamı \(1\)'dir:</p>
+          <div class="equation-card" data-raw-latex="0.9+0.1=1,\qquad 0.2+0.8=1">
+            <div class="equation-content">
+              \[
+              0.9+0.1=1,\qquad 0.2+0.8=1
+              \]
+            </div>
+          </div>
+          <p>Başlangıç vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_0=\begin{bmatrix}0\\1000\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_0=
+              \begin{bmatrix}
+              0\\
+              1000
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olsun. Bir adım sonra</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_1=A\mathbf{u}_0=\begin{bmatrix}200\\800\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_1=A\mathbf{u}_0
+              =
+              \begin{bmatrix}
+              200\\
+              800
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Toplam \(1000\) olarak korunur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: İki Durumlu Modelde Özdeğerler ve Özvektörler</h3>
+          <p>Örnek 1.8'deki matris için bir özdeğer \(\lambda_1=1\)'dir. İz \(1.7\) olduğundan ikinci özdeğer</p>
+          <div class="equation-card" data-raw-latex="\lambda_2=1.7-1=0.7">
+            <div class="equation-content">
+              \[
+              \lambda_2=1.7-1=0.7
+              \]
+            </div>
+          </div>
+          <p>\(\lambda_1=1\) için</p>
+          <div class="equation-card" data-raw-latex="A-I=\begin{bmatrix}-0.1&amp;0.2\\0.1&amp;-0.2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-I=
+              \begin{bmatrix}
+              -0.1 & 0.2\\
+              0.1 & -0.2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur ve null uzaydan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1=\begin{bmatrix}2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>bulunur. \(\lambda_2=0.7\) için</p>
+          <div class="equation-card" data-raw-latex="A-0.7I=\begin{bmatrix}0.2&amp;0.2\\0.1&amp;0.1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-0.7I=
+              \begin{bmatrix}
+              0.2 & 0.2\\
+              0.1 & 0.1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ve buna karşılık gelen bir özvektör</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_2=\begin{bmatrix}-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_2=
+              \begin{bmatrix}
+              -1\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olarak seçilebilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Sonlu Adım ve Uzun Dönem Davranışı</h3>
+          <p>Başlangıç vektörü özvektörler cinsinden</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}0\\1000\end{bmatrix}=\frac{1000}{3}\begin{bmatrix}2\\1\end{bmatrix}+\frac{2000}{3}\begin{bmatrix}-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              0\\
+              1000
+              \end{bmatrix}
+              =
+              \frac{1000}{3}
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              \frac{2000}{3}
+              \begin{bmatrix}
+              -1\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>şeklinde yazılır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}_k=\frac{1000}{3}1^k\begin{bmatrix}2\\1\end{bmatrix}+\frac{2000}{3}(0.7)^k\begin{bmatrix}-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}_k
+              =
+              \frac{1000}{3}1^k
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              \frac{2000}{3}(0.7)^k
+              \begin{bmatrix}
+              -1\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\(0.7^k\to 0\) olduğundan uzun dönem kararlı durum</p>
+          <div class="equation-card" data-raw-latex="\lim_{k\to\infty}\mathbf{u}_k=\frac{1000}{3}\begin{bmatrix}2\\1\end{bmatrix}=\begin{bmatrix}2000/3\\1000/3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \lim_{k\to\infty}\mathbf{u}_k
+              =
+              \frac{1000}{3}
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2000/3\\
+              1000/3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Toplam yine \(1000\)'dir; yalnızca dağılım kararlı oran olan \(2:1\)'e yaklaşmıştır.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Bazı kaynaklarda durum vektörleri satır vektörü olarak yazılır. Bu durumda matris soldan değil sağdan çarpılır ve sütun toplamı yerine satır toplamı \(1\) olur. Bu iki gösterim transpoz aracılığıyla aynı matematiksel içeriği ifade eder.</p>
+        </aside>
+
+        <section class="definition-card">
+          <h3>Tanım 1.11: Ortonormal Bazda Açılım</h3>
+          <p>\(\mathbf{q}_1,\ldots,\mathbf{q}_n\) ortonormal bir baz olsun. Her \(\mathbf{v}\in\mathbb{R}^n\) vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{v}=x_1\mathbf{q}_1+x_2\mathbf{q}_2+\cdots+x_n\mathbf{q}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{v}=x_1\mathbf{q}_1+x_2\mathbf{q}_2+\cdots+x_n\mathbf{q}_n
+              \]
+            </div>
+          </div>
+          <p>biçiminde tekil olarak yazılır. Ortonormal bazda katsayılar doğrudan iç çarpımlarla bulunur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Ortonormal Baz Katsayıları</h3>
+          <p><strong>İfade:</strong> \(\mathbf{q}_1,\ldots,\mathbf{q}_n\) ortonormal bir baz ve \(\mathbf{v}=\sum_i x_i\mathbf{q}_i\) ise</p>
+          <div class="equation-card" data-raw-latex="x_i=\mathbf{q}_i^T\mathbf{v}">
+            <div class="equation-content">
+              \[
+              x_i=\mathbf{q}_i^T\mathbf{v}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\mathbf{q}_i\) ile iç çarpım almak, \(\mathbf{q}_i\) dışındaki tüm ortogonal bileşenleri yok eder.</p>
+          <p><strong>Formal İspat:</strong> Açılımın iki tarafı \(\mathbf{q}_i^T\) ile çarpılırsa</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_i^T\mathbf{v}=\sum_j x_j\mathbf{q}_i^T\mathbf{q}_j=x_i">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_i^T\mathbf{v}
+              =
+              \sum_j x_j\mathbf{q}_i^T\mathbf{q}_j
+              =
+              x_i
+              \]
+            </div>
+          </div>
+          <p>çünkü \(\mathbf{q}_i^T\mathbf{q}_j=0\) eğer \(i\neq j\), \(\mathbf{q}_i^T\mathbf{q}_i=1\).</p>
+          <p><strong>Yorum:</strong> Bu sonuç Fourier katsayılarının mantığını hazırlar: sonlu boyutta noktasal toplamla yapılan iç çarpım, fonksiyon uzayında integrale dönüşür.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Ortonormal Matrisin Tersi</h3>
+          <p><strong>İfade:</strong> \(Q=[\mathbf{q}_1\ \cdots\ \mathbf{q}_n]\) ve sütunlar ortonormal ise</p>
+          <div class="equation-card" data-raw-latex="Q^{-1}=Q^T">
+            <div class="equation-content">
+              \[
+              Q^{-1}=Q^T
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(Q^TQ\), sütunlar arasındaki bütün iç çarpımları toplar. Ortonormal durumda bu iç çarpımlar birim matris verir.</p>
+          <p><strong>Formal İspat:</strong> \(Q^TQ\)'nun \((i,j)\). girdisi \(\mathbf{q}_i^T\mathbf{q}_j\)'dir. Ortonormalite nedeniyle</p>
+          <div class="equation-card" data-raw-latex="Q^TQ=I">
+            <div class="equation-content">
+              \[
+              Q^TQ=I
+              \]
+            </div>
+          </div>
+          <p>olur. \(Q\) kare ve sütunları baz olduğundan terslenebilirdir; bu eşitlik \(Q^{-1}=Q^T\) sonucunu verir.</p>
+          <p><strong>Yorum:</strong> \(Q\mathbf{x}=\mathbf{v}\) denkleminde katsayılar doğrudan \(\mathbf{x}=Q^T\mathbf{v}\) ile bulunur.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.14: Fonksiyonlar İçin İç Çarpım</h3>
+          <p>\([0,2\pi]\) aralığında tanımlı iki fonksiyon için iç çarpım</p>
+          <div class="equation-card" data-raw-latex="\langle f,g\rangle=\int_0^{2\pi} f(x)g(x)\,dx">
+            <div class="equation-content">
+              \[
+              \langle f,g\rangle=\int_0^{2\pi} f(x)g(x)\,dx
+              \]
+            </div>
+          </div>
+          <p>olarak tanımlanır. Bu tanım, vektörlerdeki \(\sum_i v_iw_i\) toplamının sürekli karşılığıdır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.15: Fourier Serisi</h3>
+          <p>\(2\pi\)-periyodik bir fonksiyon, sinüs ve kosinüs fonksiyonlarının sonsuz bir doğrusal kombinasyonu olarak ifade edilmeye çalışılır:</p>
+          <div class="equation-card" data-raw-latex="f(x)=a_0+a_1\cos x+b_1\sin x+a_2\cos 2x+b_2\sin 2x+\cdots">
+            <div class="equation-content">
+              \[
+              f(x)=a_0+a_1\cos x+b_1\sin x+a_2\cos 2x+b_2\sin 2x+\cdots
+              \]
+            </div>
+          </div>
+          <p>Burada temel fonksiyonlar</p>
+          <div class="equation-card" data-raw-latex="1,\ \cos x,\ \sin x,\ \cos 2x,\ \sin 2x,\ldots">
+            <div class="equation-content">
+              \[
+              1,\ \cos x,\ \sin x,\ \cos 2x,\ \sin 2x,\ldots
+              \]
+            </div>
+          </div>
+          <p>fonksiyon uzayının ortogonal yönleri gibi davranır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: Sinüs ve Kosinüsün Ortogonalliği</h3>
+          <p>Temel ortogonallik örneklerinden biri</p>
+          <div class="equation-card" data-raw-latex="\int_0^{2\pi}\sin x\cos x\,dx=0">
+            <div class="equation-content">
+              \[
+              \int_0^{2\pi}\sin x\cos x\,dx=0
+              \]
+            </div>
+          </div>
+          <p>eşitliğidir. Çünkü</p>
+          <div class="equation-card" data-raw-latex="\int_0^{2\pi}\sin x\cos x\,dx=\frac{1}{2}\sin^2 x\bigg|_0^{2\pi}=0">
+            <div class="equation-content">
+              \[
+              \int_0^{2\pi}\sin x\cos x\,dx
+              =
+              \frac{1}{2}\sin^2 x\bigg|_0^{2\pi}
+              =
+              0
+              \]
+            </div>
+          </div>
+          <p>Benzer biçimde farklı frekanslardaki sinüs ve kosinüs fonksiyonları da birbirine ortogonaldir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.17: İlk Kosinüs Katsayısı</h3>
+          <p><strong>İfade:</strong> \(f(x)=a_0+a_1\cos x+b_1\sin x+\cdots\) açılımında \(a_1\) katsayısı</p>
+          <div class="equation-card" data-raw-latex="a_1=\frac{1}{\pi}\int_0^{2\pi} f(x)\cos x\,dx">
+            <div class="equation-content">
+              \[
+              a_1=\frac{1}{\pi}\int_0^{2\pi} f(x)\cos x\,dx
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Açılım \(\cos x\) ile çarpılıp integre edildiğinde, \(\cos x\)'e ortogonal olan bütün terimler yok olur. Geriye yalnızca \(a_1\cos x\) terimi kalır.</p>
+          <p><strong>Formal İspat:</strong> Açılımın her iki tarafını \(\cos x\) ile çarpıp \(0\) ile \(2\pi\) arasında integre edelim:</p>
+          <div class="equation-card" data-raw-latex="\int_0^{2\pi}f(x)\cos x\,dx=a_1\int_0^{2\pi}\cos^2x\,dx">
+            <div class="equation-content">
+              \[
+              \int_0^{2\pi}f(x)\cos x\,dx
+              =
+              a_1\int_0^{2\pi}\cos^2x\,dx
+              \]
+            </div>
+          </div>
+          <p>Ortogonallik diğer terimleri sıfırlar. Ayrıca</p>
+          <div class="equation-card" data-raw-latex="\int_0^{2\pi}\cos^2x\,dx=\pi">
+            <div class="equation-content">
+              \[
+              \int_0^{2\pi}\cos^2x\,dx=\pi
+              \]
+            </div>
+          </div>
+          <p>olduğundan formül elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu formül, ortonormal bazdaki \(x_i=\mathbf{q}_i^T\mathbf{v}\) katsayı formülünün fonksiyon uzayındaki karşılığıdır. Burada iç çarpım integral ile ölçülür.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Fourier serileri, sonlu boyutlu izdüşüm teorisinin sonsuz boyutlu fonksiyon uzayına taşınmış hâlidir. Vektör bileşenleri yerini fonksiyonlara, toplam yerini integrale bırakır.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+        <p>Bu bölümde ana anlatımdaki sonuçlar tek çizgide toplanır.</p>
+        <ul>
+          <li>Markov matrislerinde sütun toplamı koşulu, \(\lambda=1\) özdeğerini zorunlu kılar.</li>
+          <li>\(A\) ve \(A^T\) aynı özdeğerlere sahiptir; bu nedenle \(A^T\mathbf{1}=\mathbf{1}\) bilgisi \(A\)'nın özdeğerlerini anlamaya yardım eder.</li>
+          <li>Matris kuvvetleri, başlangıç vektörü özvektörler cinsinden açıldığında \(\lambda_i^k\) çarpanlarıyla hesaplanır.</li>
+          <li>Ortonormal baz katsayıları iç çarpımla bulunur.</li>
+          <li>Fourier katsayıları, aynı iç çarpım fikrinin integral biçimidir.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <h3>Markov Matrisinde Uzun Dönem Durumu Bulma</h3>
+        <ol>
+          <li>Matrisin Markov koşullarını kontrol et: girdiler negatif değil mi, sütun toplamları \(1\) mi?</li>
+          <li>\(\lambda=1\) için \(A-I\) matrisinin null uzayını bul.</li>
+          <li>\(\lambda=1\) özvektörünü toplam miktara göre ölçekle.</li>
+          <li>Diğer özdeğerlerin mutlak değeri \(1\)'den küçükse uzun dönemde bu terimlerin kaybolacağını kullan.</li>
+        </ol>
+        <p>Örnek 1.10'da \(\mathbf{x}_1=(2,1)^T\) toplam \(3\) verdiği için toplam \(1000\) olan kararlı durum \((1000/3)\mathbf{x}_1\) olarak elde edilmiştir.</p>
+
+        <h3>Sonlu Adım Değerini Bulma</h3>
+        <ol>
+          <li>Özdeğerleri ve bağımsız özvektörleri bul.</li>
+          <li>\(\mathbf{u}_0=c_1\mathbf{x}_1+c_2\mathbf{x}_2+\cdots\) açılımını çöz.</li>
+          <li>\(\mathbf{u}_k=c_1\lambda_1^k\mathbf{x}_1+c_2\lambda_2^k\mathbf{x}_2+\cdots\) formülünü kullan.</li>
+        </ol>
+
+        <h3>Fourier Katsayısı Hesaplama</h3>
+        <ol>
+          <li>İstenen temel fonksiyonla çarp.</li>
+          <li>\([0,2\pi]\) aralığında integre et.</li>
+          <li>Ortogonallikle sıfırlanan terimleri çıkar.</li>
+          <li>Kalan temel fonksiyonun kendi iç çarpımına böl.</li>
+        </ol>
+        <p>İlk kosinüs katsayısı için kendi iç çarpım \(\pi\) olduğundan \(a_1\) formülünde \(\frac{1}{\pi}\) çarpanı ortaya çıkar.</p>
+      </section>
+
+      <section aria-labelledby="uygulama-baglantilari">
+        <h2 id="uygulama-baglantilari">Uygulama Bağlantıları</h2>
+        <p>Markov matrisleri, toplam miktarın korunduğu ve birimlerin durumlar arasında geçiş yaptığı modellerde ortaya çıkar. İki durumlu nüfus örneğinde her sütun, mevcut durumdaki kişilerin bir sonraki adımda hangi oranlarda iki duruma ayrıldığını gösterir. Girdiler olasılık oranları olduğu için negatif değildir; sütun toplamı \(1\) olduğu için toplam nüfus korunur.</p>
+        <p>Fourier serileri tarafındaki bağlantı ise izdüşüm teorisidir. Sonlu boyutlu ortonormal bazlarda katsayı bulma yöntemi, periyodik fonksiyonların sinüs ve kosinüsler cinsinden açılımına aktarılır.</p>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Yalnızca sütun toplamına bakmak:</strong> Sütun toplamları \(1\) olsa bile negatif girdi varsa matris Markov matrisi değildir.</li>
+          <li><strong>\(\lambda=0\) ile \(\lambda=1\)'i karıştırmak:</strong> Diferansiyel denklem kararlı durumunda \(\lambda=0\) önemliyken, matris kuvvetlerinde kalıcı bileşen \(\lambda=1\) ile gelir.</li>
+          <li><strong>Kararlı durum vektörünü ölçeklememek:</strong> Özvektör yalnızca yön verir. Toplam miktar korunuyorsa özvektör toplam miktara göre ölçeklenmelidir.</li>
+          <li><strong>Başlangıç vektörünü özvektörlere açmadan \(A^k\) hesaplamaya çalışmak:</strong> Özvektör açılımı sonlu adım formülünü doğrudan verir.</li>
+          <li><strong>Fourier katsayısında \(\pi\) çarpanını unutmak:</strong> \(\int_0^{2\pi}\cos^2x\,dx=\pi\) olduğu için \(a_1\) katsayısı integralin \(\pi\)'ye bölünmesiyle bulunur.</li>
+          <li><strong>Fonksiyon iç çarpımını noktasal çarpım sanmak:</strong> Fonksiyon uzayında iç çarpım noktasal çarpım değil, çarpımın belirli integralidir.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Markov matrisi \(\rightarrow\) negatif olmayan girdiler ve sütun toplamı \(1\)</li>
+            <li>Sütun toplamı \(1\) \(\rightarrow\) \(A^T\mathbf{1}=\mathbf{1}\)</li>
+            <li>\(A^T\) ve \(A\) aynı özdeğerler \(\rightarrow\) \(A\)'da \(\lambda=1\)</li>
+            <li>\(\lambda=1\) özvektörü \(\rightarrow\) kararlı durum yönü</li>
+            <li>\(|\lambda_i|<1\) \(\rightarrow\) sönümlenen geçici bileşenler</li>
+            <li>Ortonormal baz \(\rightarrow\) katsayılar iç çarpımla bulunur</li>
+            <li>Fonksiyon iç çarpımı \(\rightarrow\) \(\int_0^{2\pi} f(x)g(x)\,dx\)</li>
+            <li>Sinüs-kosinüs ortogonalliği \(\rightarrow\) Fourier katsayı formülleri</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Markov Matrisi Koşulları</h3>
+            <p>Girdiler negatif değildir ve her sütun toplamı \(1\)'dir.</p>
+            <div class="equation-card" data-raw-latex="a_{ij}\geq 0,\qquad \sum_i a_{ij}=1">
+              <div class="equation-content">
+                \[
+                a_{ij}\geq 0,\qquad \sum_i a_{ij}=1
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Markov Süreci</h3>
+            <p>Durum vektörü matrisin tekrar uygulanmasıyla ilerler.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{u}_{k+1}=A\mathbf{u}_k,\qquad \mathbf{u}_k=A^k\mathbf{u}_0">
+              <div class="equation-content">
+                \[
+                \mathbf{u}_{k+1}=A\mathbf{u}_k,\qquad \mathbf{u}_k=A^k\mathbf{u}_0
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Özvektör Açılımıyla Kuvvet</h3>
+            <p>Başlangıç vektörü özvektörler cinsinden yazıldığında her bileşen ilgili özdeğer kuvvetiyle çarpılır.</p>
+            <div class="equation-card" data-raw-latex="A^k\mathbf{u}_0=\sum_i c_i\lambda_i^k\mathbf{x}_i">
+              <div class="equation-content">
+                \[
+                A^k\mathbf{u}_0=\sum_i c_i\lambda_i^k\mathbf{x}_i
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Ortonormal Baz Katsayısı</h3>
+            <p>Ortonormal bazda katsayı, ilgili baz vektörüyle iç çarpımdır.</p>
+            <div class="equation-card" data-raw-latex="x_i=\mathbf{q}_i^T\mathbf{v}">
+              <div class="equation-content">
+                \[
+                x_i=\mathbf{q}_i^T\mathbf{v}
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Fonksiyon İç Çarpımı</h3>
+            <p>Fonksiyon uzayında iç çarpım, çarpımın integraliyle verilir.</p>
+            <div class="equation-card" data-raw-latex="\langle f,g\rangle=\int_0^{2\pi}f(x)g(x)\,dx">
+              <div class="equation-content">
+                \[
+                \langle f,g\rangle=\int_0^{2\pi}f(x)g(x)\,dx
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>İlk Kosinüs Katsayısı</h3>
+            <p>Fourier açılımındaki \(\cos x\) katsayısı ortogonallikle bulunur.</p>
+            <div class="equation-card" data-raw-latex="a_1=\frac{1}{\pi}\int_0^{2\pi}f(x)\cos x\,dx">
+              <div class="equation-content">
+                \[
+                a_1=\frac{1}{\pi}\int_0^{2\pi}f(x)\cos x\,dx
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde Markov matrislerinin özdeğerler aracılığıyla uzun dönem davranışı incelendi. Sütun toplamlarının \(1\) olması \(\lambda=1\) özdeğerini garanti eder; bu özdeğerin özvektörü kararlı durum yönünü verir. Diğer özdeğerlerin mutlak değeri \(1\)'den küçük olduğunda, başlangıç vektörünün bu yönlerdeki bileşenleri zamanla kaybolur.</p>
+        <p>İkinci kısımda ortonormal bazlarda katsayı bulma fikri hatırlandı ve fonksiyon uzayına taşındı. Vektörlerdeki iç çarpım toplam iken, fonksiyonlarda integral olur. Sinüs ve kosinüslerin ortogonalliği Fourier katsayılarının hesaplanmasını sağlar.</p>
+      </section>
+
+      <section aria-labelledby="cozumlu-calisma-sorulari">
+        <h2 id="cozumlu-calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.18: Kolay Soru</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matrisin Markov matrisi olup olmadığını belirleyin:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0.6&amp;0.3\\0.4&amp;0.7\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              0.6 & 0.3\\
+              0.4 & 0.7
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Tüm girdiler negatif değildir. Sütun toplamları</p>
+          <div class="equation-card" data-raw-latex="0.6+0.4=1,\qquad 0.3+0.7=1">
+            <div class="equation-content">
+              \[
+              0.6+0.4=1,\qquad 0.3+0.7=1
+              \]
+            </div>
+          </div>
+          <p>olduğundan \(A\) Markov matrisidir.</p>
+          <p><strong>Yorum:</strong> Kontrol iki aşamalıdır: negatif olmayan girdiler ve sütun toplamları.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.19: Orta Soru</h3>
+          <p><strong>Soru:</strong> Örnek 1.18'deki matris için kararlı durum yönünü bulun.</p>
+          <p><strong>Çözüm:</strong> Kararlı durum \(\lambda=1\) özvektörüdür. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="A-I=\begin{bmatrix}-0.4&amp;0.3\\0.4&amp;-0.3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-I=
+              \begin{bmatrix}
+              -0.4 & 0.3\\
+              0.4 & -0.3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisinin null uzayı bulunur. İlk satırdan</p>
+          <div class="equation-card" data-raw-latex="-0.4x+0.3y=0\quad\Rightarrow\quad y=\frac{4}{3}x">
+            <div class="equation-content">
+              \[
+              -0.4x+0.3y=0
+              \quad\Rightarrow\quad
+              y=\frac{4}{3}x
+              \]
+            </div>
+          </div>
+          <p>olur. \(x=3\) seçilirse \(y=4\) elde edilir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1=\begin{bmatrix}3\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              3\\
+              4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Toplam miktar \(1\) olarak normalize edilirse kararlı dağılım \(\left(\frac{3}{7},\frac{4}{7}\right)^T\) olur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.20: İleri Soru</h3>
+          <p><strong>Soru:</strong> \(f(x)=2+3\cos x+\sin x\) için \(a_1\) katsayısını iç çarpım formülüyle hesaplayın.</p>
+          <p><strong>Çözüm:</strong> Formül</p>
+          <div class="equation-card" data-raw-latex="a_1=\frac{1}{\pi}\int_0^{2\pi}f(x)\cos x\,dx">
+            <div class="equation-content">
+              \[
+              a_1=\frac{1}{\pi}\int_0^{2\pi}f(x)\cos x\,dx
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Yerine koyarsak</p>
+          <div class="equation-card" data-raw-latex="\int_0^{2\pi}(2+3\cos x+\sin x)\cos x\,dx">
+            <div class="equation-content">
+              \[
+              \int_0^{2\pi}(2+3\cos x+\sin x)\cos x\,dx
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Ortogonallik nedeniyle \(2\cos x\) ve \(\sin x\cos x\) integralleri sıfırdır. Geriye</p>
+          <div class="equation-card" data-raw-latex="3\int_0^{2\pi}\cos^2x\,dx=3\pi">
+            <div class="equation-content">
+              \[
+              3\int_0^{2\pi}\cos^2x\,dx=3\pi
+              \]
+            </div>
+          </div>
+          <p>kalır. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="a_1=\frac{1}{\pi}(3\pi)=3">
+            <div class="equation-content">
+              \[
+              a_1=\frac{1}{\pi}(3\pi)=3
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> İç çarpım, \(f\) içinde \(\cos x\) yönündeki bileşeni ayırır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Markov matrix</td>
+                <td>Markov matrisi</td>
+                <td>Negatif olmayan girdilere ve sütun toplamı \(1\) olan kare matris.</td>
+              </tr>
+              <tr>
+                <td>Steady state</td>
+                <td>Kararlı durum</td>
+                <td>Tekrarlı süreçte uzun dönemde ulaşılan sabit dağılım.</td>
+              </tr>
+              <tr>
+                <td>Eigenvalue</td>
+                <td>Özdeğer</td>
+                <td>Bir özvektör yönündeki ölçekleme katsayısı.</td>
+              </tr>
+              <tr>
+                <td>Eigenvector</td>
+                <td>Özvektör</td>
+                <td>Matris uygulanınca yönü değişmeyen sıfırdan farklı vektör.</td>
+              </tr>
+              <tr>
+                <td>Transpose</td>
+                <td>Transpoz</td>
+                <td>Satır ve sütunların yer değiştirmesiyle oluşan matris.</td>
+              </tr>
+              <tr>
+                <td>Orthonormal basis</td>
+                <td>Ortonormal baz</td>
+                <td>Birbirine dik ve her biri birim uzunlukta olan baz vektörleri kümesi.</td>
+              </tr>
+              <tr>
+                <td>Inner product</td>
+                <td>İç çarpım</td>
+                <td>Vektörlerde veya fonksiyonlarda uzunluk ve diklik ölçen işlem.</td>
+              </tr>
+              <tr>
+                <td>Fourier series</td>
+                <td>Fourier serisi</td>
+                <td>Periyodik fonksiyonu sinüs ve kosinüslerin toplamı olarak yazma biçimi.</td>
+              </tr>
+              <tr>
+                <td>Coefficient</td>
+                <td>Katsayı</td>
+                <td>Bir baz yönünün açılımdaki miktarını belirleyen sayı.</td>
+              </tr>
+              <tr>
+                <td>Periodic function</td>
+                <td>Periyodik fonksiyon</td>
+                <td>Belirli bir aralık kadar ötelenince aynı değerleri alan fonksiyon.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

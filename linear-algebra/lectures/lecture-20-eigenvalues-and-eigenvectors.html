@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20. Ders: Özdeğerler ve Özvektörler</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.2vw, 1.85rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" class="active" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">20. Ders: Özdeğerler ve Özvektörler</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm kare matrislerin özel vektörlerini ve bu vektörler boyunca ortaya çıkan çarpanları inceler. Ana problem, \(A\mathbf{x}\) sonucunun hangi \(\mathbf{x}\) vektörleri için \(\mathbf{x}\) ile aynı doğrultuda kaldığını bulmaktır.</p>
+        <p>Önce özvektör ve özdeğer kavramları tanımlanır. Ardından izdüşüm, yer değiştirme, simetrik, dönme ve üçgensel matris örnekleriyle bu kavramların nasıl ortaya çıktığı açıklanır.</p>
+        <p>Temel hesaplama fikri determinantla kurulur: \((A-\lambda I)\mathbf{x}=\mathbf{0}\) denkleminin sıfırdan farklı çözümü olması için \(A-\lambda I\) tekil olmalıdır. Bu nedenle özdeğerler karakteristik denklemden, özvektörler ise ilgili sıfır uzayından elde edilir.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Özvektör ve özdeğer tanımını \(A\mathbf{x}=\lambda\mathbf{x}\) denklemiyle ifade etmek.</li>
+          <li>\(\lambda=0\) özdeğerinin tekillikle ve sıfır uzayıyla ilişkisini açıklamak.</li>
+          <li>İzdüşüm ve yer değiştirme matrislerinin özvektörlerini geometrik olarak yorumlamak.</li>
+          <li>Karakteristik denklemi \(\det(A-\lambda I)=0\) biçiminde kurmak.</li>
+          <li>Bir özdeğer bulunduktan sonra ilgili özvektörleri \((A-\lambda I)\mathbf{x}=\mathbf{0}\) denklemiyle hesaplamak.</li>
+          <li>İki boyutlu örneklerde özdeğerlerin toplamı ile iz, çarpımı ile determinant arasındaki ilişkiyi görmek.</li>
+          <li>Kimlik matrisinin skaler katını eklemenin özdeğerleri nasıl değiştirdiğini anlamak.</li>
+          <li>Dönme matrisinde karmaşık özdeğerlerin, tekrarlı özdeğerlerde ise özvektör eksikliğinin ortaya çıkabileceğini ayırt etmek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Kare matrislerin vektörlere etkisi ve matris-vektör çarpımı.</li>
+          <li>Sıfır uzayı ve tekil matris kavramı.</li>
+          <li>Determinantın tekillik testi olarak kullanılması.</li>
+          <li>İki boyutlu determinant ve ikinci dereceden denklemler.</li>
+          <li>İzdüşüm, ortogonallik ve temel geometrik doğrultu kavramları.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Kare matris</td>
+                <td>Özdeğer ve özvektörler kare matrisler için incelenir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}\)</td>
+                <td>Sıfırdan farklı vektör</td>
+                <td>Özvektör tanımında \(\mathbf{x}\ne\mathbf{0}\) şartı vardır.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda\)</td>
+                <td>Özdeğer</td>
+                <td>\(A\mathbf{x}=\lambda\mathbf{x}\) denklemindeki skaler çarpandır.</td>
+              </tr>
+              <tr>
+                <td>\(I\)</td>
+                <td>Kimlik matrisi</td>
+                <td>\(\lambda\mathbf{x}\) ifadesini \(\lambda I\mathbf{x}\) olarak yazmayı sağlar.</td>
+              </tr>
+              <tr>
+                <td>\(\det(A-\lambda I)\)</td>
+                <td>Karakteristik determinant</td>
+                <td>Özdeğerleri bulmak için sıfıra eşitlenir.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>İzdüşüm matrisi</td>
+                <td>Bir alt uzaya izdüşüm yapan matris için kullanılır.</td>
+              </tr>
+              <tr>
+                <td>\(Q\)</td>
+                <td>Ortogonal dönme matrisi</td>
+                <td>Doksan derecelik dönme örneğinde kullanılır.</td>
+              </tr>
+              <tr>
+                <td>\(\operatorname{tr}(A)\)</td>
+                <td>İz</td>
+                <td>Matrisin köşegen girişlerinin toplamıdır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Bir matris genel olarak bir vektörü başka bir doğrultuya taşır. Özvektörler, bu genel davranış içinde doğrultusu değişmeyen özel vektörlerdir. Bu vektörler boyunca matrisin etkisi yalnızca bir skalerle çarpma olur.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Özvektörler matrisin özel doğrultularını, özdeğerler ise bu doğrultulardaki büyütme, küçültme, yön değiştirme veya sıfırlama etkisini ölçer.</p>
+        </aside>
+        <p>Bu konu determinantlarla doğrudan bağlanır. Sıfırdan farklı bir özvektör bulunabilmesi için \(A-\lambda I\) matrisinin tekil olması gerekir. Dolayısıyla determinant, özdeğerleri belirleyen denklemi üretir; eleme yöntemi ise bu özdeğerler bulunduktan sonra özvektörleri verir.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Özvektör ve Özdeğer</h3>
+          <p>\(A\) bir kare matris olsun. Sıfırdan farklı bir \(\mathbf{x}\) vektörü için</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\lambda\mathbf{x}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=\lambda\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>eşitliği sağlanıyorsa \(\mathbf{x}\) vektörüne \(A\)'nın bir özvektörü, \(\lambda\) skalerine de bu özvektöre karşılık gelen özdeğer denir.</p>
+          <p>Burada \(\mathbf{x}=\mathbf{0}\) kabul edilmez. Çünkü sıfır vektörü her \(\lambda\) için denklemi sağlardı ve matrise özgü bir doğrultu bilgisi taşımazdı.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.2: Sıfır Özdeğer ve Tekillik</h3>
+          <p><strong>İfade:</strong> \(0\), \(A\) matrisinin özdeğeridir ancak ve ancak \(A\) tekil bir matristir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\lambda=0\) olduğunda özdeğer denklemi \(A\mathbf{x}=\mathbf{0}\) olur. Bu, sıfır uzayında sıfırdan farklı bir vektör aramak demektir.</p>
+          <p><strong>Formal İspat:</strong> Eğer \(0\) özdeğer ise, sıfırdan farklı bir \(\mathbf{x}\) için</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=0\mathbf{x}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=0\mathbf{x}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu durumda \(A\)'nın sıfır uzayı yalnızca \(\mathbf{0}\)'dan oluşmaz; dolayısıyla \(A\) tekildir. Ters yönde, \(A\) tekil ise sıfırdan farklı bir \(\mathbf{x}\) için \(A\mathbf{x}=\mathbf{0}\) vardır. Bu da \(A\mathbf{x}=0\mathbf{x}\) olduğundan \(\lambda=0\)'ın özdeğer olduğunu gösterir.</p>
+          <p><strong>Yorum:</strong> Önceki konularda tekillik sıfır uzayı üzerinden anlaşılmıştı. Özdeğer diliyle aynı durum, sıfır özdeğerinin varlığıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: İzdüşüm Matrisinin Özdeğerleri</h3>
+          <p>Bir düzleme izdüşüm yapan \(P\) matrisini düşünelim. Düzlemin içindeki her \(\mathbf{x}\) vektörü izdüşümden sonra değişmez:</p>
+          <div class="equation-card" data-raw-latex="P\mathbf{x}=\mathbf{x}=1\mathbf{x}">
+            <div class="equation-content">
+              \[
+              P\mathbf{x}=\mathbf{x}=1\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle düzlemin içindeki sıfırdan farklı tüm vektörler \(\lambda=1\) özdeğerine karşılık gelen özvektörlerdir.</p>
+          <p>Düzleme dik bir \(\mathbf{x}\) vektörünün izdüşümü ise sıfır vektörüdür:</p>
+          <div class="equation-card" data-raw-latex="P\mathbf{x}=\mathbf{0}=0\mathbf{x}">
+            <div class="equation-content">
+              \[
+              P\mathbf{x}=\mathbf{0}=0\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla düzleme dik doğrultudaki sıfırdan farklı vektörler \(\lambda=0\) özdeğerine karşılık gelir. İzdüşüm örneğinde özvektörler, matrisin geometrik etkisini doğrudan gösterir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Yer Değiştirme Matrisi</h3>
+          <p>Aşağıdaki matris iki bileşenin yerini değiştirir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0&amp;1\\1&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\(\mathbf{x}_1=\begin{bmatrix}1\\1\end{bmatrix}\) için bileşenler yer değiştirince vektör aynı kalır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}0&amp;1\\1&amp;0\end{bmatrix}\begin{bmatrix}1\\1\end{bmatrix}=\begin{bmatrix}1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              \begin{bmatrix}
+              1\\
+              1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle \(\lambda_1=1\) olur. Buna karşılık \(\mathbf{x}_2=\begin{bmatrix}-1\\1\end{bmatrix}\) için</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}0&amp;1\\1&amp;0\end{bmatrix}\begin{bmatrix}-1\\1\end{bmatrix}=\begin{bmatrix}1\\-1\end{bmatrix}=-\begin{bmatrix}-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              0&1\\
+              1&0
+              \end{bmatrix}
+              \begin{bmatrix}
+              -1\\
+              1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              =
+              -
+              \begin{bmatrix}
+              -1\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\lambda_2=-1\) olur. Bu örnek, girişleri negatif olmayan bir matrisin negatif özdeğere sahip olabileceğini gösterir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.5: Karakteristik Denklem</h3>
+          <p>Özdeğer denklemi şu biçimde yeniden yazılır:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\lambda\mathbf{x}\quad\Longleftrightarrow\quad (A-\lambda I)\mathbf{x}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=\lambda\mathbf{x}
+              \quad\Longleftrightarrow\quad
+              (A-\lambda I)\mathbf{x}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>Sıfırdan farklı \(\mathbf{x}\) bulunabilmesi için \(A-\lambda I\) tekil olmalıdır. Bu yüzden özdeğerler</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=0">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=0
+              \]
+            </div>
+          </div>
+          <p>denkleminin çözümleri olarak bulunur. Bu denkleme karakteristik denklem denir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Simetrik İki Boyutlu Matris</h3>
+          <p>Şimdi</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}3&amp;1\\1&amp;3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              3&1\\
+              1&3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisinin özdeğerlerini bulalım. Önce \(A-\lambda I\) yazılır:</p>
+          <div class="equation-card" data-raw-latex="A-\lambda I=\begin{bmatrix}3-\lambda&amp;1\\1&amp;3-\lambda\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-\lambda I=
+              \begin{bmatrix}
+              3-\lambda&1\\
+              1&3-\lambda
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Karakteristik denklem şudur:</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=(3-\lambda)^2-1=0">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=(3-\lambda)^2-1=0
+              \]
+            </div>
+          </div>
+          <p>Düzenleyince</p>
+          <div class="equation-card" data-raw-latex="\lambda^2-6\lambda+8=0=(\lambda-4)(\lambda-2)">
+            <div class="equation-content">
+              \[
+              \lambda^2-6\lambda+8=0=(\lambda-4)(\lambda-2)
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Dolayısıyla özdeğerler \(\lambda_1=4\) ve \(\lambda_2=2\)'dir.</p>
+          <p>\(\lambda_1=4\) için</p>
+          <div class="equation-card" data-raw-latex="A-4I=\begin{bmatrix}-1&amp;1\\1&amp;-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-4I=
+              \begin{bmatrix}
+              -1&1\\
+              1&-1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur ve sıfır uzayından \(\mathbf{x}_1=\begin{bmatrix}1\\1\end{bmatrix}\) seçilebilir. \(\lambda_2=2\) için</p>
+          <div class="equation-card" data-raw-latex="A-2I=\begin{bmatrix}1&amp;1\\1&amp;1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-2I=
+              \begin{bmatrix}
+              1&1\\
+              1&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur ve sıfır uzayından \(\mathbf{x}_2=\begin{bmatrix}-1\\1\end{bmatrix}\) seçilebilir. Bu iki özvektör birbirine diktir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: İki Boyutta İz ve Determinant Bağlantısı</h3>
+          <p><strong>İfade:</strong> İki boyutlu bir matrisin özdeğerleri \(\lambda_1,\lambda_2\) ise karakteristik denklem</p>
+          <div class="equation-card" data-raw-latex="\lambda^2-\operatorname{tr}(A)\lambda+\det A=0">
+            <div class="equation-content">
+              \[
+              \lambda^2-\operatorname{tr}(A)\lambda+\det A=0
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\lambda_1+\lambda_2=\operatorname{tr}(A),\qquad \lambda_1\lambda_2=\det A">
+            <div class="equation-content">
+              \[
+              \lambda_1+\lambda_2=\operatorname{tr}(A),
+              \qquad
+              \lambda_1\lambda_2=\det A
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> İki boyutlu karakteristik denklemde doğrusal katsayı köşegen toplamından, sabit terim ise determinanttan gelir.</p>
+          <p><strong>Formal İspat:</strong> \(A=\begin{bmatrix}a&b\\c&d\end{bmatrix}\) olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=(a-\lambda)(d-\lambda)-bc=\lambda^2-(a+d)\lambda+(ad-bc)">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              (a-\lambda)(d-\lambda)-bc
+              =
+              \lambda^2-(a+d)\lambda+(ad-bc)
+              \]
+            </div>
+          </div>
+          <p>Burada \(a+d=\operatorname{tr}(A)\) ve \(ad-bc=\det A\)'dır. Ayrıca \((\lambda-\lambda_1)(\lambda-\lambda_2)=\lambda^2-(\lambda_1+\lambda_2)\lambda+\lambda_1\lambda_2\) olduğundan katsayılar karşılaştırılır.</p>
+          <p><strong>Yorum:</strong> Yer değiştirme örneğinde iz \(0\), özdeğerlerin toplamı da \(1+(-1)=0\)'dır. Simetrik örnekte iz \(6\), özdeğerlerin toplamı \(4+2=6\)'dır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: Kimlik Matrisinin Skaler Katını Ekleme</h3>
+          <p><strong>İfade:</strong> \(A\mathbf{x}=\lambda\mathbf{x}\) ise her skaler \(c\) için</p>
+          <div class="equation-card" data-raw-latex="(A+cI)\mathbf{x}=(\lambda+c)\mathbf{x}">
+            <div class="equation-content">
+              \[
+              (A+cI)\mathbf{x}=(\lambda+c)\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>olur. Yani özvektör değişmez, özdeğer \(c\) kadar artar.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(cI\) her vektörü kendi doğrultusunda \(c\) katı kadar etkiler. Bu yüzden mevcut özel doğrultular bozulmaz.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}=\lambda\mathbf{x}\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="(A+cI)\mathbf{x}=A\mathbf{x}+cI\mathbf{x}=\lambda\mathbf{x}+c\mathbf{x}=(\lambda+c)\mathbf{x}">
+            <div class="equation-content">
+              \[
+              (A+cI)\mathbf{x}
+              =
+              A\mathbf{x}+cI\mathbf{x}
+              =
+              \lambda\mathbf{x}+c\mathbf{x}
+              =
+              (\lambda+c)\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Yer değiştirme matrisinin özdeğerleri \(1\) ve \(-1\) idi. Buna \(3I\) eklenince \(\begin{bmatrix}3&1\\1&3\end{bmatrix}\) elde edilir ve özdeğerler \(4\) ile \(2\) olur; özvektörler aynı kalır.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>Bu özellik genel matris toplamları için geçerli değildir. \(A\)'nın ve \(B\)'nin özdeğerlerini bilmek, genellikle \(A+B\)'nin özdeğerlerini vermez; çünkü iki matrisin özvektörleri aynı olmak zorunda değildir.</p>
+        </aside>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: Doksan Derecelik Dönme Matrisi</h3>
+          <p>Düzlemde her vektörü doksan derece döndüren matris</p>
+          <div class="equation-card" data-raw-latex="Q=\begin{bmatrix}0&amp;-1\\1&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=
+              \begin{bmatrix}
+              0&-1\\
+              1&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olarak alınabilir. Bu matrisin karakteristik denklemi</p>
+          <div class="equation-card" data-raw-latex="\det(Q-\lambda I)=\det\begin{bmatrix}-\lambda&amp;-1\\1&amp;-\lambda\end{bmatrix}=\lambda^2+1=0">
+            <div class="equation-content">
+              \[
+              \det(Q-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              -\lambda&-1\\
+              1&-\lambda
+              \end{bmatrix}
+              =
+              \lambda^2+1=0
+              \]
+            </div>
+          </div>
+          <p>olur. Bu denklemin gerçek çözümü yoktur; çözümler karmaşık sayılardır:</p>
+          <div class="equation-card" data-raw-latex="\lambda_1=i,\qquad \lambda_2=-i">
+            <div class="equation-content">
+              \[
+              \lambda_1=i,
+              \qquad
+              \lambda_2=-i
+              \]
+            </div>
+          </div>
+          <p>Bu sonuç geometrik beklentiyle uyumludur: gerçek düzlemde sıfırdan farklı hiçbir vektör doksan derece döndürüldüğünde kendi doğrultusunda kalmaz.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Tekrarlı Özdeğer ve Özvektör Eksikliği</h3>
+          <p>Aşağıdaki üçgensel matrisi ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}3&amp;1\\0&amp;3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              3&1\\
+              0&3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Üçgensel matrislerde determinant köşegen girişlerinin çarpımıdır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det\begin{bmatrix}3-\lambda&amp;1\\0&amp;3-\lambda\end{bmatrix}=(3-\lambda)^2">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              3-\lambda&1\\
+              0&3-\lambda
+              \end{bmatrix}
+              =
+              (3-\lambda)^2
+              \]
+            </div>
+          </div>
+          <p>Tek özdeğer \(\lambda=3\)'tür ve iki kez tekrar eder. Özvektörler için</p>
+          <div class="equation-card" data-raw-latex="A-3I=\begin{bmatrix}0&amp;1\\0&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-3I=
+              \begin{bmatrix}
+              0&1\\
+              0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisinin sıfır uzayı alınır. Denklem \(x_2=0\) verir; \(x_1\) serbesttir. Bir temel özvektör</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1=\begin{bmatrix}1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              1\\
+              0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olarak seçilebilir. İkinci bağımsız özvektör yoktur. Tekrarlı özdeğerlerin temel zorluğu burada ortaya çıkar: iki boyutlu bir matrisin iki özdeğeri sayısal olarak mevcut olsa bile iki bağımsız özvektörü olmayabilir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Özdeğerler Karakteristik Denklemden Gelir</h3>
+          <p><strong>İfade:</strong> \(\lambda\), \(A\)'nın bir özdeğeridir ancak ve ancak</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=0">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=0
+              \]
+            </div>
+          </div>
+          <p>eşitliği sağlanır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Özvektör sıfırdan farklı olmalıdır. Homojen bir sistemde sıfırdan farklı çözüm ancak katsayı matrisi tekilse mümkündür.</p>
+          <p><strong>Formal İspat:</strong> \(\lambda\) özdeğer ise sıfırdan farklı bir \(\mathbf{x}\) için \(A\mathbf{x}=\lambda\mathbf{x}\) vardır. Bu eşitlik</p>
+          <div class="equation-card" data-raw-latex="(A-\lambda I)\mathbf{x}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              (A-\lambda I)\mathbf{x}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>biçimine dönüşür. Sıfırdan farklı çözüm bulunduğu için \(A-\lambda I\) tekildir ve determinantı sıfırdır. Tersine, \(\det(A-\lambda I)=0\) ise \(A-\lambda I\) tekildir; dolayısıyla sıfırdan farklı bir \(\mathbf{x}\) için \((A-\lambda I)\mathbf{x}=\mathbf{0}\) vardır. Bu da \(A\mathbf{x}=\lambda\mathbf{x}\) demektir.</p>
+          <p><strong>Yorum:</strong> Hesaplama sırası bu teoreme dayanır: önce determinant denklemiyle \(\lambda\), sonra sıfır uzayıyla \(\mathbf{x}\) bulunur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Özvektörler Sıfır Uzayından Bulunur</h3>
+          <p><strong>İfade:</strong> \(\lambda\) bir özdeğer ise ona karşılık gelen özvektörler, sıfırdan farklı olmak koşuluyla,</p>
+          <div class="equation-card" data-raw-latex="\mathcal{N}(A-\lambda I)=\{\mathbf{x}:(A-\lambda I)\mathbf{x}=\mathbf{0}\}">
+            <div class="equation-content">
+              \[
+              \mathcal{N}(A-\lambda I)
+              =
+              \{\mathbf{x}:(A-\lambda I)\mathbf{x}=\mathbf{0}\}
+              \]
+            </div>
+          </div>
+          <p>uzayındaki vektörlerdir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\lambda\) sabitlendiğinde denklem artık doğrusal ve homojendir. Geriye sıradan sıfır uzayı hesabı kalır.</p>
+          <p><strong>Formal İspat:</strong> Tanım gereği \(\mathbf{x}\) özvektör ise \(A\mathbf{x}=\lambda\mathbf{x}\), yani \((A-\lambda I)\mathbf{x}=\mathbf{0}\) olur. Bu nedenle \(\mathbf{x}\), \(A-\lambda I\)'nin sıfır uzayındadır. Tersine, bu sıfır uzayındaki sıfırdan farklı her vektör aynı eşitliği sağlar ve özvektördür.</p>
+          <p><strong>Yorum:</strong> Bu teorem, eleme yönteminin özvektör hesabında neden tekrar ortaya çıktığını açıklar.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Özdeğer ve Özvektör Hesaplama Algoritması</h3>
+        <ol>
+          <li>\(A-\lambda I\) matrisini yaz.</li>
+          <li>Karakteristik denklemi kur: \(\det(A-\lambda I)=0\).</li>
+          <li>Bu denklemi çözerek özdeğerleri bul.</li>
+          <li>Her özdeğer \(\lambda\) için \((A-\lambda I)\mathbf{x}=\mathbf{0}\) sistemini çöz.</li>
+          <li>Sıfır uzayından sıfırdan farklı bir temel vektör seç; bu vektör özvektördür.</li>
+        </ol>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: Algoritmanın Kısa Uygulaması</h3>
+          <p>\(A=\begin{bmatrix}3&1\\1&3\end{bmatrix}\) için karakteristik denklem</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=(3-\lambda)^2-1=(\lambda-4)(\lambda-2)">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              (3-\lambda)^2-1
+              =
+              (\lambda-4)(\lambda-2)
+              \]
+            </div>
+          </div>
+          <p>olduğundan özdeğerler \(4\) ve \(2\)'dir. Sırasıyla sıfır uzayları alınır:</p>
+          <div class="equation-card" data-raw-latex="\mathcal{N}(A-4I)=\operatorname{ger}\left\{\begin{bmatrix}1\\1\end{bmatrix}\right\},\qquad \mathcal{N}(A-2I)=\operatorname{ger}\left\{\begin{bmatrix}-1\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \mathcal{N}(A-4I)
+              =
+              \operatorname{ger}
+              \left\{
+              \begin{bmatrix}
+              1\\
+              1
+              \end{bmatrix}
+              \right\},
+              \qquad
+              \mathcal{N}(A-2I)
+              =
+              \operatorname{ger}
+              \left\{
+              \begin{bmatrix}
+              -1\\
+              1
+              \end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle uygun özvektörler \(\begin{bmatrix}1\\1\end{bmatrix}\) ve \(\begin{bmatrix}-1\\1\end{bmatrix}\) olarak seçilebilir.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Yaygın Hata Noktaları:</strong>
+          <p>\(\lambda\) yalnızca köşegen dışındaki tüm girişlerden çıkarılmaz; \(\lambda I\) çıkarıldığı için sadece köşegen girişleri \(\lambda\) kadar değişir. Ayrıca özvektör bulunurken \(\mathbf{x}=\mathbf{0}\) seçilemez ve tekrarlı özdeğer her zaman aynı sayıda bağımsız özvektör vermez.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <h3>\(\lambda\)'yı Tüm Girişlerden Çıkarmak</h3>
+          <p><strong>Hata:</strong> \(A-\lambda I\) yerine matrisin her girişinden \(\lambda\) çıkarmak.</p>
+          <p><strong>Neden Yanlış:</strong> \(\lambda\mathbf{x}\), \(\lambda I\mathbf{x}\) olarak yazılır. Bu nedenle yalnızca köşegen girişleri değişir.</p>
+          <p><strong>Doğru Yaklaşım:</strong> \(A=\begin{bmatrix}3&1\\1&3\end{bmatrix}\) için \(A-\lambda I=\begin{bmatrix}3-\lambda&1\\1&3-\lambda\end{bmatrix}\) yazılır.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Sıfır Vektörünü Özvektör Saymak</h3>
+          <p><strong>Hata:</strong> \(\mathbf{x}=\mathbf{0}\) vektörünü özvektör olarak kabul etmek.</p>
+          <p><strong>Neden Yanlış:</strong> Sıfır vektörü her \(\lambda\) için denklemi sağlar; bu nedenle matrise ait özel bir doğrultu vermez.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Sıfır uzayı hesaplanır, fakat sıfırdan farklı temel vektörler seçilir.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Matris Toplamlarında Özdeğerleri Toplamak</h3>
+          <p><strong>Hata:</strong> \(A\)'nın ve \(B\)'nin özdeğerleri biliniyorsa \(A+B\)'nin özdeğerlerinin doğrudan toplamlar olduğunu sanmak.</p>
+          <p><strong>Neden Yanlış:</strong> Bu akıl yürütme aynı \(\mathbf{x}\)'in hem \(A\) hem \(B\) için özvektör olmasını gerektirir; genel durumda böyle bir ortak özvektör yoktur.</p>
+          <p><strong>Doğru Yaklaşım:</strong> \(B=cI\) gibi özel bir durum yoksa \(A+B\) için karakteristik denklem yeniden kurulmalıdır.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Tekrarlı Özdeğeri İki Bağımsız Özvektör Sanmak</h3>
+          <p><strong>Hata:</strong> \(\lambda=3\)'ün iki kez tekrar etmesinden otomatik olarak iki bağımsız özvektör çıkarmak.</p>
+          <p><strong>Neden Yanlış:</strong> \(\begin{bmatrix}3&1\\0&3\end{bmatrix}\) örneğinde tek özvektör doğrultusu vardır.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Her tekrarlı özdeğer için yine \((A-\lambda I)\mathbf{x}=\mathbf{0}\) çözülmeli ve sıfır uzayının boyutu kontrol edilmelidir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Kare matris \(A\) vektörleri yeni vektörlere dönüştürür.</li>
+            <li>Özel doğrultular: \(A\mathbf{x}\), \(\mathbf{x}\) ile aynı doğrultuda kalır.</li>
+            <li>Temel denklem: \(A\mathbf{x}=\lambda\mathbf{x}\).</li>
+            <li>Özdeğer hesabı: \((A-\lambda I)\mathbf{x}=\mathbf{0}\) için sıfırdan farklı çözüm aranır.</li>
+            <li>Tekillik koşulu: \(\det(A-\lambda I)=0\).</li>
+            <li>Özvektör hesabı: \(\mathcal{N}(A-\lambda I)\) bulunur.</li>
+            <li>Geometrik örnekler: izdüşüm, yer değiştirme ve dönme.</li>
+            <li>Olası zorluklar: karmaşık özdeğerler ve bağımsız özvektör eksikliği.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <p class="formula-label">Özdeğer denklemi</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\lambda\mathbf{x},\qquad \mathbf{x}\ne\mathbf{0}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\lambda\mathbf{x},
+            \qquad
+            \mathbf{x}\ne\mathbf{0}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Homojen sisteme dönüştürme</p>
+        <div class="equation-card" data-raw-latex="(A-\lambda I)\mathbf{x}=\mathbf{0}">
+          <div class="equation-content">
+            \[
+            (A-\lambda I)\mathbf{x}=\mathbf{0}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Karakteristik denklem</p>
+        <div class="equation-card" data-raw-latex="\det(A-\lambda I)=0">
+          <div class="equation-content">
+            \[
+            \det(A-\lambda I)=0
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">İki boyutlu iz ve determinant ilişkisi</p>
+        <div class="equation-card" data-raw-latex="\lambda_1+\lambda_2=\operatorname{tr}(A),\qquad \lambda_1\lambda_2=\det A">
+          <div class="equation-content">
+            \[
+            \lambda_1+\lambda_2=\operatorname{tr}(A),
+            \qquad
+            \lambda_1\lambda_2=\det A
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Kimlik matrisinin skaler katını ekleme</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\lambda\mathbf{x}\quad\Rightarrow\quad (A+cI)\mathbf{x}=(\lambda+c)\mathbf{x}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\lambda\mathbf{x}
+            \quad\Rightarrow\quad
+            (A+cI)\mathbf{x}=(\lambda+c)\mathbf{x}
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde kare matrislerin özel doğrultuları olan özvektörler ve bu doğrultulardaki skaler etkileri olan özdeğerler tanımlandı. Ana denklem \(A\mathbf{x}=\lambda\mathbf{x}\) biçimindedir.</p>
+        <p>Özdeğerler determinant koşulundan bulunur: \(\det(A-\lambda I)=0\). Her özdeğer bulunduktan sonra ilgili özvektörler \((A-\lambda I)\mathbf{x}=\mathbf{0}\) sisteminin sıfır uzayından elde edilir.</p>
+        <p>İzdüşüm matrisleri \(1\) ve \(0\) özdeğerlerini, yer değiştirme matrisi \(1\) ve \(-1\) özdeğerlerini, dönme matrisi ise karmaşık özdeğerleri gösterdi. Tekrarlı özdeğer örneği, özvektör sayısının her zaman boyut kadar olmayabileceğini ortaya koydu.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Kolay Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}2&0\\0&5\end{bmatrix}\) matrisinin özdeğerlerini ve birer özvektörünü bulun.</p>
+          <p><strong>Çözüm:</strong> \(A-\lambda I\) matrisi</p>
+          <div class="equation-card" data-raw-latex="A-\lambda I=\begin{bmatrix}2-\lambda&amp;0\\0&amp;5-\lambda\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-\lambda I=
+              \begin{bmatrix}
+              2-\lambda&0\\
+              0&5-\lambda
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Determinant</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=(2-\lambda)(5-\lambda)">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=(2-\lambda)(5-\lambda)
+              \]
+            </div>
+          </div>
+          <p>olduğundan özdeğerler \(\lambda_1=2\) ve \(\lambda_2=5\)'tir. \(\lambda_1=2\) için \(\begin{bmatrix}1\\0\end{bmatrix}\), \(\lambda_2=5\) için \(\begin{bmatrix}0\\1\end{bmatrix}\) seçilebilir.</p>
+          <p><strong>Yorum:</strong> Köşegen matris, standart eksen doğrultularını yalnızca ölçekler.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Orta Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}4&1\\1&4\end{bmatrix}\) için özdeğerleri ve birer özvektörü bulun. Ayrıca özdeğerlerin toplamını ve çarpımını kontrol edin.</p>
+          <p><strong>Çözüm:</strong></p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det\begin{bmatrix}4-\lambda&amp;1\\1&amp;4-\lambda\end{bmatrix}=(4-\lambda)^2-1">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              4-\lambda&1\\
+              1&4-\lambda
+              \end{bmatrix}
+              =
+              (4-\lambda)^2-1
+              \]
+            </div>
+          </div>
+          <p>Bu ifade</p>
+          <div class="equation-card" data-raw-latex="\lambda^2-8\lambda+15=(\lambda-5)(\lambda-3)">
+            <div class="equation-content">
+              \[
+              \lambda^2-8\lambda+15=(\lambda-5)(\lambda-3)
+              \]
+            </div>
+          </div>
+          <p>olduğundan özdeğerler \(5\) ve \(3\)'tür. \(\lambda=5\) için \(\begin{bmatrix}1\\1\end{bmatrix}\), \(\lambda=3\) için \(\begin{bmatrix}-1\\1\end{bmatrix}\) seçilebilir.</p>
+          <p>Toplam \(5+3=8\), iz \(\operatorname{tr}(A)=4+4=8\)'dir. Çarpım \(5\cdot3=15\), determinant \(\det A=16-1=15\)'tir.</p>
+          <p><strong>Yorum:</strong> Bu soru, simetrik örnekte görülen özvektör doğrultularının aynı kaldığını ve köşegen değerleri değişince özdeğerlerin kaydığını gösterir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: İleri Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}2&1\\0&2\end{bmatrix}\) matrisinin özdeğerlerini bulun ve kaç bağımsız özvektörü olduğunu belirleyin.</p>
+          <p><strong>Çözüm:</strong> Karakteristik determinant</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det\begin{bmatrix}2-\lambda&amp;1\\0&amp;2-\lambda\end{bmatrix}=(2-\lambda)^2">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              2-\lambda&1\\
+              0&2-\lambda
+              \end{bmatrix}
+              =
+              (2-\lambda)^2
+              \]
+            </div>
+          </div>
+          <p>olduğundan tek özdeğer \(\lambda=2\)'dir ve iki kez tekrar eder. Özvektörler için</p>
+          <div class="equation-card" data-raw-latex="A-2I=\begin{bmatrix}0&amp;1\\0&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-2I=
+              \begin{bmatrix}
+              0&1\\
+              0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>sistemi çözülür. Denklem \(x_2=0\) verir; \(x_1\) serbesttir. Bu nedenle özvektör uzayı</p>
+          <div class="equation-card" data-raw-latex="\operatorname{ger}\left\{\begin{bmatrix}1\\0\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \operatorname{ger}
+              \left\{
+              \begin{bmatrix}
+              1\\
+              0
+              \end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Dolayısıyla yalnızca bir bağımsız özvektör vardır.</p>
+          <p><strong>Yorum:</strong> Tekrarlı özdeğer, bağımsız özvektör sayısının otomatik olarak tekrar sayısına eşit olacağını garanti etmez.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Eigenvalue</td>
+                <td>Özdeğer</td>
+                <td>Bir özvektör doğrultusundaki skaler çarpan.</td>
+              </tr>
+              <tr>
+                <td>Eigenvector</td>
+                <td>Özvektör</td>
+                <td>Matris etkisi altında doğrultusu değişmeyen sıfırdan farklı vektör.</td>
+              </tr>
+              <tr>
+                <td>Characteristic equation</td>
+                <td>Karakteristik denklem</td>
+                <td>\(\det(A-\lambda I)=0\) denklemi.</td>
+              </tr>
+              <tr>
+                <td>Trace</td>
+                <td>İz</td>
+                <td>Köşegen girişlerinin toplamı.</td>
+              </tr>
+              <tr>
+                <td>Singular matrix</td>
+                <td>Tekil matris</td>
+                <td>Sıfırdan farklı bir vektörü sıfır vektörüne gönderen kare matris.</td>
+              </tr>
+              <tr>
+                <td>Projection matrix</td>
+                <td>İzdüşüm matrisi</td>
+                <td>Vektörleri bir alt uzaya izdüşüren matris.</td>
+              </tr>
+              <tr>
+                <td>Permutation matrix</td>
+                <td>Yer değiştirme matrisi</td>
+                <td>Bileşenlerin veya koordinatların yerini değiştiren matris.</td>
+              </tr>
+              <tr>
+                <td>Complex conjugate</td>
+                <td>Karmaşık eşlenik</td>
+                <td>Sanal kısmın işaretinin değiştirilmesiyle elde edilen karmaşık sayı.</td>
+              </tr>
+              <tr>
+                <td>Repeated eigenvalue</td>
+                <td>Tekrarlı özdeğer</td>
+                <td>Karakteristik denklemde birden fazla kez kök olarak görünen özdeğer.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

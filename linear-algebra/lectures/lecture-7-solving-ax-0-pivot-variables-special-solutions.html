@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7. Ders: Ax = 0 Çözümü, Öncü Değişkenler ve Özel Çözümler</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" class="active" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">7. Ders: \(A\mathbf{x}=0\) Çözümü</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, sıfır uzayının yalnızca tanımını değil, hesaplanma algoritmasını ele alır: \(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümleri eliminasyon, öncü değişkenler, serbest değişkenler ve özel çözümler yoluyla bulunur.</p>
+        <p>Önceki bölümde sütun uzayı ve sıfır uzayı, bir matristen doğan iki temel alt uzay olarak tanımlanmıştı. Burada odak, sıfır uzayını somut biçimde betimlemektir. Eliminasyon işlemi denklemlerin çözüm kümesini değiştirmediği için \(A\mathbf{x}=\mathbf{0}\) yerine daha düzenli bir sistem olan \(U\mathbf{x}=\mathbf{0}\) ya da \(R\mathbf{x}=\mathbf{0}\) çözülebilir.</p>
+        <p>Bu bölümün ana fikri şudur: öncü değişkenler denklemler tarafından belirlenir, serbest değişkenler ise seçilebilir. Serbest değişkenlere sırasıyla özel \(0\) ve \(1\) değerleri verilerek sıfır uzayını üreten özel çözümler elde edilir.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Eliminasyonun \(A\mathbf{x}=\mathbf{0}\) sisteminin çözüm kümesini neden değiştirmediğini açıklayabilmek.</li>
+          <li>Dikdörtgen matrislerde eliminasyonu sıfır pivotla karşılaşıldığında bir sonraki sütuna geçerek sürdürebilmek.</li>
+          <li>Öncü sütun, serbest sütun, öncü değişken ve serbest değişken ayrımını yapabilmek.</li>
+          <li>Bir matrisin rütbesini öncü sayısı olarak yorumlayabilmek.</li>
+          <li>\(n-r\) serbest değişken sayısını kullanarak özel çözüm sayısını belirleyebilmek.</li>
+          <li>Satır basamak biçiminden geriye yerine koyma ile sıfır uzayını bulabilmek.</li>
+          <li>İndirgenmiş satır basamak biçiminde \(R=[I\ F]\) yapısını okuyabilmek.</li>
+          <li>Özel çözümleri sütun yapan sıfır uzayı matrisini \(N=\begin{bmatrix}-F\\I\end{bmatrix}\) biçiminde kurabilmek.</li>
+          <li>Bir matris ve devriğinin aynı rütbeye sahip olduğunu örnek üzerinden gözlemleyebilmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Matris-vektör çarpımını sütunların doğrusal birleşimi olarak okuyabilme.</li>
+          <li>Eliminasyon ve satır işlemlerinin lineer sistem çözümlerini koruduğunu bilme.</li>
+          <li>Satır basamak biçiminde geriye yerine koyma yapabilme.</li>
+          <li>Sıfır uzayı tanımını \(N(A)=\{\mathbf{x}:A\mathbf{x}=\mathbf{0}\}\) olarak bilme.</li>
+          <li>Doğrusal bağımlılık fikrini sütunların birbirini üretmesi ya da yok etmesi üzerinden tanıma.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>\(A\)</td><td>Başlangıç matrisi.</td></tr>
+              <tr><td>\(U\)</td><td>Eliminasyon sonrası satır basamak biçimindeki matris.</td></tr>
+              <tr><td>\(R\)</td><td>İndirgenmiş satır basamak biçimindeki matris.</td></tr>
+              <tr><td>\(\mathbf{x}\)</td><td>Bilinmeyen vektörü.</td></tr>
+              <tr><td>\(\mathbf{0}\)</td><td>Sıfır vektörü veya sıfır sağ taraf.</td></tr>
+              <tr><td>\(r\)</td><td>Öncü sayısı; matrisin rütbesi.</td></tr>
+              <tr><td>\(n\)</td><td>Matrisin sütun sayısı; bilinmeyen sayısı.</td></tr>
+              <tr><td>\(n-r\)</td><td>Serbest değişken sayısı ve özel çözüm sayısı.</td></tr>
+              <tr><td>\(F\)</td><td>İndirgenmiş biçimde serbest sütunlardan oluşan blok.</td></tr>
+              <tr><td>\(N(A)\)</td><td>\(A\) matrisinin sıfır uzayı.</td></tr>
+              <tr><td>\(N\)</td><td>Sütunları özel çözümler olan sıfır uzayı matrisi.</td></tr>
+              <tr><td>\(\mathbf{s}_1,\mathbf{s}_2\)</td><td>Özel çözüm vektörleri.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Sıfır uzayını bulmak, \(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümlerini bulmak demektir. Bu çözümler, \(A\)'nın sütunları arasında hangi katsayılarla sıfır doğrusal birleşim elde edildiğini gösterir.</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{0}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\mathbf{0}.
+            \]
+          </div>
+        </div>
+        <p>Eliminasyon, denklemleri değiştirir; fakat çözüm kümesini değiştirmez. Bu yüzden aynı sıfır uzayı daha düzenli matrislerle hesaplanabilir:</p>
+        <div class="equation-card" data-raw-latex="N(A)=N(U)=N(R)">
+          <div class="equation-content">
+            \[
+            N(A)=N(U)=N(R).
+            \]
+          </div>
+        </div>
+        <p>Bu eşitlik, tanımı algoritmaya dönüştürür. Önce \(A\) satır basamak biçimine getirilir, öncü ve serbest değişkenler belirlenir, serbest değişkenlere özel değerler verilerek tüm sıfır uzayı elde edilir.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Bir \(m\times n\) matrisin rütbesi \(r\) ise \(r\) öncü değişken ve \(n-r\) serbest değişken vardır. Sıfır uzayı, bu \(n-r\) serbest seçimin ürettiği özel çözümlerin tüm doğrusal birleşimidir.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 7.1: Öncü ve Serbest Değişkenler</h3>
+          <p>Eliminasyon sonunda bir sütunda öncü eleman bulunuyorsa, o sütuna öncü sütun ve karşılık gelen bilinmeyene öncü değişken denir. Öncü bulunmayan sütunlara serbest sütun, karşılık gelen bilinmeyenlere serbest değişken denir.</p>
+          <p>Serbest değişkenler keyfi seçilebilir. Öncü değişkenler ise bu seçimlerden sonra denklemler tarafından belirlenir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 7.2: Rütbe</h3>
+          <p>Bir matrisin rütbesi, eliminasyon sonunda ortaya çıkan öncü eleman sayısıdır:</p>
+          <div class="equation-card" data-raw-latex="r=\text{öncü sayısı}">
+            <div class="equation-content">
+              \[
+              r=\text{öncü sayısı}.
+              \]
+            </div>
+          </div>
+          <p>Rütbe, sistemde kaç tane bağımsız denklem ve kaç tane öncü değişken bulunduğunu gösterir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.3: Üç Satır ve Dört Sütunlu Matris</h3>
+          <p>Aşağıdaki dikdörtgen matris ele alınsın:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&2&2\\2&4&6&8\\3&6&8&10\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&2&2&2\\
+              2&4&6&8\\
+              3&6&8&10
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İkinci sütun birinci sütunun iki katıdır. Üçüncü satır ise ilk iki satırın toplamıdır. Bu bağımlılıklar eliminasyonda öncü sayısının az çıkmasıyla görünür hâle gelir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.4: Eliminasyon ve Satır Basamak Biçimi</h3>
+          <p>Önce birinci öncü kullanılarak ikinci satırdan birinci satırın iki katı, üçüncü satırdan birinci satırın üç katı çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&2&2&2\\2&4&6&8\\3&6&8&10\end{bmatrix}\longrightarrow \begin{bmatrix}1&2&2&2\\0&0&2&4\\0&0&2&4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&2&2&2\\
+              2&4&6&8\\
+              3&6&8&10
+              \end{bmatrix}
+              \longrightarrow
+              \begin{bmatrix}
+              1&2&2&2\\
+              0&0&2&4\\
+              0&0&2&4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İkinci sütunda öncü yoktur; bu yüzden üçüncü sütuna geçilir. Üçüncü sütundaki öncü kullanılarak son satır sıfırlanır:</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}1&2&2&2\\0&0&2&4\\0&0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              U=
+              \begin{bmatrix}
+              1&2&2&2\\
+              0&0&2&4\\
+              0&0&0&0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Öncü sütunlar birinci ve üçüncü sütunlardır. Serbest sütunlar ikinci ve dördüncü sütunlardır. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="r=2,\qquad n=4,\qquad n-r=2">
+            <div class="equation-content">
+              \[
+              r=2,\qquad n=4,\qquad n-r=2.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 7.5: Eliminasyon Sıfır Uzayını Değiştirmez</h3>
+          <p><strong>İfade:</strong> \(A\) matrisine uygulanan temel satır işlemleri \(A\mathbf{x}=\mathbf{0}\) denkleminin çözüm kümesini değiştirmez.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir denklemden başka bir denklemin katını çıkarmak, aynı denklem sisteminin eşdeğer bir yazımını verir. Sağ taraf sıfır olduğu için satır işlemlerinden sonra sağ taraf yine sıfır kalır.</p>
+          <p><strong>Formal İspat:</strong> Bir satır işlemi terslenebilir bir sol çarpma olarak düşünülebilir. Bu işlem \(A\)'yı \(EA\)'ya dönüştürsün. Eğer \(A\mathbf{x}=\mathbf{0}\) ise \(EA\mathbf{x}=E\mathbf{0}=\mathbf{0}\). Tersine \(EA\mathbf{x}=\mathbf{0}\) ise \(E^{-1}EA\mathbf{x}=E^{-1}\mathbf{0}\), yani \(A\mathbf{x}=\mathbf{0}\). Dolayısıyla iki sistemin çözümleri aynıdır.</p>
+          <p><strong>Yorum:</strong> Sıfır uzayını hesaplarken \(A\), \(U\) veya \(R\) ile çalışmak aynı sonucu verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.6: İlk Özel Çözüm</h3>
+          <p>\(U\mathbf{x}=\mathbf{0}\) denklemleri şunlardır:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}x_1+2x_2+2x_3+2x_4&=0,\\2x_3+4x_4&=0.\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x_1+2x_2+2x_3+2x_4&=0,\\
+              2x_3+4x_4&=0.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Serbest değişkenler \(x_2\) ve \(x_4\)'tür. İlk özel çözüm için</p>
+          <div class="equation-card" data-raw-latex="x_2=1,\qquad x_4=0">
+            <div class="equation-content">
+              \[
+              x_2=1,\qquad x_4=0
+              \]
+            </div>
+          </div>
+          <p>seçilir. İkinci denklemden \(x_3=0\), birinci denklemden \(x_1=-2\) bulunur. Böylece</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_1=\begin{bmatrix}-2\\1\\0\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_1=
+              \begin{bmatrix}
+              -2\\1\\0\\0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu çözüm, ikinci sütunun birinci sütunun iki katı olduğunu katsayılar üzerinden ifade eder.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.7: İkinci Özel Çözüm</h3>
+          <p>İkinci özel çözüm için serbest değişkenler bu kez</p>
+          <div class="equation-card" data-raw-latex="x_2=0,\qquad x_4=1">
+            <div class="equation-content">
+              \[
+              x_2=0,\qquad x_4=1
+              \]
+            </div>
+          </div>
+          <p>olarak seçilir. İkinci denklem \(2x_3+4=0\) verdiğinden \(x_3=-2\). Birinci denklemden \(x_1=2\) elde edilir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_2=\begin{bmatrix}2\\0\\-2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_2=
+              \begin{bmatrix}
+              2\\0\\-2\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu çözüm, sütunlar arasında</p>
+          <div class="equation-card" data-raw-latex="2\mathbf{a}_1-2\mathbf{a}_3+\mathbf{a}_4=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              2\mathbf{a}_1-2\mathbf{a}_3+\mathbf{a}_4=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>ilişkisini verir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 7.8: Özel Çözümler</h3>
+          <p>Özel çözümler, serbest değişkenlere sırasıyla birim vektör değerleri verilerek elde edilen sıfır uzayı çözümleridir. Serbest değişken sayısı \(n-r\) ise \(n-r\) tane özel çözüm vardır.</p>
+          <p>Örnek 7.6 ve 7.7'de iki serbest değişken olduğu için iki özel çözüm bulunmuştur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 7.9: Sıfır Uzayı Özel Çözümlerin Tüm Doğrusal Birleşimidir</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin \(n-r\) serbest değişkeni varsa, \(N(A)\) özel çözümlerin tüm doğrusal birleşimlerinden oluşur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Serbest değişkenler herhangi bir değer alabilir. Her serbest değişkenin etkisi özel çözümlerden biriyle temsil edilir. Genel seçim, bu özel etkilerin toplamıdır.</p>
+          <p><strong>Formal İspat:</strong> Serbest değişkenler \(\mathbf{z}\in\mathbb{R}^{n-r}\) biçiminde toplansın. Her \(\mathbf{z}\), standart birim vektörlerin doğrusal birleşimidir. Her standart seçim bir özel çözüm üretir. Lineerlik nedeniyle serbest değişkenlerin herhangi bir seçimi, karşılık gelen özel çözümlerin aynı katsayılarla doğrusal birleşimini verir.</p>
+          <p><strong>Yorum:</strong> Bu nedenle sıfır uzayı yalnızca birkaç vektörle değil, bu vektörlerin bütün doğrusal birleşimleriyle yazılmalıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.10: İlk Matrisin Bütün Sıfır Uzayı</h3>
+          <p>İki özel çözüm bulunduğundan sıfır uzayı</p>
+          <div class="equation-card" data-raw-latex="N(A)=\left\{c_1\begin{bmatrix}-2\\1\\0\\0\end{bmatrix}+c_2\begin{bmatrix}2\\0\\-2\\1\end{bmatrix}:c_1,c_2\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              N(A)=
+              \left\{
+              c_1
+              \begin{bmatrix}-2\\1\\0\\0\end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}2\\0\\-2\\1\end{bmatrix}
+              :
+              c_1,c_2\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+          <p>Geometrik olarak bu, \(\mathbb{R}^4\) içinde iki özel çözümün oluşturduğu bir alt uzaydır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 7.11: İndirgenmiş Satır Basamak Biçimi</h3>
+          <p>Bir satır basamak biçiminde her öncü \(1\)'e çevrilmiş ve her öncünün hem altında hem üstünde sıfırlar oluşturulmuşsa, elde edilen matris indirgenmiş satır basamak biçimindedir.</p>
+          <p>İlk örnekte \(U\) matrisi daha da sadeleştirilerek şu \(R\) matrisi elde edilir:</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}1&2&0&-2\\0&0&1&2\\0&0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=
+              \begin{bmatrix}
+              1&2&0&-2\\
+              0&0&1&2\\
+              0&0&0&0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 7.12: \(R=[I\ F]\) Biçiminde Sıfır Uzayı Matrisi</h3>
+          <p><strong>İfade:</strong> Öncü değişkenler önce, serbest değişkenler sonra yazılacak biçimde sütunlar düzenlenmişse ve</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}I&F\\0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=
+              \begin{bmatrix}
+              I&F\\
+              0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>ise özel çözümleri sütun yapan sıfır uzayı matrisi</p>
+          <div class="equation-card" data-raw-latex="N=\begin{bmatrix}-F\\I\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              N=
+              \begin{bmatrix}
+              -F\\
+              I
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(R\mathbf{x}=\mathbf{0}\) denklemi, öncü değişkenler ile serbest değişkenleri ayırır. Serbest değişkenlere birim seçimler verildiğinde öncü değişkenler \(-F\) olarak çıkar.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{x}\) vektörünü öncü ve serbest parçalarına ayıralım:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}\mathbf{x}_{p}\\\mathbf{x}_{f}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              \begin{bmatrix}
+              \mathbf{x}_{p}\\
+              \mathbf{x}_{f}
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>O zaman</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}I&F\\0&0\end{bmatrix}\begin{bmatrix}\mathbf{x}_{p}\\\mathbf{x}_{f}\end{bmatrix}=\mathbf{0}\quad \Longrightarrow\quad \mathbf{x}_{p}+F\mathbf{x}_{f}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              I&F\\
+              0&0
+              \end{bmatrix}
+              \begin{bmatrix}
+              \mathbf{x}_{p}\\
+              \mathbf{x}_{f}
+              \end{bmatrix}
+              =
+              \mathbf{0}
+              \quad \Longrightarrow\quad
+              \mathbf{x}_{p}+F\mathbf{x}_{f}=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\mathbf{x}_{p}=-F\mathbf{x}_{f}\). Serbest parça \(\mathbf{x}_{f}\) için birim matrisin sütunları seçilirse özel çözümler \(\begin{bmatrix}-F\\I\end{bmatrix}\) sütunları olur.</p>
+          <p><strong>Yorum:</strong> İndirgenmiş biçim, geriye yerine koymayı görünür hâle getirir; özel çözümler doğrudan \(F\) bloğundan okunur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.13: Devriğin Sıfır Uzayı</h3>
+          <p>İlk örnekteki matrisin devriği şu \(4\times 3\) matristir:</p>
+          <div class="equation-card" data-raw-latex="B=A^T=\begin{bmatrix}1&2&3\\2&4&6\\2&6&8\\2&8&10\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              B=A^T=
+              \begin{bmatrix}
+              1&2&3\\
+              2&4&6\\
+              2&6&8\\
+              2&8&10
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Üçüncü sütun ilk iki sütunun toplamıdır. Bu nedenle üçüncü sütunun serbest sütun olması beklenir. Eliminasyon bunu açığa çıkarır:</p>
+          <div class="equation-card" data-raw-latex="U=\begin{bmatrix}1&2&3\\0&2&2\\0&0&0\\0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              U=
+              \begin{bmatrix}
+              1&2&3\\
+              0&2&2\\
+              0&0&0\\
+              0&0&0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Burada yine iki öncü vardır. \(B\)'nin rütbesi de \(2\)'dir. Üç bilinmeyen olduğu için bir serbest değişken vardır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.14: Devriğin Özel Çözümü</h3>
+          <p>\(B\mathbf{x}=\mathbf{0}\) için serbest değişken \(x_3\)'tür. \(x_3=1\) seçilirse denklemler</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}x_1+2x_2+3x_3&=0,\\2x_2+2x_3&=0\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x_1+2x_2+3x_3&=0,\\
+              2x_2+2x_3&=0
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>olur. Buradan \(x_2=-1\), \(x_1=-1\) bulunur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}=\begin{bmatrix}-1\\-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}=
+              \begin{bmatrix}
+              -1\\-1\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="N(B)=\left\{c\begin{bmatrix}-1\\-1\\1\end{bmatrix}:c\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              N(B)=
+              \left\{
+              c
+              \begin{bmatrix}
+              -1\\-1\\1
+              \end{bmatrix}
+              :
+              c\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 7.15: Devriğin İndirgenmiş Biçimi</h3>
+          <p>Devriğin satır basamak biçimi daha da sadeleştirilirse</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}1&0&1\\0&1&1\\0&0&0\\0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=
+              \begin{bmatrix}
+              1&0&1\\
+              0&1&1\\
+              0&0&0\\
+              0&0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Burada \(F=\begin{bmatrix}1\\1\end{bmatrix}\) olduğundan özel çözüm doğrudan</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}-F\\I\end{bmatrix}=\begin{bmatrix}-1\\-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              -F\\
+              I
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              -1\\-1\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu sonuç, geriye yerine koyma ile bulunan çözümle aynıdır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+        <section class="theorem-card">
+          <h3>Teorem 7.16: Serbest Değişken Sayısı</h3>
+          <p><strong>İfade:</strong> \(n\) sütunlu bir matrisin rütbesi \(r\) ise \(A\mathbf{x}=\mathbf{0}\) sisteminde \(n-r\) serbest değişken vardır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Her öncü sütun bir öncü değişken belirler. Geriye kalan sütunlarda öncü yoktur; bu değişkenler serbest seçilebilir.</p>
+          <p><strong>Formal İspat:</strong> \(n\) bilinmeyen, \(n\) sütuna karşılık gelir. Rütbe \(r\), öncü sütun sayısıdır. Dolayısıyla \(r\) değişken öncü değişkendir. Geriye kalan değişken sayısı \(n-r\)'dir ve bunlar öncüye sahip olmadığı için serbest değişkenlerdir.</p>
+          <p><strong>Yorum:</strong> Sıfır uzayındaki özel çözüm sayısı tam olarak \(n-r\)'dir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 7.17: Sıfır Satırlar Bağımlı Denklemleri Gösterir</h3>
+          <p><strong>İfade:</strong> Eliminasyon sırasında bir sıfır satır ortaya çıkarsa, ilgili satır önceki satırların doğrusal birleşimiyle açıklanmıştır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir satır, önceki satırlarla tamamen yok edilebiliyorsa yeni bir bağımsız denklem taşımıyordur.</p>
+          <p><strong>Formal İspat:</strong> Eliminasyon işlemi, bir satırdan önceki satırların uygun katlarını çıkarır. Sonuç sıfır satırsa başlangıçtaki satır, çıkarılan bu katların toplamına eşittir. Bu nedenle başlangıç satırı önceki satırların doğrusal birleşimidir.</p>
+          <p><strong>Yorum:</strong> İlk örnekte üçüncü satır sıfır satıra dönüşür; çünkü başlangıçta üçüncü satır ilk iki satırın toplamıdır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <h3>\(A\mathbf{x}=\mathbf{0}\) Sistemini Çözme Algoritması</h3>
+          <p><strong>Ne işe yarar?</strong> Bir matrisin sıfır uzayını açıkça bulur.</p>
+          <ol>
+            <li>Matris \(A\)'yı eliminasyonla satır basamak biçimi \(U\)'ya getir.</li>
+            <li>Öncü sütunları ve serbest sütunları belirle.</li>
+            <li>Rütbeyi \(r\), serbest değişken sayısını \(n-r\) olarak yaz.</li>
+            <li>Her serbest değişken için sırayla \(1\), diğer serbest değişkenler için \(0\) seç.</li>
+            <li>Geriye yerine koyma ile öncü değişkenleri bul.</li>
+            <li>Elde edilen özel çözümlerin tüm doğrusal birleşimini sıfır uzayı olarak yaz.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <h3>İndirgenmiş Biçimden Özel Çözümleri Okuma</h3>
+          <p><strong>Ne işe yarar?</strong> Geriye yerine koyma işlemini blok biçiminde yapar.</p>
+          <ol>
+            <li>İndirgenmiş biçimde öncü sütunları önce, serbest sütunları sonra düşün.</li>
+            <li>Matrisi \(\begin{bmatrix}I&F\\0&0\end{bmatrix}\) biçiminde oku.</li>
+            <li>Serbest değişkenler için birim matris \(I\)'yi seç.</li>
+            <li>Öncü değişkenleri \(-F\) olarak yaz.</li>
+            <li>Sıfır uzayı matrisini \(N=\begin{bmatrix}-F\\I\end{bmatrix}\) biçiminde kur.</li>
+          </ol>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Sıfır Pivotta Durmak</h4>
+            <p>Bir sütunda öncü bulunamazsa algoritma bitmez; bir sonraki sütuna geçilir. Bu sütun serbest sütundur.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Satır İşlemlerinin Sütun Uzayını Koruduğunu Sanmak</h4>
+            <p>Satır işlemleri sıfır uzayını korur; fakat sütun uzayını genel olarak değiştirir. Bu bölümde güvenli olan nesne çözüm kümesidir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Serbest Değişkenleri Sıfıra Sabitlemek</h4>
+            <p>Tüm serbest değişkenleri sıfır seçmek yalnızca sıfır çözümü verir. Özel çözümler için sırayla bir serbest değişken \(1\), diğerleri \(0\) seçilmelidir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Tek Bir Özel Çözümü Bütün Sıfır Uzayı Sanmak</h4>
+            <p>Birden fazla serbest değişken varsa birden fazla özel çözüm vardır. Bütün sıfır uzayı, özel çözümlerin tüm doğrusal birleşimidir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Rütbeyi Satır Sayısıyla Karıştırmak</h4>
+            <p>Rütbe satır sayısı değil, öncü sayısıdır. Örnek 7.3'te üç satır vardır ama rütbe \(2\)'dir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>\(-F\) İşaretini Kaçırmak</h4>
+            <p>\(\mathbf{x}_p+F\mathbf{x}_f=\mathbf{0}\) olduğundan öncü parça \(-F\mathbf{x}_f\)'dir. Özel çözümlerde \(F\) değil, \(-F\) görünür.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>\(A\mathbf{x}=\mathbf{0}\): sıfır uzayını belirleyen homojen sistem.</li>
+            <li>Eliminasyon: çözüm kümesini koruyarak sistemi sadeleştirir.</li>
+            <li>Satır basamak biçimi \(U\): öncüleri ve serbest sütunları görünür kılar.</li>
+            <li>Rütbe \(r\): öncü sayısı, bağımsız denklem sayısı ve öncü değişken sayısı.</li>
+            <li>Serbest değişken sayısı \(n-r\): özel çözüm sayısı.</li>
+            <li>Özel çözümler: serbest değişkenlere birim seçimler verilerek bulunur.</li>
+            <li>Sıfır uzayı: özel çözümlerin tüm doğrusal birleşimleri.</li>
+            <li>İndirgenmiş biçim \(R\): \(I\), \(F\) ve sıfır satır bloklarını açıkça gösterir.</li>
+            <li>Sıfır uzayı matrisi \(N\): sütunları özel çözümlerden oluşur ve \(RN=\mathbf{0}\) sağlar.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Sıfır Uzayı</h3>
+            <p>Homojen sistemin tüm çözümleridir.</p>
+            <div class="equation-card" data-raw-latex="N(A)=\{\mathbf{x}:A\mathbf{x}=\mathbf{0}\}">
+              <div class="equation-content">
+                \[
+                N(A)=\{\mathbf{x}:A\mathbf{x}=\mathbf{0}\}.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Rütbe ve Serbest Değişken Sayısı</h3>
+            <p>Öncü sayısı rütbedir; geri kalan değişkenler serbesttir.</p>
+            <div class="equation-card" data-raw-latex="\text{serbest değişken sayısı}=n-r">
+              <div class="equation-content">
+                \[
+                \text{serbest değişken sayısı}=n-r.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Özel Çözümlerden Genel Çözüm</h3>
+            <p>Sıfır uzayı özel çözümlerin tüm doğrusal birleşimidir.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{x}=c_1\mathbf{s}_1+\cdots+c_{n-r}\mathbf{s}_{n-r}">
+              <div class="equation-content">
+                \[
+                \mathbf{x}=c_1\mathbf{s}_1+\cdots+c_{n-r}\mathbf{s}_{n-r}.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>İndirgenmiş Biçim</h3>
+            <p>Öncü sütunlar önce düşünülürse \(R\) blok biçiminde okunur.</p>
+            <div class="equation-card" data-raw-latex="R=\begin{bmatrix}I&F\\0&0\end{bmatrix}">
+              <div class="equation-content">
+                \[
+                R=
+                \begin{bmatrix}
+                I&F\\
+                0&0
+                \end{bmatrix}.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Sıfır Uzayı Matrisi</h3>
+            <p>Sütunları özel çözümler olan matris.</p>
+            <div class="equation-card" data-raw-latex="N=\begin{bmatrix}-F\\I\end{bmatrix},\qquad RN=\mathbf{0}">
+              <div class="equation-content">
+                \[
+                N=
+                \begin{bmatrix}
+                -F\\
+                I
+                \end{bmatrix},
+                \qquad
+                RN=\mathbf{0}.
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde \(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümlerini bulmak için sistematik algoritma geliştirildi. Eliminasyon çözüm kümesini değiştirmediği için sıfır uzayı \(A\), \(U\) veya \(R\) üzerinden hesaplanabilir.</p>
+        <p>Öncü sütunlar öncü değişkenleri, öncüsüz sütunlar serbest değişkenleri belirler. Rütbe \(r\), öncü sayısıdır; \(n-r\) serbest değişken ve aynı sayıda özel çözüm vardır. Serbest değişkenlere \(0\)-\(1\) seçimleri verilerek özel çözümler bulunur.</p>
+        <p>İndirgenmiş satır basamak biçimi, sıfır uzayının yapısını doğrudan gösterir. \(R=\begin{bmatrix}I&F\\0&0\end{bmatrix}\) biçiminde özel çözümler \(N=\begin{bmatrix}-F\\I\end{bmatrix}\) sütunları olarak okunur.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay</h3>
+          <p>Aşağıdaki satır basamak biçimindeki sistem için öncü ve serbest değişkenleri belirleyin:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&3&0&2\\0&0&1&-1\\0&0&0&0\end{bmatrix}\mathbf{x}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&3&0&2\\
+              0&0&1&-1\\
+              0&0&0&0
+              \end{bmatrix}
+              \mathbf{x}=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Öncüler birinci ve üçüncü sütunlardadır. Bu nedenle \(x_1\) ve \(x_3\) öncü değişkenlerdir. İkinci ve dördüncü sütunlarda öncü yoktur; \(x_2\) ve \(x_4\) serbest değişkenlerdir.</p>
+          <p>Toplam sütun sayısı \(n=4\), öncü sayısı \(r=2\) olduğundan serbest değişken sayısı \(n-r=2\)'dir.</p>
+          <p><strong>Yorum:</strong> Serbest değişken sayısı, özel çözüm sayısını da verir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta</h3>
+          <p>Aşağıdaki indirgenmiş sistemin sıfır uzayını bulun:</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}1&2&0&-2\\0&0&1&2\\0&0&0&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=
+              \begin{bmatrix}
+              1&2&0&-2\\
+              0&0&1&2\\
+              0&0&0&0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Serbest değişkenler \(x_2\) ve \(x_4\)'tür. İlk özel seçim \(x_2=1, x_4=0\) olsun. Denklemler \(x_3+2x_4=0\) ve \(x_1+2x_2-2x_4=0\) olduğundan \(x_3=0\), \(x_1=-2\). Böylece</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_1=\begin{bmatrix}-2\\1\\0\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_1=
+              \begin{bmatrix}
+              -2\\1\\0\\0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İkinci özel seçim \(x_2=0, x_4=1\) olsun. Bu kez \(x_3=-2\), \(x_1=2\):</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_2=\begin{bmatrix}2\\0\\-2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_2=
+              \begin{bmatrix}
+              2\\0\\-2\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="N(R)=\left\{c_1\mathbf{s}_1+c_2\mathbf{s}_2:c_1,c_2\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              N(R)=
+              \left\{
+              c_1\mathbf{s}_1+c_2\mathbf{s}_2:
+              c_1,c_2\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> İki serbest değişken olduğu için sıfır uzayı iki özel çözümle üretilir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri</h3>
+          <p>Öncü değişkenler önce, serbest değişkenler sonra yazılmış olsun ve</p>
+          <div class="equation-card" data-raw-latex="R=\begin{bmatrix}I&F\\0&0\end{bmatrix},\qquad F=\begin{bmatrix}2&-1\\3&4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              R=
+              \begin{bmatrix}
+              I&F\\
+              0&0
+              \end{bmatrix},
+              \qquad
+              F=
+              \begin{bmatrix}
+              2&-1\\
+              3&4
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sıfır uzayı matrisini bulun.</p>
+          <p><strong>Çözüm:</strong> Genel kural</p>
+          <div class="equation-card" data-raw-latex="N=\begin{bmatrix}-F\\I\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              N=
+              \begin{bmatrix}
+              -F\\
+              I
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğundan</p>
+          <div class="equation-card" data-raw-latex="N=\begin{bmatrix}-2&1\\-3&-4\\1&0\\0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              N=
+              \begin{bmatrix}
+              -2&1\\
+              -3&-4\\
+              1&0\\
+              0&1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sütunlar özel çözümlerdir. Gerçekten</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}I&F\end{bmatrix}\begin{bmatrix}-F\\I\end{bmatrix}=-F+F=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}I&F\end{bmatrix}
+              \begin{bmatrix}
+              -F\\
+              I
+              \end{bmatrix}
+              =
+              -F+F=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu blok hesap, özel çözümlerin neden \(-F\) ve \(I\) parçalarından oluştuğunu tek satırda gösterir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Null space</td><td>Sıfır uzayı</td><td>\(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümlerinden oluşan alt uzay.</td></tr>
+              <tr><td>Pivot variable</td><td>Öncü değişken</td><td>Öncü sütuna karşılık gelen ve denklemler tarafından belirlenen değişken.</td></tr>
+              <tr><td>Free variable</td><td>Serbest değişken</td><td>Öncü bulunmayan sütuna karşılık gelen ve serbest seçilebilen değişken.</td></tr>
+              <tr><td>Pivot column</td><td>Öncü sütun</td><td>Eliminasyon sonunda öncü eleman içeren sütun.</td></tr>
+              <tr><td>Free column</td><td>Serbest sütun</td><td>Öncü eleman içermeyen sütun.</td></tr>
+              <tr><td>Rank</td><td>Rütbe</td><td>Bir matrisin öncü eleman sayısı.</td></tr>
+              <tr><td>Special solution</td><td>Özel çözüm</td><td>Serbest değişkenlere birim seçimler verilerek elde edilen sıfır uzayı çözümü.</td></tr>
+              <tr><td>Echelon form</td><td>Satır basamak biçimi</td><td>Öncülerin basamak düzeninde bulunduğu eliminasyon sonrası biçim.</td></tr>
+              <tr><td>Reduced row echelon form</td><td>İndirgenmiş satır basamak biçimi</td><td>Öncülerin \(1\) olduğu ve öncü sütunlarda başka sıfır dışı girdi bulunmadığı biçim.</td></tr>
+              <tr><td>Back substitution</td><td>Geriye yerine koyma</td><td>Satır basamak biçiminden başlayarak bilinmeyenleri sondan başa doğru bulma yöntemi.</td></tr>
+              <tr><td>Null space matrix</td><td>Sıfır uzayı matrisi</td><td>Sütunları özel çözümlerden oluşan matris.</td></tr>
+              <tr><td>Row operation</td><td>Satır işlemi</td><td>Bir satırı başka satırların katlarıyla değiştirerek eşdeğer sistem elde etme işlemi.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var current = parseFloat(window.getComputedStyle(title).fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

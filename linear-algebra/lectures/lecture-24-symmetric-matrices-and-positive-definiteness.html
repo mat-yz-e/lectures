@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.35rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0.5rem 0 0;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.45rem, 6vw, 2.1rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" class="active" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölümde kare matrisler içinde en düzenli sınıflardan biri olan simetrik matrisler incelenir. Ana soru şudur: \(A=A^T\) koşulu, özdeğerler ve özvektörler hakkında neyi zorunlu kılar?</p>
+        <p>Simetrik matrislerin özdeğerleri gerçektir; özvektörleri ise uygun seçildiğinde ortonormal yapılabilir. Bu iki özellik, matrisin \(A=Q\Lambda Q^T\) biçimindeki ayrışımına yol açar. Bu ayrışım, matrisin bütün davranışını gerçek özdeğerler ve birbirine dik yönler üzerinden açıklar.</p>
+        <p>Bölümün ikinci ana konusu pozitif tanımlılıktır. Pozitif tanımlı matrisler, tüm özdeğerleri pozitif olan simetrik matrislerdir. Bu koşul yalnızca özdeğerlerle değil, pivotlarla ve sol üst köşe ana minörleriyle de test edilebilir.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Simetrik matris tanımını ve bu sınıfın neden özel olduğunu açıklamak.</li>
+          <li>Simetrik matrislerin özdeğerlerinin gerçek olduğunu ispatlamak.</li>
+          <li>Farklı özdeğerlere karşılık gelen özvektörlerin dikliğini göstermek.</li>
+          <li>Spektral ayrışımı \(A=Q\Lambda Q^T\) biçiminde yazmak.</li>
+          <li>Simetrik bir matrisi dik izdüşüm matrislerinin toplamı olarak yorumlamak.</li>
+          <li>Pivotların işaretleri ile özdeğerlerin işaretleri arasındaki ilişkiyi anlamak.</li>
+          <li>Pozitif tanımlılığı özdeğer, pivot ve ana minör ölçütleriyle test etmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Transpoz, simetrik matris ve matris çarpımı.</li>
+          <li>Özdeğer ve özvektör denklemi \(A\mathbf{x}=\lambda\mathbf{x}\).</li>
+          <li>Köşegenleştirme biçimi \(A=S\Lambda S^{-1}\).</li>
+          <li>Ortonormal vektörler, ortogonal matrisler ve \(Q^{-1}=Q^T\).</li>
+          <li>Eliminasyon, pivotlar ve determinant hesabı.</li>
+          <li>Karmaşık sayıların eşleniği ve \(\overline{z}z=|z|^2\) fikri.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Genellikle simetrik kare matris.</td>
+              </tr>
+              <tr>
+                <td>\(A^T\)</td>
+                <td>\(A\) matrisinin transpozu.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda_i\)</td>
+                <td>\(A\) matrisinin özdeğerleri.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x},\mathbf{q}_i\)</td>
+                <td>Özvektörler; \(\mathbf{q}_i\) çoğu yerde birim uzunluklu seçilir.</td>
+              </tr>
+              <tr>
+                <td>\(Q\)</td>
+                <td>Sütunları ortonormal özvektörlerden oluşan matris.</td>
+              </tr>
+              <tr>
+                <td>\(\Lambda\)</td>
+                <td>Özdeğerleri köşegeninde taşıyan köşegen matris.</td>
+              </tr>
+              <tr>
+                <td>\(\overline{\mathbf{x}}\)</td>
+                <td>Karmaşık vektörün bileşen bileşen eşleniği.</td>
+              </tr>
+              <tr>
+                <td>\(\overline{\mathbf{x}}^T\mathbf{x}\)</td>
+                <td>Karmaşık vektörün uzunluk karesi.</td>
+              </tr>
+              <tr>
+                <td>\(d_i\)</td>
+                <td>Eliminasyon sırasında oluşan pivotlar.</td>
+              </tr>
+              <tr>
+                <td>\(\Delta_i\)</td>
+                <td>Sol üst köşeden başlayan \(i\times i\) ana minör determinantı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Genel bir kare matris karmaşık özdeğerlere sahip olabilir ve özvektörleri birbirine dik olmak zorunda değildir. Simetrik matrislerde bu düzensizlik ortadan kalkar. Özdeğerler gerçek olur, özvektörler ortonormal seçilebilir ve matris, dik yönler boyunca ayrı ayrı ölçekleme yapan bir dönüşüm gibi anlaşılır.</p>
+        <p>Bu yapı, daha önce karşılaşılan üç ayrı fikri bir araya getirir: pivotlar, determinantlar ve özdeğerler. Simetrik matrislerde pivotların işaretleri ile özdeğerlerin işaretleri aynı sayıda pozitif ve negatif değer verir. Pozitif tanımlılık, bu birleşmenin en düzenli hâlidir: tüm özdeğerler, pivotlar ve sol üst ana minörler pozitif olur.</p>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Simetrik Matris</h3>
+          <p>Gerçek bir kare matris \(A\), transpozuna eşitse simetrik matris olarak adlandırılır:</p>
+          <div class="equation-card" data-raw-latex="A=A^T">
+            <div class="equation-content">
+              \[
+              A=A^T
+              \]
+            </div>
+          </div>
+          <p>Bu eşitlik, matrisin ana köşegene göre aynalı olduğunu ifade eder. Yani \(a_{ij}=a_{ji}\) her \(i,j\) için sağlanır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.2: Simetrik Matrislerin Özdeğerleri Gerçektir</h3>
+          <p><strong>İfade:</strong> \(A=A^T\) gerçek simetrik bir matris ise, \(A\)'nın bütün özdeğerleri gerçektir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Simetri, \(\mathbf{x}\) yönündeki ölçüm ile transpoz yönden gelen ölçümü aynı yapar. Karmaşık bir özdeğer varsayıldığında bu simetri, özdeğer ile eşleniğinin aynı olmasını zorlar; bu da özdeğerin gerçek olması demektir.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}=\lambda\mathbf{x}\) olsun ve \(\mathbf{x}\neq\mathbf{0}\) kabul edilsin. \(\mathbf{x}\) karmaşık olabilir. Eşlenik transpozla çarparak</p>
+          <div class="equation-card" data-raw-latex="\overline{\mathbf{x}}^T A\mathbf{x}=\lambda\,\overline{\mathbf{x}}^T\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \overline{\mathbf{x}}^T A\mathbf{x}
+              =
+              \lambda\,\overline{\mathbf{x}}^T\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Diğer yandan bu skalerin eşleniği ve simetri kullanıldığında aynı sol taraf</p>
+          <div class="equation-card" data-raw-latex="\overline{\mathbf{x}}^T A\mathbf{x}=\overline{\lambda}\,\overline{\mathbf{x}}^T\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \overline{\mathbf{x}}^T A\mathbf{x}
+              =
+              \overline{\lambda}\,\overline{\mathbf{x}}^T\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>biçiminde de yazılır. Bu iki eşitlik karşılaştırılırsa</p>
+          <div class="equation-card" data-raw-latex="\lambda\,\overline{\mathbf{x}}^T\mathbf{x}=\overline{\lambda}\,\overline{\mathbf{x}}^T\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \lambda\,\overline{\mathbf{x}}^T\mathbf{x}
+              =
+              \overline{\lambda}\,\overline{\mathbf{x}}^T\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>olur. Ayrıca</p>
+          <div class="equation-card" data-raw-latex="\overline{\mathbf{x}}^T\mathbf{x}=|x_1|^2+|x_2|^2+\cdots+|x_n|^2&gt;0">
+            <div class="equation-content">
+              \[
+              \overline{\mathbf{x}}^T\mathbf{x}
+              =
+              |x_1|^2+|x_2|^2+\cdots+|x_n|^2
+              &gt;0
+              \]
+            </div>
+          </div>
+          <p>olduğu için bu pozitif sayı sadeleştirilebilir. Böylece \(\lambda=\overline{\lambda}\) elde edilir. Bir sayı kendi eşleniğine eşitse gerçektir.</p>
+          <p><strong>Yorum:</strong> Genel gerçek matrislerde karmaşık özdeğerler eşlenik çiftler hâlinde ortaya çıkabilir; simetrik matrislerde bu ihtimal kaybolur.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Karmaşık vektörlerde doğru uzunluk karesi \(\mathbf{x}^T\mathbf{x}\) değil, \(\overline{\mathbf{x}}^T\mathbf{x}\) ifadesidir. Bu ifade her zaman gerçel ve pozitiftir; bu nedenle ispatta güvenle sadeleştirilebilir.</p>
+        </aside>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Farklı Özdeğerlere Ait Özvektörler Diktir</h3>
+          <p><strong>İfade:</strong> \(A=A^T\) ve \(\lambda_1\neq\lambda_2\) olsun. \(A\mathbf{x}_1=\lambda_1\mathbf{x}_1\), \(A\mathbf{x}_2=\lambda_2\mathbf{x}_2\) ise \(\mathbf{x}_1^T\mathbf{x}_2=0\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Simetri, \(A\)'nın iç çarpımın iki tarafında aynı biçimde hareket etmesini sağlar. İki farklı ölçekleme katsayısı aynı iç çarpıma uygulanınca, iç çarpımın sıfır olması zorunlu olur.</p>
+          <p><strong>Formal İspat:</strong> Önce</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1^TA\mathbf{x}_2=\lambda_2\mathbf{x}_1^T\mathbf{x}_2">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1^TA\mathbf{x}_2
+              =
+              \lambda_2\mathbf{x}_1^T\mathbf{x}_2
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Simetri nedeniyle \(\mathbf{x}_1^TA\mathbf{x}_2=(A\mathbf{x}_1)^T\mathbf{x}_2\) olur. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1^TA\mathbf{x}_2=(A\mathbf{x}_1)^T\mathbf{x}_2=\lambda_1\mathbf{x}_1^T\mathbf{x}_2">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1^TA\mathbf{x}_2
+              =
+              (A\mathbf{x}_1)^T\mathbf{x}_2
+              =
+              \lambda_1\mathbf{x}_1^T\mathbf{x}_2
+              \]
+            </div>
+          </div>
+          <p>İki eşitlik karşılaştırılırsa</p>
+          <div class="equation-card" data-raw-latex="(\lambda_1-\lambda_2)\mathbf{x}_1^T\mathbf{x}_2=0">
+            <div class="equation-content">
+              \[
+              (\lambda_1-\lambda_2)\mathbf{x}_1^T\mathbf{x}_2=0
+              \]
+            </div>
+          </div>
+          <p>\(\lambda_1\neq\lambda_2\) olduğundan \(\mathbf{x}_1^T\mathbf{x}_2=0\).</p>
+          <p><strong>Yorum:</strong> Tekrarlı özdeğer varsa özuzay içinde seçim özgürlüğü bulunur; bu durumda o özuzay içinde dik bir baz seçilebilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Ortonormal Özvektör Matrisi</h3>
+          <p>Simetrik bir matrisin özvektörleri birim uzunluklu ve birbirine dik seçildiğinde, bu özvektörleri sütun yapan matris \(Q\) olur:</p>
+          <div class="equation-card" data-raw-latex="Q=[\mathbf{q}_1\ \mathbf{q}_2\ \cdots\ \mathbf{q}_n],\qquad Q^TQ=I">
+            <div class="equation-content">
+              \[
+              Q=[\mathbf{q}_1\ \mathbf{q}_2\ \cdots\ \mathbf{q}_n],
+              \qquad
+              Q^TQ=I
+              \]
+            </div>
+          </div>
+          <p>Bu durumda \(Q^{-1}=Q^T\) olur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Spektral Ayrışım</h3>
+          <p><strong>İfade:</strong> Gerçek simetrik bir matris \(A\), ortonormal özvektörlerden oluşan bir \(Q\) matrisi ve gerçek özdeğerlerden oluşan köşegen bir \(\Lambda\) ile</p>
+          <div class="equation-card" data-raw-latex="A=Q\Lambda Q^T">
+            <div class="equation-content">
+              \[
+              A=Q\Lambda Q^T
+              \]
+            </div>
+          </div>
+          <p>biçiminde yazılabilir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Genel köşegenleştirme \(A=S\Lambda S^{-1}\) biçimindedir. Simetrik durumda özvektörler ortonormal seçilebildiği için \(S\) yerine \(Q\), \(S^{-1}\) yerine de \(Q^T\) gelir.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{q}_i=\lambda_i\mathbf{q}_i\) eşitlikleri sütunlar hâlinde yazıldığında</p>
+          <div class="equation-card" data-raw-latex="AQ=Q\Lambda">
+            <div class="equation-content">
+              \[
+              AQ=Q\Lambda
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Sağdan \(Q^T\) ile çarpılır ve \(QQ^T=I\) kullanılır:</p>
+          <div class="equation-card" data-raw-latex="AQQ^T=Q\Lambda Q^T\quad\Rightarrow\quad A=Q\Lambda Q^T">
+            <div class="equation-content">
+              \[
+              AQQ^T=Q\Lambda Q^T
+              \quad\Rightarrow\quad
+              A=Q\Lambda Q^T
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu ayrışım simetrik matrislerin en temel yapısal sonucudur. Matris, birbirine dik yönlerde gerçek katsayılarla ölçekleme yapar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: İzdüşüm Matrisleriyle Ayrışım</h3>
+          <p><strong>İfade:</strong> \(A=Q\Lambda Q^T\) ise \(A\), birim özvektörlerin oluşturduğu izdüşüm matrislerinin doğrusal kombinasyonudur:</p>
+          <div class="equation-card" data-raw-latex="A=\lambda_1\mathbf{q}_1\mathbf{q}_1^T+\lambda_2\mathbf{q}_2\mathbf{q}_2^T+\cdots+\lambda_n\mathbf{q}_n\mathbf{q}_n^T">
+            <div class="equation-content">
+              \[
+              A
+              =
+              \lambda_1\mathbf{q}_1\mathbf{q}_1^T
+              +
+              \lambda_2\mathbf{q}_2\mathbf{q}_2^T
+              +
+              \cdots
+              +
+              \lambda_n\mathbf{q}_n\mathbf{q}_n^T
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(Q\Lambda Q^T\) çarpımı sütun-satır çarpımları olarak açıldığında her özvektör yönündeki izdüşüm ayrı bir terim olarak görünür.</p>
+          <p><strong>Formal İspat:</strong> \(Q\Lambda\) matrisinin sütunları \(\lambda_i\mathbf{q}_i\)'dir. Bu matris \(Q^T\) ile çarpıldığında sütun-satır açılımı</p>
+          <div class="equation-card" data-raw-latex="Q\Lambda Q^T=\sum_{i=1}^n \lambda_i\mathbf{q}_i\mathbf{q}_i^T">
+            <div class="equation-content">
+              \[
+              Q\Lambda Q^T
+              =
+              \sum_{i=1}^n \lambda_i\mathbf{q}_i\mathbf{q}_i^T
+              \]
+            </div>
+          </div>
+          <p>sonucunu verir. \(\mathbf{q}_i\mathbf{q}_i^T\) birim \(\mathbf{q}_i\) yönüne izdüşüm matrisidir.</p>
+          <p><strong>Yorum:</strong> Simetrik bir matris, birbirine dik izdüşümlerin ağırlıklı toplamı olarak okunabilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.7: Pozitif Tanımlı Matris</h3>
+          <p>Bir simetrik matrisin bütün özdeğerleri pozitifse, bu matris pozitif tanımlıdır:</p>
+          <div class="equation-card" data-raw-latex="\lambda_1&gt;0,\ \lambda_2&gt;0,\ \ldots,\ \lambda_n&gt;0">
+            <div class="equation-content">
+              \[
+              \lambda_1&gt;0,\ \lambda_2&gt;0,\ \ldots,\ \lambda_n&gt;0
+              \]
+            </div>
+          </div>
+          <p>Pozitif tanımlılık, simetrik matrisler içinde özellikle düzenli bir alt sınıfı belirtir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: Pivot ve Özdeğer İşaretleri</h3>
+          <p><strong>İfade:</strong> Simetrik bir matris için pozitif pivot sayısı pozitif özdeğer sayısına, negatif pivot sayısı negatif özdeğer sayısına eşittir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Pivotlar eliminasyonun, özdeğerler ise spektral ayrışımın sayısal izleridir. Simetrik matrislerde bu iki bilgi aynı işaret dağılımını taşır.</p>
+          <p><strong>Formal İspat:</strong> Bu sonuç, simetrik matrislerde kongrüans dönüşümlerinin işaret sayısını korumasına dayanır. Eliminasyon, matrisi köşegeninde pivotların bulunduğu bir forma dönüştürür; spektral ayrışım ise matrisi özdeğerlerin bulunduğu köşegen forma dönüştürür. Simetrik durumda bu iki köşegen formun pozitif ve negatif terim sayıları aynıdır.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, büyük matrislerde özdeğerlerin işaretlerini anlamak için pivotları kullanmayı mümkün kılar. Pivotları bulmak, yüksek dereceli karakteristik polinomun köklerini bulmaktan çok daha güvenilirdir.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Pivotlar özdeğerlerin kendisi değildir. Ancak simetrik matrislerde pivotların işaret sayısı ile özdeğerlerin işaret sayısı aynıdır. Ayrıca pivotların çarpımı ve özdeğerlerin çarpımı aynı determinantı verir.</p>
+        </aside>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: Pozitif Tanımlı İki Boyutlu Matris</h3>
+          <p>Aşağıdaki simetrik matrisi inceleyelim:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}5&amp;2\\2&amp;3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              5 & 2\\
+              2 & 3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İlk pivot \(5\)'tir. Determinant</p>
+          <div class="equation-card" data-raw-latex="\det A=5\cdot 3-2\cdot 2=11">
+            <div class="equation-content">
+              \[
+              \det A=5\cdot 3-2\cdot 2=11
+              \]
+            </div>
+          </div>
+          <p>olduğundan ikinci pivot, pivotların çarpımı determinantı verdiği için</p>
+          <div class="equation-card" data-raw-latex="d_2=\frac{11}{5}">
+            <div class="equation-content">
+              \[
+              d_2=\frac{11}{5}
+              \]
+            </div>
+          </div>
+          <p>olur. Pivotlar \(5\) ve \(\frac{11}{5}\) pozitiftir.</p>
+          <p>Özdeğerleri bulmak için karakteristik denklem</p>
+          <div class="equation-card" data-raw-latex="\lambda^2-8\lambda+11=0">
+            <div class="equation-content">
+              \[
+              \lambda^2-8\lambda+11=0
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Buradan</p>
+          <div class="equation-card" data-raw-latex="\lambda=4\pm\sqrt{5}">
+            <div class="equation-content">
+              \[
+              \lambda=4\pm\sqrt{5}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Her iki özdeğer de pozitiftir. Bu nedenle \(A\) pozitif tanımlıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Pozitif Determinant Yeterli Değildir</h3>
+          <p>Aşağıdaki matrisin determinantı pozitiftir:</p>
+          <div class="equation-card" data-raw-latex="B=\begin{bmatrix}-1&amp;0\\0&amp;-3\end{bmatrix},\qquad \det B=3">
+            <div class="equation-content">
+              \[
+              B=
+              \begin{bmatrix}
+              -1 & 0\\
+              0 & -3
+              \end{bmatrix},
+              \qquad
+              \det B=3
+              \]
+            </div>
+          </div>
+          <p>Ancak pivotlar \(-1\) ve \(-3\)'tür; özdeğerler de \(-1\) ve \(-3\)'tür. Dolayısıyla matris pozitif tanımlı değildir.</p>
+          <p>Bu örnek, yalnızca büyük determinantın pozitif olmasının yeterli olmadığını gösterir. Sol üst köşe ana minörleri de pozitif olmalıdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Pozitif Tanımlılık İçin Eşdeğer Testler</h3>
+          <p><strong>İfade:</strong> Simetrik bir matris \(A\) için aşağıdaki koşullar bu bölümün kapsamında aynı pozitif tanımlılık sınıfını tanımlar:</p>
+          <ul>
+            <li>Tüm özdeğerler pozitiftir.</li>
+            <li>Tüm pivotlar pozitiftir.</li>
+            <li>Tüm sol üst köşe ana minörleri pozitiftir.</li>
+          </ul>
+          <p><strong>Sezgisel Gerekçe:</strong> Özdeğerler matrisin spektral yönlerdeki ölçeklemelerini, pivotlar eliminasyon sırasındaki temel katsayıları, ana minörler ise bu pivotların kısmi çarpımlarını ölçer.</p>
+          <p><strong>Formal İspat:</strong> Simetrik matrislerde Teorem 1.8 nedeniyle pivot işaretleri özdeğer işaretleriyle aynı sayıda pozitif ve negatif değer verir. Tüm pivotlar pozitifse tüm özdeğerler pozitiftir. Ayrıca satır değişimi gerekmeyen eliminasyonda sol üst ana minörler pivotların çarpımıdır:</p>
+          <div class="equation-card" data-raw-latex="\Delta_k=d_1d_2\cdots d_k">
+            <div class="equation-content">
+              \[
+              \Delta_k=d_1d_2\cdots d_k
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle bütün pivotların pozitif olması, bütün \(\Delta_k\)'lerin pozitif olmasıyla eşdeğerdir.</p>
+          <p><strong>Yorum:</strong> Pozitif tanımlılığı kontrol etmenin pratik yolu çoğu zaman pivotlara veya sol üst ana minörlere bakmaktır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.12: Karmaşık Durumda Eşlenik Transpoz Simetrisi</h3>
+          <p>Gerçek matrislerde iyi davranışı veren koşul \(A=A^T\)'dir. Karmaşık girdili matrislerde buna karşılık gelen koşul, matrisin eşlenik transpozuna eşit olmasıdır:</p>
+          <div class="equation-card" data-raw-latex="A=\overline{A}^T">
+            <div class="equation-content">
+              \[
+              A=\overline{A}^T
+              \]
+            </div>
+          </div>
+          <p>Bu not, gerçek simetrik matrislerin karmaşık sayılarla çalışırken hangi biçime genelleştiğini gösterir. Bu bölümde temel odak gerçek simetrik matrislerdir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+        <p>Simetrik matrislerin temel sonuçları tek bir yapısal ilkeye bağlanır: transpozla uyumlu davranış. Bu uyum, hem iç çarpım hesaplarında hem de köşegenleştirmede ortaya çıkar.</p>
+        <ul>
+          <li>Gerçek simetrik matrislerin özdeğerleri gerçektir.</li>
+          <li>Farklı özdeğerlere ait özvektörler diktir.</li>
+          <li>Özvektörler ortonormal seçilirse \(A=Q\Lambda Q^T\) elde edilir.</li>
+          <li>Bu ayrışım, \(A\)'yı \(\lambda_i\mathbf{q}_i\mathbf{q}_i^T\) terimlerinin toplamı olarak verir.</li>
+          <li>Pozitif tanımlılık özdeğer, pivot ve ana minör testleriyle kontrol edilir.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <h3>Simetrik Matris İçin Spektral Ayrışım</h3>
+        <ol>
+          <li>\(\det(A-\lambda I)=0\) denkleminden özdeğerleri bul.</li>
+          <li>Her özdeğer için \((A-\lambda I)\mathbf{x}=\mathbf{0}\) denklemini çöz.</li>
+          <li>Özvektörleri birim uzunluklu yap.</li>
+          <li>Tekrarlı özdeğer varsa ilgili özuzayda ortonormal baz seç.</li>
+          <li>Özvektörleri \(Q\)'nun sütunlarına, özdeğerleri \(\Lambda\)'nın köşegenine yerleştir.</li>
+          <li>\(A=Q\Lambda Q^T\) biçimini yaz.</li>
+        </ol>
+
+        <h3>Pozitif Tanımlılığı Pivotlarla Test Etme</h3>
+        <ol>
+          <li>Matrisin simetrik olduğunu kontrol et.</li>
+          <li>Eliminasyonla pivotları bul.</li>
+          <li>Tüm pivotlar pozitifse matris pozitif tanımlıdır.</li>
+          <li>Herhangi bir pivot negatifse matris pozitif tanımlı değildir.</li>
+        </ol>
+
+        <h3>Pozitif Tanımlılığı Ana Minörlerle Test Etme</h3>
+        <ol>
+          <li>Sol üst \(1\times 1\) determinantı hesapla.</li>
+          <li>Sol üst \(2\times 2\), \(3\times 3\), devam eden ana minör determinantlarını sırayla hesapla.</li>
+          <li>Hepsi pozitifse matris pozitif tanımlıdır.</li>
+        </ol>
+
+        <h3>Özdeğer İşaretlerini Yaklaşık Ayırma Fikri</h3>
+        <p>Simetrik bir matrisin özdeğerlerinin işaretlerini doğrudan bulmak zor olabilir. Ancak pivot işaretleri, kaç özdeğerin pozitif veya negatif olduğunu verir. Matris \(A-cI\) biçiminde kaydırılırsa, bu kez pivotlar özdeğerlerin \(c\)'nin hangi tarafında olduğunu saymaya yardım eder.</p>
+      </section>
+
+      <section aria-labelledby="uygulama-baglantilari">
+        <h2 id="uygulama-baglantilari">Uygulama Bağlantıları</h2>
+        <p>Simetrik matrislerin spektral ayrışımı, yönlerin birbirine karışmadığı özel eksenleri belirler. Mekanik yorumda bu eksenler, uygun koordinatlar seçildiğinde sistemin köşegen hâle gelmesini sağlar. Diferansiyel denklemlerde ise özdeğerlerin işareti kararlılık veya kararsızlık bilgisini verir.</p>
+        <p>Sayısal hesaplamalarda yüksek dereceli karakteristik polinomların köklerini bulmak güvenilir olmayabilir. Simetrik matrislerde pivot işaretleri, özdeğerlerin işaret dağılımını daha güvenli biçimde anlamak için kullanılabilir.</p>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Simetrik olmayan matrise simetrik matris sonuçlarını uygulamak:</strong> Gerçek özdeğer ve dik özvektör garantisi \(A=A^T\) koşuluna bağlıdır.</li>
+          <li><strong>Tekrarlı özdeğerde özvektörlerin kendiliğinden tek yönlü olduğunu sanmak:</strong> Tekrarlı özdeğerde özuzay çok boyutlu olabilir; dik özvektörler bu uzay içinde seçilir.</li>
+          <li><strong>\(Q^{-1}\) yerine rastgele ters hesaplamak:</strong> Ortonormal sütunlarda \(Q^{-1}=Q^T\) doğrudan kullanılır.</li>
+          <li><strong>Pivota özdeğer demek:</strong> Pivotlar özdeğerlerle aynı sayılar olmak zorunda değildir; simetrik durumda yalnızca işaret sayıları eşleşir.</li>
+          <li><strong>Pozitif determinantı pozitif tanımlılık sanmak:</strong> Tüm sol üst ana minörler veya tüm pivotlar pozitif olmalıdır.</li>
+          <li><strong>Karmaşık vektörlerde \(\mathbf{x}^T\mathbf{x}\) kullanmak:</strong> Doğru uzunluk karesi \(\overline{\mathbf{x}}^T\mathbf{x}\)'tir.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Simetrik matris \(\rightarrow\) \(A=A^T\)</li>
+            <li>Simetri \(\rightarrow\) gerçek özdeğerler</li>
+            <li>Simetri \(\rightarrow\) dik seçilebilen özvektörler</li>
+            <li>Ortonormal özvektörler \(\rightarrow\) \(Q^{-1}=Q^T\)</li>
+            <li>Spektral ayrışım \(\rightarrow\) \(A=Q\Lambda Q^T\)</li>
+            <li>Sütun-satır açılımı \(\rightarrow\) \(\sum_i \lambda_i\mathbf{q}_i\mathbf{q}_i^T\)</li>
+            <li>Pivot işaretleri \(\rightarrow\) özdeğer işaret sayıları</li>
+            <li>Tüm özdeğerler pozitif \(\leftrightarrow\) tüm pivotlar pozitif \(\leftrightarrow\) pozitif tanımlılık</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Simetrik Matris</h3>
+            <p>Matris transpozuna eşittir.</p>
+            <div class="equation-card" data-raw-latex="A=A^T">
+              <div class="equation-content">
+                \[
+                A=A^T
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Spektral Ayrışım</h3>
+            <p>Simetrik matris ortonormal özvektörlerle ayrışır.</p>
+            <div class="equation-card" data-raw-latex="A=Q\Lambda Q^T">
+              <div class="equation-content">
+                \[
+                A=Q\Lambda Q^T
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Ortonormal Matrisin Tersi</h3>
+            <p>Ortonormal sütunlu kare matrisin tersi transpozudur.</p>
+            <div class="equation-card" data-raw-latex="Q^{-1}=Q^T">
+              <div class="equation-content">
+                \[
+                Q^{-1}=Q^T
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>İzdüşüm Toplamı</h3>
+            <p>Simetrik matris, özvektör yönlerine izdüşümlerin ağırlıklı toplamıdır.</p>
+            <div class="equation-card" data-raw-latex="A=\sum_{i=1}^n\lambda_i\mathbf{q}_i\mathbf{q}_i^T">
+              <div class="equation-content">
+                \[
+                A=\sum_{i=1}^n\lambda_i\mathbf{q}_i\mathbf{q}_i^T
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Karmaşık Uzunluk Karesi</h3>
+            <p>Karmaşık vektörlerde pozitif uzunluk karesi eşlenikle hesaplanır.</p>
+            <div class="equation-card" data-raw-latex="\overline{\mathbf{x}}^T\mathbf{x}=\sum_i |x_i|^2">
+              <div class="equation-content">
+                \[
+                \overline{\mathbf{x}}^T\mathbf{x}
+                =
+                \sum_i |x_i|^2
+                \]
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3>Ana Minör-Pivot İlişkisi</h3>
+            <p>Sol üst ana minörler pivotların kısmi çarpımlarıdır.</p>
+            <div class="equation-card" data-raw-latex="\Delta_k=d_1d_2\cdots d_k">
+              <div class="equation-content">
+                \[
+                \Delta_k=d_1d_2\cdots d_k
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Simetrik matrisler, kare matrisler içinde en düzenli sınıflardan biridir. Gerçek simetrik matrislerin özdeğerleri gerçektir ve özvektörleri ortonormal seçilebilir. Bu durum \(A=Q\Lambda Q^T\) ayrışımını verir.</p>
+        <p>Bu ayrışım, simetrik matrisi dik izdüşümlerin ağırlıklı toplamı olarak yorumlamayı sağlar. Pozitif tanımlı matrisler ise tüm özdeğerleri pozitif olan simetrik matrislerdir. Simetrik durumda bu özellik pivotların ve sol üst ana minörlerin pozitifliğiyle de test edilebilir.</p>
+      </section>
+
+      <section aria-labelledby="cozumlu-calisma-sorulari">
+        <h2 id="cozumlu-calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: Kolay Soru</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matris simetrik midir?</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&amp;4\\4&amp;7\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2 & 4\\
+              4 & 7
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Transpoz</p>
+          <div class="equation-card" data-raw-latex="A^T=\begin{bmatrix}2&amp;4\\4&amp;7\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^T=
+              \begin{bmatrix}
+              2 & 4\\
+              4 & 7
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğu için \(A=A^T\). Matris simetriktir.</p>
+          <p><strong>Yorum:</strong> Simetri, ana köşegenin iki tarafındaki girdilerin eşleşmesiyle kontrol edilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Orta Soru</h3>
+          <p><strong>Soru:</strong> Aşağıdaki matrisin pozitif tanımlı olup olmadığını pivotlarla test edin:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}4&amp;2\\2&amp;5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              4 & 2\\
+              2 & 5
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> İlk pivot \(d_1=4\)'tür. Determinant</p>
+          <div class="equation-card" data-raw-latex="\det A=4\cdot 5-2\cdot 2=16">
+            <div class="equation-content">
+              \[
+              \det A=4\cdot 5-2\cdot 2=16
+              \]
+            </div>
+          </div>
+          <p>olur. İkinci pivot</p>
+          <div class="equation-card" data-raw-latex="d_2=\frac{\det A}{d_1}=\frac{16}{4}=4">
+            <div class="equation-content">
+              \[
+              d_2=\frac{\det A}{d_1}=\frac{16}{4}=4
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Her iki pivot da pozitiftir; dolayısıyla \(A\) pozitif tanımlıdır.</p>
+          <p><strong>Yorum:</strong> İki boyutta \(a_{11}>0\) ve \(\det A>0\) koşulları bu testin pratik biçimidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: İleri Soru</h3>
+          <p><strong>Soru:</strong> \(A=Q\Lambda Q^T\) ve</p>
+          <div class="equation-card" data-raw-latex="Q=\frac{1}{\sqrt{2}}\begin{bmatrix}1&amp;1\\1&amp;-1\end{bmatrix},\qquad \Lambda=\begin{bmatrix}6&amp;0\\0&amp;2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              Q=\frac{1}{\sqrt{2}}
+              \begin{bmatrix}
+              1 & 1\\
+              1 & -1
+              \end{bmatrix},
+              \qquad
+              \Lambda=
+              \begin{bmatrix}
+              6 & 0\\
+              0 & 2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olsun. \(A\)'yı bulun ve pozitif tanımlı olup olmadığını belirleyin.</p>
+          <p><strong>Çözüm:</strong> Sütunlar ortonormal olduğundan \(Q^T=Q^{-1}\). Çarpımı hesaplayalım:</p>
+          <div class="equation-card" data-raw-latex="A=Q\Lambda Q^T=\frac{1}{2}\begin{bmatrix}1&amp;1\\1&amp;-1\end{bmatrix}\begin{bmatrix}6&amp;0\\0&amp;2\end{bmatrix}\begin{bmatrix}1&amp;1\\1&amp;-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=Q\Lambda Q^T
+              =
+              \frac{1}{2}
+              \begin{bmatrix}
+              1 & 1\\
+              1 & -1
+              \end{bmatrix}
+              \begin{bmatrix}
+              6 & 0\\
+              0 & 2
+              \end{bmatrix}
+              \begin{bmatrix}
+              1 & 1\\
+              1 & -1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}4&amp;2\\2&amp;4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              4 & 2\\
+              2 & 4
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Özdeğerler \(\Lambda\)'nın köşegenindeki \(6\) ve \(2\)'dir. İkisi de pozitif olduğundan \(A\) pozitif tanımlıdır.</p>
+          <p><strong>Yorum:</strong> Spektral ayrışım verildiğinde pozitif tanımlılık doğrudan köşegen özdeğerlerden okunur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Symmetric matrix</td>
+                <td>Simetrik matris</td>
+                <td>Transpozuna eşit olan gerçek kare matris.</td>
+              </tr>
+              <tr>
+                <td>Eigenvalue</td>
+                <td>Özdeğer</td>
+                <td>Bir özvektör yönündeki ölçekleme katsayısı.</td>
+              </tr>
+              <tr>
+                <td>Eigenvector</td>
+                <td>Özvektör</td>
+                <td>Matris uygulanınca yönü değişmeyen sıfırdan farklı vektör.</td>
+              </tr>
+              <tr>
+                <td>Orthogonal</td>
+                <td>Dik</td>
+                <td>İç çarpımı sıfır olan yönleri belirtir.</td>
+              </tr>
+              <tr>
+                <td>Orthonormal</td>
+                <td>Ortonormal</td>
+                <td>Hem dik hem de birim uzunluklu olan vektörler için kullanılır.</td>
+              </tr>
+              <tr>
+                <td>Spectral theorem</td>
+                <td>Spektral teorem</td>
+                <td>Simetrik matrisin ortonormal özvektörlerle ayrıştığını belirten sonuç.</td>
+              </tr>
+              <tr>
+                <td>Positive definite</td>
+                <td>Pozitif tanımlı</td>
+                <td>Tüm özdeğerleri pozitif olan simetrik matris.</td>
+              </tr>
+              <tr>
+                <td>Pivot</td>
+                <td>Pivot</td>
+                <td>Eliminasyonda ortaya çıkan temel köşegen katsayı.</td>
+              </tr>
+              <tr>
+                <td>Leading principal minor</td>
+                <td>Sol üst ana minör</td>
+                <td>Sol üst köşeden alınan kare alt matrisin determinantı.</td>
+              </tr>
+              <tr>
+                <td>Hermitian matrix</td>
+                <td>Eşlenik transpozuna eşit matris</td>
+                <td>Karmaşık girdili durumda simetrik matrisin karşılığı olan yapı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

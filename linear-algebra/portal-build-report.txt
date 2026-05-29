@@ -1,0 +1,491 @@
+Portal Build Report
+===================
+Çalışma zamanı: 2026-05-29T05:47:08.034Z
+Kaynak klasör yolu: /Users/sefaisci/Documents/MIT-OCW/Linear-Algebra/HTML
+Hedef klasör yolu: /Users/sefaisci/Documents/MIT-OCW/Linear-Algebra/Matematik-ve-Yapay-Zeka-Enstitüsü
+Logo bulundu mu?: Evet
+Bulunan ders dosyası sayısı: 32
+Kopyalanan ders dosyası sayısı: 32
+Dönüştürülen ders dosyası sayısı: 32
+Build backup üretimi: Devre dışı
+Source-copy-backup üretimi: Devre dışı
+Kaldırılan eski backup klasörü sayısı: 0
+
+Dosya Bazlı Kontroller
+----------------------
+Dosya: lecture-1-the-geometry-of-linear-equations.html
+  Başlık: 1. Ders: Lineer Denklemlerin Geometrisi
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 25
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-2-elimination-with-matrices.html
+  Başlık: 2. Ders: Matrislerle Eliminasyon
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 36
+  data-raw-latex sayısı: 58
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-3-multiplication-and-inverse-matrices.html
+  Başlık: 3. Ders: Matris Çarpımı ve Ters Matrisler
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 28
+  data-raw-latex sayısı: 49
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-4-factorization-into-a-lu.html
+  Başlık: 4. Ders: A = LU Ayrıştırması
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 25
+  data-raw-latex sayısı: 47
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-5-transposes-permutations-spaces-rn.html
+  Başlık: 5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 34
+  data-raw-latex sayısı: 44
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-6-column-space-and-nullspace.html
+  Başlık: 6. Ders: Sütun Uzayı ve Sıfır Uzayı
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 27
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-7-solving-ax-0-pivot-variables-special-solutions.html
+  Başlık: 7. Ders: \(A\mathbf{x}=0\) Çözümü
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 27
+  data-raw-latex sayısı: 40
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-8-solving-ax-b-row-reduced-form-r.html
+  Başlık: 8. Ders: \(A\mathbf{x}=\mathbf{b}\) Çözümü
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 25
+  data-raw-latex sayısı: 33
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-9-independence-basis-and-dimension.html
+  Başlık: 9. Ders: Bağımsızlık, Baz ve Boyut
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 21
+  data-raw-latex sayısı: 36
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-10-the-four-fundamental-subspaces.html
+  Başlık: 10. Ders: Dört Temel Alt Uzay
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 15
+  data-raw-latex sayısı: 34
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-11-matrix-spaces-rank-1-small-world-graphs.html
+  Başlık: 11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 22
+  data-raw-latex sayısı: 41
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-12-graphs-networks-incidence-matrices.html
+  Başlık: 12. Ders: Graflar, Ağlar ve İlişki Matrisleri
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 26
+  data-raw-latex sayısı: 41
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-13-orthogonal-vectors-and-subspaces.html
+  Başlık: 13. Ders: Ortogonal Vektörler ve Alt Uzaylar
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 25
+  data-raw-latex sayısı: 44
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-14-projections-onto-subspaces.html
+  Başlık: 14. Ders: Alt Uzaylara İzdüşüm
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 18
+  data-raw-latex sayısı: 45
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-15-projection-matrices-and-least-squares.html
+  Başlık: 15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 19
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-16-orthogonal-matrices-and-gram-schmidt.html
+  Başlık: 16. Ders: Ortogonal Matrisler ve Gram-Schmidt
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 24
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-17-properties-of-determinants.html
+  Başlık: 17. Ders: Determinantların Özellikleri
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 19
+  data-raw-latex sayısı: 45
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-18-determinant-formulas-and-cofactors.html
+  Başlık: 18. Ders: Determinant Formülleri ve Kofaktörler
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 23
+  data-raw-latex sayısı: 38
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-19-cramers-rule-inverse-matrix-and-volume.html
+  Başlık: 19. Ders: Cramer Kuralı, Ters Matris ve Hacim
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 23
+  data-raw-latex sayısı: 45
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-20-eigenvalues-and-eigenvectors.html
+  Başlık: 20. Ders: Özdeğerler ve Özvektörler
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 14
+  h3 sayısı: 21
+  data-raw-latex sayısı: 44
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-21-diagonalization-and-powers-of-a.html
+  Başlık: 21. Ders: Köşegenleştirme ve A'nın Kuvvetleri
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 22
+  data-raw-latex sayısı: 44
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-22-differential-equations-and-exp-at.html
+  Başlık: 22. Ders: Diferansiyel Denklemler ve Matris Üsteli
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 22
+  data-raw-latex sayısı: 45
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-23-markov-matrices-fourier-series.html
+  Başlık: 23. Ders: Markov Matrisleri ve Fourier Serileri
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 29
+  data-raw-latex sayısı: 56
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-24-symmetric-matrices-and-positive-definiteness.html
+  Başlık: 24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 25
+  data-raw-latex sayısı: 37
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-25-complex-matrices-fast-fourier-transform.html
+  Başlık: 25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 27
+  data-raw-latex sayısı: 44
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-26-positive-definite-matrices-and-minima.html
+  Başlık: 26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 24
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-27-similar-matrices-and-jordan-form.html
+  Başlık: 27. Ders: Benzer Matrisler ve Jordan Biçimi
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 26
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-28-singular-value-decomposition.html
+  Başlık: 28. Ders: Tekil Değer Ayrışımı
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 21
+  data-raw-latex sayısı: 41
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-29-linear-transformations-and-their-matrices.html
+  Başlık: 29. Ders: Lineer Dönüşümler ve Matrisleri
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 29
+  data-raw-latex sayısı: 40
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-30-change-of-basis-image-compression.html
+  Başlık: 30. Ders: Baz Değişimi ve Görüntü Sıkıştırma
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 31
+  data-raw-latex sayısı: 43
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-31-left-and-right-inverses-pseudoinverse.html
+  Başlık: 31. Ders: Sol ve Sağ Tersler; Sözde Ters
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 29
+  data-raw-latex sayısı: 48
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+Dosya: lecture-32-final-course-review.html
+  Başlık: 32. Ders: Final Ders Tekrarı
+  p.lead bulundu mu?: Evet
+  h2 sayısı: 15
+  h3 sayısı: 30
+  data-raw-latex sayısı: 54
+  MathJax CDN script'i korundu mu?: Evet
+  portal.css linki eklendi mi?: Evet (1)
+  portal.js script'i eklendi mi?: Evet (1)
+  .portal-layout sayısı: 1
+  .left-sidebar sayısı: 1
+  .right-sidebar sayısı: 1
+  h1#lesson-title duruyor mu?: Evet
+
+Index Kontrolleri
+-----------------
+index.html oluşturuldu mu?: Evet
+index.html içinde right-sidebar olmadığı doğrulandı mı?: Evet
+index.html içinde data-toc olmadığı doğrulandı mı?: Evet
+Tüm href bağlantıları göreli mi?: Evet
+Logo yolu doğru mu?: Evet
+
+UI/UX İyileştirme Kontrolleri
+-----------------------------
+Dosya adları kaldırıldı mı?: Evet
+Ana sayfa kart-grid 4 sütunlu hale getirildi mi?: Evet (32 kart)
+LaTeX görünen başlıklar kullanıcı dostu başlıklara çevrildi mi?: Evet
+Sidebar arama kutusu eklendi mi?: Evet
+Sağ İçindekiler'de h3 aç/kapat yapısı eklendi mi?: Evet
+Sağ İçindekiler toggle ikonları büyütülüp başlık satırlarıyla hizalandı mı?: Evet
+Güncellenen dosyalar: index.html, assets/portal.css, assets/portal.js, tools/build-portal.js
+Sınırlama: Ders içeriklerinin akademik HTML gövdesi korunur; iyileştirmeler portal kabuğu, gezinme ve ana sayfa görünümü ile sınırlıdır.
+
+Genel Dosya Kontrolleri
+-----------------------
+index.html var mı?: Evet
+assets/portal.css var mı?: Evet
+assets/portal.js var mı?: Evet
+tools/build-portal.js var mı?: Evet
+lectures/ klasörü var mı?: Evet
+Kaynak klasörde 32 ders dosyası bulundu mu?: Evet
+32 ders dosyası hedef klasöre kopyalandı mı?: Evet
+
+Uyarılar
+--------
+- lecture-9-independence-basis-and-dimension.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-10-the-four-fundamental-subspaces.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-11-matrix-spaces-rank-1-small-world-graphs.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-12-graphs-networks-incidence-matrices.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-13-orthogonal-vectors-and-subspaces.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-14-projections-onto-subspaces.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-15-projection-matrices-and-least-squares.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-16-orthogonal-matrices-and-gram-schmidt.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-17-properties-of-determinants.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-18-determinant-formulas-and-cofactors.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-19-cramers-rule-inverse-matrix-and-volume.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-20-eigenvalues-and-eigenvectors.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-21-diagonalization-and-powers-of-a.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-22-differential-equations-and-exp-at.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-23-markov-matrices-fourier-series.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-24-symmetric-matrices-and-positive-definiteness.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-25-complex-matrices-fast-fourier-transform.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-26-positive-definite-matrices-and-minima.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-27-similar-matrices-and-jordan-form.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-28-singular-value-decomposition.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-29-linear-transformations-and-their-matrices.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-30-change-of-basis-image-compression.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-31-left-and-right-inverses-pseudoinverse.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+- lecture-32-final-course-review.html: Kaynakta h1#lesson-title bulunamadı; ilk h1 başlığı kullanıldı ve hedef kopyaya id eklendi.
+
+Hatalar
+-------
+- Yok

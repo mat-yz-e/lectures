@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" class="active" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, lineer cebirde daha önce gerçek sayılarla kurulan iç çarpım, diklik, simetri ve ortogonallik kavramlarının karmaşık sayılarla nasıl doğru biçimde değiştirileceğini inceler. Ardından bu dil, Fourier matrisinin yapısını ve bu matrisle hızlı çarpmanın temel faktörleme fikrini açıklamak için kullanılır.</p>
+        <p>Gerçek matrislerde \(A^T=A\) koşulu simetriyi, \(Q^TQ=I\) koşulu ortogonal sütunları ve \(\mathbf{x}^T\mathbf{x}\) ifadesi uzunluğun karesini verir. Karmaşık sayılar devreye girdiğinde bu ifadeler doğrudan kullanılamaz; çünkü karmaşık bileşenlerin karesini toplamak pozitif bir uzunluk ölçüsü üretmeyebilir. Bu nedenle transpoz işlemi karmaşık eşlenikle birlikte ele alınır.</p>
+        <p>Bölümün ikinci ana konusu Fourier matrisidir. Bu matris, birliğin köklerinden oluşan özel bir karmaşık matristir. Sütunlarının dik olması, tersini kolaylaştırır; özel kuvvet yapısı ise matrisle çarpmanın doğrudan \(n^2\) işlem yerine yaklaşık \(n\log_2 n\) düzeyinde yapılabilmesini sağlar.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Karmaşık vektörlerde doğru uzunluk karesinin neden \(\mathbf{z}^H\mathbf{z}\) ile tanımlandığını açıklamak.</li>
+          <li>Karmaşık iç çarpımda ilk vektörün eşlenik transpozunun neden gerektiğini kullanmak.</li>
+          <li>Hermitsel matris, üniter matris ve karmaşık ortonormal sütun kavramlarını ayırt etmek.</li>
+          <li>Fourier matrisinin girdilerini birliğin kökleriyle yazmak.</li>
+          <li>\(F_4\) matrisini açık biçimde kurmak ve sütunlarının dikliğini karmaşık iç çarpımla kontrol etmek.</li>
+          <li>Fourier matrisinin tersinin eşlenik transpozla ilişkisini açıklamak.</li>
+          <li>Hızlı Fourier dönüşümünün temel faktörlemesini ve işlem sayısını anlamak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Gerçek vektörlerde iç çarpım, norm ve diklik kavramları.</li>
+          <li>Transpoz, ters matris, ortogonal matris ve sütunların ortonormalliği.</li>
+          <li>Özdeğer ve özvektör fikri.</li>
+          <li>Karmaşık sayıların eşleniği, mutlak değeri ve \(e^{i\theta}\) biçimindeki gösterimi.</li>
+          <li>Geometrik seri toplamı ve \(W^n=1\) türünden kuvvet ilişkileri.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\mathbb{C}^n\)</td>
+                <td>Karmaşık \(n\) boyutlu vektör uzayı</td>
+                <td>Bileşenleri karmaşık sayı olan vektörlerin uzayıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{z}, \mathbf{x}, \mathbf{y}\)</td>
+                <td>Karmaşık vektörler</td>
+                <td>Bileşenleri \(z_1,\ldots,z_n\) gibi karmaşık sayılardır.</td>
+              </tr>
+              <tr>
+                <td>\(\overline{z}\)</td>
+                <td>Karmaşık eşlenik</td>
+                <td>\(a+bi\) sayısının eşleniği \(a-bi\) olur.</td>
+              </tr>
+              <tr>
+                <td>\(A^H\)</td>
+                <td>Eşlenik transpoz</td>
+                <td>Önce transpoz alınır, sonra her girişin karmaşık eşleniği alınır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{y}^H\mathbf{x}\)</td>
+                <td>Karmaşık iç çarpım</td>
+                <td>Diklik ve uzunluk hesabında kullanılan doğru çarpımdır.</td>
+              </tr>
+              <tr>
+                <td>\(Q^HQ=I\)</td>
+                <td>Üniter sütun koşulu</td>
+                <td>\(Q\) matrisinin sütunları karmaşık anlamda ortonormaldir.</td>
+              </tr>
+              <tr>
+                <td>\(W_n\)</td>
+                <td>Birliğin seçilen \(n\)'inci kökü</td>
+                <td>\(W_n=e^{2\pi i/n}\) ve \(W_n^n=1\).</td>
+              </tr>
+              <tr>
+                <td>\(F_n\)</td>
+                <td>Fourier matrisi</td>
+                <td>Girdileri \(W_n^{ij}\) biçiminde olan \(n\times n\) matristir.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>Permütasyon matrisi</td>
+                <td>Bir vektörün çift indisli bileşenlerini önce, tek indisli bileşenlerini sonra sıralar.</td>
+              </tr>
+              <tr>
+                <td>\(D\)</td>
+                <td>Köşegen düzeltme matrisi</td>
+                <td>Hızlı Fourier faktörlemesinde \(1,W,W^2,\ldots\) kuvvetlerini taşır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Karmaşık sayılar lineer cebire yalnızca yeni sayılar eklemekle kalmaz; temel kavramların biçimini de değiştirir. Gerçek uzayda uzunluk karesi \(\mathbf{x}^T\mathbf{x}\) ile yazılırken, karmaşık uzayda aynı ifade yanlış sonuç verebilir. Doğru pozitiflik için eşlenik transpoz gerekir.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Karmaşık lineer cebirde transpoz işlemi tek başına yeterli değildir. Uzunluk, diklik, simetri ve ortogonallik kavramları \(H\) işlemiyle, yani eşlenik transpozla doğru biçimde ifade edilir.</p>
+        </aside>
+        <p>Fourier matrisi bu değişimin en önemli örneklerinden biridir. Girdileri karmaşıktır, ancak sütunları düzenli biçimde diktir. Üstelik bu matrisin kuvvet yapısı, büyük boyutlu çarpımı küçük boyutlu çarpımlara ayıran bir faktörleme verir. Bu faktörleme, hesaplama sayısını dramatik biçimde düşürür.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Karmaşık Vektör ve Eşlenik Transpoz</h3>
+          <p>Bileşenleri karmaşık sayılardan oluşan bir vektör \(\mathbf{z}\in\mathbb{C}^n\) biçiminde yazılır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{z}=\begin{bmatrix}z_1\\z_2\\\vdots\\z_n\end{bmatrix},\qquad z_j\in\mathbb{C}">
+            <div class="equation-content">
+              \[
+              \mathbf{z}=\begin{bmatrix}z_1\\z_2\\\vdots\\z_n\end{bmatrix},\qquad z_j\in\mathbb{C}
+              \]
+            </div>
+          </div>
+          <p>Bir vektörün veya matrisin eşlenik transpozu, transpoz alma ile karmaşık eşlenik alma işlemlerinin birlikte uygulanmasıdır. Bu işlem \(H\) üst imiyle gösterilir.</p>
+          <div class="equation-card" data-raw-latex="\mathbf{z}^H=\begin{bmatrix}\overline{z_1} &amp; \overline{z_2} &amp; \cdots &amp; \overline{z_n}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{z}^H=\begin{bmatrix}\overline{z_1} &amp; \overline{z_2} &amp; \cdots &amp; \overline{z_n}\end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.2: \((1,i)\) Vektörünün Uzunluğu</h3>
+          <p>\(\mathbf{z}=(1,i)^T\) olsun. Gerçek uzaydaki alışkanlıkla \(\mathbf{z}^T\mathbf{z}\) hesaplanırsa şu sonuç çıkar:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{z}^T\mathbf{z}=1^2+i^2=1-1=0">
+            <div class="equation-content">
+              \[
+              \mathbf{z}^T\mathbf{z}=1^2+i^2=1-1=0
+              \]
+            </div>
+          </div>
+          <p>Bu sonuç uzunluk karesi olamaz; çünkü \((1,i)^T\) sıfır vektörü değildir. Doğru hesapta eşlenik transpoz kullanılır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{z}^H\mathbf{z}=\begin{bmatrix}1 &amp; -i\end{bmatrix}\begin{bmatrix}1\\ i\end{bmatrix}=1+(-i)i=2">
+            <div class="equation-content">
+              \[
+              \mathbf{z}^H\mathbf{z}=\begin{bmatrix}1 &amp; -i\end{bmatrix}\begin{bmatrix}1\\ i\end{bmatrix}=1+(-i)i=2
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla bu vektörün uzunluğu \(\sqrt{2}\) olur. Karmaşık uzayda pozitif uzunluk fikri, eşlenik transpozla korunur.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.3: Karmaşık İç Çarpım ve Norm</h3>
+          <p>\(\mathbf{x},\mathbf{y}\in\mathbb{C}^n\) için karmaşık iç çarpım</p>
+          <div class="equation-card" data-raw-latex="\langle \mathbf{y},\mathbf{x}\rangle=\mathbf{y}^H\mathbf{x}=\overline{y_1}x_1+\overline{y_2}x_2+\cdots+\overline{y_n}x_n">
+            <div class="equation-content">
+              \[
+              \langle \mathbf{y},\mathbf{x}\rangle=\mathbf{y}^H\mathbf{x}=\overline{y_1}x_1+\overline{y_2}x_2+\cdots+\overline{y_n}x_n
+              \]
+            </div>
+          </div>
+          <p>biçiminde tanımlanır. Normun karesi ise</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{z}\|^2=\mathbf{z}^H\mathbf{z}=|z_1|^2+|z_2|^2+\cdots+|z_n|^2">
+            <div class="equation-content">
+              \[
+              \|\mathbf{z}\|^2=\mathbf{z}^H\mathbf{z}=|z_1|^2+|z_2|^2+\cdots+|z_n|^2
+              \]
+            </div>
+          </div>
+          <p>Bu toplam \(\mathbf{z}\neq\mathbf{0}\) olduğunda pozitiftir; bu nedenle karmaşık uzayda uzunluk için doğru tanım budur.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Hermitsel Matris</h3>
+          <p>Bir karmaşık kare matris \(A\), eşlenik transpozu kendisine eşitse Hermitsel matris olarak adlandırılır:</p>
+          <div class="equation-card" data-raw-latex="A^H=A">
+            <div class="equation-content">
+              \[
+              A^H=A
+              \]
+            </div>
+          </div>
+          <p>Bu tanım, gerçek matrislerdeki \(A^T=A\) simetri koşulunun karmaşık uzaydaki doğru karşılığıdır. Köşegen girişler kendi eşleniklerine eşit olmak zorunda olduklarından gerçektir; köşegen dışındaki girişler ise karşılıklı olarak birbirinin eşleniği olur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: İki Boyutlu Hermitsel Matris</h3>
+          <p>Aşağıdaki matris Hermitseldir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2 &amp; 3+i\\3-i &amp; 5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}2 &amp; 3+i\\3-i &amp; 5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Köşegen girişler \(2\) ve \(5\) gerçektir. Üst sağ giriş \(3+i\) ise alt sol girişin eşleniğidir:</p>
+          <div class="equation-card" data-raw-latex="\overline{3+i}=3-i">
+            <div class="equation-content">
+              \[
+              \overline{3+i}=3-i
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle \(A^H=A\) koşulu sağlanır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.6: Karmaşık Ortonormallik ve Üniter Matris</h3>
+          <p>\(\mathbf{q}_1,\ldots,\mathbf{q}_n\in\mathbb{C}^n\) vektörleri karmaşık iç çarpıma göre ortonormalse</p>
+          <div class="equation-card" data-raw-latex="\mathbf{q}_i^H\mathbf{q}_j=\begin{cases}1, &amp; i=j,\\0, &amp; i\neq j.\end{cases}">
+            <div class="equation-content">
+              \[
+              \mathbf{q}_i^H\mathbf{q}_j=\begin{cases}1, &amp; i=j,\\0, &amp; i\neq j.\end{cases}
+              \]
+            </div>
+          </div>
+          <p>Bu vektörler \(Q=[\mathbf{q}_1\ \mathbf{q}_2\ \cdots\ \mathbf{q}_n]\) matrisinin sütunlarını oluşturursa, ortonormallik tek matris denklemiyle yazılır:</p>
+          <div class="equation-card" data-raw-latex="Q^HQ=I">
+            <div class="equation-content">
+              \[
+              Q^HQ=I
+              \]
+            </div>
+          </div>
+          <p>Bu koşulu sağlayan kare karmaşık matrislere üniter matris denir. Gerçek durumda ortogonal matrisin oynadığı rolü karmaşık durumda üniter matris oynar.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.7: Fourier Matrisi</h3>
+          <p>\(W_n=e^{2\pi i/n}\) olsun. \(W_n\), birliğin seçilen \(n\)'inci köküdür ve \(W_n^n=1\) koşulunu sağlar. \(n\times n\) Fourier matrisi \(F_n\), sıfırdan başlayan indislerle</p>
+          <div class="equation-card" data-raw-latex="(F_n)_{ij}=W_n^{ij},\qquad i,j=0,1,\ldots,n-1">
+            <div class="equation-content">
+              \[
+              (F_n)_{ij}=W_n^{ij},\qquad i,j=0,1,\ldots,n-1
+              \]
+            </div>
+          </div>
+          <p>biçiminde tanımlanır. Birinci satır ve birinci sütun tamamen \(1\)'lerden oluşur. Diğer girişler \(W_n\)'in kuvvetleridir.</p>
+          <div class="equation-card" data-raw-latex="W_n=e^{2\pi i/n}=\cos\frac{2\pi}{n}+i\sin\frac{2\pi}{n}">
+            <div class="equation-content">
+              \[
+              W_n=e^{2\pi i/n}=\cos\frac{2\pi}{n}+i\sin\frac{2\pi}{n}
+              \]
+            </div>
+          </div>
+          <p>Kuvvetlerle çalışırken \(e^{i\theta}\) biçimi özellikle uygundur; çünkü üs almak açıları toplar.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Dört Boyutlu Fourier Matrisi</h3>
+          <p>\(n=4\) için</p>
+          <div class="equation-card" data-raw-latex="W_4=e^{2\pi i/4}=e^{i\pi/2}=i">
+            <div class="equation-content">
+              \[
+              W_4=e^{2\pi i/4}=e^{i\pi/2}=i
+              \]
+            </div>
+          </div>
+          <p>olur. Böylece \(W_4\)'ün kuvvetleri \(i,-1,-i,1\) olarak döner. \(F_4\) matrisi şudur:</p>
+          <div class="equation-card" data-raw-latex="F_4=\begin{bmatrix}1 &amp; 1 &amp; 1 &amp; 1\\1 &amp; i &amp; -1 &amp; -i\\1 &amp; -1 &amp; 1 &amp; -1\\1 &amp; -i &amp; -1 &amp; i\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              F_4=\begin{bmatrix}1 &amp; 1 &amp; 1 &amp; 1\\1 &amp; i &amp; -1 &amp; -i\\1 &amp; -1 &amp; 1 &amp; -1\\1 &amp; -i &amp; -1 &amp; i\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Örneğin ikinci ve dördüncü sütunların karmaşık iç çarpımı hesaplanırken ilk sütun değil, ilk çarpan eşlenir. Bu eşleme yapılmazsa yanlışlıkla sıfır olmayan bir toplam elde edilir.</p>
+          <div class="equation-card" data-raw-latex="\overline{\begin{bmatrix}1\\ i\\ -1\\ -i\end{bmatrix}}^{\,T}\begin{bmatrix}1\\ -i\\ -1\\ i\end{bmatrix}=1+(-i)(-i)+1+ i^2=0">
+            <div class="equation-content">
+              \[
+              \overline{\begin{bmatrix}1\\ i\\ -1\\ -i\end{bmatrix}}^{\,T}\begin{bmatrix}1\\ -i\\ -1\\ i\end{bmatrix}=1+(-i)(-i)+1+ i^2=0
+              \]
+            </div>
+          </div>
+          <p>Bu hesap, Fourier matrisindeki dikliğin gerçek iç çarpımla değil, karmaşık iç çarpımla görüldüğünü gösterir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Hermitsel Matrislerin Özdeğer ve Özvektör Özelliği</h3>
+          <p><strong>İfade:</strong> \(A^H=A\) olan bir karmaşık kare matrisin özdeğerleri gerçektir. Ayrıca farklı özdeğerlere ait özvektörler karmaşık iç çarpıma göre diktir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Hermitsel matrisler, gerçek simetrik matrislerin karmaşık karşılığıdır. Gerçek simetrik matrislerde simetri, özdeğerlerin gerçekliğini ve özvektörlerin dikliğini sağlar. Karmaşık durumda aynı rolü \(A^H=A\) koşulu üstlenir.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}=\lambda\mathbf{x}\) ve \(\mathbf{x}\neq\mathbf{0}\) olsun. \(\mathbf{x}^H\mathbf{x}>0\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^HA\mathbf{x}=\lambda\,\mathbf{x}^H\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^HA\mathbf{x}=\lambda\,\mathbf{x}^H\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Hermitsel koşul nedeniyle \(\mathbf{x}^HA\mathbf{x}\) gerçek bir sayıdır; çünkü bu skalerin eşleniği yine kendisidir:</p>
+          <div class="equation-card" data-raw-latex="\overline{\mathbf{x}^HA\mathbf{x}}=\mathbf{x}^HA^H\mathbf{x}=\mathbf{x}^HA\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \overline{\mathbf{x}^HA\mathbf{x}}=\mathbf{x}^HA^H\mathbf{x}=\mathbf{x}^HA\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>Sağ tarafta \(\mathbf{x}^H\mathbf{x}\) pozitif gerçek olduğundan \(\lambda\) gerçek olmalıdır.</p>
+          <p>Şimdi \(A\mathbf{x}=\lambda\mathbf{x}\), \(A\mathbf{y}=\mu\mathbf{y}\) ve \(\lambda\neq\mu\) olsun. Hermitsel koşul ve özdeğerlerin gerçekliğiyle</p>
+          <div class="equation-card" data-raw-latex="\lambda\,\mathbf{x}^H\mathbf{y}=(A\mathbf{x})^H\mathbf{y}=\mathbf{x}^HA\mathbf{y}=\mu\,\mathbf{x}^H\mathbf{y}">
+            <div class="equation-content">
+              \[
+              \lambda\,\mathbf{x}^H\mathbf{y}=(A\mathbf{x})^H\mathbf{y}=\mathbf{x}^HA\mathbf{y}=\mu\,\mathbf{x}^H\mathbf{y}
+              \]
+            </div>
+          </div>
+          <p>bulunur. \(\lambda\neq\mu\) olduğundan \(\mathbf{x}^H\mathbf{y}=0\). Bu da dikliği verir.</p>
+          <p><strong>Yorum:</strong> Bu teorem, karmaşık uzayda simetri kavramının neden \(A^H=A\) ile tanımlandığını açıklar: doğru tanım, gerçek özdeğerleri ve dik özvektörleri korur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: Fourier Matrisinin Sütunlarının Diklik Özelliği</h3>
+          <p><strong>İfade:</strong> \(F_n\) Fourier matrisinin sütunları karmaşık iç çarpıma göre diktir ve her sütunun uzunluk karesi \(n\)'dir. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="F_n^HF_n=nI">
+            <div class="equation-content">
+              \[
+              F_n^HF_n=nI
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Fourier matrisinin sütunları birliğin köklerinin farklı kuvvetlerinden oluşur. Farklı sütunların iç çarpımı, bir çember etrafında eşit aralıklı karmaşık sayıların toplamına dönüşür; bu toplam sıfırdır.</p>
+          <p><strong>Formal İspat:</strong> \(j\)'inci ve \(k\)'inci sütunların iç çarpımı</p>
+          <div class="equation-card" data-raw-latex="\sum_{r=0}^{n-1}\overline{W_n^{rj}}\,W_n^{rk}=\sum_{r=0}^{n-1}W_n^{r(k-j)}">
+            <div class="equation-content">
+              \[
+              \sum_{r=0}^{n-1}\overline{W_n^{rj}}\,W_n^{rk}=\sum_{r=0}^{n-1}W_n^{r(k-j)}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Eğer \(j=k\) ise her terim \(1\)'dir ve toplam \(n\) olur. Eğer \(j\neq k\) ise \(W_n^{k-j}\neq 1\), fakat \((W_n^{k-j})^n=1\). Geometrik seri formülüyle</p>
+          <div class="equation-card" data-raw-latex="\sum_{r=0}^{n-1}W_n^{r(k-j)}=\frac{1-(W_n^{k-j})^n}{1-W_n^{k-j}}=0">
+            <div class="equation-content">
+              \[
+              \sum_{r=0}^{n-1}W_n^{r(k-j)}=\frac{1-(W_n^{k-j})^n}{1-W_n^{k-j}}=0
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Böylece sütunlar diktir ve her sütunun uzunluk karesi \(n\)'dir.</p>
+          <p><strong>Yorum:</strong> Normalize edilmiş Fourier matrisi \(\frac{1}{\sqrt{n}}F_n\) üniterdir. Bu nedenle Fourier matrisinin tersi eşlenik transpozla kolayca yazılır:</p>
+          <div class="equation-card" data-raw-latex="F_n^{-1}=\frac{1}{n}F_n^H">
+            <div class="equation-content">
+              \[
+              F_n^{-1}=\frac{1}{n}F_n^H
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Fourier Matrisinin Çift-Tek Faktörlemesi</h3>
+          <p><strong>İfade:</strong> \(n\) çift olsun. Uygun bir permütasyon matrisi \(P\), giriş vektörünün çift indisli bileşenlerini önce, tek indisli bileşenlerini sonra sıralasın. \(D=\operatorname{diag}(1,W_n,W_n^2,\ldots,W_n^{n/2-1})\) olmak üzere</p>
+          <div class="equation-card" data-raw-latex="F_n=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_{n/2} &amp; 0\\0 &amp; F_{n/2}\end{bmatrix}P">
+            <div class="equation-content">
+              \[
+              F_n=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_{n/2} &amp; 0\\0 &amp; F_{n/2}\end{bmatrix}P
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Fourier toplamında çift indisli ve tek indisli bileşenler ayrıldığında, çift kısımda \(W_n^2=W_{n/2}\) ortaya çıkar. Bu nedenle \(n\) boyutlu dönüşüm, iki adet \(n/2\) boyutlu dönüşüme ayrılır. Tek indisli kısım yalnızca \(W_n^r\) gibi köşegen düzeltme çarpanları gerektirir.</p>
+          <p><strong>Formal İspat:</strong> \(j=2m\) ve \(j=2m+1\) ayrımı yapılır. \(r\)'inci çıktı bileşeni</p>
+          <div class="equation-card" data-raw-latex="\sum_{j=0}^{n-1}W_n^{rj}x_j=\sum_m W_n^{2rm}x_{2m}+W_n^r\sum_m W_n^{2rm}x_{2m+1}">
+            <div class="equation-content">
+              \[
+              \sum_{j=0}^{n-1}W_n^{rj}x_j=\sum_m W_n^{2rm}x_{2m}+W_n^r\sum_m W_n^{2rm}x_{2m+1}
+              \]
+            </div>
+          </div>
+          <p>olur. \(W_n^2=W_{n/2}\) olduğundan iki toplam da \(F_{n/2}\) ile hesaplanan toplamlardır. \(r\) yerine \(r+n/2\) yazıldığında çift kısım değişmez, tek kısım ise \(W_n^{n/2}=-1\) nedeniyle işaret değiştirir. Bu tam olarak yukarıdaki blok matris çarpımını verir.</p>
+          <p><strong>Yorum:</strong> Faktörleme tek başına yalnızca bir adımı açıklar; asıl hız kazancı bu adımın tekrar tekrar uygulanmasından doğar. \(F_{64}\), iki adet \(F_{32}\)'ye; her \(F_{32}\), iki adet \(F_{16}\)'ya ayrılır ve süreç küçük boyutlara kadar sürer.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Karmaşık Uzunluk ve Diklik Hesabı</h3>
+        <p><strong>Ne işe yarar?</strong> Karmaşık vektörlerde uzunluk ve diklik hesaplarını doğru yapar.</p>
+        <ol>
+          <li>İlk vektörün eşlenik transpozunu al.</li>
+          <li>İkinci vektörle çarp.</li>
+          <li>Sonuç sıfırsa vektörler diktir; aynı vektörle çarpım pozitif gerçek uzunluk karesini verir.</li>
+        </ol>
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>Karmaşık vektörlerde \(\mathbf{y}^T\mathbf{x}\) değil, \(\mathbf{y}^H\mathbf{x}\) kullanılmalıdır. Eşlenik alınmazsa uzunluk karesi bile sıfır veya karmaşık çıkabilir.</p>
+        </aside>
+
+        <h3>Yöntem 2: Fourier Matrisini Kurma</h3>
+        <ol>
+          <li>Boyutu \(n\) olarak seç.</li>
+          <li>\(W_n=e^{2\pi i/n}\) değerini belirle.</li>
+          <li>Satır ve sütun indislerini \(0,1,\ldots,n-1\) olarak al.</li>
+          <li>\((i,j)\) girişine \(W_n^{ij}\) yaz.</li>
+        </ol>
+        <p>Bu yöntemle \(F_4\) doğrudan Örnek 1.8'deki matris olarak elde edilir.</p>
+
+        <h3>Yöntem 3: Hızlı Fourier Faktörlemesiyle İşlem Sayısını Azaltma</h3>
+        <p>Doğrudan \(F_n\mathbf{x}\) çarpımı, genel bir dolu \(n\times n\) matris çarpımı gibi yaklaşık \(n^2\) çarpma gerektirir. Çift-tek faktörleme bu çarpımı iki adet yarı boyutlu Fourier çarpımına indirir.</p>
+        <section class="example-card">
+          <h3>Örnek 1.12: \(F_{64}\) İçin İlk Ayrıştırma</h3>
+          <p>\(W_{64}=e^{2\pi i/64}\) olsun. \(W_{64}^2=W_{32}\) olduğundan \(F_{64}\), iki adet \(F_{32}\) içeren blok yapıya ayrılır:</p>
+          <div class="equation-card" data-raw-latex="F_{64}=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_{32} &amp; 0\\0 &amp; F_{32}\end{bmatrix}P">
+            <div class="equation-content">
+              \[
+              F_{64}=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_{32} &amp; 0\\0 &amp; F_{32}\end{bmatrix}P
+              \]
+            </div>
+          </div>
+          <p>Burada \(P\), \((x_0,x_1,x_2,x_3,\ldots)^T\) vektörünü \((x_0,x_2,x_4,\ldots,x_1,x_3,x_5,\ldots)^T\) sırasına getirir. Köşegen matris ise</p>
+          <div class="equation-card" data-raw-latex="D=\operatorname{diag}(1,W_{64},W_{64}^2,\ldots,W_{64}^{31})">
+            <div class="equation-content">
+              \[
+              D=\operatorname{diag}(1,W_{64},W_{64}^2,\ldots,W_{64}^{31})
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Doğrudan çarpım \(64^2\) çarpma gerektirirken, bu ayrıştırmanın ana maliyeti iki adet \(32^2\) çarpma ve köşegen düzeltme için \(32\) çarpmadır.</p>
+          <div class="equation-card" data-raw-latex="64^2\quad\longrightarrow\quad 2\cdot 32^2+32">
+            <div class="equation-content">
+              \[
+              64^2\quad\longrightarrow\quad 2\cdot 32^2+32
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.13: \(n=1024\) İçin İşlem Sayısı</h3>
+          <p>\(n=1024=2^{10}\) olduğunda doğrudan yöntem yaklaşık</p>
+          <div class="equation-card" data-raw-latex="1024^2=1\,048\,576">
+            <div class="equation-content">
+              \[
+              1024^2=1\,048\,576
+              \]
+            </div>
+          </div>
+          <p>çarpma gerektirir. Hızlı faktörleme ile işlem sayısı yaklaşık</p>
+          <div class="equation-card" data-raw-latex="\frac{1}{2}n\log_2 n=\frac{1}{2}\cdot 1024\cdot 10=5120">
+            <div class="equation-content">
+              \[
+              \frac{1}{2}n\log_2 n=\frac{1}{2}\cdot 1024\cdot 10=5120
+              \]
+            </div>
+          </div>
+          <p>olur. Bu, aynı temel dönüşüm için işlem sayısının yaklaşık iki yüz kat azalması demektir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Fourier dönüşümüyle çarpma problemi yalnızca soyut bir matris çarpımı değildir; büyük hesaplamalarda sıkça yinelenen bir temel işlemdir. Bu bölümdeki ana uygulama bağlantısı, dolu bir Fourier matrisiyle çarpmanın özel bir faktörlemeyle çok daha hızlı yapılabilmesidir.</p>
+        <p>Buradaki hızlanma, matrisin seyrek olmasından değil; matrisin köklerden oluşan çok düzenli kuvvet yapısından gelir. Başlangıçtaki \(F_n\) matrisi doludur, fakat uygun faktörlere ayrıldığında permütasyonlar, köşegen çarpmalar ve daha küçük Fourier matrisleri ortaya çıkar.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Karmaşık uzunluğu \(\mathbf{z}^T\mathbf{z}\) ile hesaplamak:</strong> Bu yöntem \((1,i)^T\) gibi sıfır olmayan bir vektöre sıfır uzunluk karesi verebilir. Doğru ifade \(\mathbf{z}^H\mathbf{z}\)'dir.</li>
+          <li><strong>Hermitsel koşulu \(A^T=A\) sanmak:</strong> Karmaşık matrislerde yalnızca transpoz yeterli değildir. Doğru koşul \(A^H=A\)'dır.</li>
+          <li><strong>Diklik kontrolünde eşleniği unutmak:</strong> Fourier matrisinin sütunları, gerçek iç çarpıma göre değil karmaşık iç çarpıma göre diktir.</li>
+          <li><strong>Fourier matrisinin ortonormal olduğunu sanmak:</strong> \(F_n\)'in sütunları diktir, fakat uzunlukları \(\sqrt{n}\)'dir. Ortonormal matris \(\frac{1}{\sqrt{n}}F_n\)'dir.</li>
+          <li><strong>Hızlı faktörlemenin sadece \(F_{64}\) için geçerli olduğunu düşünmek:</strong> Aynı fikir, özellikle \(n\)'in iki kuvveti olduğu durumlarda tekrar tekrar uygulanır.</li>
+          <li><strong>Köşegen düzeltme matrisinin maliyetini dolu matris gibi saymak:</strong> \(D\) köşegen olduğu için \(n/2\) çarpma gerektirir; \(n^2\) türünden bir maliyeti yoktur.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Karmaşık vektörler \(\rightarrow\) eşlenik transpoz \(\rightarrow\) doğru norm ve iç çarpım</span>
+          <span>Eşlenik transpoz \(\rightarrow\) Hermitsel matris \(\rightarrow\) gerçek özdeğerler ve dik özvektörler</span>
+          <span>Karmaşık ortonormal sütunlar \(\rightarrow\) üniter matris \(\rightarrow\) tersin eşlenik transpozla yazılması</span>
+          <span>Birliğin kökleri \(\rightarrow\) Fourier matrisi \(\rightarrow\) dik sütunlar</span>
+          <span>Fourier matrisi \(\rightarrow\) çift-tek ayrıştırma \(\rightarrow\) hızlı Fourier faktörlemesi</span>
+          <span>Özyinelemeli ayrıştırma \(\rightarrow\) \(n^2\) yerine yaklaşık \(n\log_2 n\) işlem</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>Karmaşık Norm</h3>
+            <p>Karmaşık vektörün uzunluk karesi eşlenik transpozla hesaplanır.</p>
+            <div class="equation-card" data-raw-latex="\|\mathbf{z}\|^2=\mathbf{z}^H\mathbf{z}=\sum_{j=1}^n |z_j|^2">
+              <div class="equation-content">
+                \[
+                \|\mathbf{z}\|^2=\mathbf{z}^H\mathbf{z}=\sum_{j=1}^n |z_j|^2
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Karmaşık İç Çarpım</h3>
+            <p>Diklik ve açı ilişkileri bu çarpım üzerinden yorumlanır.</p>
+            <div class="equation-card" data-raw-latex="\langle \mathbf{y},\mathbf{x}\rangle=\mathbf{y}^H\mathbf{x}">
+              <div class="equation-content">
+                \[
+                \langle \mathbf{y},\mathbf{x}\rangle=\mathbf{y}^H\mathbf{x}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Hermitsel Matris</h3>
+            <p>Gerçek simetrik matris kavramının karmaşık karşılığıdır.</p>
+            <div class="equation-card" data-raw-latex="A^H=A">
+              <div class="equation-content">
+                \[
+                A^H=A
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Üniter Matris</h3>
+            <p>Karmaşık ortonormal sütunların matris biçimindeki koşuludur.</p>
+            <div class="equation-card" data-raw-latex="Q^HQ=I">
+              <div class="equation-content">
+                \[
+                Q^HQ=I
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Fourier Matrisi</h3>
+            <p>Girdileri birliğin köklerinin kuvvetlerinden oluşur.</p>
+            <div class="equation-card" data-raw-latex="(F_n)_{ij}=W_n^{ij},\qquad W_n=e^{2\pi i/n}">
+              <div class="equation-content">
+                \[
+                (F_n)_{ij}=W_n^{ij},\qquad W_n=e^{2\pi i/n}
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Fourier Matrisinin Tersi</h3>
+            <p>Sütun dikliği sayesinde ters matris eşlenik transpozla yazılır.</p>
+            <div class="equation-card" data-raw-latex="F_n^{-1}=\frac{1}{n}F_n^H">
+              <div class="equation-content">
+                \[
+                F_n^{-1}=\frac{1}{n}F_n^H
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Hızlı Fourier Faktörlemesi</h3>
+            <p>Çift ve tek indislerin ayrılması, büyük dönüşümü iki küçük dönüşüme indirir.</p>
+            <div class="equation-card" data-raw-latex="F_n=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_{n/2} &amp; 0\\0 &amp; F_{n/2}\end{bmatrix}P">
+              <div class="equation-content">
+                \[
+                F_n=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_{n/2} &amp; 0\\0 &amp; F_{n/2}\end{bmatrix}P
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>İşlem Sayısı</h3>
+            <p>Özyineleme sonucunda doğrudan çarpıma göre çok daha düşük maliyet elde edilir.</p>
+            <div class="equation-card" data-raw-latex="n^2\quad\longrightarrow\quad \frac{1}{2}n\log_2 n">
+              <div class="equation-content">
+                \[
+                n^2\quad\longrightarrow\quad \frac{1}{2}n\log_2 n
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde gerçek lineer cebir kavramlarının karmaşık uzayda nasıl değiştiği görüldü. Uzunluk ve iç çarpım için transpoz yerine eşlenik transpoz kullanılması gerektiği temel ilkedir. Bu değişim, Hermitsel ve üniter matris kavramlarını doğurur.</p>
+        <p>Fourier matrisi, birliğin köklerinden oluşan özel bir karmaşık matristir. Sütunları karmaşık iç çarpıma göre diktir ve bu nedenle tersi kolayca bulunur. Ancak asıl hesaplama gücü, \(F_n\)'in çift ve tek indisli bileşenleri ayıran faktörlemesinden gelir. Bu faktörleme özyinelemeli uygulandığında, dolu bir \(n\times n\) matrisle çarpma \(n^2\) yerine yaklaşık \(n\log_2 n\) işlemle yapılabilir.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Kolay Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> \(\mathbf{z}=(2,1-i)^T\) için \(\|\mathbf{z}\|^2\) değerini bulun.</p>
+          <p><strong>Çözüm:</strong> Karmaşık norm karesi, bileşenlerin mutlak değer karelerinin toplamıdır:</p>
+          <div class="equation-card" data-raw-latex="\|\mathbf{z}\|^2=|2|^2+|1-i|^2=4+(1^2+(-1)^2)=6">
+            <div class="equation-content">
+              \[
+              \|\mathbf{z}\|^2=|2|^2+|1-i|^2=4+(1^2+(-1)^2)=6
+              \]
+            </div>
+          </div>
+          <p><strong>Sonuç:</strong> \(\|\mathbf{z}\|=\sqrt{6}\). Bu hesapta \((1-i)^2\) değil, \(|1-i|^2\) kullanılır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Orta Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> \(F_4\)'ün ikinci ve üçüncü sütunlarının karmaşık iç çarpımının sıfır olduğunu gösterin. Sıfırdan başlayan indisle bu sütunlar \(\mathbf{f}_1=(1,i,-1,-i)^T\) ve \(\mathbf{f}_2=(1,-1,1,-1)^T\) olsun.</p>
+          <p><strong>Çözüm:</strong> İlk vektör eşlenir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{f}_1^H=\begin{bmatrix}1 &amp; -i &amp; -1 &amp; i\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{f}_1^H=\begin{bmatrix}1 &amp; -i &amp; -1 &amp; i\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İç çarpım</p>
+          <div class="equation-card" data-raw-latex="\mathbf{f}_1^H\mathbf{f}_2=1+(-i)(-1)+(-1)(1)+i(-1)=1+i-1-i=0">
+            <div class="equation-content">
+              \[
+              \mathbf{f}_1^H\mathbf{f}_2=1+(-i)(-1)+(-1)(1)+i(-1)=1+i-1-i=0
+              \]
+            </div>
+          </div>
+          <p><strong>Sonuç:</strong> Bu iki sütun diktir. Eşlenik alınmasaydı karmaşık diklik doğru kontrol edilmemiş olurdu.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: İleri Çalışma Sorusu</h3>
+          <p><strong>Soru:</strong> \(n=8\) için hızlı Fourier faktörlemesinin ilk adımını yazın ve bu adımın doğrudan çarpıma göre işlem sayısını nasıl değiştirdiğini belirtin.</p>
+          <p><strong>Çözüm:</strong> \(W_8=e^{2\pi i/8}\) ve \(W_8^2=W_4\). Çift-tek ayrıştırması</p>
+          <div class="equation-card" data-raw-latex="F_8=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_4 &amp; 0\\0 &amp; F_4\end{bmatrix}P">
+            <div class="equation-content">
+              \[
+              F_8=\begin{bmatrix}I &amp; D\\ I &amp; -D\end{bmatrix}\begin{bmatrix}F_4 &amp; 0\\0 &amp; F_4\end{bmatrix}P
+              \]
+            </div>
+          </div>
+          <p>burada</p>
+          <div class="equation-card" data-raw-latex="D=\operatorname{diag}(1,W_8,W_8^2,W_8^3)">
+            <div class="equation-content">
+              \[
+              D=\operatorname{diag}(1,W_8,W_8^2,W_8^3)
+              \]
+            </div>
+          </div>
+          <p>ve \(P\), bileşenleri \((x_0,x_2,x_4,x_6,x_1,x_3,x_5,x_7)^T\) sırasına getirir. Doğrudan çarpım \(8^2=64\) çarpma gerektirirken, ilk ayrıştırma ana maliyeti</p>
+          <div class="equation-card" data-raw-latex="2\cdot 4^2+4=36">
+            <div class="equation-content">
+              \[
+              2\cdot 4^2+4=36
+              \]
+            </div>
+          </div>
+          <p>olarak değiştirir. Daha fazla hızlanma, iki adet \(F_4\)'ün de aynı yöntemle ayrıştırılmasından gelir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>complex vector</td>
+                <td>karmaşık vektör</td>
+                <td>Bileşenleri karmaşık sayılar olan vektör.</td>
+              </tr>
+              <tr>
+                <td>complex conjugate</td>
+                <td>karmaşık eşlenik</td>
+                <td>\(a+bi\) sayısını \(a-bi\) sayısına dönüştüren işlem.</td>
+              </tr>
+              <tr>
+                <td>conjugate transpose</td>
+                <td>eşlenik transpoz</td>
+                <td>Transpoz ve karmaşık eşlenik işlemlerinin birlikte uygulanması.</td>
+              </tr>
+              <tr>
+                <td>Hermitian matrix</td>
+                <td>Hermitsel matris</td>
+                <td>\(A^H=A\) koşulunu sağlayan karmaşık kare matris.</td>
+              </tr>
+              <tr>
+                <td>unitary matrix</td>
+                <td>üniter matris</td>
+                <td>Sütunları karmaşık anlamda ortonormal olan kare matris.</td>
+              </tr>
+              <tr>
+                <td>Fourier matrix</td>
+                <td>Fourier matrisi</td>
+                <td>Girdileri birliğin köklerinin kuvvetlerinden oluşan özel karmaşık matris.</td>
+              </tr>
+              <tr>
+                <td>root of unity</td>
+                <td>birliğin kökü</td>
+                <td>\(W^n=1\) koşulunu sağlayan karmaşık sayı.</td>
+              </tr>
+              <tr>
+                <td>primitive root</td>
+                <td>ilkel kök</td>
+                <td>Kuvvetleriyle birliğin tüm ilgili köklerini dolaşan seçilmiş kök.</td>
+              </tr>
+              <tr>
+                <td>fast Fourier transform</td>
+                <td>hızlı Fourier dönüşümü</td>
+                <td>Fourier matrisiyle çarpmayı özel faktörleme sayesinde hızlandıran yöntem.</td>
+              </tr>
+              <tr>
+                <td>permutation matrix</td>
+                <td>permütasyon matrisi</td>
+                <td>Bileşenlerin sırasını değiştiren matris.</td>
+              </tr>
+              <tr>
+                <td>diagonal matrix</td>
+                <td>köşegen matris</td>
+                <td>Köşegen dışındaki girişleri sıfır olan matris.</td>
+              </tr>
+              <tr>
+                <td>recursion</td>
+                <td>özyineleme</td>
+                <td>Aynı ayrıştırma fikrinin daha küçük boyutlarda tekrar uygulanması.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) {
+          const minMobileSize = 18;
+          let mobileSize = parseFloat(window.getComputedStyle(title).fontSize);
+          let mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+
+          while (
+            Math.round(title.getBoundingClientRect().height / mobileLineHeight) > 2 &&
+            mobileSize > minMobileSize
+          ) {
+            mobileSize -= 1;
+            title.style.fontSize = mobileSize + "px";
+            mobileLineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+          }
+
+          return;
+        }
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+:root {
+  --portal-bg: #f8fafc;
+  --portal-panel: #ffffff;
+  --portal-text: #111827;
+  --portal-muted: #4b5563;
+  --portal-border: #e5e7eb;
+  --portal-border-strong: #d1d5db;
+  --portal-accent: #2563eb;
+  --portal-accent-soft: #eff6ff;
+  --portal-accent-line: #3b82f6;
+  --portal-shadow: 0 16px 40px rgba(15, 23, 42, 0.10);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--portal-bg);
+  color: var(--portal-text);
+}
+
+.portal-layout,
+.portal-layout *,
+.portal-layout *::before,
+.portal-layout *::after {
+  box-sizing: border-box;
+}
+
+.portal-layout {
+  min-height: 100vh;
+  display: grid;
+}
+
+.portal-layout.home-layout {
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.portal-layout.lesson-layout {
+  grid-template-columns: 320px minmax(0, 1fr) 280px;
+}
+
+.left-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--portal-panel);
+  border-right: 1px solid var(--portal-border);
+  padding: 24px 20px;
+  z-index: 20;
+}
+
+.right-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--portal-panel);
+  border-left: 1px solid var(--portal-border);
+  padding: 24px 18px;
+}
+
+.content {
+  min-width: 0;
+  padding: 28px;
+}
+
+.home-content {
+  min-width: 0;
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(28px, 4vw, 56px);
+}
+
+.portal-logo {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 16px;
+  display: block;
+  margin: 0 auto 12px;
+  background: #fff;
+  border: 1px solid var(--portal-border);
+}
+
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.brand-title {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.35;
+  margin: 0;
+  max-width: 210px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sidebar-section-title,
+.mobile-collapsible-nav summary {
+  margin: 22px 0 10px;
+  color: var(--portal-muted);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.mobile-collapsible-nav {
+  margin-top: 0;
+}
+
+.mobile-collapsible-nav summary {
+  cursor: pointer;
+  list-style-position: outside;
+}
+
+.sidebar-search {
+  margin: 0 0 12px;
+}
+
+.lesson-search {
+  width: 100%;
+  border: 1px solid var(--portal-border);
+  border-radius: 12px;
+  background: #f9fafb;
+  color: var(--portal-text);
+  padding: 10px 12px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.lesson-search:focus {
+  border-color: #93c5fd;
+  background: #ffffff;
+  outline: 3px solid rgba(37, 99, 235, 0.14);
+}
+
+.lesson-search-empty {
+  margin-top: 10px;
+  color: var(--portal-muted);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+}
+
+.nav-list,
+.toc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.primary-nav {
+  margin-bottom: 6px;
+}
+
+.nav-list a,
+.toc a {
+  position: relative;
+  color: var(--portal-muted);
+  text-decoration: none;
+  padding: 9px 10px 9px 12px;
+  border-radius: 12px;
+  line-height: 1.38;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.nav-list a:hover,
+.toc a:hover {
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent);
+}
+
+.nav-list a.active,
+.toc a.active {
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent);
+  font-weight: 800;
+}
+
+.nav-list a.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--portal-accent-line);
+}
+
+.toc-title {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.toc {
+  gap: 8px;
+}
+
+.toc-group {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 7px;
+}
+
+.toc-group-header {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+
+.toc-toggle {
+  width: 1.95rem;
+  height: 1.95rem;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--portal-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.toc-toggle span {
+  display: block;
+  line-height: 1;
+}
+
+.toc-toggle:hover,
+.toc-toggle:focus-visible {
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent);
+  outline: none;
+}
+
+.toc-toggle[disabled] {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.toc-link {
+  display: block;
+}
+
+.toc-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0 0 2.15rem;
+}
+
+.toc-sublist[hidden] {
+  display: none;
+}
+
+.toc a.toc-level-3 {
+  padding: 6px 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.content .lesson-page {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  background: #ffffff;
+}
+
+.home-hero {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid var(--portal-border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+
+.home-eyebrow {
+  margin-bottom: 10px;
+  color: var(--portal-accent);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.home-content h1 {
+  margin: 0 0 14px;
+  color: var(--portal-text);
+  font-family: Georgia, Cambria, "Times New Roman", serif;
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.home-intro {
+  max-width: 860px;
+  margin: 0 auto;
+  color: var(--portal-muted);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.home-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.home-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1e3a8a;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+
+.course-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 218px;
+  padding: 20px;
+  color: var(--portal-text);
+  text-decoration: none;
+  border: 1px solid var(--portal-border);
+  border-radius: 18px;
+  background: var(--portal-panel);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.course-card:hover,
+.course-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: #bfdbfe;
+  box-shadow: var(--portal-shadow);
+  outline: none;
+}
+
+.course-card-meta {
+  width: max-content;
+  margin-bottom: 14px;
+  padding: 0.24rem 0.58rem;
+  border-radius: 999px;
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.course-card-title {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+}
+
+.course-card-description {
+  margin-top: 10px;
+  color: var(--portal-muted);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.58;
+}
+
+@media (max-width: 1499px) {
+  .course-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .portal-layout.home-layout,
+  .portal-layout.lesson-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .left-sidebar,
+  .right-sidebar {
+    position: relative;
+    height: auto;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--portal-border);
+  }
+
+  .content {
+    padding: 18px;
+  }
+
+  .home-content {
+    padding: 28px 18px;
+  }
+
+  .course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .portal-logo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-card {
+    min-height: 0;
+  }
+
+  .left-sidebar,
+  .right-sidebar {
+    padding: 18px 14px;
+  }
+}

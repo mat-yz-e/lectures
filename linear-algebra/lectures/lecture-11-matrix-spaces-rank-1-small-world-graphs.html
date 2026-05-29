@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item p {
+      margin-bottom: 0.4rem;
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.2rem, 4.9vw, 1.65rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" class="active" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, vektör uzayı kavramının yalnızca \(\mathbb{R}^n\) içindeki sayı listeleriyle sınırlı olmadığını gösterir. Matrisler, fonksiyonlar ve graf yapıları da uygun işlemlerle lineer cebirin konusu olabilir.</p>
+        <p>Önce \(3\times3\) matrislerden oluşan uzay ve bu uzayın simetrik, üst üçgensel, köşegen gibi alt uzayları incelenir. Ardından alt uzayların kesişimi ve toplamı üzerinden boyut ilişkisi kurulur. Daha sonra rank bir matrislerin dış çarpım biçimi ele alınır ve rankın alt uzay oluşturma sorularındaki rolü vurgulanır.</p>
+        <p>Bölümün sonunda, bileşenleri toplamı sıfır olan \(\mathbb{R}^4\) alt uzayı dört temel alt uzay diliyle yorumlanır ve küçük dünya grafikleri üzerinden graf kavramına giriş yapılır.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Matrislerden oluşan kümelerin vektör uzayı olarak nasıl ele alınabildiğini açıklamak.</li>
+          <li>\(3\times3\) matrisler uzayının standart bazını ve boyutunu belirlemek.</li>
+          <li>Simetrik, üst üçgensel ve köşegen matrislerin alt uzaylarını tanımak.</li>
+          <li>Alt uzayların kesişimi ve toplamı arasındaki boyut ilişkisini kullanmak.</li>
+          <li>Fonksiyonlardan oluşan çözüm uzaylarını baz ve boyut kavramlarıyla yorumlamak.</li>
+          <li>Rank bir matrislerin \(\mathbf{u}\mathbf{v}^T\) biçiminde yazılabildiğini görmek.</li>
+          <li>Rankı sabit olan matris kümelerinin neden genellikle alt uzay olmadığını açıklamak.</li>
+          <li>\(\mathbb{R}^4\) içinde bileşenleri toplamı sıfır olan alt uzayın bazını bulmak.</li>
+          <li>Graf, düğüm, kenar ve uzaklık kavramlarını lineer cebire hazırlık olarak tanımak.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Vektör uzayı, alt uzay, baz ve boyut kavramları.</li>
+          <li>Matris toplamı ve skalerle çarpma işlemleri.</li>
+          <li>Sütun uzayı, satır uzayı, sıfır uzayı ve rank.</li>
+          <li>Rank bir matrislerin satır ve sütun bağımlılıkları.</li>
+          <li>Homojen denklem sistemi \(A\mathbf{x}=\mathbf{0}\).</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(M\)</td>
+                <td>Matris uzayı</td>
+                <td>Bu bölümde çoğunlukla tüm \(3\times3\) matrislerin uzayını gösterir.</td>
+              </tr>
+              <tr>
+                <td>\(S\)</td>
+                <td>Simetrik matrisler alt uzayı</td>
+                <td>\(A^T=A\) koşulunu sağlayan matrislerden oluşur.</td>
+              </tr>
+              <tr>
+                <td>\(U\)</td>
+                <td>Üst üçgensel matrisler alt uzayı</td>
+                <td>Ana köşegenin altındaki girdileri sıfır olan matrislerden oluşur.</td>
+              </tr>
+              <tr>
+                <td>\(D\)</td>
+                <td>Köşegen matrisler alt uzayı</td>
+                <td>Ana köşegen dışındaki bütün girdileri sıfır olan matrislerden oluşur.</td>
+              </tr>
+              <tr>
+                <td>\(S\cap U\)</td>
+                <td>Kesişim</td>
+                <td>Hem \(S\) hem de \(U\) içinde bulunan matrislerin kümesi.</td>
+              </tr>
+              <tr>
+                <td>\(S+U\)</td>
+                <td>Alt uzay toplamı</td>
+                <td>\(S\) içinden bir matris ile \(U\) içinden bir matrisin toplamı olarak yazılabilen matrisler.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{u}\mathbf{v}^T\)</td>
+                <td>Dış çarpım</td>
+                <td>Bir sütun vektörü ile bir satır vektörünün çarpımı; rank bir matris üretir.</td>
+              </tr>
+              <tr>
+                <td>\(G=(V,E)\)</td>
+                <td>Graf</td>
+                <td>Düğümler ve onları bağlayan kenarlardan oluşan yapı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Lineer cebirin gücü, elemanların mutlaka alışılmış anlamda sayı listeleri olmasını gerektirmemesinden gelir. Matrisler ve fonksiyonlar da toplanabiliyor ve skalerlerle çarpılabiliyorsa vektör uzayı diliyle incelenebilir. Böylece baz, boyut, alt uzay ve rank kavramları daha geniş bir alana yayılır.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Vektör uzayı olmak için gereken temel işlemler toplama ve skalerle çarpmadır. Matris çarpımı gibi ek işlemler bulunabilir; fakat vektör uzayı yapısının parçası olmak zorunda değildir.</p>
+        </aside>
+        <p>Rank bir matrisler, matrislerin en basit yapı taşlarıdır. Bir rank bir matris, tek bir sütun yönü ile tek bir satır yönünün dış çarpımı olarak yazılır. Bu fikir, daha yüksek ranklı matrislerin de rank bir parçalarla anlaşılabileceğini gösterir.</p>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Matris Uzayı</h3>
+          <p>Sabit boyutlu matrislerin kümesi, matris toplamı ve skalerle çarpma işlemleri altında bir vektör uzayıdır. Örneğin tüm \(3\times3\) gerçek matrislerin uzayı</p>
+          <div class="equation-card" data-raw-latex="M=\mathbb{R}^{3\times3}">
+            <div class="equation-content">
+              \[
+              M=\mathbb{R}^{3\times3}
+              \]
+            </div>
+          </div>
+          <p>ile gösterilebilir. Bu uzayın elemanları matrislerdir; fakat vektör uzayı bakımından bu elemanlar vektör rolündedir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.2: \(3\times3\) Matrisler Uzayının Standart Bazı</h3>
+          <p>Her \(3\times3\) matris dokuz girdiyle belirlenir. Bu nedenle \(M=\mathbb{R}^{3\times3}\) uzayının boyutu \(9\) dur. Standart baz, her seferinde yalnızca bir konumda \(1\), diğer konumlarda \(0\) bulunan matrislerden oluşur:</p>
+          <div class="equation-card" data-raw-latex="E_{ij}\ \text{matrisinin }(i,j)\text{ girdisi }1,\text{ diğer girdileri }0">
+            <div class="equation-content">
+              \[
+              E_{ij}\ \text{matrisinin }(i,j)\text{ girdisi }1,\text{ diğer girdileri }0
+              \]
+            </div>
+          </div>
+          <p>Bu dokuz matris \(M\) uzayını gerer ve bağımsızdır. Her matris</p>
+          <div class="equation-card" data-raw-latex="A=\sum_{i=1}^{3}\sum_{j=1}^{3}a_{ij}E_{ij}">
+            <div class="equation-content">
+              \[
+              A=\sum_{i=1}^{3}\sum_{j=1}^{3}a_{ij}E_{ij}
+              \]
+            </div>
+          </div>
+          <p>biçiminde tek türlü yazılır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.3: Simetrik, Üst Üçgensel ve Köşegen Alt Uzayları</h3>
+          <p>\(3\times3\) matrisler uzayında üç temel alt uzay şu şekilde tanımlanır:</p>
+          <div class="equation-card" data-raw-latex="S=\{A\in M:\ A^T=A\},\quad U=\{A\in M:\ a_{ij}=0\ \text{eğer }i>j\},\quad D=\{A\in M:\ a_{ij}=0\ \text{eğer }i\ne j\}">
+            <div class="equation-content">
+              \[
+              S=\{A\in M:\ A^T=A\},\quad
+              U=\{A\in M:\ a_{ij}=0\ \text{eğer }i>j\},\quad
+              D=\{A\in M:\ a_{ij}=0\ \text{eğer }i\ne j\}
+              \]
+            </div>
+          </div>
+          <p>Bu üç küme de alt uzaydır; çünkü toplama ve skalerle çarpma altında kapalıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Simetrik Matrisler Uzayının Boyutu</h3>
+          <p>Bir \(3\times3\) simetrik matris</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}a&b&c\\b&d&e\\c&e&f\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              a&b&c\\
+              b&d&e\\
+              c&e&f
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Üç köşegen girdisi ve köşegenin üstündeki üç girdi serbestçe seçilir; alt köşegen bunlarla belirlenir. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\dim S=6">
+            <div class="equation-content">
+              \[
+              \dim S=6
+              \]
+            </div>
+          </div>
+          <p>olur. Doğal bir baz, üç köşegen standart matrisi ile simetrik çiftleri temsil eden \(E_{12}+E_{21}\), \(E_{13}+E_{31}\), \(E_{23}+E_{32}\) matrislerinden oluşur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: Üst Üçgensel Matrisler Uzayının Boyutu</h3>
+          <p>Bir \(3\times3\) üst üçgensel matris</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}a&b&c\\0&d&e\\0&0&f\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              a&b&c\\
+              0&d&e\\
+              0&0&f
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Serbest girdi sayısı yine altıdır; dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\dim U=6">
+            <div class="equation-content">
+              \[
+              \dim U=6
+              \]
+            </div>
+          </div>
+          <p>Bu uzay için standart baz matrislerinden \(E_{ij}\) olup \(i\leq j\) koşulunu sağlayan altı tanesi seçilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Kesişim ve Toplam</h3>
+          <p>Bir matris hem simetrik hem üst üçgensel ise ana köşegen dışındaki bütün girdileri sıfır olmak zorundadır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="S\cap U=D">
+            <div class="equation-content">
+              \[
+              S\cap U=D
+              \]
+            </div>
+          </div>
+          <p>ve köşegen matrisler uzayının boyutu</p>
+          <div class="equation-card" data-raw-latex="\dim(S\cap U)=\dim D=3">
+            <div class="equation-content">
+              \[
+              \dim(S\cap U)=\dim D=3
+              \]
+            </div>
+          </div>
+          <p>olur. Buna karşılık \(S\cup U\) alt uzay değildir; çünkü simetrik bir matris ile üst üçgensel bir matrisin toplamı genellikle bu iki kümeden birinde kalmaz. Alt uzay elde etmek için toplam uzay kullanılır:</p>
+          <div class="equation-card" data-raw-latex="S+U=\{S_0+U_0:\ S_0\in S,\ U_0\in U\}">
+            <div class="equation-content">
+              \[
+              S+U=\{S_0+U_0:\ S_0\in S,\ U_0\in U\}
+              \]
+            </div>
+          </div>
+          <p>Bu örnekte her \(3\times3\) matris bir simetrik matris ile bir üst üçgensel matrisin toplamı olarak yazılabilir; dolayısıyla \(S+U=M\) ve \(\dim(S+U)=9\) olur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: İki Alt Uzay İçin Boyut Formülü</h3>
+          <p><strong>İfade:</strong> Sonlu boyutlu bir vektör uzayının iki alt uzayı \(V\) ve \(W\) için</p>
+          <div class="equation-card" data-raw-latex="\dim V+\dim W=\dim(V\cap W)+\dim(V+W)">
+            <div class="equation-content">
+              \[
+              \dim V+\dim W=\dim(V\cap W)+\dim(V+W)
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(V\) ve \(W\) boyutları toplanırken kesişimdeki yönler iki kez sayılır. Toplam uzayın boyutunu bulmak için bu fazla sayımı bir kez geri almak gerekir.</p>
+          <p><strong>Formal İspat:</strong> \(V\cap W\) için bir baz seçilsin ve bu baz \(V\) için bir baza, ayrıca \(W\) için bir baza tamamlanmış olsun. \(V+W\) uzayını geren aile, \(V\) bazındaki ek vektörler, \(W\) bazındaki ek vektörler ve kesişim bazından oluşur. Bu aile bağımsızdır; çünkü iki farklı tamamlamadan gelen bir bağımlılık, kesişim bazına geri indirgenir ve baz bağımsızlığına aykırı olur. Böylece toplam uzayın boyutu, \(V\) ve \(W\) boyutlarının toplamından kesişim boyutu çıkarılarak bulunur.</p>
+          <p><strong>Yorum:</strong> Simetrik ve üst üçgensel matris örneğinde \(6+6=3+9\) eşitliği bu teoremin somut karşılığıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Fonksiyonlardan Oluşan Çözüm Uzayı</h3>
+          <p>İkinci mertebeden homojen diferansiyel denklem</p>
+          <div class="equation-card" data-raw-latex="y''+y=0">
+            <div class="equation-content">
+              \[
+              y''+y=0
+              \]
+            </div>
+          </div>
+          <p>için çözümler bir vektör uzayı oluşturur. \(\cos x\) ve \(\sin x\) çözümdür; tüm çözümler</p>
+          <div class="equation-card" data-raw-latex="y=c_1\cos x+c_2\sin x">
+            <div class="equation-content">
+              \[
+              y=c_1\cos x+c_2\sin x
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Bu nedenle çözüm uzayının bir bazı \(\{\cos x,\sin x\}\), boyutu ise \(2\) dir. Bu örnek, lineer cebirdeki baz ve boyut kavramlarının fonksiyon uzaylarında da çalıştığını gösterir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.9: Rank Bir Matris</h3>
+          <p>Rankı \(1\) olan sıfırdan farklı bir matrisin bütün sütunları tek bir sütun doğrultusunun katlarıdır ve bütün satırları tek bir satır doğrultusunun katlarıdır. Bu nedenle rank bir matris dış çarpım biçiminde yazılabilir:</p>
+          <div class="equation-card" data-raw-latex="A=\mathbf{u}\mathbf{v}^T">
+            <div class="equation-content">
+              \[
+              A=\mathbf{u}\mathbf{v}^T
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Rank Bir Matrisin Dış Çarpımı</h3>
+          <p>Aşağıdaki matrisin ikinci satırı birinci satırın iki katıdır:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&4&5\\2&8&10\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              1&4&5\\
+              2&8&10
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle rank \(1\) dir. Matris şu dış çarpım olarak yazılır:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1\\2\end{bmatrix}\begin{bmatrix}1&4&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}1\\2\end{bmatrix}
+              \begin{bmatrix}1&4&5\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Satır uzayının bir bazı \((1,4,5)^T\), sütun uzayının bir bazı ise \((1,2)^T\) vektörüdür. Her iki uzayın boyutu da ranka eşit olarak \(1\) dir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.11: Rank Bir Matrislerin Yapısı</h3>
+          <p><strong>İfade:</strong> Sıfırdan farklı bir matris \(A\) için \(\operatorname{rank}(A)=1\) ancak ve ancak \(A=\mathbf{u}\mathbf{v}^T\) biçiminde yazılabilir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Rank bir olduğunda bütün sütunlar tek bir sütunun katıdır. Bu katsayılar bir satır vektörü oluşturur; seçilen sütunla bu satırın dış çarpımı bütün matrisi geri verir.</p>
+          <p><strong>Formal İspat:</strong> \(\operatorname{rank}(A)=1\) olsun. Sıfırdan farklı bir sütun \(\mathbf{u}\) seçelim. Her sütun \(\mathbf{u}\) vektörünün bir katı olduğundan \(A\) sütunları \(\alpha_1\mathbf{u},\ldots,\alpha_n\mathbf{u}\) biçimindedir. \(\mathbf{v}=(\alpha_1,\ldots,\alpha_n)^T\) tanımlanırsa \(A=\mathbf{u}\mathbf{v}^T\) olur. Tersine, \(A=\mathbf{u}\mathbf{v}^T\) ise her sütun \(\mathbf{u}\) vektörünün bir katıdır; bu yüzden sütun uzayı en fazla bir boyutludur. Matris sıfır değilse rank tam olarak \(1\) dir.</p>
+          <p><strong>Yorum:</strong> Rank bir matrisler, daha yüksek ranklı matrislerin anlaşılmasında temel yapı taşlarıdır.</p>
+        </section>
+
+        <section class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Rankı \(r\) olan bir matris, uygun biçimde \(r\) adet rank bir matrisin toplamı olarak düşünülebilir. Örneğin rankı \(4\) olan bir matris için dört rank bir yapı taşı gerekir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Rankı Sabit Matrisler Genellikle Alt Uzay Oluşturmaz</h3>
+          <p><strong>İfade:</strong> Rankı \(1\) olan matrislerin kümesi alt uzay değildir. Benzer biçimde, rankı tam olarak sabit bir pozitif sayıya eşit olan matrisler kümesi de genel olarak alt uzay değildir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Alt uzay olmak için toplama altında kapalı olmak gerekir. İki rank bir matrisin toplamı çoğu zaman rank iki olur.</p>
+          <p><strong>Formal İspat:</strong> Şu iki rank bir matrisi ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&0\\0&0\end{bmatrix},\qquad B=\begin{bmatrix}0&0\\0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}1&0\\0&0\end{bmatrix},\qquad
+              B=\begin{bmatrix}0&0\\0&1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Her ikisinin rankı \(1\) dir. Fakat</p>
+          <div class="equation-card" data-raw-latex="A+B=\begin{bmatrix}1&0\\0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A+B=\begin{bmatrix}1&0\\0&1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>rankı \(2\) olan bir matristir. Dolayısıyla rank bir matrisler toplama altında kapalı değildir.</p>
+          <p><strong>Yorum:</strong> Rank, alt uzayları tanımada güçlü bir ölçüdür; fakat rankı sabitlemek tek başına alt uzay koşullarını sağlamaz.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Toplamın Rankı İçin Üst Sınır</h3>
+          <p><strong>İfade:</strong> Aynı boyutlu iki matris için</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(A+B)\leq \operatorname{rank}(A)+\operatorname{rank}(B)">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(A+B)\leq \operatorname{rank}(A)+\operatorname{rank}(B)
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A+B\) matrisinin sütunları, \(A\) ve \(B\) sütunlarının toplamlarından oluşur. Bu sütunlar, \(A\) ve \(B\) sütun uzaylarının toplam uzayının dışına çıkamaz.</p>
+          <p><strong>Formal İspat:</strong> Her sütun için \((A+B)_j=A_j+B_j\) yazılır. Bu sütun, \(C(A)+C(B)\) toplam uzayı içindedir. Dolayısıyla \(C(A+B)\subseteq C(A)+C(B)\). Boyut alınırsa \(\operatorname{rank}(A+B)\leq \dim(C(A)+C(B))\leq \dim C(A)+\dim C(B)\). Bu da istenen eşitsizliği verir.</p>
+          <p><strong>Yorum:</strong> Bu eşitsizlik, rankların toplama altında nasıl davranabileceğine dair temel bir sınır sağlar.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Bileşen Toplamı Sıfır Olan Alt Uzay</h3>
+          <p>\(\mathbb{R}^4\) içinde şu alt uzayı ele alalım:</p>
+          <div class="equation-card" data-raw-latex="S=\{\mathbf{v}\in\mathbb{R}^4:\ v_1+v_2+v_3+v_4=0\}">
+            <div class="equation-content">
+              \[
+              S=\{\mathbf{v}\in\mathbb{R}^4:\ v_1+v_2+v_3+v_4=0\}
+              \]
+            </div>
+          </div>
+          <p>Bu bir alt uzaydır. Çünkü iki vektörün bileşen toplamları sıfırsa toplamlarının bileşen toplamı da sıfırdır; skalerle çarpma da bu özelliği korur. Ayrıca bu uzay bir sıfır uzayıdır:</p>
+          <div class="equation-card" data-raw-latex="S=N(A),\qquad A=\begin{bmatrix}1&1&1&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              S=N(A),\qquad
+              A=\begin{bmatrix}1&1&1&1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu matrisin rankı \(1\), sütun sayısı \(4\) olduğundan \(\dim S=4-1=3\) olur. Serbest değişkenlerden gelen doğal baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}-1\\1\\0\\0\end{bmatrix},\begin{bmatrix}-1\\0\\1\\0\end{bmatrix},\begin{bmatrix}-1\\0\\0\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}-1\\1\\0\\0\end{bmatrix},
+              \begin{bmatrix}-1\\0\\1\\0\end{bmatrix},
+              \begin{bmatrix}-1\\0\\0\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: \(A=\begin{bmatrix}1&1&1&1\end{bmatrix}\) İçin Dört Temel Alt Uzay</h3>
+          <p>Bu matris \(1\times4\) boyutludur. Rank \(1\) dir.</p>
+          <ul>
+            <li>Satır uzayı, \((1,1,1,1)\) vektörünün tüm katlarından oluşur ve \(\mathbb{R}^4\) içinde bir boyutludur.</li>
+            <li>Sıfır uzayı, bileşenleri toplamı sıfır olan vektörlerden oluşur ve üç boyutludur.</li>
+            <li>Sütun uzayı, \(\mathbb{R}^1\) uzayının tamamıdır ve bir boyutludur.</li>
+            <li>Sol sıfır uzayı yalnızca sıfır vektöründen oluşur ve boyutu \(0\) dır.</li>
+          </ul>
+          <div class="equation-card" data-raw-latex="\dim C(A^T)=1,\quad \dim N(A)=3,\quad \dim C(A)=1,\quad \dim N(A^T)=0">
+            <div class="equation-content">
+              \[
+              \dim C(A^T)=1,\quad
+              \dim N(A)=3,\quad
+              \dim C(A)=1,\quad
+              \dim N(A^T)=0
+              \]
+            </div>
+          </div>
+          <p>Sol sıfır uzayının bazında vektör bulunmaz; çünkü sıfır boyutlu uzayın bazı boş ailedir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.16: Graf</h3>
+          <p>Bir graf, düğümler ve düğümleri bağlayan kenarlardan oluşur. Kısa biçimde</p>
+          <div class="equation-card" data-raw-latex="G=(V,E)">
+            <div class="equation-content">
+              \[
+              G=(V,E)
+              \]
+            </div>
+          </div>
+          <p>yazılır. Burada \(V\) düğümler kümesini, \(E\) ise kenarlar kümesini gösterir. Beş düğümlü ve altı kenarlı bir graf, bir sonraki adımda \(5\times6\) boyutlu bir matrisle temsil edilebilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.17: Graf Uzaklığı</h3>
+          <p>Bir grafta iki düğüm arasındaki uzaklık, bir düğümden diğerine gitmek için gereken en az kenar sayısıdır. Arkadaşlık ağında düğümler kişiler, kenarlar arkadaşlık ilişkileri olarak yorumlanabilir. Bu durumda uzaklık, bir kişiden diğerine kaç tanıdık bağlantısıyla ulaşılabileceğini ölçer.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.18: Simetrik ve Üst Üçgensel Matrislerin Toplamı Bütün Uzayı Verir</h3>
+          <p><strong>İfade:</strong> \(M=\mathbb{R}^{3\times3}\), \(S\) simetrik matrisler alt uzayı ve \(U\) üst üçgensel matrisler alt uzayı olsun. O zaman \(S+U=M\).</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Üst üçgensel matrisler köşegen ve üst tarafı serbestçe kontrol eder. Simetrik matrisler alt taraftaki girdileri üst tarafla eşleyerek kalan yönleri tamamlar. Birlikte bütün matris girdileri elde edilebilir.</p>
+          <p><strong>Formal İspat:</strong> Teorem 1.7 kullanılır. \(\dim S=6\), \(\dim U=6\), \(S\cap U=D\) ve \(\dim D=3\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\dim(S+U)=\dim S+\dim U-\dim(S\cap U)=6+6-3=9">
+            <div class="equation-content">
+              \[
+              \dim(S+U)=\dim S+\dim U-\dim(S\cap U)=6+6-3=9
+              \]
+            </div>
+          </div>
+          <p>\(S+U\), \(M\) içinde bir alt uzaydır ve \(M\) ile aynı boyuta sahiptir. Bu nedenle \(S+U=M\).</p>
+          <p><strong>Yorum:</strong> İki alt uzayın birleşimi değil, toplamı lineer cebirde doğal işlemdir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.19: Bileşen Toplamı Sıfır Olan Uzayın Boyutu</h3>
+          <p><strong>İfade:</strong> \(S=\{\mathbf{v}\in\mathbb{R}^4:\ v_1+v_2+v_3+v_4=0\}\) alt uzayının boyutu \(3\) tür.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Dört bileşen vardır; tek bir bağımsız koşul bu bileşenlerden birini diğer üçüne bağlar. Bu yüzden üç serbestlik kalır.</p>
+          <p><strong>Formal İspat:</strong> \(S=N(A)\) ve \(A=\begin{bmatrix}1&1&1&1\end{bmatrix}\) olsun. Bu matrisin rankı \(1\) dir. Rank-sıfır uzayı boyut bağıntısından</p>
+          <div class="equation-card" data-raw-latex="\dim N(A)=n-r=4-1=3">
+            <div class="equation-content">
+              \[
+              \dim N(A)=n-r=4-1=3
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Dolayısıyla \(\dim S=3\).</p>
+          <p><strong>Yorum:</strong> Görünüşte basit bir koşul, homojen sistem ve dört temel alt uzay diliyle tam olarak anlaşılır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <strong>Yöntem 1: Matris Alt Uzayının Boyutunu Bulma</strong>
+          <ol>
+            <li>Matris üzerinde hangi girdilerin serbest seçilebildiğini belirle.</li>
+            <li>Bağımlı girdileri koşullardan çıkar.</li>
+            <li>Serbest parametre sayısını boyut olarak yaz.</li>
+            <li>Her serbest parametre için bir baz matrisi oluştur.</li>
+          </ol>
+          <p>Simetrik \(3\times3\) matrislerde altı serbest parametre olduğu için boyut \(6\) dır.</p>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 2: Alt Uzay Toplamı İçin Boyut Hesabı</strong>
+          <ol>
+            <li>Her alt uzayın boyutunu bul.</li>
+            <li>Kesişim alt uzayını belirle.</li>
+            <li>Kesişim boyutunu hesapla.</li>
+            <li>\(\dim(V+W)=\dim V+\dim W-\dim(V\cap W)\) formülünü uygula.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 3: Rank Bir Matrisi Dış Çarpım Olarak Yazma</strong>
+          <ol>
+            <li>Sıfır olmayan bir sütun \(\mathbf{u}\) seç.</li>
+            <li>Her sütunun \(\mathbf{u}\) vektörünün hangi katı olduğunu bul.</li>
+            <li>Bu katsayıları \(\mathbf{v}^T\) satırına yerleştir.</li>
+            <li>\(A=\mathbf{u}\mathbf{v}^T\) eşitliğini kontrol et.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <strong>Yöntem 4: Bileşen Toplamı Sıfır Olan Uzaya Baz Bulma</strong>
+          <ol>
+            <li>Koşulu \(A\mathbf{v}=0\) biçimine yaz.</li>
+            <li>Pivot değişkeni ve serbest değişkenleri belirle.</li>
+            <li>Her serbest değişken için bir özel çözüm oluştur.</li>
+            <li>Bu özel çözümleri baz olarak yaz.</li>
+          </ol>
+        </section>
+      </section>
+
+      <section aria-labelledby="uygulama-baglantilari">
+        <h2 id="uygulama-baglantilari">Uygulama Bağlantıları</h2>
+        <p>Graf fikri, düğümler ve kenarlar üzerinden ilişki ağlarını temsil eder. Bir sınıftaki kişiler düğüm, arkadaşlıklar kenar olarak alınırsa iki kişi arasındaki uzaklık, onları bağlayan en kısa arkadaşlık zincirinin uzunluğudur.</p>
+        <p>Küçük dünya düşüncesi, çok büyük bir graf içinde bile birkaç ek bağlantının uzaklıkları dramatik biçimde azaltabileceğini vurgular. Benzer biçimde internet siteleri düğüm, bağlantılar kenar olarak düşünüldüğünde büyük bir ağ grafı elde edilir. Bu dersin sonunda yalnızca graf kavramı tanıtılır; bu grafı tanımlayan matrisler sonraki adımın konusudur.</p>
+      </section>
+
+      <section aria-labelledby="sik-yapilan-hatalar">
+        <h2 id="sik-yapilan-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Hata 1: Matris Çarpımını Vektör Uzayı İşlemi Sanmak</h4>
+            <p>Matris uzayında temel işlemler toplama ve skalerle çarpmadır. Matris çarpımı ayrıca tanımlı olabilir; fakat vektör uzayı yapısını belirlemez.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 2: Birleşimi Alt Uzay Sanmak</h4>
+            <p>İki alt uzayın birleşimi genellikle alt uzay değildir. Doğru işlem, alt uzay toplamıdır.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 3: Rankı Sabit Kümeyi Alt Uzay Sanmak</h4>
+            <p>Rank bir matrislerin toplamı rank iki olabilir. Bu nedenle rankı sabit matrisler toplama altında kapalı değildir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Hata 4: Sıfır Boyutlu Uzayın Bazını Yanlış Yazmak</h4>
+            <p>Yalnızca sıfır vektöründen oluşan uzayın bazı boş ailedir; \(\mathbf{0}\) vektörü baz elemanı olarak alınmaz.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Vektör uzayı kavramı, sayı listelerinden matrislere ve fonksiyonlara genişler.</li>
+            <li>\(3\times3\) matrisler uzayının boyutu \(9\) dur.</li>
+            <li>Simetrik ve üst üçgensel matrislerin boyutları \(6\), kesişimleri olan köşegen matrislerin boyutu \(3\) tür.</li>
+            <li>Alt uzay toplamı \(S+U\), birleşimden farklıdır ve bu örnekte bütün matris uzayını verir.</li>
+            <li>Homojen diferansiyel denklemin çözüm kümesi de bir sıfır uzayı gibi düşünülebilir.</li>
+            <li>Rank bir matrisler \(\mathbf{u}\mathbf{v}^T\) biçimindedir.</li>
+            <li>Rankı sabit matrisler genellikle alt uzay değildir.</li>
+            <li>\(\{\mathbf{v}\in\mathbb{R}^4:\sum v_i=0\}\), \([1\ 1\ 1\ 1]\) matrisinin sıfır uzayıdır.</li>
+            <li>Graf yapıları düğümler ve kenarlarla ilişkileri temsil eder; uzaklık en kısa kenar zinciriyle ölçülür.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <div class="formula-item">
+            <p>Matris uzayının standart açılımı:</p>
+            <div class="equation-card" data-raw-latex="A=\sum_{i=1}^{3}\sum_{j=1}^{3}a_{ij}E_{ij}">
+              <div class="equation-content">
+                \[
+                A=\sum_{i=1}^{3}\sum_{j=1}^{3}a_{ij}E_{ij}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Alt uzay toplamının boyutu:</p>
+            <div class="equation-card" data-raw-latex="\dim(V+W)=\dim V+\dim W-\dim(V\cap W)">
+              <div class="equation-content">
+                \[
+                \dim(V+W)=\dim V+\dim W-\dim(V\cap W)
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Simetrik ve üst üçgensel matris örneği:</p>
+            <div class="equation-card" data-raw-latex="\dim S=6,\quad \dim U=6,\quad \dim(S\cap U)=3,\quad \dim(S+U)=9">
+              <div class="equation-content">
+                \[
+                \dim S=6,\quad \dim U=6,\quad
+                \dim(S\cap U)=3,\quad \dim(S+U)=9
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Rank bir matris:</p>
+            <div class="equation-card" data-raw-latex="A=\mathbf{u}\mathbf{v}^T">
+              <div class="equation-content">
+                \[
+                A=\mathbf{u}\mathbf{v}^T
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Rank toplam eşitsizliği:</p>
+            <div class="equation-card" data-raw-latex="\operatorname{rank}(A+B)\leq \operatorname{rank}(A)+\operatorname{rank}(B)">
+              <div class="equation-content">
+                \[
+                \operatorname{rank}(A+B)\leq \operatorname{rank}(A)+\operatorname{rank}(B)
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Bileşen toplamı sıfır olan uzay:</p>
+            <div class="equation-card" data-raw-latex="\{\mathbf{v}\in\mathbb{R}^4:\ v_1+v_2+v_3+v_4=0\}=N\left(\begin{bmatrix}1&1&1&1\end{bmatrix}\right)">
+              <div class="equation-content">
+                \[
+                \{\mathbf{v}\in\mathbb{R}^4:\ v_1+v_2+v_3+v_4=0\}
+                =
+                N\left(\begin{bmatrix}1&1&1&1\end{bmatrix}\right)
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde lineer cebirin vektör uzayı kavramı matrislere ve fonksiyonlara genişletildi. Tüm \(3\times3\) matrislerin uzayının boyutu \(9\), simetrik ve üst üçgensel alt uzayların boyutları \(6\), köşegen alt uzayın boyutu \(3\) olarak bulundu. Kesişim ve toplam işlemleri üzerinden \(\dim(V+W)=\dim V+\dim W-\dim(V\cap W)\) ilişkisi somutlaştırıldı.</p>
+        <p>Rank bir matrislerin \(\mathbf{u}\mathbf{v}^T\) biçiminde yazıldığı, bu matrislerin temel yapı taşı olduğu ve rankı sabit matris kümelerinin genellikle alt uzay oluşturmadığı gösterildi. Ayrıca bileşen toplamı sıfır olan \(\mathbb{R}^4\) alt uzayı bir sıfır uzayı olarak çözüldü.</p>
+        <p>Son olarak graf kavramı, düğüm ve kenar diliyle tanıtıldı; küçük dünya fikri, büyük graf içindeki kısa bağlantı zincirleri bağlamında yorumlandı.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(2\times2\) simetrik matrisler uzayının boyutunu ve bir bazını bulun.</p>
+          <p><strong>Çözüm:</strong> Genel bir \(2\times2\) simetrik matris</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}a&b\\b&c\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}a&b\\b&c\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Üç serbest parametre vardır. Bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}1&0\\0&0\end{bmatrix},\begin{bmatrix}0&1\\1&0\end{bmatrix},\begin{bmatrix}0&0\\0&1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}1&0\\0&0\end{bmatrix},
+              \begin{bmatrix}0&1\\1&0\end{bmatrix},
+              \begin{bmatrix}0&0\\0&1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>olur. Boyut \(3\) tür.</p>
+          <p><strong>Yorum:</strong> Simetri, köşegen dışındaki iki girdiyi tek parametreye indirir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>Aşağıdaki matrisi rank bir dış çarpım olarak yazın:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}3&6&-3\\1&2&-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              3&6&-3\\
+              1&2&-1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> İkinci satır birinci satırın üçte biridir; ayrıca bütün sütunlar \((3,1)^T\) vektörünün katlarıdır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}3\\1\end{bmatrix}\begin{bmatrix}1&2&-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}3\\1\end{bmatrix}
+              \begin{bmatrix}1&2&-1\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Yorum:</strong> Tek sütun yönü ve tek satır yönü bütün matrisi belirlediği için rank \(1\) dir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>\(\mathbb{R}^4\) içinde</p>
+          <div class="equation-card" data-raw-latex="T=\{\mathbf{x}\in\mathbb{R}^4:\ x_1+x_2+x_3+x_4=0,\ x_1-x_2=0\}">
+            <div class="equation-content">
+              \[
+              T=\{\mathbf{x}\in\mathbb{R}^4:\ x_1+x_2+x_3+x_4=0,\ x_1-x_2=0\}
+              \]
+            </div>
+          </div>
+          <p>alt uzayının boyutunu ve bir bazını bulun.</p>
+          <p><strong>Çözüm:</strong> Koşullar şu homojen sistemle yazılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&1&1&1\\1&-1&0&0\end{bmatrix}\mathbf{x}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&1&1&1\\
+              1&-1&0&0
+              \end{bmatrix}\mathbf{x}=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>İkinci denklem \(x_1=x_2\) verir. \(x_3=s\), \(x_4=t\) seçelim. Birinci denklem \(2x_1+s+t=0\) olduğundan \(x_1=x_2=-(s+t)/2\). Kesirleri önlemek için iki özel çözüm seçebiliriz:</p>
+          <div class="equation-card" data-raw-latex="s=2,t=0\Rightarrow \begin{bmatrix}-1\\-1\\2\\0\end{bmatrix},\qquad s=0,t=2\Rightarrow \begin{bmatrix}-1\\-1\\0\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              s=2,t=0\Rightarrow
+              \begin{bmatrix}-1\\-1\\2\\0\end{bmatrix},
+              \qquad
+              s=0,t=2\Rightarrow
+              \begin{bmatrix}-1\\-1\\0\\2\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla bir baz</p>
+          <div class="equation-card" data-raw-latex="\left\{\begin{bmatrix}-1\\-1\\2\\0\end{bmatrix},\begin{bmatrix}-1\\-1\\0\\2\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \left\{
+              \begin{bmatrix}-1\\-1\\2\\0\end{bmatrix},
+              \begin{bmatrix}-1\\-1\\0\\2\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>ve boyut \(2\) dir.</p>
+          <p><strong>Yorum:</strong> Dört bilinmeyen üzerinde iki bağımsız lineer koşul iki serbestlik bırakır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Matrix space</td>
+                <td>Matris uzayı</td>
+                <td>Sabit boyutlu matrislerin toplama ve skalerle çarpma altında oluşturduğu vektör uzayı.</td>
+              </tr>
+              <tr>
+                <td>Symmetric matrix</td>
+                <td>Simetrik matris</td>
+                <td>Transpozu kendisine eşit olan matris.</td>
+              </tr>
+              <tr>
+                <td>Upper triangular matrix</td>
+                <td>Üst üçgensel matris</td>
+                <td>Ana köşegenin altındaki bütün girdileri sıfır olan matris.</td>
+              </tr>
+              <tr>
+                <td>Diagonal matrix</td>
+                <td>Köşegen matris</td>
+                <td>Ana köşegen dışındaki bütün girdileri sıfır olan matris.</td>
+              </tr>
+              <tr>
+                <td>Intersection</td>
+                <td>Kesişim</td>
+                <td>İki alt uzayın ortak elemanlarından oluşan alt uzay.</td>
+              </tr>
+              <tr>
+                <td>Sum of subspaces</td>
+                <td>Alt uzay toplamı</td>
+                <td>İki alt uzaydan seçilen elemanların toplamlarıyla oluşan alt uzay.</td>
+              </tr>
+              <tr>
+                <td>Rank one matrix</td>
+                <td>Rank bir matris</td>
+                <td>Sütun uzayı ve satır uzayı bir boyutlu olan sıfırdan farklı matris.</td>
+              </tr>
+              <tr>
+                <td>Outer product</td>
+                <td>Dış çarpım</td>
+                <td>Bir sütun vektörü ile bir satır vektörünün çarpımı.</td>
+              </tr>
+              <tr>
+                <td>Graph</td>
+                <td>Graf</td>
+                <td>Düğümler ve bu düğümleri bağlayan kenarlardan oluşan yapı.</td>
+              </tr>
+              <tr>
+                <td>Small world graph</td>
+                <td>Küçük dünya grafiği</td>
+                <td>Çok büyük olmasına rağmen düğümler arasında kısa bağlantı yolları bulunan graf yapısı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lineer Cebir Ders Portalı</title>
+  <link rel="stylesheet" href="assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout home-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="index.html" class="active">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lectures/lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lectures/lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lectures/lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lectures/lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lectures/lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lectures/lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lectures/lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lectures/lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lectures/lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lectures/lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lectures/lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lectures/lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lectures/lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lectures/lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lectures/lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lectures/lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lectures/lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lectures/lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lectures/lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lectures/lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lectures/lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lectures/lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lectures/lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lectures/lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lectures/lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lectures/lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lectures/lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lectures/lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lectures/lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lectures/lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lectures/lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lectures/lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="home-content">
+      <section class="home-hero" aria-labelledby="portal-title">
+        <div class="home-eyebrow">Matematik ve Yapay Zeka Enstitüsü</div>
+        <h1 id="portal-title">Lineer Cebir Ders Portalı</h1>
+        <p class="home-intro">Bu portal, lineer cebir derslerinin tamamına tek bir yerden erişmek için hazırlanmıştır. Sol menüden istediğiniz dersi seçerek ilgili ders içeriğine ulaşabilirsiniz.</p>
+        <div class="home-meta" aria-label="Portal özellikleri">
+          <span>32 ders</span>
+          <span>Türkçe içerik</span>
+          <span>MathJax destekli formüller</span>
+          <span>Yerel kullanım</span>
+        </div>
+      </section>
+
+      <section class="course-grid" aria-label="Dersler">
+        <a class="course-card" href="lectures/lecture-1-the-geometry-of-linear-equations.html" aria-label="1. Ders: Lineer Denklemlerin Geometrisi dersini aç">
+          <div class="course-card-meta">1. Ders</div>
+          <div class="course-card-title">1. Ders: Lineer Denklemlerin Geometrisi</div>
+          <div class="course-card-description">Bu bölümde lineer cebirin başlangıç problemi incelenir: bir lineer denklem sisteminin çözümünü anlamak ve aynı sistemi farklı geometrik yorumlarla okuyabilmek.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-2-elimination-with-matrices.html" aria-label="2. Ders: Matrislerle Eliminasyon dersini aç">
+          <div class="course-card-meta">2. Ders</div>
+          <div class="course-card-title">2. Ders: Matrislerle Eliminasyon</div>
+          <div class="course-card-description">Bu bölüm, lineer denklem sistemlerini yalnızca yorumlamakla kalmayıp sistematik biçimde çözmenin ilk yöntemini kurar: eliminasyon.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-3-multiplication-and-inverse-matrices.html" aria-label="3. Ders: Matris Çarpımı ve Ters Matrisler dersini aç">
+          <div class="course-card-meta">3. Ders</div>
+          <div class="course-card-title">3. Ders: Matris Çarpımı ve Ters Matrisler</div>
+          <div class="course-card-description">Bu bölüm, matris çarpımının birden fazla eşdeğer yorumunu ve kare matrislerde ters matris kavramını birlikte ele alır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-4-factorization-into-a-lu.html" aria-label="4. Ders: A = LU Ayrıştırması dersini aç">
+          <div class="course-card-meta">4. Ders</div>
+          <div class="course-card-title">4. Ders: A = LU Ayrıştırması</div>
+          <div class="course-card-description">Bu bölüm, eliminasyonun matris çarpımı diliyle nasıl A = LU ayrıştırmasına dönüştüğünü açıklar.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-5-transposes-permutations-spaces-rn.html" aria-label="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları dersini aç">
+          <div class="course-card-meta">5. Ders</div>
+          <div class="course-card-title">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</div>
+          <div class="course-card-description">Bu bölüm, eliminasyonda satır değiş tokuşlarını temsil eden permütasyon matrislerini, devrik işlemini ve vektör uzayları fikrinin ilk büyük adımını bir araya getirir.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-6-column-space-and-nullspace.html" aria-label="6. Ders: Sütun Uzayı ve Sıfır Uzayı dersini aç">
+          <div class="course-card-meta">6. Ders</div>
+          <div class="course-card-title">6. Ders: Sütun Uzayı ve Sıfır Uzayı</div>
+          <div class="course-card-description">Bu bölüm, vektör uzayları ve alt uzaylar fikrini merkeze alır; özellikle bir matristen doğal olarak doğan iki temel alt uzayı, sütun uzayını ve sıfır uzayını inceler.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-7-solving-ax-0-pivot-variables-special-solutions.html" aria-label="7. Ders: Ax = 0 Çözümü dersini aç">
+          <div class="course-card-meta">7. Ders</div>
+          <div class="course-card-title">7. Ders: Ax = 0 Çözümü</div>
+          <div class="course-card-description">Bu bölüm, sıfır uzayının yalnızca tanımını değil, hesaplanma algoritmasını ele alır: Ax = 0 denkleminin tüm çözümleri eliminasyon, öncü değişkenler, serbest değişkenler ve özel çözümler yoluyla bulunur.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-8-solving-ax-b-row-reduced-form-r.html" aria-label="8. Ders: Ax = b Çözümü dersini aç">
+          <div class="course-card-meta">8. Ders</div>
+          <div class="course-card-title">8. Ders: Ax = b Çözümü</div>
+          <div class="course-card-description">Bu bölüm, Ax = b biçimindeki lineer sistemlerin tam çözümünü ele alır: önce çözümün var olup olmadığı belirlenir, sonra varsa bütün çözümler sistematik biçimde yazılır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-9-independence-basis-and-dimension.html" aria-label="9. Ders: Bağımsızlık, Baz ve Boyut dersini aç">
+          <div class="course-card-meta">9. Ders</div>
+          <div class="course-card-title">9. Ders: Bağımsızlık, Baz ve Boyut</div>
+          <div class="course-card-description">Bu bölüm, lineer cebirin en temel yapı taşlarından dördünü kesin anlamlarıyla kurar: bir vektör ailesinin bağımsız olması, bir uzayı germesi, o uzay için baz oluşturması ve uzayın boyutunun belirlenmesi.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-10-the-four-fundamental-subspaces.html" aria-label="10. Ders: Dört Temel Alt Uzay dersini aç">
+          <div class="course-card-meta">10. Ders</div>
+          <div class="course-card-title">10. Ders: Dört Temel Alt Uzay</div>
+          <div class="course-card-description">Bu bölüm, bir m × n matrisle doğal olarak gelen dört temel alt uzayı birlikte ele alır: sütun uzayı, sıfır uzayı, satır uzayı ve sol sıfır uzayı.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-11-matrix-spaces-rank-1-small-world-graphs.html" aria-label="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri dersini aç">
+          <div class="course-card-meta">11. Ders</div>
+          <div class="course-card-title">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</div>
+          <div class="course-card-description">Bu bölüm, vektör uzayı kavramının yalnızca R^n içindeki sayı listeleriyle sınırlı olmadığını gösterir. Matrisler, fonksiyonlar ve graf yapıları da uygun işlemlerle lineer cebirin konusu olabilir.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-12-graphs-networks-incidence-matrices.html" aria-label="12. Ders: Graflar, Ağlar ve İlişki Matrisleri dersini aç">
+          <div class="course-card-meta">12. Ders</div>
+          <div class="course-card-title">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</div>
+          <div class="course-card-description">Bu bölümde lineer cebirin soyut matris sorularının gerçek yapılı matrislerden nasıl doğduğunu gösteren temel bir model incelenir: düğümlerden ve kenarlardan oluşan yönlü bir ağ.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-13-orthogonal-vectors-and-subspaces.html" aria-label="13. Ders: Ortogonal Vektörler ve Alt Uzaylar dersini aç">
+          <div class="course-card-meta">13. Ders</div>
+          <div class="course-card-title">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</div>
+          <div class="course-card-description">Bu bölüm, lineer cebirde ortogonallik fikrini vektörlerden alt uzaylara taşır ve dört temel alt uzayın geometrisini daha keskin biçimde açıklar.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-14-projections-onto-subspaces.html" aria-label="14. Ders: Alt Uzaylara İzdüşüm dersini aç">
+          <div class="course-card-meta">14. Ders</div>
+          <div class="course-card-title">14. Ders: Alt Uzaylara İzdüşüm</div>
+          <div class="course-card-description">Bu bölümün ana problemi, bir vektörün belirli bir alt uzay içinde kendisine en yakın vektörünü bulmaktır. Bu en yakın vektöre izdüşüm denir; aradaki fark ise hata vektörüdür.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-15-projection-matrices-and-least-squares.html" aria-label="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler dersini aç">
+          <div class="course-card-meta">15. Ders</div>
+          <div class="course-card-title">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</div>
+          <div class="course-card-description">Bu bölüm, izdüşüm matrisinin geometrik anlamını pekiştirir ve en küçük kareler yaklaşımını tam bir sayısal doğru uydurma örneği üzerinde kurar.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-16-orthogonal-matrices-and-gram-schmidt.html" aria-label="16. Ders: Ortogonal Matrisler ve Gram-Schmidt dersini aç">
+          <div class="course-card-meta">16. Ders</div>
+          <div class="course-card-title">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</div>
+          <div class="course-card-description">Bu bölüm, ortogonallik konusunun son halkası olarak ortonormal bazları, ortogonal matrisleri ve Gram-Schmidt yöntemini ele alır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-17-properties-of-determinants.html" aria-label="17. Ders: Determinantların Özellikleri dersini aç">
+          <div class="course-card-meta">17. Ders</div>
+          <div class="course-card-title">17. Ders: Determinantların Özellikleri</div>
+          <div class="course-card-description">Bu bölüm, dikdörtgensel matrislerden kare matrislerin özel dünyasına geçerek determinant kavramını başlatır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-18-determinant-formulas-and-cofactors.html" aria-label="18. Ders: Determinant Formülleri ve Kofaktörler dersini aç">
+          <div class="course-card-meta">18. Ders</div>
+          <div class="course-card-title">18. Ders: Determinant Formülleri ve Kofaktörler</div>
+          <div class="course-card-description">Bu bölüm determinant konusunun ikinci adımıdır: temel özelliklerden yola çıkarak açık determinant formülleri elde edilir.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-19-cramers-rule-inverse-matrix-and-volume.html" aria-label="19. Ders: Cramer Kuralı, Ters Matris ve Hacim dersini aç">
+          <div class="course-card-meta">19. Ders</div>
+          <div class="course-card-title">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</div>
+          <div class="course-card-description">Bu bölüm, determinant konusunun uygulama aşamasıdır: determinant ve kofaktörler ters matris, lineer sistem çözümü ve hacim hesabı için kullanılır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-20-eigenvalues-and-eigenvectors.html" aria-label="20. Ders: Özdeğerler ve Özvektörler dersini aç">
+          <div class="course-card-meta">20. Ders</div>
+          <div class="course-card-title">20. Ders: Özdeğerler ve Özvektörler</div>
+          <div class="course-card-description">Bu bölüm kare matrislerin özel vektörlerini ve bu vektörler boyunca ortaya çıkan çarpanları inceler. Ana problem, Ax sonucunun hangi x vektörleri için x ile aynı doğrultuda kaldığını bulmaktır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-21-diagonalization-and-powers-of-a.html" aria-label="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri dersini aç">
+          <div class="course-card-meta">21. Ders</div>
+          <div class="course-card-title">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</div>
+          <div class="course-card-description">Bu bölüm, özdeğer ve özvektörlerin temel kullanımını açıklar: yeterli sayıda bağımsız özvektör bulunduğunda matris köşegen bir matrise indirgenir ve A'nın yüksek kuvvetleri kolayca anlaşılır.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-22-differential-equations-and-exp-at.html" aria-label="22. Ders: Diferansiyel Denklemler ve Matris Üsteli dersini aç">
+          <div class="course-card-meta">22. Ders</div>
+          <div class="course-card-title">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</div>
+          <div class="course-card-description">Bu bölüm, sabit katsayılı birinci mertebeden lineer diferansiyel denklem sistemlerini özdeğer ve özvektörlerle çözmeyi inceler.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-23-markov-matrices-fourier-series.html" aria-label="23. Ders: Markov Matrisleri ve Fourier Serileri dersini aç">
+          <div class="course-card-meta">23. Ders</div>
+          <div class="course-card-title">23. Ders: Markov Matrisleri ve Fourier Serileri</div>
+          <div class="course-card-description">Bu bölümde özdeğerler ve özvektörler iki farklı ama aynı çizgide ilerleyen problemde kullanılır: Markov matrislerinin uzun dönem davranışı ve ortonormal bazlara göre katsayı bulma problemi. İlk kısım, matris...</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-24-symmetric-matrices-and-positive-definiteness.html" aria-label="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık dersini aç">
+          <div class="course-card-meta">24. Ders</div>
+          <div class="course-card-title">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</div>
+          <div class="course-card-description">Bu bölümde kare matrisler içinde en düzenli sınıflardan biri olan simetrik matrisler incelenir. Ana soru şudur: A = A^T koşulu, özdeğerler ve özvektörler hakkında neyi zorunlu kılar?</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-25-complex-matrices-fast-fourier-transform.html" aria-label="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü dersini aç">
+          <div class="course-card-meta">25. Ders</div>
+          <div class="course-card-title">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</div>
+          <div class="course-card-description">Bu bölüm, lineer cebirde daha önce gerçek sayılarla kurulan iç çarpım, diklik, simetri ve ortogonallik kavramlarının karmaşık sayılarla nasıl doğru biçimde değiştirileceğini inceler. Ardından bu dil, Fourier...</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-26-positive-definite-matrices-and-minima.html" aria-label="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar dersini aç">
+          <div class="course-card-meta">26. Ders</div>
+          <div class="course-card-title">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</div>
+          <div class="course-card-description">Bu bölüm, pozitif tanımlı simetrik matrislerin nasıl tanınacağını ve bu özelliğin ikinci dereceden fonksiyonların minimumlarıyla neden aynı matematiksel yapıyı anlattığını inceler.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-27-similar-matrices-and-jordan-form.html" aria-label="27. Ders: Benzer Matrisler ve Jordan Biçimi dersini aç">
+          <div class="course-card-meta">27. Ders</div>
+          <div class="course-card-title">27. Ders: Benzer Matrisler ve Jordan Biçimi</div>
+          <div class="course-card-description">Bu bölüm, pozitif tanımlı matrislerin bazı temel kapanış özelliklerini tamamladıktan sonra benzer matrisleri ve tekrarlı özdeğerlerde ortaya çıkan Jordan biçimini inceler.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-28-singular-value-decomposition.html" aria-label="28. Ders: Tekil Değer Ayrışımı dersini aç">
+          <div class="course-card-meta">28. Ders</div>
+          <div class="course-card-title">28. Ders: Tekil Değer Ayrışımı</div>
+          <div class="course-card-description">Bu bölüm, herhangi bir matrisin iki dik matris ve ortada köşegen biçimli bir matris yardımıyla nasıl ayrıştırılacağını inceler.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-29-linear-transformations-and-their-matrices.html" aria-label="29. Ders: Lineer Dönüşümler ve Matrisleri dersini aç">
+          <div class="course-card-meta">29. Ders</div>
+          <div class="course-card-title">29. Ders: Lineer Dönüşümler ve Matrisleri</div>
+          <div class="course-card-description">Bu bölüm, matrislerden bir adım geri çekilerek lineer dönüşüm fikrini doğrudan ele alır ve her lineer dönüşümün baz seçimi yapıldığında bir matrisle temsil edildiğini gösterir.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-30-change-of-basis-image-compression.html" aria-label="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma dersini aç">
+          <div class="course-card-meta">30. Ders</div>
+          <div class="course-card-title">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</div>
+          <div class="course-card-description">Bu bölüm, baz değişiminin yalnızca soyut bir koordinat işlemi olmadığını; görüntü ve işaret sıkıştırma gibi büyük veri akışlarında temel bir lineer cebir aracı olduğunu gösterir.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-31-left-and-right-inverses-pseudoinverse.html" aria-label="31. Ders: Sol ve Sağ Tersler; Sözde Ters dersini aç">
+          <div class="course-card-meta">31. Ders</div>
+          <div class="course-card-title">31. Ders: Sol ve Sağ Tersler; Sözde Ters</div>
+          <div class="course-card-description">Bu bölüm, bir matrisin neden her zaman klasik anlamda terslenemediğini ve ters kavramının rütbe ile dört temel alt uzay üzerinden nasıl genişletildiğini inceler.</div>
+        </a>
+        <a class="course-card" href="lectures/lecture-32-final-course-review.html" aria-label="32. Ders: Final Ders Tekrarı dersini aç">
+          <div class="course-card-meta">32. Ders</div>
+          <div class="course-card-title">32. Ders: Final Ders Tekrarı</div>
+          <div class="course-card-description">Bu bölüm, ders boyunca kurulan ana fikirleri sınav tipi sorular üzerinden yeniden düzenler: çözüm varlığı, tekillik, rütbe, dört temel alt uzay, projeksiyonlar, özdeğerler ve en küçük kareler aynı çatı altın...</div>
+        </a>
+      </section>
+    </main>
+  </div>
+  <script defer src="assets/portal.js"></script>
+</body>
+</html>

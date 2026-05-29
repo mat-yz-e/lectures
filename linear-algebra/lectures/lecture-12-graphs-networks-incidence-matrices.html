@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>12. Ders: Graflar, Ağlar ve İlişki Matrisleri</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item p {
+      margin-bottom: 0.4rem;
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.3vw, 1.75rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" class="active" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</h1>
+
+      <section aria-labelledby="kapsam-ve-baglam">
+        <h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölümde lineer cebirin soyut matris sorularının gerçek yapılı matrislerden nasıl doğduğunu gösteren temel bir model incelenir: düğümlerden ve kenarlardan oluşan yönlü bir ağ.</p>
+        <p>Bir grafın ilişki matrisi, her kenarın hangi düğümden çıktığını ve hangi düğüme girdiğini kaydeder. Bu matris hem cebirsel olarak dört temel alt uzayla bağlantılıdır hem de ağlarda potansiyel farkı, akım ve denge denklemlerinin ortak dilini verir.</p>
+        <p>Önce küçük bir graf üzerinden \(A\) ilişki matrisi kurulur. Sonra \(A\mathbf{x}\), \(N(A)\), \(A^T\mathbf{y}=0\), döngü akımları, ağaçlar ve Euler bağıntısı lineer cebir açısından yorumlanır. Bölümün sonunda bu yapı, denge halindeki ağ denklemi \(A^TCA\mathbf{x}=\mathbf{f}\) biçiminde birleştirilir.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir yönlü graf için ilişki matrisini kurmak.</li>
+          <li>\(A\mathbf{x}\) çarpımını kenarlar üzerindeki potansiyel farkları olarak yorumlamak.</li>
+          <li>Bağlantılı bir graf için \(N(A)\) uzayının sabit potansiyellerden oluştuğunu açıklamak.</li>
+          <li>\(\operatorname{rank}(A)=n-1\) sonucunu örnek graf üzerinde kullanmak.</li>
+          <li>\(A^T\mathbf{y}=0\) denklemini düğümlerde akım dengesi olarak okumak.</li>
+          <li>\(N(A^T)\) uzayını bağımsız döngü akımlarıyla ilişkilendirmek.</li>
+          <li>Ağaç, döngü ve bağımsız kenar kavramlarını lineer bağımlılık diliyle açıklamak.</li>
+          <li>Euler bağıntısını ilişki matrisinin rank ve nullspace boyutlarıyla temellendirmek.</li>
+          <li>\(A^TCA\mathbf{x}=\mathbf{f}\) denkleminin hangi üç lineer adımın birleşimi olduğunu görmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Matris çarpımı ve transpoz işlemi.</li>
+          <li>Sütun uzayı, satır uzayı ve nullspace kavramları.</li>
+          <li>Rank-nullity bağıntısı.</li>
+          <li>Lineer bağımsızlık ve baz kavramı.</li>
+          <li>Homojen lineer sistem çözme fikri.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(n\)</td>
+                <td>Düğüm sayısı</td>
+                <td>Örnek graf için \(n=4\).</td>
+              </tr>
+              <tr>
+                <td>\(m\)</td>
+                <td>Kenar sayısı</td>
+                <td>Örnek graf için \(m=5\).</td>
+              </tr>
+              <tr>
+                <td>\(A\)</td>
+                <td>İlişki matrisi</td>
+                <td>Satırları kenarları, sütunları düğümleri temsil eder.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}\)</td>
+                <td>Düğüm potansiyelleri</td>
+                <td>\(\mathbf{x}=(x_1,x_2,x_3,x_4)^T\).</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{e}\)</td>
+                <td>Potansiyel farkları</td>
+                <td>Kenarlar üzerindeki fark vektörü; \(\mathbf{e}=A\mathbf{x}\).</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{y}\)</td>
+                <td>Kenar akımları</td>
+                <td>\(\mathbf{y}=(y_1,\ldots,y_5)^T\).</td>
+              </tr>
+              <tr>
+                <td>\(C\)</td>
+                <td>İletkenlik matrisi</td>
+                <td>Potansiyel farklarını akımlara bağlayan köşegen matris.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{f}\)</td>
+                <td>Dış akım kaynağı</td>
+                <td>Düğümlere dışarıdan giren veya çıkan akımları temsil eder.</td>
+              </tr>
+              <tr>
+                <td>\(N(A)\)</td>
+                <td>Nullspace</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) çözümlerinin uzayı.</td>
+              </tr>
+              <tr>
+                <td>\(N(A^T)\)</td>
+                <td>Sol nullspace</td>
+                <td>\(A^T\mathbf{y}=\mathbf{0}\) çözümlerinin uzayı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Lineer cebirdeki matrisler çoğu zaman rastgele sayı tabloları değildir; belirli bir yapıyı, dengeyi veya bağlantıyı kaydeder. Bir grafın ilişki matrisi bunun en temel örneklerinden biridir.</p>
+        <p>Bir yanda düğümlerdeki bilinmeyen potansiyeller vardır. Matris \(A\), bu potansiyelleri kenarlar üzerindeki farklara dönüştürür. Diğer yanda kenarlardaki akımlar vardır. Transpoz matris \(A^T\), bu akımların düğümlerde dengelenip dengelenmediğini denetler.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>İlişki matrisi, grafın bağlantı yapısını lineer cebirin dört temel alt uzayına taşır: sabit potansiyeller \(N(A)\) içinde, döngü akımları ise \(N(A^T)\) içindedir.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Graf ve Yönlendirilmiş Kenar</h3>
+          <p>Bir graf, düğümlerden ve bu düğümleri bağlayan kenarlardan oluşur. Bir kenara yön verildiğinde, o kenarın bir başlangıç düğümü ve bir bitiş düğümü seçilmiş olur.</p>
+          <p>Yön seçimi çoğu zaman fiziksel zorunluluk değil, işaretleri tutarlı belirlemek için yapılan bir konvansiyondur. Akım yönü daha sonra seçilen okla aynı yöndeyse pozitif, ters yöndeyse negatif sayılabilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: İlişki Matrisi</h3>
+          <p>\(n\) düğümlü ve \(m\) kenarlı yönlü bir graf için ilişki matrisi \(A\), \(m\times n\) boyutlu bir matristir. Her satır bir kenara, her sütun bir düğüme karşılık gelir.</p>
+          <p>Bir kenar \(i\) düğümünden \(j\) düğümüne yönlendirilmişse, ilgili satırda \(i\) sütununa \(-1\), \(j\) sütununa \(1\), diğer sütunlara \(0\) yazılır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Dört Düğümlü ve Beş Kenarlı Graf</h3>
+          <p>Düğümler \(1,2,3,4\) olsun. Kenarlar şu yönlerde seçilsin:</p>
+          <div class="equation-card" data-raw-latex="1\to2,\qquad 2\to3,\qquad 1\to3,\qquad 1\to4,\qquad 3\to4">
+            <div class="equation-content">
+              \[
+              1\to2,\qquad 2\to3,\qquad 1\to3,\qquad 1\to4,\qquad 3\to4
+              \]
+            </div>
+          </div>
+          <p>Buna karşılık gelen ilişki matrisi şudur:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}-1&1&0&0\\0&-1&1&0\\-1&0&1&0\\-1&0&0&1\\0&0&-1&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              -1&1&0&0\\
+              0&-1&1&0\\
+              -1&0&1&0\\
+              -1&0&0&1\\
+              0&0&-1&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Her satırda tam iki sıfır olmayan girdi vardır. Bu yüzden ilişki matrisi seyrek ve çok düzenli bir matristir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Düğüm Potansiyelleri ve Kenar Farkları</h3>
+          <p>Düğüm potansiyelleri \(\mathbf{x}=(x_1,x_2,x_3,x_4)^T\) ile gösterilsin. \(A\mathbf{x}\) çarpımı, her kenar boyunca bitiş potansiyeli eksi başlangıç potansiyelini verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: \(A\mathbf{x}\) Çarpımının Anlamı</h3>
+          <p>Yukarıdaki ilişki matrisi için</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\begin{bmatrix}x_2-x_1\\x_3-x_2\\x_3-x_1\\x_4-x_1\\x_4-x_3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=
+              \begin{bmatrix}
+              x_2-x_1\\
+              x_3-x_2\\
+              x_3-x_1\\
+              x_4-x_1\\
+              x_4-x_3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu vektör, beş kenar üzerindeki potansiyel farklarını verir. Örneğin ilk bileşen \(1\to2\) kenarı üzerindeki farktır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Sabit Potansiyellerin Nullspace Oluşturması</h3>
+          <p><strong>İfade:</strong> Örnek graf için \(A\mathbf{x}=\mathbf{0}\) denkleminin çözümleri sabit potansiyellerdir:</p>
+          <div class="equation-card" data-raw-latex="N(A)=\operatorname{span}\left\{\begin{bmatrix}1\\1\\1\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              N(A)=\operatorname{span}\left\{
+              \begin{bmatrix}1\\1\\1\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Eğer bütün düğümlerdeki potansiyel aynıysa hiçbir kenar boyunca fark yoktur. Potansiyel farkı olmayınca \(A\mathbf{x}\) sıfır olur.</p>
+          <p><strong>Formal İspat:</strong> \(A\mathbf{x}=\mathbf{0}\) ise</p>
+          <div class="equation-card" data-raw-latex="x_2-x_1=0,\quad x_3-x_2=0,\quad x_3-x_1=0,\quad x_4-x_1=0,\quad x_4-x_3=0">
+            <div class="equation-content">
+              \[
+              x_2-x_1=0,\quad x_3-x_2=0,\quad x_3-x_1=0,\quad x_4-x_1=0,\quad x_4-x_3=0
+              \]
+            </div>
+          </div>
+          <p>İlk iki denklem \(x_1=x_2=x_3\) sonucunu verir. Dördüncü denklem \(x_4=x_1\) dediği için \(x_1=x_2=x_3=x_4\). Dolayısıyla \(\mathbf{x}=c(1,1,1,1)^T\) olur. Tersi yönde, bu biçimdeki her vektörün bütün kenar farkları sıfırdır.</p>
+          <p><strong>Yorum:</strong> Potansiyeller mutlak değil, farkları belirleyicidir. Bütün potansiyellere aynı sabiti eklemek ağdaki farkları değiştirmez.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Bir düğümü topraklamak, o düğümün potansiyelini sıfır kabul etmek demektir. Böylece sabit ekleme serbestliği kaldırılır ve kalan potansiyeller belirlenebilir hâle gelir.</p>
+        </aside>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Örnek İlişki Matrisinin Rankı</h3>
+          <p><strong>İfade:</strong> Yukarıdaki \(5\times4\) ilişki matrisi için</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(A)=3">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(A)=3
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Dört düğüm potansiyelinden biri ortak sabit olarak serbest kalır. Bu tek serbestlik, sütunların bir bağımlılığa sahip olduğunu gösterir.</p>
+          <p><strong>Formal İspat:</strong> \(A\) matrisinin dört sütunu vardır. Teorem 1.6'ya göre \(N(A)\) bir boyutludur. Rank-nullity bağıntısı uygulanır:</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(A)+\dim N(A)=4">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(A)+\dim N(A)=4
+              \]
+            </div>
+          </div>
+          <p>\(\dim N(A)=1\) olduğundan \(\operatorname{rank}(A)=3\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, bağlantılı bir graf için genel desenin küçük örneğidir: rank, düğüm sayısından bir eksiktir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.8: Akım Dengesi Denklemi</h3>
+          <p>Kenar akımları \(\mathbf{y}=(y_1,y_2,y_3,y_4,y_5)^T\) ile gösterilsin. \(A^T\mathbf{y}=\mathbf{0}\) denklemi her düğümde giren ve çıkan akımların dengelenmesini söyler.</p>
+          <p>Bu denklem, düğümlerde akım birikmediği varsayımının lineer cebirsel biçimidir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: \(A^T\mathbf{y}=0\) Denklemlerinin Açılması</h3>
+          <p>Örnek matrisin transpozu \(\mathbf{y}\) ile çarpıldığında dört düğüm denklemi elde edilir:</p>
+          <div class="equation-card" data-raw-latex="A^T\mathbf{y}=\begin{bmatrix}-y_1-y_3-y_4\\y_1-y_2\\y_2+y_3-y_5\\y_4+y_5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^T\mathbf{y}=
+              \begin{bmatrix}
+              -y_1-y_3-y_4\\
+              y_1-y_2\\
+              y_2+y_3-y_5\\
+              y_4+y_5
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Birinci denklem, birinci düğümden çıkan üç akımın toplamının sıfır olmasını; ikinci denklem, \(1\to2\) ve \(2\to3\) kenarlarındaki akımların dengelenmesini ifade eder.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.10: Döngü Akımlarından Baz Oluşturma</h3>
+          <p>Birinci bağımsız döngü \(1\to2\to3\to1\) çevresinde seçilebilir. Bu döngüye karşılık gelen akım vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{y}^{(1)}=\begin{bmatrix}1\\1\\-1\\0\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{y}^{(1)}=
+              \begin{bmatrix}
+              1\\1\\-1\\0\\0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. İkinci bağımsız döngü \(1\to3\to4\to1\) çevresinde seçilebilir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{y}^{(2)}=\begin{bmatrix}0\\0\\1\\-1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{y}^{(2)}=
+              \begin{bmatrix}
+              0\\0\\1\\-1\\1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu iki vektör \(A^T\mathbf{y}=\mathbf{0}\) denklemini sağlar ve bağımsızdır. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="N(A^T)=\operatorname{span}\left\{\begin{bmatrix}1\\1\\-1\\0\\0\end{bmatrix},\begin{bmatrix}0\\0\\1\\-1\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              N(A^T)=\operatorname{span}\left\{
+              \begin{bmatrix}1\\1\\-1\\0\\0\end{bmatrix},
+              \begin{bmatrix}0\\0\\1\\-1\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.11: Ağaç</h3>
+          <p>Bir grafın döngü içermeyen bağlı parçasına ağaç denir. Örnek graf içinde \(1\to2\), \(2\to3\) ve \(1\to4\) kenarları dört düğümü bağlar ve döngü oluşturmaz.</p>
+          <p>Lineer cebir açısından, döngü içermeyen bu kenarlar bağımsız satır veya transpozda bağımsız sütun seçimine karşılık gelir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ve-ispatlar">
+        <h2 id="teoremler-ve-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Sol Nullspace Boyutu ve Döngü Sayısı</h3>
+          <p><strong>İfade:</strong> Örnek graf için \(N(A^T)\) iki boyutludur:</p>
+          <div class="equation-card" data-raw-latex="\dim N(A^T)=m-\operatorname{rank}(A)=5-3=2">
+            <div class="equation-content">
+              \[
+              \dim N(A^T)=m-\operatorname{rank}(A)=5-3=2
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Düğümlerde akım dengesi sağlanırken akım, bağımsız döngüler etrafında serbestçe dolaşabilir. Örnek grafte iki bağımsız döngü vardır.</p>
+          <p><strong>Formal İspat:</strong> \(A\) matrisi \(5\times4\) boyutludur ve rankı \(3\) tür. \(A^T\) matrisi \(4\times5\) boyutlu olup rankı yine \(3\) tür. Rank-nullity bağıntısı \(A^T\) için uygulanır:</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(A^T)+\dim N(A^T)=5">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(A^T)+\dim N(A^T)=5
+              \]
+            </div>
+          </div>
+          <p>\(\operatorname{rank}(A^T)=3\) olduğundan \(\dim N(A^T)=2\) bulunur.</p>
+          <p><strong>Yorum:</strong> Sol nullspace, soyut bir cebirsel artık değil, bağımsız döngü akımlarının uzayıdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Döngülerin Satır Bağımlılığı Üretmesi</h3>
+          <p><strong>İfade:</strong> Bir ilişki matrisinde döngü oluşturan kenarlara karşılık gelen satırlar lineer bağımlılık taşır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir döngü boyunca gidildiğinde potansiyel farkları teleskopik biçimde toplanır ve başlangıç düğümüne geri dönüldüğü için toplam sıfır olur.</p>
+          <p><strong>Formal İspat:</strong> Örnek grafte ilk üç kenar \(1\to2\), \(2\to3\), \(1\to3\) aynı üç düğüm arasında bir döngü oluşturur. İlgili satırlar</p>
+          <div class="equation-card" data-raw-latex="\mathbf{r}_1=\begin{bmatrix}-1&1&0&0\end{bmatrix},\quad \mathbf{r}_2=\begin{bmatrix}0&-1&1&0\end{bmatrix},\quad \mathbf{r}_3=\begin{bmatrix}-1&0&1&0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{r}_1=\begin{bmatrix}-1&1&0&0\end{bmatrix},\quad
+              \mathbf{r}_2=\begin{bmatrix}0&-1&1&0\end{bmatrix},\quad
+              \mathbf{r}_3=\begin{bmatrix}-1&0&1&0\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{r}_1+\mathbf{r}_2=\mathbf{r}_3">
+            <div class="equation-content">
+              \[
+              \mathbf{r}_1+\mathbf{r}_2=\mathbf{r}_3
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu bir lineer bağımlılık ilişkisidir.</p>
+          <p><strong>Yorum:</strong> Döngüsüz bir kenar seçimi, bağımsız satır seçimine; döngü ise bağımlılığa karşılık gelir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.14: Euler Bağıntısı</h3>
+          <p><strong>İfade:</strong> Bağlı bir graf için düğüm sayısı \(n\), kenar sayısı \(m\) ve bağımsız döngü sayısı \(\ell\) arasında</p>
+          <div class="equation-card" data-raw-latex="n-m+\ell=1">
+            <div class="equation-content">
+              \[
+              n-m+\ell=1
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir ağacı oluşturmak için \(n-1\) kenar yeterlidir. Bu sayının üzerindeki her bağımsız ek kenar yeni bir döngü oluşturur.</p>
+          <p><strong>Formal İspat:</strong> Bağlı graf için ilişki matrisinin nullspace'i sabit potansiyellerden oluşur; bu yüzden \(\dim N(A)=1\) ve \(\operatorname{rank}(A)=n-1\). Bağımsız döngü sayısı sol nullspace boyutudur:</p>
+          <div class="equation-card" data-raw-latex="\ell=\dim N(A^T)=m-\operatorname{rank}(A)=m-(n-1)">
+            <div class="equation-content">
+              \[
+              \ell=\dim N(A^T)=m-\operatorname{rank}(A)=m-(n-1)
+              \]
+            </div>
+          </div>
+          <p>Bu eşitlik düzenlenirse \(n-m+\ell=1\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu sonuç, graf topolojisinin lineer cebirdeki rank-nullity bağıntısından nasıl çıktığını gösterir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.15: \(A^TA\) ve \(A^TCA\) Matrislerinin Simetrisi</h3>
+          <p><strong>İfade:</strong> Uygun boyutlu her \(A\) için \(A^TA\) simetriktir. Ayrıca \(C=C^T\) ise \(A^TCA\) da simetriktir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir matrisin transpozu soldan ve sağdan aynı yapı ile çarpıldığında, ortaya çıkan matris yön değiştirme işlemine karşı değişmez kalır.</p>
+          <p><strong>Formal İspat:</strong> Transpoz kuralları kullanılır:</p>
+          <div class="equation-card" data-raw-latex="(A^TA)^T=A^T(A^T)^T=A^TA">
+            <div class="equation-content">
+              \[
+              (A^TA)^T=A^T(A^T)^T=A^TA
+              \]
+            </div>
+          </div>
+          <p>Eğer \(C=C^T\) ise</p>
+          <div class="equation-card" data-raw-latex="(A^TCA)^T=A^TC^TA=A^TCA">
+            <div class="equation-content">
+              \[
+              (A^TCA)^T=A^TC^TA=A^TCA
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Denge denklemlerinde ortaya çıkan matrislerin simetrik olması rastlantı değil, \(A\), \(A^T\) ve simetrik fiziksel katsayıların birleşiminden kaynaklanır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: İlişki Matrisi Kurma Yöntemi</h3>
+          <p>Bir graf için ilişki matrisi kurarken şu adımlar izlenir:</p>
+          <ol>
+            <li>Düğümleri sırayla numaralandır.</li>
+            <li>Her kenara bir yön seç.</li>
+            <li>Her kenar için bir satır oluştur.</li>
+            <li>Satırda çıkış düğümüne \(-1\), giriş düğümüne \(1\), diğer düğümlere \(0\) yaz.</li>
+          </ol>
+          <p>Örnek grafte ilk kenar \(1\to2\) olduğu için ilk satır \([-1,1,0,0]\) olur. Beş kenar için aynı işlem uygulanınca Teorem 1.3'teki matris elde edilir.</p>
+          <aside class="note-card">
+            <strong>Dikkat:</strong>
+            <p>Kenar yönleri değiştirilebilir; bir kenarın yönü ters seçilirse ilgili satırın işareti değişir. Ancak temel alt uzayların boyutları bu keyfi seçimden etkilenmez.</p>
+          </aside>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.17: \(N(A)\) Hesaplama Yöntemi</h3>
+          <p>\(A\mathbf{x}=\mathbf{0}\) denklemini açmak, bütün komşu düğümler arasındaki potansiyel farklarının sıfır olduğunu söyler:</p>
+          <div class="equation-card" data-raw-latex="x_2=x_1,\qquad x_3=x_2,\qquad x_3=x_1,\qquad x_4=x_1,\qquad x_4=x_3">
+            <div class="equation-content">
+              \[
+              x_2=x_1,\qquad x_3=x_2,\qquad x_3=x_1,\qquad x_4=x_1,\qquad x_4=x_3
+              \]
+            </div>
+          </div>
+          <p>Bu eşitlikler bütün potansiyellerin aynı sabit olduğunu verir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=c\begin{bmatrix}1\\1\\1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=c
+              \begin{bmatrix}
+              1\\1\\1\\1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.18: \(N(A^T)\) Hesaplama Yöntemi</h3>
+          <p>\(A^T\mathbf{y}=\mathbf{0}\) denklemi açılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}-y_1-y_3-y_4&=0,\\y_1-y_2&=0,\\y_2+y_3-y_5&=0,\\y_4+y_5&=0.\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              -y_1-y_3-y_4&=0,\\
+              y_1-y_2&=0,\\
+              y_2+y_3-y_5&=0,\\
+              y_4+y_5&=0.
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>Serbest değişkenler döngü akımları olarak seçilebilir. İki bağımsız döngü iki serbest parametre verir ve Örnek 1.10'daki iki baz vektörünü üretir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.19: Birleşik Ağ Denklemi</h3>
+          <p>Denge modelinde üç adım art arda uygulanır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{e}=A\mathbf{x},\qquad \mathbf{y}=C\mathbf{e},\qquad A^T\mathbf{y}=\mathbf{f}">
+            <div class="equation-content">
+              \[
+              \mathbf{e}=A\mathbf{x},\qquad
+              \mathbf{y}=C\mathbf{e},\qquad
+              A^T\mathbf{y}=\mathbf{f}
+              \]
+            </div>
+          </div>
+          <p>İlk iki denklem üçüncüde yerine konursa</p>
+          <div class="equation-card" data-raw-latex="A^TCA\mathbf{x}=\mathbf{f}">
+            <div class="equation-content">
+              \[
+              A^TCA\mathbf{x}=\mathbf{f}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Bu denklem, düğüm potansiyellerini dış kaynaklara bağlayan temel denge denklemidir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="uygulama-baglantilari">
+        <h2 id="uygulama-baglantilari">Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki model, denge halindeki ağ problemlerinin soyut biçimidir. Elektrik ağında \(\mathbf{x}\) düğüm potansiyelleri, \(A\mathbf{x}\) potansiyel farkları, \(C\) iletkenlik katsayıları ve \(\mathbf{y}\) kenar akımları olarak yorumlanır.</p>
+        <p>Aynı yapı, akışın kenarlar üzerinde taşındığı ve düğümlerde korunma yasasının geçerli olduğu başka ağlarda da ortaya çıkar. Önemli olan, yerel kenar yasası ile düğümdeki denge yasasının \(A\) ve \(A^T\) üzerinden birleşmesidir.</p>
+      </section>
+
+      <section aria-labelledby="sik-yapilan-hatalar">
+        <h2 id="sik-yapilan-hatalar">Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <h3>Hata 1: Satır ve Sütunların Rollerini Karıştırmak</h3>
+          <p>İlişki matrisinde satırlar kenarları, sütunlar düğümleri temsil eder. Tersi düşünülürse \(A\mathbf{x}\) çarpımının anlamı bozulur.</p>
+          <p><strong>Doğru yaklaşım:</strong> Her satırı bir kenarın çıkış ve giriş düğümlerini kaydeden satır olarak okuyun.</p>
+        </section>
+        <section class="note-card">
+          <h3>Hata 2: Sabit Potansiyeli Sıfır Çözümle Karıştırmak</h3>
+          <p>\(A\mathbf{x}=\mathbf{0}\) yalnızca \(\mathbf{x}=\mathbf{0}\) anlamına gelmez. Sabit potansiyellerin tamamı nullspace içindedir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Sıfır olan şey potansiyeller değil, potansiyel farklarıdır.</p>
+        </section>
+        <section class="note-card">
+          <h3>Hata 3: Her Döngüyü Baz Vektörü Sanmak</h3>
+          <p>Örnek grafte dış çevre döngüsü de bir akım çözümü verir; ancak iki temel döngünün toplamı olduğu için bağımsız değildir.</p>
+          <p><strong>Doğru yaklaşım:</strong> Baz için bağımsız döngüler seçin; sayıları \(m-r\) olmalıdır.</p>
+        </section>
+        <section class="note-card">
+          <h3>Hata 4: \(A^T\mathbf{y}=0\) Denklemini Kenar Denklemi Sanmak</h3>
+          <p>Bu denklem kenarlarda değil, düğümlerde dengeyi ifade eder.</p>
+          <p><strong>Doğru yaklaşım:</strong> \(A\mathbf{x}\) kenar farklarını, \(A^T\mathbf{y}\) düğüm dengelerini verir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Graf \(\rightarrow\) düğümler ve kenarlar \(\rightarrow\) yön seçimi</li>
+            <li>Yönlü kenarlar \(\rightarrow\) ilişki matrisi \(A\)</li>
+            <li>Düğüm potansiyelleri \(\mathbf{x}\) \(\rightarrow\) \(A\mathbf{x}\) \(\rightarrow\) potansiyel farkları</li>
+            <li>\(A\mathbf{x}=\mathbf{0}\) \(\rightarrow\) sabit potansiyeller \(\rightarrow\) \(\operatorname{rank}(A)=n-1\)</li>
+            <li>Kenar akımları \(\mathbf{y}\) \(\rightarrow\) \(A^T\mathbf{y}=0\) \(\rightarrow\) düğüm dengesi</li>
+            <li>\(N(A^T)\) \(\rightarrow\) bağımsız döngü akımları \(\rightarrow\) Euler bağıntısı</li>
+            <li>\(\mathbf{e}=A\mathbf{x}\), \(\mathbf{y}=C\mathbf{e}\), \(A^T\mathbf{y}=\mathbf{f}\) \(\rightarrow\) \(A^TCA\mathbf{x}=\mathbf{f}\)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <div class="formula-item">
+            <p>Örnek grafın ilişki matrisi:</p>
+            <div class="equation-card" data-raw-latex="A=\begin{bmatrix}-1&1&0&0\\0&-1&1&0\\-1&0&1&0\\-1&0&0&1\\0&0&-1&1\end{bmatrix}">
+              <div class="equation-content">
+                \[
+                A=\begin{bmatrix}
+                -1&1&0&0\\
+                0&-1&1&0\\
+                -1&0&1&0\\
+                -1&0&0&1\\
+                0&0&-1&1
+                \end{bmatrix}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Potansiyel farkları:</p>
+            <div class="equation-card" data-raw-latex="\mathbf{e}=A\mathbf{x}">
+              <div class="equation-content">
+                \[
+                \mathbf{e}=A\mathbf{x}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Sabit potansiyellerin nullspace'i:</p>
+            <div class="equation-card" data-raw-latex="N(A)=\operatorname{span}\left\{\begin{bmatrix}1\\1\\1\\1\end{bmatrix}\right\}">
+              <div class="equation-content">
+                \[
+                N(A)=\operatorname{span}\left\{
+                \begin{bmatrix}1\\1\\1\\1\end{bmatrix}
+                \right\}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Rank:</p>
+            <div class="equation-card" data-raw-latex="\operatorname{rank}(A)=n-1=3">
+              <div class="equation-content">
+                \[
+                \operatorname{rank}(A)=n-1=3
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Düğüm dengesi:</p>
+            <div class="equation-card" data-raw-latex="A^T\mathbf{y}=\mathbf{0}">
+              <div class="equation-content">
+                \[
+                A^T\mathbf{y}=\mathbf{0}
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Bağımsız döngü sayısı:</p>
+            <div class="equation-card" data-raw-latex="\dim N(A^T)=m-r">
+              <div class="equation-content">
+                \[
+                \dim N(A^T)=m-r
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Euler bağıntısı:</p>
+            <div class="equation-card" data-raw-latex="n-m+\ell=1">
+              <div class="equation-content">
+                \[
+                n-m+\ell=1
+                \]
+              </div>
+            </div>
+          </div>
+          <div class="formula-item">
+            <p>Birleşik denge denklemi:</p>
+            <div class="equation-card" data-raw-latex="A^TCA\mathbf{x}=\mathbf{f}">
+              <div class="equation-content">
+                \[
+                A^TCA\mathbf{x}=\mathbf{f}
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde grafların ilişki matrisleri aracılığıyla lineer cebire nasıl bağlandığı incelendi. \(A\) matrisi düğüm potansiyellerini kenar farklarına taşırken, \(A^T\) matrisi kenar akımlarını düğüm dengelerine taşır.</p>
+        <p>Örnek graf için \(N(A)\) sabit potansiyellerden oluşur ve rank \(3\) tür. Sol nullspace \(N(A^T)\) iki boyutludur; bu iki boyut bağımsız döngü akımlarına karşılık gelir. Döngüler satır bağımlılıklarını, döngüsüz kenar seçimleri ise ağaçları temsil eder.</p>
+        <p>Son olarak, \(\mathbf{e}=A\mathbf{x}\), \(\mathbf{y}=C\mathbf{e}\) ve \(A^T\mathbf{y}=\mathbf{f}\) denklemleri birleştirilerek \(A^TCA\mathbf{x}=\mathbf{f}\) denge denklemi elde edildi.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>Üç düğümlü ve iki kenarlı bir grafte kenarlar \(1\to2\) ve \(2\to3\) olsun. İlişki matrisini yazın ve \(A\mathbf{x}\) vektörünü bulun.</p>
+          <p><strong>Çözüm:</strong> İki kenar ve üç düğüm olduğu için \(A\) matrisi \(2\times3\) boyutludur:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}-1&1&0\\0&-1&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              -1&1&0\\
+              0&-1&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\(\mathbf{x}=(x_1,x_2,x_3)^T\) için</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\begin{bmatrix}x_2-x_1\\x_3-x_2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=
+              \begin{bmatrix}
+              x_2-x_1\\
+              x_3-x_2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Her bileşen, ilgili kenar boyunca potansiyel farkıdır.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>Üç düğümlü döngü grafte kenarlar \(1\to2\), \(2\to3\), \(1\to3\) olsun. \(N(A)\) ve \(\operatorname{rank}(A)\) değerlerini bulun.</p>
+          <p><strong>Çözüm:</strong> İlişki matrisi</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}-1&1&0\\0&-1&1\\-1&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=\begin{bmatrix}
+              -1&1&0\\
+              0&-1&1\\
+              -1&0&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. \(A\mathbf{x}=\mathbf{0}\) denklemi</p>
+          <div class="equation-card" data-raw-latex="x_2=x_1,\qquad x_3=x_2,\qquad x_3=x_1">
+            <div class="equation-content">
+              \[
+              x_2=x_1,\qquad x_3=x_2,\qquad x_3=x_1
+              \]
+            </div>
+          </div>
+          <p>koşullarını verir. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="N(A)=\operatorname{span}\left\{\begin{bmatrix}1\\1\\1\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              N(A)=\operatorname{span}\left\{
+              \begin{bmatrix}1\\1\\1\end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>ve rank-nullity bağıntısından \(\operatorname{rank}(A)=3-1=2\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Üçüncü kenar döngüyü kapatır; bu yüzden üç satırdan biri diğer ikisine bağımlıdır.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>Bağlı bir grafte \(n=6\) düğüm ve \(m=9\) kenar vardır. İlişki matrisinin rankını, \(N(A)\) boyutunu, \(N(A^T)\) boyutunu ve bağımsız döngü sayısını bulun.</p>
+          <p><strong>Çözüm:</strong> Bağlı graf için sabit potansiyeller \(N(A)\) uzayını oluşturur. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\dim N(A)=1">
+            <div class="equation-content">
+              \[
+              \dim N(A)=1
+              \]
+            </div>
+          </div>
+          <p>\(A\) matrisinin \(n=6\) sütunu vardır. Rank-nullity bağıntısından</p>
+          <div class="equation-card" data-raw-latex="\operatorname{rank}(A)=6-1=5">
+            <div class="equation-content">
+              \[
+              \operatorname{rank}(A)=6-1=5
+              \]
+            </div>
+          </div>
+          <p>\(A^T\) matrisinin sütun sayısı \(m=9\) ve rankı \(5\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\dim N(A^T)=9-5=4">
+            <div class="equation-content">
+              \[
+              \dim N(A^T)=9-5=4
+              \]
+            </div>
+          </div>
+          <p>Bağımsız döngü sayısı \(\ell=\dim N(A^T)=4\) tür. Euler bağıntısı da bunu doğrular:</p>
+          <div class="equation-card" data-raw-latex="n-m+\ell=6-9+4=1">
+            <div class="equation-content">
+              \[
+              n-m+\ell=6-9+4=1
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Dokuz kenarın yalnızca beşi bağımsız bir ağaç oluşturmak için gereklidir; kalan dört bağımsız serbestlik döngülere karşılık gelir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="sozluk">
+        <h2 id="sozluk">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Graph</td>
+                <td>Graf</td>
+                <td>Düğümler ve bu düğümleri bağlayan kenarlardan oluşan yapı.</td>
+              </tr>
+              <tr>
+                <td>Network</td>
+                <td>Ağ</td>
+                <td>Kenarlar üzerinde akış veya etkileşim taşıyan graf yapısı.</td>
+              </tr>
+              <tr>
+                <td>Node</td>
+                <td>Düğüm</td>
+                <td>Grafın bağlantı noktası.</td>
+              </tr>
+              <tr>
+                <td>Edge</td>
+                <td>Kenar</td>
+                <td>İki düğümü bağlayan yönlü veya yönsüz bağlantı.</td>
+              </tr>
+              <tr>
+                <td>Incidence matrix</td>
+                <td>İlişki matrisi</td>
+                <td>Kenar-düğüm bağlantılarını \(-1\), \(0\), \(1\) girdileriyle kaydeden matris.</td>
+              </tr>
+              <tr>
+                <td>Potential</td>
+                <td>Potansiyel</td>
+                <td>Düğümlere atanan skaler değer.</td>
+              </tr>
+              <tr>
+                <td>Potential difference</td>
+                <td>Potansiyel farkı</td>
+                <td>Bir kenarın bitiş ve başlangıç düğümleri arasındaki fark.</td>
+              </tr>
+              <tr>
+                <td>Current</td>
+                <td>Akım</td>
+                <td>Kenar boyunca taşınan yönlü büyüklük.</td>
+              </tr>
+              <tr>
+                <td>Current law</td>
+                <td>Akım dengesi yasası</td>
+                <td>Her düğümde giren ve çıkan akımların dengelenmesi.</td>
+              </tr>
+              <tr>
+                <td>Loop</td>
+                <td>Döngü</td>
+                <td>Bir düğümden başlayıp farklı kenarlar üzerinden aynı düğüme geri dönen kapalı yol.</td>
+              </tr>
+              <tr>
+                <td>Tree</td>
+                <td>Ağaç</td>
+                <td>Bağlı ve döngüsüz graf.</td>
+              </tr>
+              <tr>
+                <td>Conductance</td>
+                <td>İletkenlik</td>
+                <td>Potansiyel farkını akıma dönüştüren katsayı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>18. Ders: Determinant Formülleri ve Kofaktörler</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.2vw, 1.85rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" class="active" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">18. Ders: Determinant Formülleri ve Kofaktörler</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm determinant konusunun ikinci adımıdır: temel özelliklerden yola çıkarak açık determinant formülleri elde edilir.</p>
+        <p>Önce iki ve üç boyutlu determinantların, satırlarda ayrı ayrı doğrusallık kullanılarak nasıl terimlere ayrıldığı incelenir. Bu ayrıştırma, genel \(n\times n\) determinantın \(n!\) terimli büyük formülüne götürür.</p>
+        <p>Daha sonra büyük formül, seçilen bir satırdaki terimlere göre gruplanır. Bu gruplama kofaktör kavramını verir. Kofaktörler, \(n\times n\) determinantı daha küçük determinantlara bağlayan hesaplama aracıdır. Son olarak bu fikir, köşegen ve komşu köşegenlerinde \(1\)'ler bulunan bir matris ailesine uygulanır.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Determinantın büyük formülündeki terimlerin nasıl seçildiğini açıklamak.</li>
+          <li>Her terimde her satırdan ve her sütundan tam bir giriş alındığını görmek.</li>
+          <li>Permütasyon işaretinin determinant teriminin işaretini belirlediğini kullanmak.</li>
+          <li>Üç boyutlu determinantın altı terimli formülünü doğru işaretlerle yazmak.</li>
+          <li>Kofaktörün işaretli küçük determinant olduğunu tanımlamak.</li>
+          <li>Bir satır veya sütun boyunca kofaktör açılımı yapmak.</li>
+          <li>Çok sıfırlı matrislerde büyük formül veya kofaktör açılımını verimli seçmek.</li>
+          <li>Üç köşegenli \(A_n\) matrisleri için \(D_n=D_{n-1}-D_{n-2}\) bağıntısını elde etmek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Determinantın temel özellikleri: satır değişimi, satırda doğrusallık ve \(\det I=1\).</li>
+          <li>Sıfır satır veya sıfır sütun içeren matrislerin tekil olması.</li>
+          <li>Permütasyon matrisi ve satır değişimi sayısının işarete etkisi.</li>
+          <li>İki boyutlu determinant formülü.</li>
+          <li>Alt matris ve daha küçük boyutlu determinant hesabı.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A=(a_{ij})\)</td>
+                <td>Kare matris</td>
+                <td>\(a_{ij}\), \(i\). satır ve \(j\). sütundaki giriştir.</td>
+              </tr>
+              <tr>
+                <td>\(\det A\)</td>
+                <td>Determinant</td>
+                <td>Kare matrise bağlı sayıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\alpha,\beta,\gamma,\ldots\)</td>
+                <td>Sütun seçimleri</td>
+                <td>Büyük formülde her satırdan seçilen girişlerin sütun numaralarıdır.</td>
+              </tr>
+              <tr>
+                <td>\(n!\)</td>
+                <td>Terim sayısı</td>
+                <td>\(n\times n\) determinantın büyük formülündeki terim sayısıdır.</td>
+              </tr>
+              <tr>
+                <td>\(M_{ij}\)</td>
+                <td>Küçük alt matris</td>
+                <td>\(i\). satır ve \(j\). sütun silinince kalan matristir.</td>
+              </tr>
+              <tr>
+                <td>\(C_{ij}\)</td>
+                <td>Kofaktör</td>
+                <td>\((-1)^{i+j}\det M_{ij}\) sayısıdır.</td>
+              </tr>
+              <tr>
+                <td>\(A_n\)</td>
+                <td>Üç köşegenli matris</td>
+                <td>Köşegeninde ve komşu köşegenlerinde \(1\)'ler bulunan \(n\times n\) matristir.</td>
+              </tr>
+              <tr>
+                <td>\(D_n\)</td>
+                <td>\(\det A_n\)</td>
+                <td>Üç köşegenli matris ailesinin determinant dizisidir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Determinant için üç farklı hesap bakışı vardır. Birincisi, eleme ile pivotların çarpımına gitmektir. İkincisi, bütün terimleri açıkça yazan büyük formüldür. Üçüncüsü ise determinantı daha küçük determinantlara ayıran kofaktör açılımıdır.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Büyük formül determinantın tüm cebirsel içeriğini açık eder; kofaktör açılımı ise bu içeriği daha küçük determinantlara düzenli biçimde aktarır.</p>
+        </aside>
+        <p>Büyük formül genel durumda çok sayıda terim içerdiği için doğrudan hesaplama aracı olarak ağırdır. Fakat matris çok sayıda sıfır içeriyorsa terimlerin çoğu yok olur. Kofaktör açılımı da özellikle sıfırları çok olan satır veya sütunlar seçildiğinde verimli olur.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.1: İki Boyutlu Formülün Satır Doğrusallığından Çıkışı</h3>
+          <p>İki boyutlu determinantı temel özelliklerden elde edelim:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}a&b\\c&d\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Birinci satır \([a\ b]=[a\ 0]+[0\ b]\) olarak ayrılır. Sonra ikinci satır da her parçada ikiye ayrılır. Dört determinant elde edilir:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=\det\begin{bmatrix}a&0\\c&0\end{bmatrix}+\det\begin{bmatrix}a&0\\0&d\end{bmatrix}+\det\begin{bmatrix}0&b\\c&0\end{bmatrix}+\det\begin{bmatrix}0&b\\0&d\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              =
+              \det
+              \begin{bmatrix}
+              a&0\\
+              c&0
+              \end{bmatrix}
+              +
+              \det
+              \begin{bmatrix}
+              a&0\\
+              0&d
+              \end{bmatrix}
+              +
+              \det
+              \begin{bmatrix}
+              0&b\\
+              c&0
+              \end{bmatrix}
+              +
+              \det
+              \begin{bmatrix}
+              0&b\\
+              0&d
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Birinci ve dördüncü determinantta bir sütun tamamen sıfırdır; bu determinantlar sıfırdır. Kalan iki terim</p>
+          <div class="equation-card" data-raw-latex="ad-bc">
+            <div class="equation-content">
+              \[
+              ad-bc
+              \]
+            </div>
+          </div>
+          <p>sonucunu verir. Böylece tanıdık formül, satırlarda ayrı ayrı doğrusallık ve işaret kuralından çıkar.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Büyük Formülde Yaşayan Terimler</h3>
+          <p>\(n\times n\) bir determinantın büyük formülünde sıfır olmayan bir terim, her satırdan ve her sütundan tam bir giriş seçerek oluşur. Böyle bir seçim</p>
+          <div class="equation-card" data-raw-latex="a_{1\alpha}a_{2\beta}a_{3\gamma}\cdots a_{n\omega}">
+            <div class="equation-content">
+              \[
+              a_{1\alpha}a_{2\beta}a_{3\gamma}\cdots a_{n\omega}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Burada \(\alpha,\beta,\gamma,\ldots,\omega\) sütun numaraları \(1,\ldots,n\)'nin bir permütasyonudur. Her sütun bir kez kullanılır; aksi hâlde bir sütun eksik kalır ve ilgili parça sıfır determinant verir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Determinantın Büyük Formülü</h3>
+          <p><strong>İfade:</strong> \(A=(a_{ij})\) bir \(n\times n\) matris olsun. Determinant, tüm sütun permütasyonları üzerinden</p>
+          <div class="equation-card" data-raw-latex="\det A=\sum_{\sigma} \operatorname{sgn}(\sigma)\,a_{1,\sigma(1)}a_{2,\sigma(2)}\cdots a_{n,\sigma(n)}">
+            <div class="equation-content">
+              \[
+              \det A=
+              \sum_{\sigma}
+              \operatorname{sgn}(\sigma)\,
+              a_{1,\sigma(1)}
+              a_{2,\sigma(2)}
+              \cdots
+              a_{n,\sigma(n)}
+              \]
+            </div>
+          </div>
+          <p>şeklinde yazılır. Toplam \(n!\) terim içerir. Permütasyon çift sayıda satır değişimiyle birim düzene geliyorsa işaret \(+\), tek sayıda satır değişimiyle geliyorsa işaret \(-\)'dir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Satır doğrusallığı her satırı tek girişli parçalara ayırır. Sütunlardan biri hiç seçilmezse ortaya sıfır sütun çıkar. Bu nedenle yalnızca her sütunu bir kez kullanan seçimler kalır.</p>
+          <p><strong>Formal İspat:</strong> Birinci satırı \(n\) tek girişli satıra ayırın. Sonra ikinci satırı, ardından bütün satırları aynı biçimde ayırın. Toplamda \(n^n\) aday parça oluşur. Fakat aynı sütunu iki kez kullanan bir parçada en az bir sütun hiç kullanılmaz; bu parça sıfır determinant verir. Geriye yalnızca sütun numaraları bir permütasyon oluşturan \(n!\) parça kalır. Her parçada katsayılar satırlardan dışarı alınır ve geriye bir permütasyon matrisinin determinantı kalır. Bu determinant permütasyonun işaretidir.</p>
+          <p><strong>Yorum:</strong> Büyük formül kavramsal olarak eksiksizdir, ancak \(n!\) terim nedeniyle büyük boyutlarda doğrudan hesap için ağırdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Üç Boyutlu Determinantın Altı Terimi</h3>
+          <p>\(3\times3\) matris için büyük formül altı terim verir:</p>
+          <div class="equation-card" data-raw-latex="\det A=a_{11}a_{22}a_{33}+a_{12}a_{23}a_{31}+a_{13}a_{21}a_{32}-a_{11}a_{23}a_{32}-a_{12}a_{21}a_{33}-a_{13}a_{22}a_{31}">
+            <div class="equation-content">
+              \[
+              \det A=
+              a_{11}a_{22}a_{33}
+              +a_{12}a_{23}a_{31}
+              +a_{13}a_{21}a_{32}
+              -a_{11}a_{23}a_{32}
+              -a_{12}a_{21}a_{33}
+              -a_{13}a_{22}a_{31}
+              \]
+            </div>
+          </div>
+          <p>İlk terim \(1,2,3\) sütun sırasını kullanır ve pozitiftir. Örneğin \(a_{11}a_{23}a_{32}\) terimi \(1,3,2\) sırasını kullanır; bu sıra tek değişimle düzene geldiği için negatiftir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.5: Çok Sıfırlı Dört Boyutlu Matris</h3>
+          <p>Aşağıdaki matris için büyük formülde \(24\) aday terim vardır; fakat bunların çoğu sıfırdır:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}0&0&1&1\\0&1&1&0\\1&1&0&0\\1&0&0&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              0&0&1&1\\
+              0&1&1&0\\
+              1&1&0&0\\
+              1&0&0&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Sıfır olmayan iki seçim kalır. Sütun sırası \(4,3,2,1\) olan seçim pozitiftir:</p>
+          <div class="equation-card" data-raw-latex="a_{14}a_{23}a_{32}a_{41}=1">
+            <div class="equation-content">
+              \[
+              a_{14}a_{23}a_{32}a_{41}=1
+              \]
+            </div>
+          </div>
+          <p>Sütun sırası \(3,2,1,4\) olan seçim negatiftir:</p>
+          <div class="equation-card" data-raw-latex="-a_{13}a_{22}a_{31}a_{44}=-1">
+            <div class="equation-content">
+              \[
+              -a_{13}a_{22}a_{31}a_{44}=-1
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle determinant sıfırdır:</p>
+          <div class="equation-card" data-raw-latex="\det A=1-1=0">
+            <div class="equation-content">
+              \[
+              \det A=1-1=0
+              \]
+            </div>
+          </div>
+          <p>Aynı sonuç satırlardan da anlaşılır: birinci ve üçüncü satırların toplamı, ikinci ve dördüncü satırların toplamına eşittir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.6: Kofaktör</h3>
+          <p>\(A=(a_{ij})\) kare matrisinde \(M_{ij}\), \(i\). satır ve \(j\). sütun silinince kalan alt matris olsun. \(a_{ij}\) girişinin kofaktörü</p>
+          <div class="equation-card" data-raw-latex="C_{ij}=(-1)^{i+j}\det M_{ij}">
+            <div class="equation-content">
+              \[
+              C_{ij}=(-1)^{i+j}\det M_{ij}
+              \]
+            </div>
+          </div>
+          <p>olarak tanımlanır. İşaretler dama tahtası düzenindedir: ilk satırda \(+,-,+,-,\ldots\), ikinci satırda \(-,+,-,+,\ldots\) biçiminde devam eder.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Kofaktör Açılımı</h3>
+          <p><strong>İfade:</strong> Determinant, herhangi bir satır boyunca kofaktörlerle açılabilir:</p>
+          <div class="equation-card" data-raw-latex="\det A=a_{i1}C_{i1}+a_{i2}C_{i2}+\cdots+a_{in}C_{in}">
+            <div class="equation-content">
+              \[
+              \det A=
+              a_{i1}C_{i1}
+              +a_{i2}C_{i2}
+              +\cdots
+              +a_{in}C_{in}
+              \]
+            </div>
+          </div>
+          <p>Aynı biçimde herhangi bir sütun boyunca da açılım yapılabilir:</p>
+          <div class="equation-card" data-raw-latex="\det A=a_{1j}C_{1j}+a_{2j}C_{2j}+\cdots+a_{nj}C_{nj}">
+            <div class="equation-content">
+              \[
+              \det A=
+              a_{1j}C_{1j}
+              +a_{2j}C_{2j}
+              +\cdots
+              +a_{nj}C_{nj}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Büyük formüldeki terimler, seçilen satırda hangi girişin kullanıldığına göre gruplanır. Her grup, o giriş ile geriye kalan satır ve sütunların determinantının çarpımıdır.</p>
+          <p><strong>Formal İspat:</strong> Bir \(a_{ij}\) girişi seçildiğinde \(i\). satır ve \(j\). sütun artık kullanılamaz. Büyük formülde \(a_{ij}\) içeren tüm terimler, kalan \(n-1\) satır ve \(n-1\) sütun üzerinde bir determinant oluşturur. Bu determinantın işareti, \(a_{ij}\)'nin konumundan gelen \((-1)^{i+j}\) çarpanıyla düzeltilir. Böylece \(a_{ij}\) içeren terimlerin toplamı \(a_{ij}C_{ij}\) olur. Seçilen satırdaki bütün \(j\)'ler toplanınca satır açılımı elde edilir. Sütun açılımı, transpoz altında determinantın değişmemesiyle aynı gerekçeye sahiptir.</p>
+          <p><strong>Yorum:</strong> Kofaktör açılımı özellikle sıfır içeren satır veya sütunlarda çok etkilidir; sıfır girişlerin kofaktörleri hesaplanmadan geçilebilir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Üç Boyutlu Kofaktör Açılımı</h3>
+          <p>Bir \(3\times3\) matrisin ilk satır boyunca kofaktör açılımı şöyledir:</p>
+          <div class="equation-card" data-raw-latex="\det A=a_{11}(a_{22}a_{33}-a_{23}a_{32})-a_{12}(a_{21}a_{33}-a_{23}a_{31})+a_{13}(a_{21}a_{32}-a_{22}a_{31})">
+            <div class="equation-content">
+              \[
+              \det A=
+              a_{11}(a_{22}a_{33}-a_{23}a_{32})
+              -a_{12}(a_{21}a_{33}-a_{23}a_{31})
+              +a_{13}(a_{21}a_{32}-a_{22}a_{31})
+              \]
+            </div>
+          </div>
+          <p>Burada \(a_{11}\)'in kofaktörü sağ alt \(2\times2\) determinanttır. \(a_{12}\)'nin kofaktörü ise ilgili \(2\times2\) determinantın negatifi olarak gelir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.9: İki Boyutlu Kofaktör Açılımı</h3>
+          <p>İlk satır boyunca açılım yapalım:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=aC_{11}+bC_{12}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              a&b\\
+              c&d
+              \end{bmatrix}
+              =
+              aC_{11}+bC_{12}
+              \]
+            </div>
+          </div>
+          <p>\(C_{11}=d\) ve \(C_{12}=-c\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="aC_{11}+bC_{12}=ad-bc">
+            <div class="equation-content">
+              \[
+              aC_{11}+bC_{12}=ad-bc
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Böylece kofaktör açılımı iki boyutlu tanıdık formülle uyumludur.</p>
+        </section>
+
+        <h3>Üç Köşegenli Matris Ailesi</h3>
+        <p>\(A_n\), köşegeninde ve komşu köşegenlerinde \(1\)'ler bulunan \(n\times n\) matris olsun. İlk örnekler:</p>
+        <div class="equation-card" data-raw-latex="A_1=[1],\qquad A_2=\begin{bmatrix}1&1\\1&1\end{bmatrix},\qquad A_3=\begin{bmatrix}1&1&0\\1&1&1\\0&1&1\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            A_1=[1],
+            \qquad
+            A_2=
+            \begin{bmatrix}
+            1&1\\
+            1&1
+            \end{bmatrix},
+            \qquad
+            A_3=
+            \begin{bmatrix}
+            1&1&0\\
+            1&1&1\\
+            0&1&1
+            \end{bmatrix}
+            \]
+          </div>
+        </div>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: Üç Köşegenli Determinant Bağıntısı</h3>
+          <p><strong>İfade:</strong> \(D_n=\det A_n\) için</p>
+          <div class="equation-card" data-raw-latex="D_n=D_{n-1}-D_{n-2}">
+            <div class="equation-content">
+              \[
+              D_n=D_{n-1}-D_{n-2}
+              \]
+            </div>
+          </div>
+          <p>bağıntısı geçerlidir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> İlk satırda yalnızca iki sıfır olmayan giriş vardır. Kofaktör açılımında bu iki giriş dışında her terim sıfırla çarpılır. İlk giriş \(A_{n-1}\) determinantını, ikinci giriş işaret nedeniyle \(-A_{n-2}\) determinantını verir.</p>
+          <p><strong>Formal İspat:</strong> İlk satır boyunca kofaktör açılımı yapalım. \(a_{11}=1\) terimi, ilk satır ve ilk sütun silinince kalan \(A_{n-1}\) matrisini verir. Bu katkı \(D_{n-1}\)'dir. \(a_{12}=1\) teriminin kofaktör işareti negatiftir. Bu kofaktörün içinde ilk sütunda tek bir \(1\) kalır; onun üzerinden tekrar açılınca kalan alt determinant \(D_{n-2}\) olur. Bu ikinci katkı \(-D_{n-2}\)'dir. Diğer ilk satır girişleri sıfır olduğundan sonuç \(D_n=D_{n-1}-D_{n-2}\) olur.</p>
+          <p><strong>Yorum:</strong> Kofaktör açılımı burada tek tek büyük determinant hesaplamak yerine bir dizi bağıntısı verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: İlk Determinantlar ve Periyot</h3>
+          <p>Başlangıç değerleri</p>
+          <div class="equation-card" data-raw-latex="D_1=1,\qquad D_2=\det\begin{bmatrix}1&1\\1&1\end{bmatrix}=0">
+            <div class="equation-content">
+              \[
+              D_1=1,
+              \qquad
+              D_2=
+              \det
+              \begin{bmatrix}
+              1&1\\
+              1&1
+              \end{bmatrix}
+              =0
+              \]
+            </div>
+          </div>
+          <p>olur. Bağıntıdan</p>
+          <div class="equation-card" data-raw-latex="D_3=D_2-D_1=-1,\qquad D_4=D_3-D_2=-1">
+            <div class="equation-content">
+              \[
+              D_3=D_2-D_1=-1,
+              \qquad
+              D_4=D_3-D_2=-1
+              \]
+            </div>
+          </div>
+          <p>ve devamında</p>
+          <div class="equation-card" data-raw-latex="D_5=0,\qquad D_6=1,\qquad D_7=1">
+            <div class="equation-content">
+              \[
+              D_5=0,
+              \qquad
+              D_6=1,
+              \qquad
+              D_7=1
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Dizi</p>
+          <div class="equation-card" data-raw-latex="1,\ 0,\ -1,\ -1,\ 0,\ 1,\ 1,\ldots">
+            <div class="equation-content">
+              \[
+              1,\ 0,\ -1,\ -1,\ 0,\ 1,\ 1,\ldots
+              \]
+            </div>
+          </div>
+          <p>biçiminde altı adımlı bir tekrar düzeni gösterir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+        <p>Bu bölümde ana anlatımda kullanılan üç temel sonuç tek yerde toplanır.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Büyük Formülde Terim Sayısı</h3>
+          <p><strong>İfade:</strong> \(n\times n\) determinantın büyük formülünde \(n!\) terim vardır; her terim her satır ve sütundan bir giriş içerir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Birinci satırda \(n\) seçim, ikinci satırda kalan \(n-1\) seçim, böyle devam ederek son satırda \(1\) seçim kalır.</p>
+          <p><strong>Formal İspat:</strong> Sıfır olmayan bir terimde aynı sütun iki kez seçilemez; seçilirse başka bir sütun eksik kalır ve ilgili tek girişli parçada sıfır sütun oluşur. Bu nedenle sütun seçimleri \(1,\ldots,n\)'nin bir permütasyonu olmalıdır. Permütasyon sayısı \(n(n-1)\cdots1=n!\)'dir.</p>
+          <p><strong>Yorum:</strong> Bu sayı, büyük formülün neden hızla büyüdüğünü açıklar.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Kofaktör İşaret Deseni</h3>
+          <p><strong>İfade:</strong> \(a_{ij}\) girişinin kofaktör işareti \((-1)^{i+j}\) ile belirlenir.</p>
+          <div class="equation-card" data-raw-latex="C_{ij}=(-1)^{i+j}\det M_{ij}">
+            <div class="equation-content">
+              \[
+              C_{ij}=(-1)^{i+j}\det M_{ij}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(a_{ij}\)'yi seçmek, o satır ve sütunu determinant hesabından çıkarmaktır. Geriye kalan determinantın doğru büyük formül işaretleriyle uyumlu olması için konuma bağlı işaret gerekir.</p>
+          <p><strong>Formal İspat:</strong> \(a_{ij}\) içeren terimleri büyük formülde gruplayalım. Bu terimlerde kalan satır ve sütunlar, \(M_{ij}\) determinantının terimlerini oluşturur. \(a_{ij}\)'yi standart ilk konuma taşımak için satır ve sütun konumlarından gelen toplam işaret değişimi \(i+j\)'nin tek veya çift olmasına bağlıdır. Bu nedenle işaret \((-1)^{i+j}\) olur.</p>
+          <p><strong>Yorum:</strong> İşaretleri ezberlemek yerine dama tahtası düzeniyle izlemek hata riskini azaltır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.14: Satır ve Sütun Kofaktör Açılımlarının Eşdeğerliği</h3>
+          <p><strong>İfade:</strong> Kofaktör açılımı herhangi bir satır veya sütun boyunca yapılabilir ve aynı determinantı verir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Determinant transpoz alınca değişmez. Satır boyunca yapılan açılım, transpoz matrisinde sütun boyunca yapılan açılıma karşılık gelir.</p>
+          <p><strong>Formal İspat:</strong> Satır açılımı büyük formüldeki terimleri seçilen satır girişlerine göre gruplar. Sütun açılımı ise aynı terimleri seçilen sütun girişlerine göre gruplar. İki gruplama da aynı \(n!\) terimin tamamını ve yalnızca onları içerir. Ayrıca \(\det A=\det A^T\) olduğundan satır kurallarının sütunlara aktarılması tutarlıdır.</p>
+          <p><strong>Yorum:</strong> Hesap yaparken sıfırı en çok olan satır veya sütun seçilebilir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Büyük Formülle Hesap</h3>
+        <p>Büyük formül, her satır ve sütundan bir giriş seçen tüm permütasyonları toplar.</p>
+        <ol>
+          <li>Her satırdan bir giriş seç.</li>
+          <li>Aynı sütunun iki kez seçilmediğini kontrol et.</li>
+          <li>Seçilen sütun sırasının işaretini belirle.</li>
+          <li>Girişleri çarp ve işareti uygula.</li>
+          <li>Tüm geçerli seçimleri topla.</li>
+        </ol>
+        <p>Bu yöntem genel durumda çok büyür; fakat çok sıfırlı matrislerde sıfır olmayan birkaç terim kalabilir.</p>
+
+        <h3>Kofaktör Açılımıyla Hesap</h3>
+        <ol>
+          <li>Sıfırı fazla olan bir satır veya sütun seç.</li>
+          <li>Seçilen her sıfır olmayan giriş \(a_{ij}\) için \(M_{ij}\) alt matrisini oluştur.</li>
+          <li>Kofaktörü \(C_{ij}=(-1)^{i+j}\det M_{ij}\) olarak hesapla.</li>
+          <li>\(a_{ij}C_{ij}\) terimlerini topla.</li>
+        </ol>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Bir Satırda İki Sıfır Varken Kofaktör Açılımı</h3>
+          <p>Aşağıdaki determinantı ilk satırdan açalım:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}2&0&0\\1&3&4\\5&6&7\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              2&0&0\\
+              1&3&4\\
+              5&6&7
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İlk satırdaki yalnızca \(2\) katkı verir:</p>
+          <div class="equation-card" data-raw-latex="2\det\begin{bmatrix}3&4\\6&7\end{bmatrix}=2(21-24)=-6">
+            <div class="equation-content">
+              \[
+              2\det
+              \begin{bmatrix}
+              3&4\\
+              6&7
+              \end{bmatrix}
+              =
+              2(21-24)
+              =
+              -6
+              \]
+            </div>
+          </div>
+          <p>Sıfır girişlerin kofaktörlerini hesaplamaya gerek yoktur.</p>
+        </section>
+
+        <h3>Bağıntı ile Hesap</h3>
+        <p>Benzer yapılı matris ailelerinde kofaktör açılımı bir bağıntı verebilir. Üç köşegenli \(A_n\) için</p>
+        <div class="equation-card" data-raw-latex="D_n=D_{n-1}-D_{n-2}">
+          <div class="equation-content">
+            \[
+            D_n=D_{n-1}-D_{n-2}
+            \]
+          </div>
+        </div>
+        <p>bağıntısı, her \(n\) için determinantı yeniden açmak yerine önceki iki değerden hesaplama sağlar.</p>
+
+        <h3>Yaygın Hata Noktaları</h3>
+        <ul>
+          <li>Bir terimde aynı sütundan iki giriş seçmek.</li>
+          <li>Kofaktör işaretini alt determinantın dışında unutmak.</li>
+          <li>İlk satırdaki \(-,+,-\) düzenini her satır için aynı sanmak; işaret satır ve sütun numarasına bağlıdır.</li>
+          <li>Çok sıfırlı satır veya sütun varken daha zor bir açılım seçmek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki uygulama bağlantısı doğrudan hesaplamaya yöneliktir. Çok sayıda sıfır içeren matrislerde büyük formüldeki terimlerin çoğu kendiliğinden sıfır olur. Bu, determinantı yalnızca birkaç permütasyon terimiyle hesaplamayı mümkün kılar.</p>
+        <p>Kofaktör açılımı da benzer biçimde hesap yükünü azaltır. Bir satır veya sütunda çok sıfır varsa, yalnızca sıfır olmayan girişlerin küçük determinantları hesaplanır. Üç köşegenli matris ailesinde ise kofaktör açılımı tek bir determinantı değil, bütün aileyi yöneten bağıntıyı üretir.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Üç boyutlu çapraz çizgi kuralını daha büyük boyutlara taşımak. <strong>Neden yanlış?</strong> Bu görsel ezber yalnızca üç boyutlu özel formülü temsil eder. <strong>Doğru yaklaşım:</strong> Genel durumda permütasyon terimleri veya kofaktör açılımı kullanılmalıdır.</p>
+        </section>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Kofaktörü yalnızca küçük determinant sanmak. <strong>Neden yanlış?</strong> Kofaktör işaretli küçük determinanttır. <strong>Doğru yaklaşım:</strong> Her zaman \(C_{ij}=(-1)^{i+j}\det M_{ij}\) formülünü uygula.</p>
+        </section>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Büyük formülde her satırdan bir giriş seçip sütun tekrarını kontrol etmemek. <strong>Neden yanlış?</strong> Aynı sütun iki kez kullanılırsa bir sütun eksik kalır ve o terim sıfırdır. <strong>Doğru yaklaşım:</strong> Sütun sırasının bir permütasyon olduğundan emin ol.</p>
+        </section>
+        <section class="note-card">
+          <strong>Dikkat:</strong>
+          <p><strong>Hata:</strong> Sıfır girişlerin kofaktörlerini hesaplamak. <strong>Neden yanlış?</strong> Sıfır girişle çarpılan her kofaktör toplamda sıfır katkı verir. <strong>Doğru yaklaşım:</strong> Açılım için sıfırı fazla olan satır veya sütunu seç.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Determinant formülü: satır doğrusallığı ile tek girişli parçalara ayrılır.</li>
+            <li>Yaşayan terimler: her satır ve her sütundan bir giriş seçer.</li>
+            <li>Permütasyon işareti: terimin \(+\) veya \(-\) olmasını belirler.</li>
+            <li>Büyük formül: \(n!\) terimin toplamıdır.</li>
+            <li>Kofaktör: seçilen girişin satır ve sütunu silinerek bulunan işaretli küçük determinanttır.</li>
+            <li>Kofaktör açılımı: determinantı daha küçük determinantların toplamına indirir.</li>
+            <li>Çok sıfırlı matrisler: sıfır terimler elenir, hesap sadeleşir.</li>
+            <li>Üç köşegenli matrisler: kofaktör açılımı \(D_n=D_{n-1}-D_{n-2}\) bağıntısını verir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Büyük formül</p>
+        <div class="equation-card" data-raw-latex="\det A=\sum_{\sigma}\operatorname{sgn}(\sigma)a_{1,\sigma(1)}a_{2,\sigma(2)}\cdots a_{n,\sigma(n)}">
+          <div class="equation-content">
+            \[
+            \det A=
+            \sum_{\sigma}
+            \operatorname{sgn}(\sigma)
+            a_{1,\sigma(1)}
+            a_{2,\sigma(2)}
+            \cdots
+            a_{n,\sigma(n)}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Üç boyutlu determinant</p>
+        <div class="equation-card" data-raw-latex="\det A=a_{11}a_{22}a_{33}+a_{12}a_{23}a_{31}+a_{13}a_{21}a_{32}-a_{11}a_{23}a_{32}-a_{12}a_{21}a_{33}-a_{13}a_{22}a_{31}">
+          <div class="equation-content">
+            \[
+            \det A=
+            a_{11}a_{22}a_{33}
+            +a_{12}a_{23}a_{31}
+            +a_{13}a_{21}a_{32}
+            -a_{11}a_{23}a_{32}
+            -a_{12}a_{21}a_{33}
+            -a_{13}a_{22}a_{31}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Kofaktör</p>
+        <div class="equation-card" data-raw-latex="C_{ij}=(-1)^{i+j}\det M_{ij}">
+          <div class="equation-content">
+            \[
+            C_{ij}=(-1)^{i+j}\det M_{ij}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Satır boyunca kofaktör açılımı</p>
+        <div class="equation-card" data-raw-latex="\det A=\sum_{j=1}^{n}a_{ij}C_{ij}">
+          <div class="equation-content">
+            \[
+            \det A=\sum_{j=1}^{n}a_{ij}C_{ij}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Sütun boyunca kofaktör açılımı</p>
+        <div class="equation-card" data-raw-latex="\det A=\sum_{i=1}^{n}a_{ij}C_{ij}">
+          <div class="equation-content">
+            \[
+            \det A=\sum_{i=1}^{n}a_{ij}C_{ij}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Üç köşegenli determinant bağıntısı</p>
+        <div class="equation-card" data-raw-latex="D_n=D_{n-1}-D_{n-2},\qquad D_1=1,\quad D_2=0">
+          <div class="equation-content">
+            \[
+            D_n=D_{n-1}-D_{n-2},
+            \qquad
+            D_1=1,\quad D_2=0
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde determinantın açık formülleri incelendi. Büyük formül, her satır ve sütundan bir giriş seçen \(n!\) terimin işaretli toplamı olarak verildi. Bu formül, determinantın temel özelliklerinden satır satır ayrıştırma yoluyla elde edilir.</p>
+        <p>Kofaktör kavramı, büyük formülü seçilen bir satır veya sütundaki girişlere göre gruplar. Böylece \(n\times n\) determinant, \((n-1)\times(n-1)\) determinantlara indirgenir.</p>
+        <p>Çok sıfırlı matrislerde büyük formül ve kofaktör açılımı ciddi sadeleşme sağlar. Üç köşegenli \(A_n\) örneğinde kofaktörler, \(D_n=D_{n-1}-D_{n-2}\) bağıntısını ve altı adımlı tekrar düzenini ortaya çıkarır.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Soru 1: Kofaktör İşareti</h3>
+          <p>\(4\times4\) bir matriste \(a_{23}\) girişinin kofaktör işareti nedir?</p>
+          <p><strong>Çözüm:</strong> Kofaktör işareti \((-1)^{i+j}\) ile belirlenir. Burada \(i=2\), \(j=3\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="(-1)^{2+3}=(-1)^5=-1">
+            <div class="equation-content">
+              \[
+              (-1)^{2+3}=(-1)^5=-1
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(C_{23}=-\det M_{23}\) olur.</p>
+          <p><strong>Yorum:</strong> Kofaktör işaretleri satırdan satıra yer değiştirir; bu nedenle yalnızca ilk satır desenini ezberlemek yeterli değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 2: Kofaktör Açılımı ile Determinant</h3>
+          <p>Aşağıdaki determinantı ilk satır boyunca hesaplayın:</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}3&0&2\\1&4&5\\0&2&1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              3&0&2\\
+              1&4&5\\
+              0&2&1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> İlk satırda orta giriş sıfırdır. Açılım yalnızca \(3\) ve \(2\) üzerinden yapılır:</p>
+          <div class="equation-card" data-raw-latex="3\det\begin{bmatrix}4&5\\2&1\end{bmatrix}+2\det\begin{bmatrix}1&4\\0&2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              3\det
+              \begin{bmatrix}
+              4&5\\
+              2&1
+              \end{bmatrix}
+              +
+              2\det
+              \begin{bmatrix}
+              1&4\\
+              0&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>İlk ve üçüncü konumların işaretleri pozitiftir:</p>
+          <div class="equation-card" data-raw-latex="3(4\cdot1-5\cdot2)+2(1\cdot2-4\cdot0)=3(-6)+2(2)=-14">
+            <div class="equation-content">
+              \[
+              3(4\cdot1-5\cdot2)+2(1\cdot2-4\cdot0)
+              =
+              3(-6)+2(2)
+              =
+              -14
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Sıfır girişli satır seçildiğinde işlem sayısı azalır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 3: Üç Köşegenli Bağıntı</h3>
+          <p>\(D_1=1\), \(D_2=0\) ve \(D_n=D_{n-1}-D_{n-2}\) olsun. \(D_8\) değerini bulun.</p>
+          <p><strong>Çözüm:</strong> Değerleri sırayla hesaplayalım:</p>
+          <div class="equation-card" data-raw-latex="D_3=0-1=-1,\quad D_4=-1-0=-1,\quad D_5=-1-(-1)=0">
+            <div class="equation-content">
+              \[
+              D_3=0-1=-1,
+              \quad
+              D_4=-1-0=-1,
+              \quad
+              D_5=-1-(-1)=0
+              \]
+            </div>
+          </div>
+          <div class="equation-card" data-raw-latex="D_6=0-(-1)=1,\quad D_7=1-0=1,\quad D_8=1-1=0">
+            <div class="equation-content">
+              \[
+              D_6=0-(-1)=1,
+              \quad
+              D_7=1-0=1,
+              \quad
+              D_8=1-1=0
+              \]
+            </div>
+          </div>
+          <p>Sonuç \(D_8=0\)'dır.</p>
+          <p><strong>Yorum:</strong> Bağıntı altı adımlı tekrar düzenini sürdürür; \(D_8\), \(D_2\) ile aynı değeri alır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce ve Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Determinant formula</td>
+                <td>Determinant formülü</td>
+                <td>Determinantı matris girişleri cinsinden veren açık ifade.</td>
+              </tr>
+              <tr>
+                <td>Permutation</td>
+                <td>Permütasyon</td>
+                <td>Sütun numaralarının bir sıralaması.</td>
+              </tr>
+              <tr>
+                <td>Sign of a permutation</td>
+                <td>Permütasyon işareti</td>
+                <td>Seçilen terimin artı mı eksi mi olduğunu belirleyen işaret.</td>
+              </tr>
+              <tr>
+                <td>Cofactor</td>
+                <td>Kofaktör</td>
+                <td>Bir girişe karşılık gelen işaretli küçük determinant.</td>
+              </tr>
+              <tr>
+                <td>Minor</td>
+                <td>Küçük determinant</td>
+                <td>İlgili satır ve sütun silinince kalan alt matrisin determinantı.</td>
+              </tr>
+              <tr>
+                <td>Cofactor expansion</td>
+                <td>Kofaktör açılımı</td>
+                <td>Determinantı bir satır veya sütun boyunca kofaktörlerle yazma yöntemi.</td>
+              </tr>
+              <tr>
+                <td>Tridiagonal matrix</td>
+                <td>Üç köşegenli matris</td>
+                <td>Sıfır olmayan girişleri ana köşegen ve komşu iki köşegende yoğunlaşan matris.</td>
+              </tr>
+              <tr>
+                <td>Recursive formula</td>
+                <td>Bağıntı formülü</td>
+                <td>Bir determinant dizisini önceki değerlerle hesaplayan formül.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        var page = document.querySelector(".lesson-page");
+        if (!title || !page) return;
+
+        if (window.matchMedia("(max-width: 768px)").matches) {
+          title.style.fontSize = "";
+          return;
+        }
+
+        title.style.fontSize = "";
+        var computed = window.getComputedStyle(title);
+        var currentSize = parseFloat(computed.fontSize);
+        var minSize = 28;
+        var availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

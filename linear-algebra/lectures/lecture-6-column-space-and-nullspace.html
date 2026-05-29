@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>6. Ders: Sütun Uzayı ve Sıfır Uzayı</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" class="active" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">6. Ders: Sütun Uzayı ve Sıfır Uzayı</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, vektör uzayları ve alt uzaylar fikrini merkeze alır; özellikle bir matristen doğal olarak doğan iki temel alt uzayı, sütun uzayını ve sıfır uzayını inceler.</p>
+        <p>Önce alt uzay olmanın anlamı, toplama ve skalerle çarpma altında kapalı kalma koşulu üzerinden netleştirilir. Düzlemler ve doğrular gibi geometrik örnekler, bir kümenin neden mutlaka orijinden geçmesi gerektiğini gösterir. Ardından iki alt uzayın birleşiminin genellikle alt uzay olmadığı, fakat kesişiminin her zaman alt uzay olduğu açıklanır.</p>
+        <p>Bu kavramsal temel, \(A\mathbf{x}=\mathbf{b}\) denklemine doğrudan bağlanır. Sütun uzayı, hangi sağ tarafların çözülebilir olduğunu belirler. Sıfır uzayı ise \(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümlerini toplar ve matrisin sütunları arasındaki doğrusal ilişkileri ortaya çıkarır.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Vektör uzayı ve alt uzay kavramlarını kapanış koşullarıyla açıklayabilmek.</li>
+          <li>Bir düzlemin veya doğrunun alt uzay olabilmesi için neden orijinden geçmesi gerektiğini yorumlayabilmek.</li>
+          <li>İki alt uzayın birleşiminin neden genellikle alt uzay olmadığını gösterebilmek.</li>
+          <li>İki alt uzayın kesişiminin her zaman alt uzay olduğunu ispatlayabilmek.</li>
+          <li>Bir matrisin sütun uzayını sütunların tüm doğrusal birleşimleri olarak tanımlayabilmek.</li>
+          <li>\(A\mathbf{x}=\mathbf{b}\) denkleminin çözülebilirliğini \(\mathbf{b}\in C(A)\) koşuluyla ilişkilendirebilmek.</li>
+          <li>Bir matrisin sıfır uzayını \(A\mathbf{x}=\mathbf{0}\) denkleminin çözüm kümesi olarak tanımlayabilmek.</li>
+          <li>Sıfır uzayının neden alt uzay olduğunu matris çarpımının doğrusal özellikleriyle kanıtlayabilmek.</li>
+          <li>Homojen olmayan bir sistemin çözüm kümesinin neden genellikle alt uzay olmadığını açıklayabilmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Vektör toplama ve skalerle çarpma işlemlerini bilme.</li>
+          <li>Doğrusal birleşim kavramını temel düzeyde kullanabilme.</li>
+          <li>Matris-vektör çarpımını sütunların doğrusal birleşimi olarak okuyabilme.</li>
+          <li>\(A\mathbf{x}=\mathbf{b}\) biçimindeki lineer denklem sistemlerinin matris gösterimini tanıma.</li>
+          <li>Orijin ve sıfır vektörü kavramlarını geometrik ve cebirsel olarak ayırt edebilme.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>\(A\)</td><td>Matris; satır sayısı \(m\), sütun sayısı \(n\) olabilir.</td></tr>
+              <tr><td>\(\mathbf{x}\)</td><td>Bilinmeyen vektörü; \(A\mathbf{x}\) çarpımında sütunların katsayılarını taşır.</td></tr>
+              <tr><td>\(\mathbf{b}\)</td><td>Sağ taraf vektörü.</td></tr>
+              <tr><td>\(\mathbf{0}\)</td><td>Sıfır vektörü.</td></tr>
+              <tr><td>\(\mathbf{v},\mathbf{w}\)</td><td>Alt uzay koşullarını tartışmak için kullanılan vektörler.</td></tr>
+              <tr><td>\(c,d\)</td><td>Skaler katsayılar.</td></tr>
+              <tr><td>\(S,T\)</td><td>Genel alt uzaylar.</td></tr>
+              <tr><td>\(P,L\)</td><td>Geometrik örneklerde düzlem ve doğru için kullanılan alt uzaylar.</td></tr>
+              <tr><td>\(\mathbb{R}^m,\mathbb{R}^n\)</td><td>Gerçek bileşenli vektör uzayları.</td></tr>
+              <tr><td>\(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\)</td><td>\(A\) matrisinin sütunlara ayrılmış gösterimi.</td></tr>
+              <tr><td>\(C(A)\)</td><td>\(A\) matrisinin sütun uzayı.</td></tr>
+              <tr><td>\(N(A)\)</td><td>\(A\) matrisinin sıfır uzayı.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>Lineer cebirin merkezinde iki tamamlayıcı soru vardır. Birincisi, verilen \(A\) ve \(\mathbf{b}\) için \(A\mathbf{x}=\mathbf{b}\) denkleminin çözülebilir olup olmadığıdır. İkincisi, \(A\mathbf{x}=\mathbf{0}\) denklemini sağlayan tüm \(\mathbf{x}\) vektörlerinin nasıl anlaşılacağıdır.</p>
+        <p>Sütun uzayı ilk soruya cevap verir: \(A\mathbf{x}\), \(A\)'nın sütunlarının doğrusal birleşimi olduğundan, ulaşılabilecek tüm sağ taraflar sütun uzayındadır.</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}
+            =
+            x_1\mathbf{a}_1+x_2\mathbf{a}_2+\cdots+x_n\mathbf{a}_n.
+            \]
+          </div>
+        </div>
+        <p>Sıfır uzayı ikinci soruya cevap verir: Sütunların hangi katsayılarla birbirini yok ettiğini gösterir. Bu nedenle sütun uzayı sağ tarafların dünyasında, sıfır uzayı ise bilinmeyenlerin dünyasında yaşar.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Bir matris \(m\times n\) boyutundaysa \(C(A)\subseteq\mathbb{R}^m\), fakat \(N(A)\subseteq\mathbb{R}^n\) olur. Bu iki uzay aynı matristen doğar, ancak farklı ortam uzaylarında bulunur.</p>
+        </aside>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 6.1: Vektör Uzayı</h3>
+          <p>Bir vektörler kümesi, vektör toplama ve skalerle çarpma işlemleri altında kapalıysa vektör uzayıdır. Yani \(\mathbf{v}\) ve \(\mathbf{w}\) bu kümede, \(c\) ve \(d\) gerçek sayılar ise</p>
+          <div class="equation-card" data-raw-latex="c\mathbf{v}+d\mathbf{w}">
+            <div class="equation-content">
+              \[
+              c\mathbf{v}+d\mathbf{w}
+              \]
+            </div>
+          </div>
+          <p>yine aynı kümede kalmalıdır. Bu tek koşul, toplama ve skalerle çarpma kapanışını birlikte ifade eder.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 6.2: Alt Uzay</h3>
+          <p>Bir vektör uzayının içinde yer alan ve kendi başına vektör uzayı olan alt kümeye alt uzay denir. \(\mathbb{R}^3\) içinde orijinden geçen düzlemler ve orijinden geçen doğrular alt uzaydır.</p>
+          <p>Bir alt uzay mutlaka sıfır vektörünü içerir. Çünkü herhangi bir \(\mathbf{v}\) alt uzayda ise \(0\mathbf{v}=\mathbf{0}\) de aynı alt uzayda olmalıdır.</p>
+          <div class="equation-card" data-raw-latex="0\mathbf{v}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              0\mathbf{v}=\mathbf{0}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.3: \(\mathbb{R}^3\) İçinde Düzlem ve Doğru</h3>
+          <p>\(\mathbb{R}^3\)'te orijinden geçen bir düzlem \(P\) alt uzaydır. Çünkü düzlemdeki iki vektörün toplamı yine düzlemdedir; düzlemdeki bir vektörün herhangi bir skaler katı da yine düzlemdedir.</p>
+          <p>Benzer biçimde orijinden geçen bir doğru \(L\) alt uzaydır. Doğru üzerindeki her vektör, doğrunun yön vektörünün bir skaler katı olarak yazılabilir; skaler katların toplamı da aynı doğru üzerinde kalır.</p>
+          <p>Buna karşılık orijinden geçmeyen bir doğru veya düzlem alt uzay olamaz. Çünkü sıfır vektörünü içermez.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.4: Birleşim Alt Uzay Olmak Zorunda Değildir</h3>
+          <p>\(\mathbb{R}^3\) içinde orijinden geçen bir düzlem \(P\) ve bu düzlemin içinde olmayan orijinden geçen bir doğru \(L\) alınsın. Her ikisi ayrı ayrı alt uzaydır. Ancak birleşim</p>
+          <div class="equation-card" data-raw-latex="P\cup L">
+            <div class="equation-content">
+              \[
+              P\cup L
+              \]
+            </div>
+          </div>
+          <p>genellikle alt uzay değildir. Çünkü \(\mathbf{p}\in P\) ve \(\boldsymbol{\ell}\in L\) seçildiğinde \(\mathbf{p}+\boldsymbol{\ell}\) çoğu zaman ne \(P\)'de ne de \(L\)'dedir. Dolayısıyla birleşim toplama altında kapalı kalmaz.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 6.5: Alt Uzayların Kesişimi Alt Uzaydır</h3>
+          <p><strong>İfade:</strong> \(S\) ve \(T\) aynı vektör uzayının alt uzaylarıysa \(S\cap T\) de alt uzaydır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Kesişim, iki alt uzayın ortak vektörlerinden oluşur. Ortak iki vektörü topladığımızda sonuç hem \(S\)'de hem de \(T\)'de kalır; bu yüzden yine ortak bölgede bulunur.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{v},\mathbf{w}\in S\cap T\) ve \(c,d\in\mathbb{R}\) olsun. O hâlde \(\mathbf{v},\mathbf{w}\in S\) ve \(\mathbf{v},\mathbf{w}\in T\). \(S\) alt uzay olduğu için</p>
+          <div class="equation-card" data-raw-latex="c\mathbf{v}+d\mathbf{w}\in S">
+            <div class="equation-content">
+              \[
+              c\mathbf{v}+d\mathbf{w}\in S.
+              \]
+            </div>
+          </div>
+          <p>Aynı gerekçeyle \(T\) alt uzay olduğundan</p>
+          <div class="equation-card" data-raw-latex="c\mathbf{v}+d\mathbf{w}\in T">
+            <div class="equation-content">
+              \[
+              c\mathbf{v}+d\mathbf{w}\in T.
+              \]
+            </div>
+          </div>
+          <p>Bu vektör hem \(S\)'de hem \(T\)'de olduğuna göre \(S\cap T\)'dedir. Kapanış koşulu sağlandığından \(S\cap T\) alt uzaydır.</p>
+          <p><strong>Yorum:</strong> Kesişim, alt uzay koşullarını korur; birleşim ise farklı yönlerden gelen vektörlerin toplamını genellikle dışarıda bırakır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.6: Düzlem ve Doğrunun Kesişimi</h3>
+          <p>\(\mathbb{R}^3\)'te orijinden geçen bir düzlem \(P\) ve bu düzlemde yer almayan orijinden geçen bir doğru \(L\) düşünelim. Bu durumda ortak kısım yalnızca sıfır vektörüdür:</p>
+          <div class="equation-card" data-raw-latex="P\cap L=\{\mathbf{0}\}">
+            <div class="equation-content">
+              \[
+              P\cap L=\{\mathbf{0}\}.
+              \]
+            </div>
+          </div>
+          <p>\(\{\mathbf{0}\}\) kendi başına alt uzaydır. Çünkü \(\mathbf{0}+\mathbf{0}=\mathbf{0}\) ve her \(c\in\mathbb{R}\) için \(c\mathbf{0}=\mathbf{0}\) olur.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 6.7: Sütun Uzayı</h3>
+          <p>\(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\) bir \(m\times n\) matris olsun. \(A\)'nın sütun uzayı, sütunlarının tüm doğrusal birleşimlerinden oluşur:</p>
+          <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+c_2\mathbf{a}_2+\cdots+c_n\mathbf{a}_n:\ c_1,\ldots,c_n\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              C(A)=
+              \{c_1\mathbf{a}_1+c_2\mathbf{a}_2+\cdots+c_n\mathbf{a}_n:\ c_1,\ldots,c_n\in\mathbb{R}\}.
+              \]
+            </div>
+          </div>
+          <p>Her sütun \(m\) bileşenli olduğundan \(C(A)\), \(\mathbb{R}^m\)'nin bir alt uzayıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.8: Dört Satır ve Üç Sütunlu Bir Matrisin Sütun Uzayı</h3>
+          <p>Aşağıdaki matris ele alınsın:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1&2\\2&1&3\\3&1&4\\4&1&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1&2\\
+              2&1&3\\
+              3&1&4\\
+              4&1&5
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sütunlar \(\mathbb{R}^4\)'tedir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1=\begin{bmatrix}1\\2\\3\\4\end{bmatrix},\quad \mathbf{a}_2=\begin{bmatrix}1\\1\\1\\1\end{bmatrix},\quad \mathbf{a}_3=\begin{bmatrix}2\\3\\4\\5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1=
+              \begin{bmatrix}1\\2\\3\\4\end{bmatrix},
+              \quad
+              \mathbf{a}_2=
+              \begin{bmatrix}1\\1\\1\\1\end{bmatrix},
+              \quad
+              \mathbf{a}_3=
+              \begin{bmatrix}2\\3\\4\\5\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Üçüncü sütun ilk iki sütunun toplamıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2.
+              \]
+            </div>
+          </div>
+          <p>Bu yüzden üçüncü sütun sütun uzayına yeni bir yön eklemez. Sütun uzayı, ilk iki sütunun tüm doğrusal birleşimleriyle aynı kümedir:</p>
+          <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+c_2\mathbf{a}_2:\ c_1,c_2\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              C(A)=\{c_1\mathbf{a}_1+c_2\mathbf{a}_2:\ c_1,c_2\in\mathbb{R}\}.
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla bu sütun uzayı \(\mathbb{R}^4\)'ün tamamı değildir; \(\mathbb{R}^4\) içinde iki yönle oluşturulan bir alt uzaydır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 6.9: Sütun Uzayı Çözülebilir Sağ Tarafların Kümesidir</h3>
+          <p><strong>İfade:</strong> \(A\mathbf{x}=\mathbf{b}\) denkleminin çözülebilir olması için gerek ve yeter koşul \(\mathbf{b}\in C(A)\) olmasıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\mathbf{x}\) ifadesi, \(A\)'nın sütunlarının katsayıları \(\mathbf{x}\)'in bileşenleri olan doğrusal birleşimidir. Bu nedenle \(A\mathbf{x}\) ile ulaşılabilecek her vektör sütun uzayındadır.</p>
+          <p><strong>Formal İspat:</strong> \(A=[\mathbf{a}_1\ \cdots\ \mathbf{a}_n]\) ve \(\mathbf{x}=(x_1,\ldots,x_n)^T\) olsun. Matris-vektör çarpımı</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n.
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Eğer \(A\mathbf{x}=\mathbf{b}\) çözülebiliyorsa, \(\mathbf{b}\) sütunların bir doğrusal birleşimidir; dolayısıyla \(\mathbf{b}\in C(A)\). Tersine \(\mathbf{b}\in C(A)\) ise bazı \(x_1,\ldots,x_n\) katsayıları için \(\mathbf{b}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\) yazılır. Bu katsayılar \(\mathbf{x}\) vektörünü verir ve \(A\mathbf{x}=\mathbf{b}\) sağlanır.</p>
+          <p><strong>Yorum:</strong> Sütun uzayı, bir sistemin hangi sağ taraflar için tutarlı olduğunu tam olarak belirleyen geometrik nesnedir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.10: Çözülebilir Sağ Taraflar</h3>
+          <p>Örnek 6.8'deki \(A\) için</p>
+          <div class="equation-card" data-raw-latex="A\begin{bmatrix}1\\0\\0\end{bmatrix}=\begin{bmatrix}1\\2\\3\\4\end{bmatrix},\qquad A\begin{bmatrix}0\\1\\0\end{bmatrix}=\begin{bmatrix}1\\1\\1\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A
+              \begin{bmatrix}1\\0\\0\end{bmatrix}
+              =
+              \begin{bmatrix}1\\2\\3\\4\end{bmatrix},
+              \qquad
+              A
+              \begin{bmatrix}0\\1\\0\end{bmatrix}
+              =
+              \begin{bmatrix}1\\1\\1\\1\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu iki sağ taraf çözülebilirdir, çünkü doğrudan \(A\)'nın sütunlarıdır. Daha genel olarak \(\mathbf{b}\), ilk iki sütunun doğrusal birleşimi ise sistem çözülebilir.</p>
+          <p>Örneğin \(\mathbf{b}=(1,2,3,4)^T\) için çözüm \(\mathbf{x}=(1,0,0)^T\)'dir. \(\mathbf{b}=(1,1,1,1)^T\) için çözüm \(\mathbf{x}=(0,1,0)^T\)'dir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 6.11: Sıfır Uzayı</h3>
+          <p>Bir \(A\) matrisinin sıfır uzayı, homojen sistemin tüm çözümlerinden oluşur:</p>
+          <div class="equation-card" data-raw-latex="N(A)=\{\mathbf{x}\in\mathbb{R}^n:\ A\mathbf{x}=\mathbf{0}\}">
+            <div class="equation-content">
+              \[
+              N(A)=\{\mathbf{x}\in\mathbb{R}^n:\ A\mathbf{x}=\mathbf{0}\}.
+              \]
+            </div>
+          </div>
+          <p>Eğer \(A\) bir \(m\times n\) matris ise sıfır uzayındaki vektörlerin \(n\) bileşeni vardır. Bu yüzden \(N(A)\), \(\mathbb{R}^n\)'nin bir alt uzayıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.12: Aynı Matrisin Sıfır Uzayı</h3>
+          <p>Örnek 6.8'deki matris için \(A\mathbf{x}=\mathbf{0}\) denklemini inceleyelim:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&1&2\\2&1&3\\3&1&4\\4&1&5\end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}=\begin{bmatrix}0\\0\\0\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&1&2\\
+              2&1&3\\
+              3&1&4\\
+              4&1&5
+              \end{bmatrix}
+              \begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}
+              =
+              \begin{bmatrix}0\\0\\0\\0\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Üçüncü sütun ilk iki sütunun toplamı olduğu için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1+\mathbf{a}_2-\mathbf{a}_3=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1+\mathbf{a}_2-\mathbf{a}_3=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Bu ilişki şu çözüm vektörünü verir:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\1\\-1\end{bmatrix}\in N(A)">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}1\\1\\-1\end{bmatrix}\in N(A).
+              \]
+            </div>
+          </div>
+          <p>Bu ilişkinin tüm skaler katları da çözümdür. Dolayısıyla sıfır uzayı şu doğrudur:</p>
+          <div class="equation-card" data-raw-latex="N(A)=\left\{c\begin{bmatrix}1\\1\\-1\end{bmatrix}:c\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              N(A)=
+              \left\{
+              c
+              \begin{bmatrix}1\\1\\-1\end{bmatrix}
+              :
+              c\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+          <p>Geometrik olarak \(N(A)\), \(\mathbb{R}^3\) içinde orijinden geçen bir doğrudur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 6.13: Sıfır Uzayı Alt Uzaydır</h3>
+          <p><strong>İfade:</strong> Her \(m\times n\) matris \(A\) için \(N(A)\), \(\mathbb{R}^n\)'nin bir alt uzayıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\) tarafından sıfıra gönderilen iki vektörü toplarsak, toplam da sıfıra gider. Böyle bir vektörün skaler katı da yine sıfıra gider.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{v},\mathbf{w}\in N(A)\) olsun. Bu durumda \(A\mathbf{v}=\mathbf{0}\) ve \(A\mathbf{w}=\mathbf{0}\). Matris çarpımının dağılma özelliğiyle</p>
+          <div class="equation-card" data-raw-latex="A(\mathbf{v}+\mathbf{w})=A\mathbf{v}+A\mathbf{w}=\mathbf{0}+\mathbf{0}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A(\mathbf{v}+\mathbf{w})
+              =
+              A\mathbf{v}+A\mathbf{w}
+              =
+              \mathbf{0}+\mathbf{0}
+              =
+              \mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle \(\mathbf{v}+\mathbf{w}\in N(A)\). Ayrıca \(c\in\mathbb{R}\) için</p>
+          <div class="equation-card" data-raw-latex="A(c\mathbf{v})=cA\mathbf{v}=c\mathbf{0}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A(c\mathbf{v})=cA\mathbf{v}=c\mathbf{0}=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(c\mathbf{v}\in N(A)\). Toplama ve skalerle çarpma altında kapanış sağlandığı için \(N(A)\) alt uzaydır.</p>
+          <p><strong>Yorum:</strong> Sıfır uzayının alt uzay olmasını sağlayan kritik nokta sağ tarafın \(\mathbf{0}\) olmasıdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 6.14: Homojen Olmayan Çözümler Alt Uzay Değildir</h3>
+          <p>Aynı \(A\) matrisiyle sağ taraf \(\mathbf{b}=(1,2,3,4)^T\) seçilsin:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}=\begin{bmatrix}1\\2\\3\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}=
+              \begin{bmatrix}1\\2\\3\\4\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu sistemin bir çözümü \(\mathbf{x}=(1,0,0)^T\)'dir. Bir başka çözüm de \(\mathbf{x}=(0,-1,1)^T\)'dir, çünkü</p>
+          <div class="equation-card" data-raw-latex="-\mathbf{a}_2+\mathbf{a}_3=\mathbf{a}_1">
+            <div class="equation-content">
+              \[
+              -\mathbf{a}_2+\mathbf{a}_3=\mathbf{a}_1.
+              \]
+            </div>
+          </div>
+          <p>Ancak çözüm kümesi alt uzay değildir. En temel neden, sıfır vektörünün çözüm olmamasıdır:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{0}=\mathbf{0}\ne \begin{bmatrix}1\\2\\3\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\mathbf{0}=\mathbf{0}\ne
+              \begin{bmatrix}1\\2\\3\\4\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle homojen olmayan sistemin çözüm kümesi, alt uzay değil; sıfır uzayına paralel, orijinden geçmeyen bir çözüm kümesidir.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+        <section class="theorem-card">
+          <h3>Teorem 6.15: Sütun Uzayı Alt Uzaydır</h3>
+          <p><strong>İfade:</strong> Her \(m\times n\) matris \(A\) için \(C(A)\), \(\mathbb{R}^m\)'nin bir alt uzayıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sütun uzayı zaten sütunların tüm doğrusal birleşimlerinden oluşur. İki doğrusal birleşimi toplamak veya bir skalerle çarpmak yine sütunların doğrusal birleşimini verir.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{u},\mathbf{v}\in C(A)\) olsun. O hâlde bazı katsayılar için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}=\sum_{j=1}^{n}c_j\mathbf{a}_j,\qquad \mathbf{v}=\sum_{j=1}^{n}d_j\mathbf{a}_j">
+            <div class="equation-content">
+              \[
+              \mathbf{u}=\sum_{j=1}^{n}c_j\mathbf{a}_j,
+              \qquad
+              \mathbf{v}=\sum_{j=1}^{n}d_j\mathbf{a}_j.
+              \]
+            </div>
+          </div>
+          <p>\(s,t\in\mathbb{R}\) için</p>
+          <div class="equation-card" data-raw-latex="s\mathbf{u}+t\mathbf{v}=\sum_{j=1}^{n}(sc_j+td_j)\mathbf{a}_j">
+            <div class="equation-content">
+              \[
+              s\mathbf{u}+t\mathbf{v}
+              =
+              \sum_{j=1}^{n}(sc_j+td_j)\mathbf{a}_j.
+              \]
+            </div>
+          </div>
+          <p>Sağ taraf yine \(A\)'nın sütunlarının doğrusal birleşimidir. Bu nedenle \(s\mathbf{u}+t\mathbf{v}\in C(A)\), yani \(C(A)\) alt uzaydır.</p>
+          <p><strong>Yorum:</strong> Sütun uzayı, bir matristen alt uzay üretmenin doğrudan yoludur: birkaç sütun verilir, onların tüm doğrusal birleşimleri alınır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 6.16: Homojen Olmayan Çözüm Kümesi Alt Uzay Olmak Zorunda Değildir</h3>
+          <p><strong>İfade:</strong> \(\mathbf{b}\ne\mathbf{0}\) ise \(A\mathbf{x}=\mathbf{b}\) denkleminin çözüm kümesi, çözüm olsa bile genellikle alt uzay değildir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Alt uzay sıfır vektörünü içermelidir. Ancak \(A\mathbf{0}=\mathbf{0}\) olduğundan, sağ taraf sıfır değilse \(\mathbf{0}\) çözüm olamaz.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{b}\ne\mathbf{0}\) olsun. Her \(A\) için</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{0}=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A\mathbf{0}=\mathbf{0}.
+              \]
+            </div>
+          </div>
+          <p>Bu değer \(\mathbf{b}\)'ye eşit değildir. Dolayısıyla \(\mathbf{0}\), \(A\mathbf{x}=\mathbf{b}\) denkleminin çözümü değildir. Sıfır vektörünü içermeyen bir küme alt uzay olamayacağı için bu çözüm kümesi alt uzay değildir.</p>
+          <p><strong>Yorum:</strong> Sıfır uzayını özel yapan şey yalnızca bir çözüm kümesi olması değil, sağ tarafın sıfır olmasıdır.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <h3>Sütun Uzayını Belirleme</h3>
+          <p><strong>Ne işe yarar?</strong> \(A\mathbf{x}=\mathbf{b}\) sisteminde hangi \(\mathbf{b}\) vektörlerinin çözülebilir olduğunu belirler.</p>
+          <ol>
+            <li>Matrisin sütunlarını \(\mathbf{a}_1,\ldots,\mathbf{a}_n\) olarak yaz.</li>
+            <li>Sütunların tüm doğrusal birleşimlerini oluştur.</li>
+            <li>Bir sütun önceki sütunların doğrusal birleşimiyse, sütun uzayına yeni yön eklemediğini not et.</li>
+            <li>\(\mathbf{b}\)'nin bu doğrusal birleşimlerden biri olup olmadığını kontrol et.</li>
+          </ol>
+          <p>Örnek 6.8'de \(\mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2\) olduğundan sütun uzayını ilk iki sütun belirler.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Sıfır Uzayını Belirleme</h3>
+          <p><strong>Ne işe yarar?</strong> Sütunların hangi katsayılarla sıfır toplam verdiğini bulur.</p>
+          <ol>
+            <li>\(A\mathbf{x}=\mathbf{0}\) denklemini yaz.</li>
+            <li>Sütunlar arasında görülen doğrusal ilişkiyi belirle.</li>
+            <li>Bu ilişkiyi \(\mathbf{x}\) vektörünün katsayıları olarak oku.</li>
+            <li>Bulunan çözümün tüm skaler katlarını al.</li>
+          </ol>
+          <p>Örnek 6.12'de \(\mathbf{a}_1+\mathbf{a}_2-\mathbf{a}_3=\mathbf{0}\) olduğu için sıfır uzayı \((1,1,-1)^T\) vektörünün tüm skaler katlarından oluşur.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Yaygın Hata Noktaları</h3>
+          <ul>
+            <li>Sütun uzayını \(\mathbb{R}^n\)'de sanmak yanlıştır; sütunlar \(m\) bileşenli olduğundan \(C(A)\subseteq\mathbb{R}^m\)'dir.</li>
+            <li>Sıfır uzayını sağ taraf vektörlerinin kümesi sanmak yanlıştır; \(N(A)\), bilinmeyen vektörlerinden oluşur.</li>
+            <li>Birleşim ile kesişimi karıştırmak hatalıdır; kesişim alt uzaydır, birleşim genellikle değildir.</li>
+            <li>Homojen olmayan sistemin çözüm kümesini alt uzay saymak yanlıştır; sağ taraf sıfır değilse sıfır vektörü çözüm değildir.</li>
+          </ul>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Alt Uzayın Orijinden Geçmesini Unutmak</h4>
+            <p>Orijinden geçmeyen bir doğru, toplama ve skalerle çarpma açısından kapalı görünse bile sıfır vektörünü içermediği için alt uzay değildir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Birleşimi Alt Uzay Sanmak</h4>
+            <p>İki alt uzayın birleşimindeki vektörler ayrı ayrı iyi davranır; fakat farklı parçalardan gelen iki vektörün toplamı birleşimin dışında kalabilir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sütun Uzayının Ortamını Yanlış Seçmek</h4>
+            <p>\(m\times n\) matrisin sütunları \(m\) bileşenlidir. Bu yüzden sütun uzayı \(\mathbb{R}^m\)'dedir, \(\mathbb{R}^n\)'de değil.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sıfır Uzayını Sağ Taraflarla Karıştırmak</h4>
+            <p>Sıfır uzayı \(\mathbf{x}\) vektörlerinden oluşur. Sağ taraf vektörleri sütun uzayına aittir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>\(A\mathbf{x}=\mathbf{b}\) İçin Her \(\mathbf{b}\)'yi Çözülebilir Sanmak</h4>
+            <p>Çözüm olması için \(\mathbf{b}\), sütunların doğrusal birleşimi olmalıdır. Özellikle dört denklem üç bilinmeyenli bir sistemde her sağ taraf beklenemez.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Homojen Olmayan Çözüm Kümesini Alt Uzay Saymak</h4>
+            <p>\(\mathbf{b}\ne\mathbf{0}\) ise \(\mathbf{0}\) çözüm değildir. Sıfır vektörü yoksa alt uzay da yoktur.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Vektör uzayı: doğrusal birleşimler altında kapalı vektör kümesi.</li>
+            <li>Alt uzay: daha büyük bir vektör uzayının içinde bulunan vektör uzayı.</li>
+            <li>Orijin koşulu: her alt uzay \(\mathbf{0}\) vektörünü içerir.</li>
+            <li>Kesişim: iki alt uzayın ortak kısmı yine alt uzaydır.</li>
+            <li>Birleşim: iki alt uzayın birleşimi genellikle alt uzay değildir.</li>
+            <li>Sütun uzayı: \(A\)'nın sütunlarının doğrusal birleşimleri; çözülebilir sağ tarafların kümesi.</li>
+            <li>Sıfır uzayı: \(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümleri; bilinmeyen uzayında bir alt uzay.</li>
+            <li>Homojen olmayan çözüm kümesi: çözüm varsa sıfır uzayına paralel olabilir, fakat genellikle alt uzay değildir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Alt Uzay Kapanışı</h3>
+            <p>Bir alt uzay doğrusal birleşimler altında kapalıdır.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{v},\mathbf{w}\in W,\ c,d\in\mathbb{R}\quad \Longrightarrow\quad c\mathbf{v}+d\mathbf{w}\in W">
+              <div class="equation-content">
+                \[
+                \mathbf{v},\mathbf{w}\in W,\ c,d\in\mathbb{R}
+                \quad \Longrightarrow\quad
+                c\mathbf{v}+d\mathbf{w}\in W.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Sütun Uzayı</h3>
+            <p>Sütun uzayı, matris sütunlarının tüm doğrusal birleşimleridir.</p>
+            <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n:\ c_j\in\mathbb{R}\}">
+              <div class="equation-content">
+                \[
+                C(A)=\{c_1\mathbf{a}_1+\cdots+c_n\mathbf{a}_n:\ c_j\in\mathbb{R}\}.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Matris-Vektör Çarpımı</h3>
+            <p>\(A\mathbf{x}\), sütunların katsayılı toplamı olarak okunur.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Çözülebilirlik Ölçütü</h3>
+            <p>Sağ taraf sütun uzayındaysa sistem çözülebilir.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}\quad \Longleftrightarrow\quad \mathbf{b}\in C(A)">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}
+                \quad \Longleftrightarrow\quad
+                \mathbf{b}\in C(A).
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Sıfır Uzayı</h3>
+            <p>Sıfır uzayı homojen sistemin tüm çözümleridir.</p>
+            <div class="equation-card" data-raw-latex="N(A)=\{\mathbf{x}\in\mathbb{R}^n:\ A\mathbf{x}=\mathbf{0}\}">
+              <div class="equation-content">
+                \[
+                N(A)=\{\mathbf{x}\in\mathbb{R}^n:\ A\mathbf{x}=\mathbf{0}\}.
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde vektör uzayı ve alt uzay kavramları, doğrusal birleşimler altında kapalı kalma koşulu üzerinden kuruldu. Orijinden geçen düzlem ve doğruların alt uzay olduğu, fakat iki alt uzayın birleşiminin genellikle alt uzay olmadığı görüldü. Buna karşılık kesişim her zaman alt uzaydır.</p>
+        <p>Bir matrisin sütun uzayı, sütunlarının tüm doğrusal birleşimlerinden oluşur ve \(A\mathbf{x}=\mathbf{b}\) denkleminin hangi sağ taraflar için çözülebilir olduğunu belirler. Bir matrisin sıfır uzayı ise \(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümleridir ve bilinmeyen vektörlerinin bulunduğu uzayda yaşar.</p>
+        <p>Aynı matris için \(C(A)\) ve \(N(A)\) farklı türden bilgileri taşır: sütun uzayı ulaşılabilen sağ tarafları, sıfır uzayı ise sütunlar arasındaki yok edici katsayı ilişkilerini gösterir.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay</h3>
+          <p>\(\mathbb{R}^3\)'te</p>
+          <div class="equation-card" data-raw-latex="L=\left\{c\begin{bmatrix}2\\-1\\3\end{bmatrix}:c\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              L=
+              \left\{
+              c
+              \begin{bmatrix}2\\-1\\3\end{bmatrix}
+              :
+              c\in\mathbb{R}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>kümesinin alt uzay olup olmadığını belirleyin.</p>
+          <p><strong>Çözüm:</strong> \(L\), tek bir vektörün tüm skaler katlarından oluşur. İki eleman alalım:</p>
+          <div class="equation-card" data-raw-latex="c\begin{bmatrix}2\\-1\\3\end{bmatrix},\qquad d\begin{bmatrix}2\\-1\\3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              c
+              \begin{bmatrix}2\\-1\\3\end{bmatrix},
+              \qquad
+              d
+              \begin{bmatrix}2\\-1\\3\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Toplamları</p>
+          <div class="equation-card" data-raw-latex="(c+d)\begin{bmatrix}2\\-1\\3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              (c+d)
+              \begin{bmatrix}2\\-1\\3\end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>yine \(L\)'dedir. Her skaler kat da aynı biçimde kalır. Ayrıca \(c=0\) için sıfır vektörü elde edilir. Dolayısıyla \(L\) alt uzaydır.</p>
+          <p><strong>Yorum:</strong> Tek bir vektörün tüm skaler katları, orijinden geçen bir doğru oluşturur.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta</h3>
+          <p>Şu matris için sütun uzayını açıklayın ve \(\mathbf{b}=(3,4,5,6)^T\) sağ tarafının çözülebilir olup olmadığını belirleyin:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1&2\\2&1&3\\3&1&4\\4&1&5\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1&2\\
+              2&1&3\\
+              3&1&4\\
+              4&1&5
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Çözüm:</strong> Sütunlar \(\mathbf{a}_1=(1,2,3,4)^T\), \(\mathbf{a}_2=(1,1,1,1)^T\) ve \(\mathbf{a}_3=(2,3,4,5)^T\)'dir. Üçüncü sütun ilk ikisinin toplamıdır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_3=\mathbf{a}_1+\mathbf{a}_2.
+              \]
+            </div>
+          </div>
+          <p>Bu yüzden</p>
+          <div class="equation-card" data-raw-latex="C(A)=\{c_1\mathbf{a}_1+c_2\mathbf{a}_2:\ c_1,c_2\in\mathbb{R}\}">
+            <div class="equation-content">
+              \[
+              C(A)=\{c_1\mathbf{a}_1+c_2\mathbf{a}_2:\ c_1,c_2\in\mathbb{R}\}.
+              \]
+            </div>
+          </div>
+          <p>\(\mathbf{b}\)'nin bu biçimde yazılıp yazılamadığını kontrol edelim:</p>
+          <div class="equation-card" data-raw-latex="c_1\begin{bmatrix}1\\2\\3\\4\end{bmatrix}+c_2\begin{bmatrix}1\\1\\1\\1\end{bmatrix}=\begin{bmatrix}3\\4\\5\\6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              c_1
+              \begin{bmatrix}1\\2\\3\\4\end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}1\\1\\1\\1\end{bmatrix}
+              =
+              \begin{bmatrix}3\\4\\5\\6\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>İlk iki denklem \(c_1+c_2=3\) ve \(2c_1+c_2=4\) verir. Buradan \(c_1=1\), \(c_2=2\). Bu değerler üçüncü ve dördüncü bileşenleri de sağlar: \(3\cdot1+2=5\), \(4\cdot1+2=6\). Dolayısıyla \(\mathbf{b}\in C(A)\) ve sistem çözülebilir.</p>
+          <p><strong>Yorum:</strong> Sağ taraf sütun uzayındaysa çözüm vardır; burada \(\mathbf{x}=(1,2,0)^T\) bir çözümdür.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri</h3>
+          <p>Aynı \(A\) matrisi için sıfır uzayını bulun ve \(A\mathbf{x}=(1,2,3,4)^T\) denkleminin çözüm kümesinin neden alt uzay olmadığını açıklayın.</p>
+          <p><strong>Çözüm:</strong> Sütun ilişkisi</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}_1+\mathbf{a}_2-\mathbf{a}_3=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              \mathbf{a}_1+\mathbf{a}_2-\mathbf{a}_3=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>olduğundan \((1,1,-1)^T\) sıfır uzayındadır. Bu ilişkinin tüm skaler katları çözümdür:</p>
+          <div class="equation-card" data-raw-latex="N(A)=\left\{c\begin{bmatrix}1\\1\\-1\end{bmatrix}:c\in\mathbb{R}\right\}">
+            <div class="equation-content">
+              \[
+              N(A)=
+              \left\{
+              c
+              \begin{bmatrix}1\\1\\-1\end{bmatrix}
+              :
+              c\in\mathbb{R}
+              \right\}.
+              \]
+            </div>
+          </div>
+          <p>Diğer denklemde \((1,0,0)^T\) bir çözümdür, çünkü \(A(1,0,0)^T=\mathbf{a}_1=(1,2,3,4)^T\). Fakat çözüm kümesi alt uzay değildir; çünkü sıfır vektörü çözüm değildir:</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{0}=\mathbf{0}\ne \begin{bmatrix}1\\2\\3\\4\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A\mathbf{0}=\mathbf{0}\ne
+              \begin{bmatrix}1\\2\\3\\4\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Ayrıca her çözüm, bir özel çözüme sıfır uzayından bir vektör eklenerek elde edilir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}1\\0\\0\end{bmatrix}+c\begin{bmatrix}1\\1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              \begin{bmatrix}1\\0\\0\end{bmatrix}
+              +
+              c
+              \begin{bmatrix}1\\1\\-1\end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Sıfır uzayı orijinden geçen bir doğru iken, homojen olmayan çözüm kümesi bu doğruya paralel fakat orijinden geçmeyen bir doğrudur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Vector space</td><td>Vektör uzayı</td><td>Toplama ve skalerle çarpma altında kapalı vektörler kümesi.</td></tr>
+              <tr><td>Subspace</td><td>Alt uzay</td><td>Bir vektör uzayının içinde bulunan ve kendi başına vektör uzayı olan küme.</td></tr>
+              <tr><td>Linear combination</td><td>Doğrusal birleşim</td><td>Vektörlerin skaler katsayılarla çarpılıp toplanması.</td></tr>
+              <tr><td>Column space</td><td>Sütun uzayı</td><td>Bir matrisin sütunlarının tüm doğrusal birleşimlerinden oluşan alt uzay.</td></tr>
+              <tr><td>Null space</td><td>Sıfır uzayı</td><td>\(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümlerinden oluşan alt uzay.</td></tr>
+              <tr><td>Right-hand side</td><td>Sağ taraf</td><td>\(A\mathbf{x}=\mathbf{b}\) denklemindeki \(\mathbf{b}\) vektörü.</td></tr>
+              <tr><td>Homogeneous system</td><td>Homojen sistem</td><td>Sağ tarafı sıfır vektörü olan lineer sistem.</td></tr>
+              <tr><td>Intersection</td><td>Kesişim</td><td>İki kümede birden bulunan elemanların oluşturduğu küme.</td></tr>
+              <tr><td>Union</td><td>Birleşim</td><td>İki kümeden en az birinde bulunan elemanların oluşturduğu küme.</td></tr>
+              <tr><td>Zero vector</td><td>Sıfır vektörü</td><td>Bütün bileşenleri sıfır olan vektör.</td></tr>
+              <tr><td>Scalar</td><td>Skaler</td><td>Vektörleri çarpmakta kullanılan gerçek sayı.</td></tr>
+              <tr><td>Closure</td><td>Kapanış</td><td>Bir işlemden sonra sonucun yine aynı kümede kalması özelliği.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var current = parseFloat(window.getComputedStyle(title).fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

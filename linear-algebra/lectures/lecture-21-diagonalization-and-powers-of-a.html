@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.2vw, 1.85rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" class="active" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, özdeğer ve özvektörlerin temel kullanımını açıklar: yeterli sayıda bağımsız özvektör bulunduğunda matris köşegen bir matrise indirgenir ve \(A\)'nın yüksek kuvvetleri kolayca anlaşılır.</p>
+        <p>Önce özvektörlerden oluşan \(S\) matrisi ve özdeğerlerden oluşan \(\Lambda\) matrisi kurulur. Bu yapıdan \(AS=S\Lambda\), \(S^{-1}AS=\Lambda\) ve \(A=S\Lambda S^{-1}\) eşitlikleri elde edilir.</p>
+        <p>Daha sonra bu eşitlikler \(A^2\), \(A^k\), ayrık zamanlı sistemler ve Fibonacci dizisi üzerinde kullanılır. Dersin önemli sınırlaması da işlenir: köşegenleştirme için \(n\) bağımsız özvektör gerekir; tekrarlı özdeğerler bu koşulu bazen bozabilir.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Özvektör matrisini \(S=[\mathbf{x}_1\ \mathbf{x}_2\ \cdots\ \mathbf{x}_n]\) biçiminde kurmak.</li>
+          <li>\(AS=S\Lambda\) eşitliğini sütun sütun matris çarpımıyla açıklamak.</li>
+          <li>Köşegenleştirme formüllerini \(S^{-1}AS=\Lambda\) ve \(A=S\Lambda S^{-1}\) olarak yazmak.</li>
+          <li>Köşegenleştirme için \(S\)'nin tersinir olması gerektiğini ve bunun bağımsız özvektörlere dayandığını görmek.</li>
+          <li>\(A^k=S\Lambda^kS^{-1}\) formülünü kullanarak matris kuvvetlerini incelemek.</li>
+          <li>\(A^k\to0\) davranışının özdeğerlerin mutlak değerleriyle nasıl belirlendiğini anlamak.</li>
+          <li>Tekrarlı özdeğerlerde cebirsel ve geometrik çokluk ayrımını yapmak.</li>
+          <li>Fibonacci dizisini birinci mertebeden matris sistemi olarak yazıp özdeğerlerle büyüme hızını açıklamak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Özdeğer ve özvektör denklemi \(A\mathbf{x}=\lambda\mathbf{x}\).</li>
+          <li>Lineer bağımsızlık ve tersinir matris kavramları.</li>
+          <li>Matris çarpımının sütunlar üzerinden yorumlanması.</li>
+          <li>Köşegen matrislerin kuvvetlerinin kolay hesaplanması.</li>
+          <li>Tekil matris, sıfır uzayı ve özvektör hesabı.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Kare matris</td>
+                <td>Köşegenleştirilmek istenen matristir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}_i\)</td>
+                <td>Özvektör</td>
+                <td>\(A\mathbf{x}_i=\lambda_i\mathbf{x}_i\) eşitliğini sağlar.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda_i\)</td>
+                <td>Özdeğer</td>
+                <td>\(\mathbf{x}_i\) doğrultusundaki skaler çarpandır.</td>
+              </tr>
+              <tr>
+                <td>\(S\)</td>
+                <td>Özvektör matrisi</td>
+                <td>Sütunları \(A\)'nın bağımsız özvektörleridir.</td>
+              </tr>
+              <tr>
+                <td>\(\Lambda\)</td>
+                <td>Özdeğer matrisi</td>
+                <td>Köşegeninde \(\lambda_1,\ldots,\lambda_n\) bulunan köşegen matristir.</td>
+              </tr>
+              <tr>
+                <td>\(u_k\)</td>
+                <td>Ayrık zaman vektörü</td>
+                <td>\(u_{k+1}=Au_k\) sisteminde \(k\). adımdaki durumdur.</td>
+              </tr>
+              <tr>
+                <td>\(F_k\)</td>
+                <td>Fibonacci sayısı</td>
+                <td>\(F_{k+2}=F_{k+1}+F_k\) bağıntısıyla tanımlanır.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Özvektörler, \(A\) matrisinin karmaşık görünen etkisini ayrıştıran özel doğrultulardır. Eğer başlangıç vektörü bu doğrultuların toplamı olarak yazılırsa, matrisin her uygulaması her bileşeni yalnızca kendi özdeğeriyle çarpar.</p>
+        <aside class="note-card">
+          <strong>Çekirdek Kavram:</strong>
+          <p>Köşegenleştirme, bir matrisi özvektör koordinatlarında köşegen bir etkiye dönüştürür. Bu nedenle \(A\)'nın kuvvetleri, \(\Lambda\)'nın kuvvetlerine indirgenir.</p>
+        </aside>
+        <p>Bu bakış, eleme çarpanlarına ayırmasından farklıdır. \(LU\) çarpanları sistemi çözmek için güçlüdür; fakat \(A^{100}\) gibi kuvvetleri anlamakta doğal değildir. Özdeğerler ise doğrudan matrisin tekrar tekrar uygulanmasının uzun dönem davranışını gösterir.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Özvektör Matrisi ve Özdeğer Matrisi</h3>
+          <p>\(A\), \(n\times n\) bir matris olsun ve \(n\) tane lineer bağımsız özvektörü bulunsun. Özvektörler sütunlara yerleştirilerek</p>
+          <div class="equation-card" data-raw-latex="S=\begin{bmatrix}\mathbf{x}_1&amp;\mathbf{x}_2&amp;\cdots&amp;\mathbf{x}_n\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              S=
+              \begin{bmatrix}
+              \mathbf{x}_1&\mathbf{x}_2&\cdots&\mathbf{x}_n
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>matrisi kurulur. Özdeğerler ise köşegen matrise yerleştirilir:</p>
+          <div class="equation-card" data-raw-latex="\Lambda=\begin{bmatrix}\lambda_1&amp;0&amp;\cdots&amp;0\\0&amp;\lambda_2&amp;\cdots&amp;0\\\vdots&amp;\vdots&amp;\ddots&amp;\vdots\\0&amp;0&amp;\cdots&amp;\lambda_n\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \Lambda=
+              \begin{bmatrix}
+              \lambda_1&0&\cdots&0\\
+              0&\lambda_2&\cdots&0\\
+              \vdots&\vdots&\ddots&\vdots\\
+              0&0&\cdots&\lambda_n
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.2: Temel Köşegenleştirme Eşitliği</h3>
+          <p><strong>İfade:</strong> \(A\)'nın \(n\) bağımsız özvektörü varsa ve \(S\) bu özvektörlerden oluşuyorsa</p>
+          <div class="equation-card" data-raw-latex="AS=S\Lambda">
+            <div class="equation-content">
+              \[
+              AS=S\Lambda
+              \]
+            </div>
+          </div>
+          <p>eşitliği sağlanır. Ayrıca \(S\) tersinir olduğundan</p>
+          <div class="equation-card" data-raw-latex="S^{-1}AS=\Lambda,\qquad A=S\Lambda S^{-1}">
+            <div class="equation-content">
+              \[
+              S^{-1}AS=\Lambda,
+              \qquad
+              A=S\Lambda S^{-1}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\), \(S\)'nin her sütununa ayrı ayrı etki eder. Her sütun bir özvektör olduğundan etki yalnızca o sütunu ilgili özdeğerle çarpmaktır.</p>
+          <p><strong>Formal İspat:</strong> \(S\)'nin sütunları \(\mathbf{x}_1,\ldots,\mathbf{x}_n\) olsun. Matris çarpımı sütunlar üzerinden okunursa</p>
+          <div class="equation-card" data-raw-latex="AS=\begin{bmatrix}A\mathbf{x}_1&amp;A\mathbf{x}_2&amp;\cdots&amp;A\mathbf{x}_n\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              AS=
+              \begin{bmatrix}
+              A\mathbf{x}_1&A\mathbf{x}_2&\cdots&A\mathbf{x}_n
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Özvektör denklemi \(A\mathbf{x}_i=\lambda_i\mathbf{x}_i\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="AS=\begin{bmatrix}\lambda_1\mathbf{x}_1&amp;\lambda_2\mathbf{x}_2&amp;\cdots&amp;\lambda_n\mathbf{x}_n\end{bmatrix}=S\Lambda">
+            <div class="equation-content">
+              \[
+              AS=
+              \begin{bmatrix}
+              \lambda_1\mathbf{x}_1&
+              \lambda_2\mathbf{x}_2&
+              \cdots&
+              \lambda_n\mathbf{x}_n
+              \end{bmatrix}
+              =
+              S\Lambda
+              \]
+            </div>
+          </div>
+          <p>\(S\)'nin sütunları bağımsız olduğu için \(S\) tersinirdir. Soldan \(S^{-1}\) ile çarpılırsa \(S^{-1}AS=\Lambda\), sağdan \(S^{-1}\) ile düzenlenirse \(A=S\Lambda S^{-1}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Bu formül, özdeğer-özvektör hesabının temel kullanım noktasıdır. Matris, uygun koordinatlarda köşegen hale gelir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.3: Köşegenleştirilebilir Matris</h3>
+          <p>Bir \(A\) matrisi, tersinir bir \(S\) ve köşegen bir \(\Lambda\) matrisi için</p>
+          <div class="equation-card" data-raw-latex="A=S\Lambda S^{-1}">
+            <div class="equation-content">
+              \[
+              A=S\Lambda S^{-1}
+              \]
+            </div>
+          </div>
+          <p>biçiminde yazılabiliyorsa köşegenleştirilebilir denir. Buradaki \(S\) matrisi özvektörlerden, \(\Lambda\) matrisi karşılık gelen özdeğerlerden oluşur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: Matris Kuvvetleri</h3>
+          <p><strong>İfade:</strong> \(A=S\Lambda S^{-1}\) ise her pozitif tam sayı \(k\) için</p>
+          <div class="equation-card" data-raw-latex="A^k=S\Lambda^kS^{-1}">
+            <div class="equation-content">
+              \[
+              A^k=S\Lambda^kS^{-1}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu durumda \(A^k\)'nın özvektörleri \(A\)'nın özvektörleriyle aynıdır; özdeğerleri \(\lambda_i^k\)'dır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\) her uygulanışında özvektör doğrultusundaki bileşeni \(\lambda_i\) ile çarpar. \(k\) kez uygulandığında çarpan \(\lambda_i^k\) olur.</p>
+          <p><strong>Formal İspat:</strong> \(A=S\Lambda S^{-1}\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="A^2=(S\Lambda S^{-1})(S\Lambda S^{-1})=S\Lambda^2S^{-1}">
+            <div class="equation-content">
+              \[
+              A^2=
+              (S\Lambda S^{-1})(S\Lambda S^{-1})
+              =
+              S\Lambda^2S^{-1}
+              \]
+            </div>
+          </div>
+          <p>çünkü ortadaki \(S^{-1}S\) çarpımı \(I\)'dır. Aynı iptal \(k\) çarpan için tekrarlanır ve \(A^k=S\Lambda^kS^{-1}\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Köşegen \(\Lambda\)'nın kuvveti yalnızca köşegen girişlerin kuvvetlerinin alınmasıdır:</p>
+          <div class="equation-card" data-raw-latex="\Lambda^k=\begin{bmatrix}\lambda_1^k&amp;0&amp;\cdots&amp;0\\0&amp;\lambda_2^k&amp;\cdots&amp;0\\\vdots&amp;\vdots&amp;\ddots&amp;\vdots\\0&amp;0&amp;\cdots&amp;\lambda_n^k\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \Lambda^k=
+              \begin{bmatrix}
+              \lambda_1^k&0&\cdots&0\\
+              0&\lambda_2^k&\cdots&0\\
+              \vdots&\vdots&\ddots&\vdots\\
+              0&0&\cdots&\lambda_n^k
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Kuvvetlerin Sıfıra Yaklaşması</h3>
+          <p><strong>İfade:</strong> \(A\) köşegenleştirilebilir olsun. Eğer tüm özdeğerler için \(|\lambda_i|<1\) ise</p>
+          <div class="equation-card" data-raw-latex="A^k\to 0\qquad (k\to\infty)">
+            <div class="equation-content">
+              \[
+              A^k\to 0
+              \qquad
+              (k\to\infty)
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(S\) ve \(S^{-1}\) sabittir. Uzun dönem davranışı \(\Lambda^k\)'daki \(\lambda_i^k\) terimleri belirler.</p>
+          <p><strong>Formal İspat:</strong> \(A^k=S\Lambda^kS^{-1}\). Eğer \(|\lambda_i|<1\) ise her \(i\) için \(\lambda_i^k\to0\). Bu yüzden \(\Lambda^k\) sıfır matrise yaklaşır. Sabit matrislerle soldan ve sağdan çarpma bu yakınsamayı bozmaz; dolayısıyla \(A^k\to0\).</p>
+          <p><strong>Yorum:</strong> Bu sonuç köşegenleştirilebilirlik varsayımına dayanır. Bağımsız özvektörler yoksa aynı açıklama doğrudan kullanılamaz.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Farklı Özdeğerler Bağımsız Özvektörler Verir</h3>
+          <p><strong>İfade:</strong> \(A\)'nın \(n\) özdeğeri birbirinden farklıysa, \(A\) \(n\) lineer bağımsız özvektöre sahiptir ve köşegenleştirilebilir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Farklı özdeğerler, matrisin birbirinden ayrılmış özel doğrultularını üretir. Bu doğrultular birbirinin doğrusal birleşimi olarak çökmeye zorlanmaz.</p>
+          <p><strong>Formal İspat:</strong> Bu ders kapsamında sonuç temel bir köşegenleştirilebilirlik ölçütü olarak kullanılır. Her farklı özdeğer için en az bir özvektör bulunur ve bu özvektörler lineer bağımsızdır. Böylece \(S\)'nin sütunları bağımsız olur, \(S^{-1}\) vardır ve \(S^{-1}AS=\Lambda\) yazılabilir.</p>
+          <p><strong>Yorum:</strong> Çoğu tipik örnekte özdeğerler farklıdır. Zorluk genellikle tekrarlı özdeğerlerde ortaya çıkar.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.7: Cebirsel ve Geometrik Çokluk</h3>
+          <p>Bir özdeğerin karakteristik denklemde kaç kez kök olarak geçtiğine cebirsel çokluk denir. Aynı özdeğere karşılık gelen özvektör uzayının boyutuna ise geometrik çokluk denir.</p>
+          <p>Geometrik çokluk, \((A-\lambda I)\mathbf{x}=\mathbf{0}\) sisteminin sıfır uzayının boyutudur. Köşegenleştirme için toplamda \(n\) bağımsız özvektör gerekir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.8: Köşegenleştirilemeyen Üçgensel Matris</h3>
+          <p>Aşağıdaki matrisi ele alalım:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}2&amp;1\\0&amp;2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              2&1\\
+              0&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Üçgensel olduğu için özdeğerler köşegenden okunur; yine de determinantla yazalım:</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det\begin{bmatrix}2-\lambda&amp;1\\0&amp;2-\lambda\end{bmatrix}=(2-\lambda)^2">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              2-\lambda&1\\
+              0&2-\lambda
+              \end{bmatrix}
+              =
+              (2-\lambda)^2
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\lambda=2\) iki kez tekrarlanır; cebirsel çokluk \(2\)'dir. Ancak özvektörler için</p>
+          <div class="equation-card" data-raw-latex="A-2I=\begin{bmatrix}0&amp;1\\0&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-2I=
+              \begin{bmatrix}
+              0&1\\
+              0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Sıfır uzayı \(x_2=0\) koşulunu verir; bu uzay yalnızca bir boyutludur:</p>
+          <div class="equation-card" data-raw-latex="\mathcal{N}(A-2I)=\operatorname{ger}\left\{\begin{bmatrix}1\\0\end{bmatrix}\right\}">
+            <div class="equation-content">
+              \[
+              \mathcal{N}(A-2I)
+              =
+              \operatorname{ger}
+              \left\{
+              \begin{bmatrix}
+              1\\
+              0
+              \end{bmatrix}
+              \right\}
+              \]
+            </div>
+          </div>
+          <p>Geometrik çokluk \(1\)'dir. İki boyutlu bir matris için yalnızca bir bağımsız özvektör olduğundan bu matris köşegenleştirilemez.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>Tekrarlı özdeğer her zaman sorun yaratmaz. Kimlik matrisinde tek özdeğer \(1\), tüm boyut boyunca tekrarlanır; fakat her vektör özvektör olduğu için yeterli sayıda bağımsız özvektör seçilebilir. Sorun, tekrarlı özdeğerin özvektör uzayının küçük kalmasıdır.</p>
+        </aside>
+
+        <section class="definition-card">
+          <h3>Tanım 1.9: Ayrık Zamanlı Birinci Mertebe Sistem</h3>
+          <p>Bir vektör dizisi</p>
+          <div class="equation-card" data-raw-latex="u_{k+1}=Au_k">
+            <div class="equation-content">
+              \[
+              u_{k+1}=Au_k
+              \]
+            </div>
+          </div>
+          <p>bağıntısını sağlıyorsa, \(k\) adım sonra</p>
+          <div class="equation-card" data-raw-latex="u_k=A^ku_0">
+            <div class="equation-content">
+              \[
+              u_k=A^ku_0
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Köşegenleştirme, bu formülü hesaplanabilir hale getirir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: Başlangıç Vektörünü Özvektörlere Ayırma</h3>
+          <p><strong>İfade:</strong> \(A\)'nın bağımsız özvektörleri \(\mathbf{x}_1,\ldots,\mathbf{x}_n\) olsun. Başlangıç vektörü</p>
+          <div class="equation-card" data-raw-latex="u_0=c_1\mathbf{x}_1+c_2\mathbf{x}_2+\cdots+c_n\mathbf{x}_n">
+            <div class="equation-content">
+              \[
+              u_0=
+              c_1\mathbf{x}_1+
+              c_2\mathbf{x}_2+
+              \cdots+
+              c_n\mathbf{x}_n
+              \]
+            </div>
+          </div>
+          <p>biçiminde yazılırsa</p>
+          <div class="equation-card" data-raw-latex="u_k=A^ku_0=c_1\lambda_1^k\mathbf{x}_1+c_2\lambda_2^k\mathbf{x}_2+\cdots+c_n\lambda_n^k\mathbf{x}_n">
+            <div class="equation-content">
+              \[
+              u_k=A^ku_0=
+              c_1\lambda_1^k\mathbf{x}_1+
+              c_2\lambda_2^k\mathbf{x}_2+
+              \cdots+
+              c_n\lambda_n^k\mathbf{x}_n
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Her özvektör bileşeni kendi özdeğeriyle bağımsız biçimde ilerler.</p>
+          <p><strong>Formal İspat:</strong> \(A^k\mathbf{x}_i=\lambda_i^k\mathbf{x}_i\) olduğundan lineerlik ile</p>
+          <div class="equation-card" data-raw-latex="A^k\left(\sum_{i=1}^n c_i\mathbf{x}_i\right)=\sum_{i=1}^n c_iA^k\mathbf{x}_i=\sum_{i=1}^n c_i\lambda_i^k\mathbf{x}_i">
+            <div class="equation-content">
+              \[
+              A^k\left(\sum_{i=1}^n c_i\mathbf{x}_i\right)
+              =
+              \sum_{i=1}^n c_iA^k\mathbf{x}_i
+              =
+              \sum_{i=1}^n c_i\lambda_i^k\mathbf{x}_i
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Uzun dönemde mutlak değeri en büyük özdeğer genellikle baskın terimi belirler.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: Fibonacci Dizisinin Matris Sistemi</h3>
+          <p>Fibonacci sayıları</p>
+          <div class="equation-card" data-raw-latex="F_{k+2}=F_{k+1}+F_k,\qquad F_0=0,\quad F_1=1">
+            <div class="equation-content">
+              \[
+              F_{k+2}=F_{k+1}+F_k,
+              \qquad
+              F_0=0,\quad F_1=1
+              \]
+            </div>
+          </div>
+          <p>bağıntısıyla tanımlanır. Bu ikinci mertebeden skaler bağıntı, aşağıdaki vektörle birinci mertebeden sisteme dönüştürülür:</p>
+          <div class="equation-card" data-raw-latex="u_k=\begin{bmatrix}F_{k+1}\\F_k\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              u_k=
+              \begin{bmatrix}
+              F_{k+1}\\
+              F_k
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Böylece</p>
+          <div class="equation-card" data-raw-latex="u_{k+1}=\begin{bmatrix}F_{k+2}\\F_{k+1}\end{bmatrix}=\begin{bmatrix}1&amp;1\\1&amp;0\end{bmatrix}\begin{bmatrix}F_{k+1}\\F_k\end{bmatrix}=Au_k">
+            <div class="equation-content">
+              \[
+              u_{k+1}
+              =
+              \begin{bmatrix}
+              F_{k+2}\\
+              F_{k+1}
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1&1\\
+              1&0
+              \end{bmatrix}
+              \begin{bmatrix}
+              F_{k+1}\\
+              F_k
+              \end{bmatrix}
+              =
+              Au_k
+              \]
+            </div>
+          </div>
+          <p>Buradaki matris</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&amp;1\\1&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&1\\
+              1&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Özdeğerler karakteristik denklemden bulunur:</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det\begin{bmatrix}1-\lambda&amp;1\\1&amp;-\lambda\end{bmatrix}=\lambda^2-\lambda-1">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              1-\lambda&1\\
+              1&-\lambda
+              \end{bmatrix}
+              =
+              \lambda^2-\lambda-1
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\lambda_1=\frac{1+\sqrt5}{2},\qquad \lambda_2=\frac{1-\sqrt5}{2}">
+            <div class="equation-content">
+              \[
+              \lambda_1=\frac{1+\sqrt5}{2},
+              \qquad
+              \lambda_2=\frac{1-\sqrt5}{2}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Özvektörler pratik olarak</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1=\begin{bmatrix}\lambda_1\\1\end{bmatrix},\qquad \mathbf{x}_2=\begin{bmatrix}\lambda_2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              \lambda_1\\
+              1
+              \end{bmatrix},
+              \qquad
+              \mathbf{x}_2=
+              \begin{bmatrix}
+              \lambda_2\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>seçilebilir. Başlangıç vektörü \(u_0=\begin{bmatrix}1\\0\end{bmatrix}\)'dır. Bu vektör özvektörlerin birleşimi olarak yazıldığında</p>
+          <div class="equation-card" data-raw-latex="u_0=\frac{1}{\sqrt5}\mathbf{x}_1-\frac{1}{\sqrt5}\mathbf{x}_2">
+            <div class="equation-content">
+              \[
+              u_0=
+              \frac{1}{\sqrt5}\mathbf{x}_1
+              -
+              \frac{1}{\sqrt5}\mathbf{x}_2
+              \]
+            </div>
+          </div>
+          <p>olur. Bu yüzden</p>
+          <div class="equation-card" data-raw-latex="u_k=\frac{1}{\sqrt5}\lambda_1^k\mathbf{x}_1-\frac{1}{\sqrt5}\lambda_2^k\mathbf{x}_2">
+            <div class="equation-content">
+              \[
+              u_k=
+              \frac{1}{\sqrt5}\lambda_1^k\mathbf{x}_1
+              -
+              \frac{1}{\sqrt5}\lambda_2^k\mathbf{x}_2
+              \]
+            </div>
+          </div>
+          <p>ve ikinci bileşene bakılırsa</p>
+          <div class="equation-card" data-raw-latex="F_k=\frac{\lambda_1^k-\lambda_2^k}{\sqrt5}">
+            <div class="equation-content">
+              \[
+              F_k=
+              \frac{\lambda_1^k-\lambda_2^k}{\sqrt5}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. \(|\lambda_1|>1\) ve \(|\lambda_2|<1\) olduğundan büyük \(k\) değerlerinde büyümeyi esas olarak \(\lambda_1^k\) terimi belirler.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+        <p>Bu bölümde ana teoremler anlatım içinde verildi. Burada özellikle üç temel sonuç bir araya getirilir.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Köşegenleştirme Koşulu</h3>
+          <p><strong>İfade:</strong> \(A\), \(n\times n\) bir matris olsun. \(A\) köşegenleştirilebilir olmak için \(n\) tane lineer bağımsız özvektöre sahip olmalıdır.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(S\) matrisi özvektörlerden oluşur. \(S^{-1}\)'in var olması için bu sütunlar bağımsız olmalıdır.</p>
+          <p><strong>Formal İspat:</strong> Eğer \(A=S\Lambda S^{-1}\) ise \(S\) tersinirdir; bu yüzden sütunları bağımsızdır. Ayrıca \(AS=S\Lambda\) eşitliği, \(S\)'nin her sütununun bir özvektör olduğunu gösterir. Tersine, \(n\) bağımsız özvektör varsa bu vektörlerden tersinir \(S\) kurulur ve Teorem 1.2 ile \(S^{-1}AS=\Lambda\) elde edilir.</p>
+          <p><strong>Yorum:</strong> Köşegenleştirilebilirlik yalnızca özdeğerleri bulmakla değil, yeterli sayıda bağımsız özvektör bulmakla ilgilidir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Özdeğerler ve Kuvvetler</h3>
+          <p><strong>İfade:</strong> Eğer \(A\mathbf{x}=\lambda\mathbf{x}\) ise</p>
+          <div class="equation-card" data-raw-latex="A^k\mathbf{x}=\lambda^k\mathbf{x}">
+            <div class="equation-content">
+              \[
+              A^k\mathbf{x}=\lambda^k\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\mathbf{x}\) doğrultusu her uygulamada değişmez; sadece çarpan tekrar tekrar uygulanır.</p>
+          <p><strong>Formal İspat:</strong> \(k=1\) için ifade tanımdır. \(A^k\mathbf{x}=\lambda^k\mathbf{x}\) doğru olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="A^{k+1}\mathbf{x}=A(A^k\mathbf{x})=A(\lambda^k\mathbf{x})=\lambda^kA\mathbf{x}=\lambda^{k+1}\mathbf{x}">
+            <div class="equation-content">
+              \[
+              A^{k+1}\mathbf{x}
+              =
+              A(A^k\mathbf{x})
+              =
+              A(\lambda^k\mathbf{x})
+              =
+              \lambda^kA\mathbf{x}
+              =
+              \lambda^{k+1}\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu sonuç, \(A^k\)'nın özdeğerlerinin \(\lambda_i^k\) olmasının vektör düzeyindeki açıklamasıdır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Bir Matrisi Köşegenleştirme</h3>
+        <ol>
+          <li>Karakteristik denklemden özdeğerleri bul.</li>
+          <li>Her \(\lambda_i\) için \((A-\lambda_i I)\mathbf{x}=\mathbf{0}\) sistemini çözerek özvektörleri bul.</li>
+          <li>Bağımsız \(n\) özvektör varsa bunları \(S\)'nin sütunlarına yerleştir.</li>
+          <li>\(\Lambda\)'nın köşegenine karşılık gelen özdeğerleri aynı sırayla yaz.</li>
+          <li>\(A=S\Lambda S^{-1}\) ve \(A^k=S\Lambda^kS^{-1}\) formüllerini kullan.</li>
+        </ol>
+
+        <h3>Ayrık Zamanlı Sistemi Çözme</h3>
+        <ol>
+          <li>Sistemi \(u_{k+1}=Au_k\) biçiminde yaz.</li>
+          <li>\(A\)'yı köşegenleştir.</li>
+          <li>Başlangıç vektörünü \(u_0=S\mathbf{c}\) biçiminde özvektör birleşimi olarak yaz.</li>
+          <li>\(u_k=S\Lambda^k\mathbf{c}\) formülünü kullan.</li>
+          <li>Büyük \(k\) için en büyük mutlak değerli özdeğerin etkisini incele.</li>
+        </ol>
+
+        <aside class="note-card">
+          <strong>Yaygın Hata Noktaları:</strong>
+          <p>\(S\)'nin sütun sırası ile \(\Lambda\)'daki özdeğer sırası aynı olmalıdır. Ayrıca \(S^{-1}\) ancak özvektörler bağımsızsa vardır; tekrarlı özdeğer durumunda bu koşul mutlaka kontrol edilmelidir.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümde uygulama bağlantısı, ayrık adımlarla ilerleyen lineer sistemlerdir. \(u_{k+1}=Au_k\) bağıntısı, her adımda aynı matrisin tekrar uygulanmasını ifade eder.</p>
+        <p>Fibonacci dizisi bu fikrin saf matematiksel bir örneğidir. İkinci mertebeden bir skaler bağıntı, iki bileşenli birinci mertebeden matris sistemine çevrilir. Büyüme hızını doğrudan baskın özdeğer belirler:</p>
+        <div class="equation-card" data-raw-latex="\lambda_1=\frac{1+\sqrt5}{2}">
+          <div class="equation-content">
+            \[
+            \lambda_1=\frac{1+\sqrt5}{2}
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+
+        <section class="note-card">
+          <h3>\(S\)'yi Tersinir Kontrol Etmeden Kullanmak</h3>
+          <p><strong>Hata:</strong> Özvektörler bağımsız mı diye bakmadan \(S^{-1}\) yazmak.</p>
+          <p><strong>Neden Yanlış:</strong> Köşegenleştirme \(S^{-1}\)'e dayanır. Bağımlı sütunlardan oluşan \(S\)'nin tersi yoktur.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Özvektörlerin sayısı ve bağımsızlığı kontrol edilmelidir.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Tekrarlı Özdeğeri Otomatik Olarak Yeterli Sanmak</h3>
+          <p><strong>Hata:</strong> \(\lambda=2\)'nin iki kez kök olmasından iki bağımsız özvektör geleceğini varsaymak.</p>
+          <p><strong>Neden Yanlış:</strong> \(\begin{bmatrix}2&1\\0&2\end{bmatrix}\) örneğinde özvektör uzayı yalnızca bir boyutludur.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Geometrik çokluk sıfır uzayının boyutuyla hesaplanmalıdır.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>\(A^k\)'yı Yanlış Çarpmak</h3>
+          <p><strong>Hata:</strong> \(A^k=(S\Lambda S^{-1})^k\) ifadesini \(S^k\Lambda^k(S^{-1})^k\) gibi yorumlamak.</p>
+          <p><strong>Neden Yanlış:</strong> Matris çarpımı değişmeli değildir. İptal yalnızca ardışık \(S^{-1}S\) çarpımlarında gerçekleşir.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Çarpım açık yazılmalı ve ortadaki \(S^{-1}S=I\) iptalleri görülmelidir.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Uzun Dönem Davranışında Küçük Özdeğeri Baskın Sanmak</h3>
+          <p><strong>Hata:</strong> Fibonacci örneğinde \(\lambda_2\)'nin de büyümeyi belirlediğini düşünmek.</p>
+          <p><strong>Neden Yanlış:</strong> \(|\lambda_2|<1\) olduğundan \(\lambda_2^k\) büyük \(k\) için küçülür.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Büyük \(k\) için mutlak değeri en büyük özdeğer baskın davranışı belirler.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Özvektörler \(S\)'nin sütunlarına yerleştirilir.</li>
+            <li>Özdeğerler \(\Lambda\)'nın köşegenine yazılır.</li>
+            <li>Sütun çarpımı \(AS=S\Lambda\) eşitliğini verir.</li>
+            <li>Bağımsız özvektörler varsa \(S^{-1}\) vardır.</li>
+            <li>Köşegenleştirme \(S^{-1}AS=\Lambda\) ve \(A=S\Lambda S^{-1}\) biçimindedir.</li>
+            <li>Kuvvetler \(A^k=S\Lambda^kS^{-1}\) ile hesaplanır.</li>
+            <li>Ayrık sistem \(u_{k+1}=Au_k\), \(u_k=A^ku_0\) sonucunu verir.</li>
+            <li>Uzun dönem davranışını özdeğerlerin mutlak değerleri belirler.</li>
+            <li>Tekrarlı özdeğerlerde geometrik çokluk kontrol edilmelidir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Özvektör matrisi</p>
+        <div class="equation-card" data-raw-latex="S=\begin{bmatrix}\mathbf{x}_1&amp;\mathbf{x}_2&amp;\cdots&amp;\mathbf{x}_n\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            S=
+            \begin{bmatrix}
+            \mathbf{x}_1&\mathbf{x}_2&\cdots&\mathbf{x}_n
+            \end{bmatrix}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Temel sütun eşitliği</p>
+        <div class="equation-card" data-raw-latex="AS=S\Lambda">
+          <div class="equation-content">
+            \[
+            AS=S\Lambda
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Köşegenleştirme</p>
+        <div class="equation-card" data-raw-latex="S^{-1}AS=\Lambda,\qquad A=S\Lambda S^{-1}">
+          <div class="equation-content">
+            \[
+            S^{-1}AS=\Lambda,
+            \qquad
+            A=S\Lambda S^{-1}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Matris kuvveti</p>
+        <div class="equation-card" data-raw-latex="A^k=S\Lambda^kS^{-1}">
+          <div class="equation-content">
+            \[
+            A^k=S\Lambda^kS^{-1}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Ayrık sistem çözümü</p>
+        <div class="equation-card" data-raw-latex="u_k=A^ku_0=S\Lambda^kS^{-1}u_0">
+          <div class="equation-content">
+            \[
+            u_k=A^ku_0=S\Lambda^kS^{-1}u_0
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Özvektör birleşimiyle çözüm</p>
+        <div class="equation-card" data-raw-latex="u_k=\sum_{i=1}^n c_i\lambda_i^k\mathbf{x}_i">
+          <div class="equation-content">
+            \[
+            u_k=
+            \sum_{i=1}^n c_i\lambda_i^k\mathbf{x}_i
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde özdeğer ve özvektörlerin en önemli kullanımı olan köşegenleştirme incelendi. Bağımsız özvektörler \(S\)'nin sütunlarına, özdeğerler \(\Lambda\)'nın köşegenine yerleştirildi.</p>
+        <p>Temel eşitlik \(AS=S\Lambda\) üzerinden \(S^{-1}AS=\Lambda\) ve \(A=S\Lambda S^{-1}\) elde edildi. Bu yapı sayesinde matris kuvvetleri \(A^k=S\Lambda^kS^{-1}\) biçiminde basitleşti.</p>
+        <p>Tekrarlı özdeğerlerin köşegenleştirmeyi bozabileceği, \(\begin{bmatrix}2&1\\0&2\end{bmatrix}\) örneğiyle görüldü. Son olarak Fibonacci dizisi, \(u_{k+1}=Au_k\) sistemi olarak yazıldı ve büyüme hızının baskın özdeğer tarafından belirlendiği gösterildi.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Kolay Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}3&0\\0&5\end{bmatrix}\) için \(A^k\)'yı yazın.</p>
+          <p><strong>Çözüm:</strong> Matris zaten köşegendir. Bu nedenle \(S=I\), \(\Lambda=A\) alınabilir.</p>
+          <div class="equation-card" data-raw-latex="A^k=\begin{bmatrix}3^k&amp;0\\0&amp;5^k\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^k=
+              \begin{bmatrix}
+              3^k&0\\
+              0&5^k
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Köşegenleştirmenin amacı, genel matrisi bu kolay duruma dönüştürmektir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Orta Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}3&1\\1&3\end{bmatrix}\) için \(S\), \(\Lambda\) ve \(A^k\) formülünü yazın.</p>
+          <p><strong>Çözüm:</strong> Bu matrisin özdeğerleri \(4\) ve \(2\), uygun özvektörleri ise \(\begin{bmatrix}1\\1\end{bmatrix}\) ve \(\begin{bmatrix}-1\\1\end{bmatrix}\)'dir. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="S=\begin{bmatrix}1&amp;-1\\1&amp;1\end{bmatrix},\qquad \Lambda=\begin{bmatrix}4&amp;0\\0&amp;2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              S=
+              \begin{bmatrix}
+              1&-1\\
+              1&1
+              \end{bmatrix},
+              \qquad
+              \Lambda=
+              \begin{bmatrix}
+              4&0\\
+              0&2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="A^k=S\begin{bmatrix}4^k&amp;0\\0&amp;2^k\end{bmatrix}S^{-1}">
+            <div class="equation-content">
+              \[
+              A^k=
+              S
+              \begin{bmatrix}
+              4^k&0\\
+              0&2^k
+              \end{bmatrix}
+              S^{-1}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Yüksek kuvvetlerde \(4^k\) terimi \(2^k\)'ye göre daha hızlı büyür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: İleri Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}2&1\\0&2\end{bmatrix}\) matrisinin köşegenleştirilebilir olup olmadığını belirleyin.</p>
+          <p><strong>Çözüm:</strong> Karakteristik determinant</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=(2-\lambda)^2">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)=(2-\lambda)^2
+              \]
+            </div>
+          </div>
+          <p>olduğundan \(\lambda=2\) iki kez tekrarlanır. Özvektörler için</p>
+          <div class="equation-card" data-raw-latex="A-2I=\begin{bmatrix}0&amp;1\\0&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A-2I=
+              \begin{bmatrix}
+              0&1\\
+              0&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu sistem \(x_2=0\) koşulunu verir; özvektör uzayı yalnızca \(\begin{bmatrix}1\\0\end{bmatrix}\) doğrultusudur.</p>
+          <p>İki boyutlu matris için iki bağımsız özvektör gerekir, fakat yalnızca bir tane vardır. Bu nedenle matris köşegenleştirilemez.</p>
+          <p><strong>Yorum:</strong> Cebirsel çokluk \(2\), geometrik çokluk \(1\)'dir; eksik özvektör köşegenleştirmeyi engeller.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Diagonalization</td>
+                <td>Köşegenleştirme</td>
+                <td>Bir matrisi \(S^{-1}AS=\Lambda\) biçiminde köşegen matrise dönüştürme işlemi.</td>
+              </tr>
+              <tr>
+                <td>Eigenvector matrix</td>
+                <td>Özvektör matrisi</td>
+                <td>Sütunları özvektörlerden oluşan \(S\) matrisi.</td>
+              </tr>
+              <tr>
+                <td>Eigenvalue matrix</td>
+                <td>Özdeğer matrisi</td>
+                <td>Köşegeninde özdeğerlerin bulunduğu \(\Lambda\) matrisi.</td>
+              </tr>
+              <tr>
+                <td>Matrix power</td>
+                <td>Matris kuvveti</td>
+                <td>Bir matrisin tekrar tekrar kendisiyle çarpılması.</td>
+              </tr>
+              <tr>
+                <td>Algebraic multiplicity</td>
+                <td>Cebirsel çokluk</td>
+                <td>Bir özdeğerin karakteristik denklemdeki tekrar sayısı.</td>
+              </tr>
+              <tr>
+                <td>Geometric multiplicity</td>
+                <td>Geometrik çokluk</td>
+                <td>Bir özdeğerin özvektör uzayının boyutu.</td>
+              </tr>
+              <tr>
+                <td>Difference equation</td>
+                <td>Ayrık fark denklemi</td>
+                <td>Adımlar arasında \(u_{k+1}=Au_k\) gibi bağıntı kuran denklem.</td>
+              </tr>
+              <tr>
+                <td>Fibonacci sequence</td>
+                <td>Fibonacci dizisi</td>
+                <td>Her terimi önceki iki terimin toplamı olan sayı dizisi.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

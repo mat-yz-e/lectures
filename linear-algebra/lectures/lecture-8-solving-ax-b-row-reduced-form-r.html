@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8. Ders: Ax = b Çözümü ve Satır İndirgenmiş Biçim</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card,
+    .lesson-page .question-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .question-card {
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3,
+    .lesson-page .question-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .lesson-page .mini-panel {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .mini-panel h4 {
+      margin-top: 0;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.25rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1.1rem;
+      min-width: 0;
+    }
+
+    .lesson-page .formula-item {
+      min-width: 0;
+      padding: 1rem 1rem 0.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-card-muted);
+    }
+
+    .lesson-page .formula-item h3 {
+      margin-top: 0;
+      font-size: 1.12rem;
+    }
+
+    .lesson-page .ui-text,
+    .lesson-page button,
+    .lesson-page table {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.65rem, 8vw, 2.35rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card,
+      .lesson-page .question-card {
+        padding: 1.05rem 1rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.15rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" class="active" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">8. Ders: \(A\mathbf{x}=\mathbf{b}\) Çözümü</h1>
+
+      <section aria-labelledby="kapsam-baglam">
+        <h2 id="kapsam-baglam">Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, \(A\mathbf{x}=\mathbf{b}\) biçimindeki lineer sistemlerin tam çözümünü ele alır: önce çözümün var olup olmadığı belirlenir, sonra varsa bütün çözümler sistematik biçimde yazılır.</p>
+        <p>Önceki bölümde \(A\mathbf{x}=\mathbf{0}\) denkleminin sıfır uzayı, öncü değişkenler, serbest değişkenler ve özel çözümler aracılığıyla bulunmuştu. Burada sağ taraf \(\mathbf{b}\) sıfır olmak zorunda değildir. Bu nedenle ilk soru artık şudur: \(\mathbf{b}\), \(A\)'nın sütun uzayında mı?</p>
+        <p>Eliminasyon, sağ tarafla birlikte yürütülür. Bunun için \(A\)'nın yanına \(\mathbf{b}\) eklenir ve artırılmış matris üzerinde satır işlemleri yapılır. Eğer eliminasyon sonunda sıfır sol taraflı fakat sıfır olmayan sağ taraflı bir denklem çıkarsa sistem tutarsızdır. Tutarlı durumda bir özel çözüm bulunur ve buna sıfır uzayının bütün elemanları eklenerek tam çözüm elde edilir.</p>
+      </section>
+
+      <section aria-labelledby="ogrenme-hedefleri">
+        <h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Artırılmış matrisin \([A\ \mathbf{b}]\) biçiminde nasıl kurulduğunu açıklayabilmek.</li>
+          <li>Eliminasyon sırasında sağ tarafın da aynı satır işlemlerinden geçirilmesi gerektiğini bilmek.</li>
+          <li>Satır bağımlılıklarından doğan çözülebilirlik koşullarını okuyabilmek.</li>
+          <li>\(A\mathbf{x}=\mathbf{b}\) denkleminin \(\mathbf{b}\in C(A)\) olduğunda çözülebilir olduğunu kullanabilmek.</li>
+          <li>Bir özel çözümü serbest değişkenleri sıfır seçerek bulabilmek.</li>
+          <li>Tam çözümü \(\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n\) biçiminde yazabilmek.</li>
+          <li>Rütbe \(r\), satır sayısı \(m\) ve sütun sayısı \(n\) arasındaki ilişkileri yorumlayabilmek.</li>
+          <li>Tam sütun rütbesi, tam satır rütbesi ve kare tersinir durumlarını çözüm sayısı bakımından ayırt edebilmek.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="on-kosullar">
+        <h2 id="on-kosullar">Ön Koşullar</h2>
+        <ul>
+          <li>Eliminasyon ve satır basamak biçimiyle lineer sistem çözebilme.</li>
+          <li>Sıfır uzayını ve özel çözümleri tanıma.</li>
+          <li>Sütun uzayını sağ tarafların çözülebilirlik kümesi olarak yorumlama.</li>
+          <li>Öncü ve serbest değişken ayrımını yapabilme.</li>
+          <li>Rütbeyi öncü sayısı olarak kullanabilme.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="notasyon-tablosu">
+        <h2 id="notasyon-tablosu">Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Sembol</th>
+                <th scope="col">Anlamı</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>\(A\)</td><td>Katsayı matrisi.</td></tr>
+              <tr><td>\(\mathbf{x}\)</td><td>Bilinmeyen vektörü.</td></tr>
+              <tr><td>\(\mathbf{b}\)</td><td>Sağ taraf vektörü.</td></tr>
+              <tr><td>\([A\ \mathbf{b}]\)</td><td>Artırılmış matris.</td></tr>
+              <tr><td>\(U\)</td><td>Eliminasyon sonrası satır basamak biçimi.</td></tr>
+              <tr><td>\(R\)</td><td>İndirgenmiş satır basamak biçimi.</td></tr>
+              <tr><td>\(C(A)\)</td><td>\(A\)'nın sütun uzayı.</td></tr>
+              <tr><td>\(N(A)\)</td><td>\(A\)'nın sıfır uzayı.</td></tr>
+              <tr><td>\(\mathbf{x}_p\)</td><td>Bir özel çözüm.</td></tr>
+              <tr><td>\(\mathbf{x}_n\)</td><td>Sıfır uzayından bir çözüm.</td></tr>
+              <tr><td>\(m,n,r\)</td><td>Sırasıyla satır sayısı, sütun sayısı ve rütbe.</td></tr>
+              <tr><td>\(I,F\)</td><td>İndirgenmiş biçimde birim blok ve serbest sütun bloğu.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="buyuk-resim">
+        <h2 id="buyuk-resim">Büyük Resim</h2>
+        <p>\(A\mathbf{x}=\mathbf{b}\) sistemi üç temel soruya ayrılır. İlk soru, çözümün var olup olmadığıdır. İkinci soru, varsa bir çözümün nasıl bulunacağıdır. Üçüncü soru, bütün çözümlerin nasıl yazılacağıdır.</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\mathbf{b}.
+            \]
+          </div>
+        </div>
+        <p>Çözülebilirlik, sağ tarafın sütun uzayında olmasına bağlıdır. Bir özel çözüm \(\mathbf{x}_p\) bulunduğunda, geri kalan bütün özgürlük sıfır uzayından gelir:</p>
+        <div class="equation-card" data-raw-latex="\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n,\qquad \mathbf{x}_n\in N(A)">
+          <div class="equation-content">
+            \[
+            \mathbf{x}=\mathbf{x}_p+\mathbf{x}_n,
+            \qquad
+            \mathbf{x}_n\in N(A).
+            \]
+          </div>
+        </div>
+        <p>Bu formül, sağ taraflı sistemleri homojen sistemlerle bağlar. Sağ taraf yalnızca bir noktayı belirler; sıfır uzayı ise bu noktanın etrafında hangi yönlerde hareket edilebileceğini belirler.</p>
+      </section>
+
+      <section aria-labelledby="ana-anlatim">
+        <h2 id="ana-anlatim">Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 8.1: Artırılmış Matris</h3>
+          <p>\(A\mathbf{x}=\mathbf{b}\) sistemini çözmek için \(A\) matrisinin yanına sağ taraf vektörü eklenir. Elde edilen matris</p>
+          <div class="equation-card" data-raw-latex="[A\ \mathbf{b}]">
+            <div class="equation-content">
+              \[
+              [A\ \mathbf{b}]
+              \]
+            </div>
+          </div>
+          <p>biçiminde gösterilir ve artırılmış matris olarak adlandırılır. Eliminasyon sırasında \(A\)'nın satırlarına uygulanan her işlem \(\mathbf{b}\) sütununa da uygulanır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.2: Sağ Taraflı Sistem İçin Artırılmış Matris</h3>
+          <p>Aşağıdaki matris ve sağ taraf kullanılsın:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&2&2\\2&4&6&8\\3&6&8&10\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}b_1\\b_2\\b_3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&2&2&2\\
+              2&4&6&8\\
+              3&6&8&10
+              \end{bmatrix},
+              \qquad
+              \mathbf{b}=
+              \begin{bmatrix}
+              b_1\\b_2\\b_3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Üçüncü satır, ilk iki satırın toplamıdır. Bu nedenle sağ tarafın da aynı ilişkiyi sağlaması beklenir.</p>
+          <div class="equation-card" data-raw-latex="[A\ \mathbf{b}]=\begin{bmatrix}1&2&2&2&b_1\\2&4&6&8&b_2\\3&6&8&10&b_3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              [A\ \mathbf{b}]
+              =
+              \begin{bmatrix}
+              1&2&2&2&b_1\\
+              2&4&6&8&b_2\\
+              3&6&8&10&b_3
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.3: Eliminasyonla Çözülebilirlik Koşulu</h3>
+          <p>Birinci öncüyle eliminasyon yapılınca</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&2&2&2&b_1\\2&4&6&8&b_2\\3&6&8&10&b_3\end{bmatrix}\longrightarrow\begin{bmatrix}1&2&2&2&b_1\\0&0&2&4&b_2-2b_1\\0&0&2&4&b_3-3b_1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&2&2&2&b_1\\
+              2&4&6&8&b_2\\
+              3&6&8&10&b_3
+              \end{bmatrix}
+              \longrightarrow
+              \begin{bmatrix}
+              1&2&2&2&b_1\\
+              0&0&2&4&b_2-2b_1\\
+              0&0&2&4&b_3-3b_1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Sonra ikinci satır üçüncü satırdan çıkarılır:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&2&2&2&b_1\\0&0&2&4&b_2-2b_1\\0&0&0&0&b_3-b_2-b_1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&2&2&2&b_1\\
+              0&0&2&4&b_2-2b_1\\
+              0&0&0&0&b_3-b_2-b_1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Son satırın sol tarafı sıfırdır. Sistem ancak sağ taraf da sıfırsa tutarlıdır:</p>
+          <div class="equation-card" data-raw-latex="b_3-b_2-b_1=0\qquad \Longleftrightarrow\qquad b_3=b_1+b_2">
+            <div class="equation-content">
+              \[
+              b_3-b_2-b_1=0
+              \qquad \Longleftrightarrow\qquad
+              b_3=b_1+b_2.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 8.4: Çözülebilirlik Koşulları</h3>
+          <p><strong>İfade:</strong> \(A\mathbf{x}=\mathbf{b}\) denklemi tam olarak \(\mathbf{b}\in C(A)\) olduğunda çözülebilir. Eşdeğer olarak, \(A\)'nın satırları arasında sıfır satır üreten her doğrusal ilişki sağ taraf bileşenlerinde de sıfır üretmelidir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(A\mathbf{x}\), \(A\)'nın sütunlarının bir doğrusal birleşimidir. Dolayısıyla sağ taraf bu sütunların oluşturduğu uzayın içinde olmalıdır. Satır işlemleri açısından bakıldığında, sol tarafta yok olan her denklem sağ tarafta da yok olmalıdır.</p>
+          <p><strong>Formal İspat:</strong> Eğer \(A\mathbf{x}=\mathbf{b}\) çözülebiliyorsa, \(\mathbf{b}=A\mathbf{x}\) olduğundan \(\mathbf{b}\), \(A\)'nın sütunlarının doğrusal birleşimidir. Bu yüzden \(\mathbf{b}\in C(A)\). Tersine \(\mathbf{b}\in C(A)\) ise bazı katsayılar \(x_1,\ldots,x_n\) için \(\mathbf{b}=x_1\mathbf{a}_1+\cdots+x_n\mathbf{a}_n\) yazılır; bu katsayılar bir çözüm verir.</p>
+          <p>Satır ilişkisi için, katsayılar \(y_i\) ile satırların doğrusal birleşimi sıfır satır veriyorsa aynı katsayılarla denklemler toplanınca sol taraf sıfır olur. Tutarlı bir sistemde sağ taraf da sıfır olmalıdır.</p>
+          <p><strong>Yorum:</strong> Sütun uzayı dili geometrik, satır ilişkisi dili ise eliminasyon temelli çözülebilirlik ölçütüdür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.5: Tutarlı Bir Sağ Taraf</h3>
+          <p>\(\mathbf{b}=(1,5,6)^T\) seçilsin. Bu vektör çözülebilirlik koşulunu sağlar:</p>
+          <div class="equation-card" data-raw-latex="6=1+5">
+            <div class="equation-content">
+              \[
+              6=1+5.
+              \]
+            </div>
+          </div>
+          <p>Eliminasyon sonunda artırılmış matrisin sağ tarafı</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1\\3\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1\\3\\0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimine gelir. Son denklem \(0=0\) olduğundan sistem tutarlıdır.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 8.6: Özel Çözüm</h3>
+          <p>Tutarlı bir \(A\mathbf{x}=\mathbf{b}\) sistemi için herhangi bir tek çözüme özel çözüm denir ve \(\mathbf{x}_p\) ile gösterilir. Bu bölümde özel çözümü bulmak için serbest değişkenler sıfır seçilir.</p>
+          <div class="equation-card" data-raw-latex="\text{serbest değişkenler}=0">
+            <div class="equation-content">
+              \[
+              \text{serbest değişkenler}=0.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.7: Serbest Değişkenleri Sıfır Seçerek Özel Çözüm</h3>
+          <p>Örnek matriste öncü sütunlar \(1\) ve \(3\), serbest sütunlar \(2\) ve \(4\)'tür. Bu nedenle \(x_2=0\) ve \(x_4=0\) seçilir. Kalan iki denklem</p>
+          <div class="equation-card" data-raw-latex="\begin{aligned}x_1+2x_3&=1,\\2x_3&=3\end{aligned}">
+            <div class="equation-content">
+              \[
+              \begin{aligned}
+              x_1+2x_3&=1,\\
+              2x_3&=3
+              \end{aligned}
+              \]
+            </div>
+          </div>
+          <p>olur. Buradan \(x_3=\frac{3}{2}\) ve \(x_1=-2\) bulunur. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_p=\begin{bmatrix}-2\\0\\\frac{3}{2}\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_p=
+              \begin{bmatrix}
+              -2\\
+              0\\
+              \frac{3}{2}\\
+              0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 8.8: Tam Çözümün Yapısı</h3>
+          <p><strong>İfade:</strong> \(A\mathbf{x}=\mathbf{b}\) tutarlı olsun ve \(\mathbf{x}_p\) bir özel çözüm olsun. O zaman bütün çözümler</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n,\qquad \mathbf{x}_n\in N(A)">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=\mathbf{x}_p+\mathbf{x}_n,
+              \qquad
+              \mathbf{x}_n\in N(A)
+              \]
+            </div>
+          </div>
+          <p>biçimindedir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Bir özel çözüm doğru sağ tarafı verir. Sıfır uzayından eklenen her vektör sağ tarafa sıfır katkı yaptığı için doğru sağ taraf bozulmaz.</p>
+          <p><strong>Formal İspat:</strong> Eğer \(\mathbf{x}_n\in N(A)\) ise \(A\mathbf{x}_n=\mathbf{0}\). Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="A(\mathbf{x}_p+\mathbf{x}_n)=A\mathbf{x}_p+A\mathbf{x}_n=\mathbf{b}+\mathbf{0}=\mathbf{b}">
+            <div class="equation-content">
+              \[
+              A(\mathbf{x}_p+\mathbf{x}_n)
+              =
+              A\mathbf{x}_p+A\mathbf{x}_n
+              =
+              \mathbf{b}+\mathbf{0}
+              =
+              \mathbf{b}.
+              \]
+            </div>
+          </div>
+          <p>Tersine \(\mathbf{x}\) herhangi bir çözümse \(A\mathbf{x}=\mathbf{b}\) ve \(A\mathbf{x}_p=\mathbf{b}\). Çıkarınca \(A(\mathbf{x}-\mathbf{x}_p)=\mathbf{0}\) elde edilir; yani \(\mathbf{x}-\mathbf{x}_p\in N(A)\). Bu yüzden \(\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n\) biçimindedir.</p>
+          <p><strong>Yorum:</strong> Tam çözüm, bir nokta ile sıfır uzayının toplamıdır. Bu küme genellikle orijinden geçmez, bu nedenle alt uzay değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.9: İlk Matris İçin Tam Çözüm</h3>
+          <p>Önceki bölümde aynı \(A\) matrisi için sıfır uzayının iki özel çözümle üretildiği bulunmuştu:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{s}_1=\begin{bmatrix}-2\\1\\0\\0\end{bmatrix},\qquad \mathbf{s}_2=\begin{bmatrix}2\\0\\-2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{s}_1=
+              \begin{bmatrix}
+              -2\\1\\0\\0
+              \end{bmatrix},
+              \qquad
+              \mathbf{s}_2=
+              \begin{bmatrix}
+              2\\0\\-2\\1
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle \(\mathbf{b}=(1,5,6)^T\) için tam çözüm</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}=\begin{bmatrix}-2\\0\\\frac{3}{2}\\0\end{bmatrix}+c_1\begin{bmatrix}-2\\1\\0\\0\end{bmatrix}+c_2\begin{bmatrix}2\\0\\-2\\1\end{bmatrix},\qquad c_1,c_2\in\mathbb{R}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}=
+              \begin{bmatrix}
+              -2\\0\\\frac{3}{2}\\0
+              \end{bmatrix}
+              +
+              c_1
+              \begin{bmatrix}
+              -2\\1\\0\\0
+              \end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}
+              2\\0\\-2\\1
+              \end{bmatrix},
+              \qquad
+              c_1,c_2\in\mathbb{R}.
+              \]
+            </div>
+          </div>
+          <p>Burada \(\mathbf{x}_p\) sabittir; \(c_1\) ve \(c_2\) yalnızca sıfır uzayı yönlerinde değişir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 8.10: Tam Sütun Rütbesi ve Tam Satır Rütbesi</h3>
+          <p>\(A\) bir \(m\times n\) matris ve rütbesi \(r\) olsun. Eğer \(r=n\) ise matris tam sütun rütbesine sahiptir. Eğer \(r=m\) ise matris tam satır rütbesine sahiptir. Kare durumda \(r=m=n\) ise matris tersinirdir.</p>
+          <div class="equation-card" data-raw-latex="r\le m,\qquad r\le n">
+            <div class="equation-content">
+              \[
+              r\le m,\qquad r\le n.
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.11: Tam Sütun Rütbesi</h3>
+          <p>Dört satır ve iki sütunlu şu matris iki öncüye sahiptir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&3\\2&1\\6&1\\5&1\end{bmatrix},\qquad r=2=n">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&3\\
+              2&1\\
+              6&1\\
+              5&1
+              \end{bmatrix},
+              \qquad
+              r=2=n.
+              \]
+            </div>
+          </div>
+          <p>Bu durumda serbest değişken yoktur ve sıfır uzayı yalnızca \(\mathbf{0}\)'dan oluşur. Sistem \(A\mathbf{x}=\mathbf{b}\) her \(\mathbf{b}\) için çözülebilir değildir; fakat çözülebilirse çözüm tektir.</p>
+          <p>Örneğin \(\mathbf{b}\), iki sütunun toplamı olarak seçilirse</p>
+          <div class="equation-card" data-raw-latex="\mathbf{b}=\begin{bmatrix}4\\3\\7\\6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{b}=
+              \begin{bmatrix}
+              4\\3\\7\\6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>için çözüm \(\mathbf{x}=(1,1)^T\)'dir ve başka çözüm yoktur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.12: Tam Satır Rütbesi</h3>
+          <p>Önceki örneğin devriği iki satır ve dört sütunlu bir matristir:</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&2&6&5\\3&1&1&1\end{bmatrix},\qquad r=2=m">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&2&6&5\\
+              3&1&1&1
+              \end{bmatrix},
+              \qquad
+              r=2=m.
+              \]
+            </div>
+          </div>
+          <p>Her satırda öncü vardır; bu yüzden eliminasyonda sıfır satır oluşmaz. Dolayısıyla her sağ taraf \(\mathbf{b}\in\mathbb{R}^2\) için çözüm vardır. Ancak \(n-m=2\) serbest değişken bulunduğundan çözümler genellikle sonsuz çoktur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 8.13: Kare Tersinir Durum</h3>
+          <p>Kare ve tam rütbeli bir matris için</p>
+          <div class="equation-card" data-raw-latex="r=m=n">
+            <div class="equation-content">
+              \[
+              r=m=n
+              \]
+            </div>
+          </div>
+          <p>olur. Böyle bir matrisin indirgenmiş satır basamak biçimi birim matristir:</p>
+          <div class="equation-card" data-raw-latex="R=I">
+            <div class="equation-content">
+              \[
+              R=I.
+              \]
+            </div>
+          </div>
+          <p>Bu durumda her \(\mathbf{b}\) için tam olarak bir çözüm vardır ve sıfır uzayı yalnızca sıfır vektörüdür.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="teoremler-ispatlar">
+        <h2 id="teoremler-ispatlar">Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 8.14: Rütbe Çözüm Sayısını Belirler</h3>
+          <p><strong>İfade:</strong> \(A\) bir \(m\times n\) matris ve rütbesi \(r\) olsun. Çözüm sayısının temel yapısı \(r\)'nin \(m\) ve \(n\) ile ilişkisine göre belirlenir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(r\), kaç öncü değişken olduğunu ve kaç bağımsız denklem kaldığını söyler. \(n-r\) serbest değişken varsa çözüm varsa sonsuz aile oluşur. \(m-r\) sıfır satır varsa sağ taraf için koşullar ortaya çıkar.</p>
+          <p><strong>Formal İspat:</strong> Eliminasyon sonunda \(r\) öncü bulunduğu için \(r\) öncü değişken ve \(n-r\) serbest değişken vardır. Eğer \(m-r>0\) ise indirgenmiş sistemde sıfır sol taraflı satırlar vardır; bu satırların sağ tarafları sıfır değilse sistem tutarsızdır. Eğer tutarlıysa serbest değişkenler \(n-r\) boyutlu özgürlük verir. Eğer \(n-r=0\) ise çözüm varsa tektir; eğer \(n-r>0\) ise çözüm varsa sonsuz çoktur.</p>
+          <p><strong>Yorum:</strong> Rütbe, çözümün kesin sayısal değerlerini vermez; fakat çözümün varlık ve özgürlük yapısını belirler.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 8.15: Tam Rütbe Durumları</h3>
+          <p><strong>İfade:</strong> Aşağıdaki dört durum çözüm davranışını özetler:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Durum</th>
+                  <th scope="col">İndirgenmiş Biçim</th>
+                  <th scope="col">Çözüm Davranışı</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>\(r=m=n\)</td><td>\(R=I\)</td><td>Her \(\mathbf{b}\) için tek çözüm.</td></tr>
+                <tr><td>\(r=n<m\)</td><td>\(R=\begin{bmatrix}I\\0\end{bmatrix}\)</td><td>Çözüm yok ya da tek çözüm.</td></tr>
+                <tr><td>\(r=m<n\)</td><td>\(R\) içinde her satırda öncü vardır.</td><td>Her \(\mathbf{b}\) için çözüm; genellikle sonsuz çok çözüm.</td></tr>
+                <tr><td>\(r<m,\ r<n\)</td><td>Hem serbest sütun hem sıfır satır vardır.</td><td>Çözüm yok ya da sonsuz çok çözüm.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Tam sütun rütbesi serbest değişken bırakmaz; tam satır rütbesi sağ taraf için koşul bırakmaz. Kare tam rütbede iki özellik aynı anda gerçekleşir.</p>
+          <p><strong>Formal İspat:</strong> \(r=n\) ise \(n-r=0\), dolayısıyla sıfır uzayı yalnızca \(\mathbf{0}\)'dır ve çözüm varsa tektir. \(r=m\) ise \(m-r=0\), dolayısıyla sıfır satır yoktur ve sağ taraf için tutarlılık engeli doğmaz. Bu iki gözlem tabloda yer alan dört durumu verir.</p>
+          <p><strong>Yorum:</strong> Bu sınıflandırma, lineer sistemlerin bütün temel çözüm tiplerini tek tabloda toplar.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="hesaplama-yontemleri">
+        <h2 id="hesaplama-yontemleri">Hesaplama Yöntemleri</h2>
+
+        <section class="note-card">
+          <h3>\(A\mathbf{x}=\mathbf{b}\) Sistemini Çözme Algoritması</h3>
+          <p><strong>Ne işe yarar?</strong> Sağ taraflı bir lineer sistemin tutarlı olup olmadığını ve tutarlıysa bütün çözümlerini bulur.</p>
+          <ol>
+            <li>Artırılmış matrisi \([A\ \mathbf{b}]\) biçiminde yaz.</li>
+            <li>Eliminasyonu \(A\) ve \(\mathbf{b}\) üzerinde aynı anda uygula.</li>
+            <li>Sıfır sol taraflı satırların sağ tarafını kontrol et.</li>
+            <li>Her sıfır sol taraflı satırda sağ taraf da sıfırsa sistem tutarlıdır; aksi hâlde çözüm yoktur.</li>
+            <li>Tutarlı durumda serbest değişkenleri sıfır seçerek bir özel çözüm \(\mathbf{x}_p\) bul.</li>
+            <li>\(A\mathbf{x}=\mathbf{0}\) denkleminin sıfır uzayını özel çözümlerle yaz.</li>
+            <li>Tam çözümü \(\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n\) olarak ifade et.</li>
+          </ol>
+        </section>
+
+        <section class="note-card">
+          <h3>Rütbeden Çözüm Tipini Okuma</h3>
+          <p><strong>Ne işe yarar?</strong> Ayrıntılı hesap yapmadan sistemin olası çözüm davranışını gösterir.</p>
+          <ul>
+            <li>\(r=n\): Serbest değişken yoktur; çözüm varsa tektir.</li>
+            <li>\(r=m\): Sağ taraf için ek koşul yoktur; her \(\mathbf{b}\) için çözüm vardır.</li>
+            <li>\(r=m=n\): Her \(\mathbf{b}\) için tam olarak bir çözüm vardır.</li>
+            <li>\(r<m\) ve \(r<n\): Hem tutarlılık koşulları hem serbest değişkenler bulunur; çözüm yok ya da sonsuz çok çözüm vardır.</li>
+          </ul>
+        </section>
+      </section>
+
+      <section aria-labelledby="sik-hatalar">
+        <h2 id="sik-hatalar">Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <section class="mini-panel">
+            <h4>Sağ Tarafı Eliminasyona Katmamak</h4>
+            <p>\(\mathbf{b}\) sütunu, \(A\)'ya uygulanan her satır işlemini aynen takip etmelidir. Aksi hâlde tutarlılık koşulları yanlış okunur.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Sıfır Satırı Görüp Sistemi Otomatik Çözümsüz Sanmak</h4>
+            <p>Sıfır sol taraflı satır yalnızca sağ taraf sıfır değilse çelişki üretir. \(0=0\) satırı tutarlılığı bozmaz.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Özel Çözümü Sıfır Uzayıyla Karıştırmak</h4>
+            <p>\(\mathbf{x}_p\) tek bir çözümdür ve skaler katları genellikle çözüm değildir. Sıfır uzayı ise bütün homojen çözümleri içerir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Tam Çözümde Sıfır Uzayını Unutmak</h4>
+            <p>Serbest değişken varsa yalnızca \(\mathbf{x}_p\) yazmak eksiktir. Bütün çözümler için \(N(A)\)'dan gelen tüm terimler eklenmelidir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Tam Sütun Rütbesini Her Zaman Çözüm Var Sanmak</h4>
+            <p>\(r=n\) yalnızca çözüm varsa tek olduğunu söyler. Çözümün varlığı için yine \(\mathbf{b}\in C(A)\) gerekir.</p>
+          </section>
+          <section class="mini-panel">
+            <h4>Tam Satır Rütbesinde Tek Çözüm Beklemek</h4>
+            <p>\(r=m<n\) durumunda her sağ taraf için çözüm vardır; fakat serbest değişkenler nedeniyle genellikle sonsuz çok çözüm bulunur.</p>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kavram-haritasi">
+        <h2 id="kavram-haritasi">Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>\(A\mathbf{x}=\mathbf{b}\): sağ taraflı lineer sistem.</li>
+            <li>Artırılmış matris: \(A\) ve \(\mathbf{b}\)'nin birlikte elimine edilmesi.</li>
+            <li>Çözülebilirlik: \(\mathbf{b}\in C(A)\) ya da sıfır satır koşullarının sağlanması.</li>
+            <li>Özel çözüm: serbest değişkenleri sıfır seçerek bulunan bir çözüm.</li>
+            <li>Sıfır uzayı: özel çözüme eklenebilecek bütün homojen çözümler.</li>
+            <li>Tam çözüm: \(\mathbf{x}_p+N(A)\).</li>
+            <li>Rütbe: öncü sayısı; çözümün varlık ve çokluk yapısını belirler.</li>
+            <li>Tam sütun rütbesi: çözüm varsa teklik.</li>
+            <li>Tam satır rütbesi: her sağ taraf için varlık.</li>
+            <li>Kare tam rütbe: her sağ taraf için tek çözüm.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="ana-formuller">
+        <h2 id="ana-formuller">Ana Formüller</h2>
+        <div class="formula-list">
+          <section class="formula-item">
+            <h3>Çözülebilirlik</h3>
+            <p>Sağ taraf sütun uzayında olmalıdır.</p>
+            <div class="equation-card" data-raw-latex="A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}\quad \Longleftrightarrow\quad \mathbf{b}\in C(A)">
+              <div class="equation-content">
+                \[
+                A\mathbf{x}=\mathbf{b}\ \text{çözülebilir}
+                \quad \Longleftrightarrow\quad
+                \mathbf{b}\in C(A).
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Satır Koşulu</h3>
+            <p>Sol tarafta yok olan satır ilişkisi sağ tarafta da yok olmalıdır.</p>
+            <div class="equation-card" data-raw-latex="\text{satır ilişkisi }0\text{ veriyorsa, aynı ilişki }\mathbf{b}\text{ üzerinde de }0\text{ vermelidir}">
+              <div class="equation-content">
+                \[
+                \text{satır ilişkisi }0\text{ veriyorsa, aynı ilişki }\mathbf{b}\text{ üzerinde de }0\text{ vermelidir}.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Tam Çözüm</h3>
+            <p>Bir özel çözüm ile sıfır uzayının toplamı.</p>
+            <div class="equation-card" data-raw-latex="\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n,\qquad \mathbf{x}_n\in N(A)">
+              <div class="equation-content">
+                \[
+                \mathbf{x}=\mathbf{x}_p+\mathbf{x}_n,
+                \qquad
+                \mathbf{x}_n\in N(A).
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Rütbe Sınırları</h3>
+            <p>Rütbe hem satır hem sütun sayısını aşamaz.</p>
+            <div class="equation-card" data-raw-latex="r\le m,\qquad r\le n">
+              <div class="equation-content">
+                \[
+                r\le m,\qquad r\le n.
+                \]
+              </div>
+            </div>
+          </section>
+
+          <section class="formula-item">
+            <h3>Serbest Değişken Sayısı</h3>
+            <p>Serbest değişkenler sıfır uzayının özgürlük sayısını verir.</p>
+            <div class="equation-card" data-raw-latex="\text{serbest değişken sayısı}=n-r">
+              <div class="equation-content">
+                \[
+                \text{serbest değişken sayısı}=n-r.
+                \]
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section aria-labelledby="kisa-ozet">
+        <h2 id="kisa-ozet">Kısa Özet</h2>
+        <p>Bu bölümde \(A\mathbf{x}=\mathbf{b}\) sistemleri tam olarak çözüldü. İlk adım, artırılmış matris üzerinde eliminasyon yaparak tutarlılık koşullarını belirlemektir. Sol tarafta sıfır satır oluştuğunda sağ tarafın da sıfır olması gerekir.</p>
+        <p>Tutarlı durumda serbest değişkenler sıfır seçilerek bir özel çözüm \(\mathbf{x}_p\) bulunur. Daha sonra sıfır uzayının bütün elemanları bu özel çözüme eklenir. Böylece tam çözüm \(\mathbf{x}=\mathbf{x}_p+\mathbf{x}_n\) biçiminde yazılır.</p>
+        <p>Son olarak rütbenin çözüm sayısını nasıl belirlediği incelendi. Tam sütun rütbesi teklik, tam satır rütbesi varlık, kare tam rütbe ise her sağ taraf için tek çözüm anlamına gelir.</p>
+      </section>
+
+      <section aria-labelledby="calisma-sorulari">
+        <h2 id="calisma-sorulari">Çözümlü Çalışma Soruları</h2>
+
+        <section class="question-card">
+          <h3>Soru 1: Kolay</h3>
+          <p>Aşağıdaki satır bağımlılığına sahip sistemde çözülebilirlik koşulunu bulun:</p>
+          <div class="equation-card" data-raw-latex="\text{üçüncü satır}=\text{birinci satır}+\text{ikinci satır}">
+            <div class="equation-content">
+              \[
+              \text{üçüncü satır}=\text{birinci satır}+\text{ikinci satır}.
+              \]
+            </div>
+          </div>
+          <p>Sağ taraf \(\mathbf{b}=(b_1,b_2,b_3)^T\) olsun.</p>
+          <p><strong>Çözüm:</strong> Sol tarafta üçüncü denklem, ilk iki denklemin toplamıdır. Tutarlılık için sağ tarafın da aynı ilişkiyi sağlaması gerekir:</p>
+          <div class="equation-card" data-raw-latex="b_3=b_1+b_2">
+            <div class="equation-content">
+              \[
+              b_3=b_1+b_2.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Satır bağımlılığı, sağ taraf üzerinde zorunlu bir koşul üretir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 2: Orta</h3>
+          <p>Örnek 8.2'deki \(A\) matrisi ve \(\mathbf{b}=(1,5,6)^T\) için serbest değişkenleri sıfır seçerek bir özel çözüm bulun.</p>
+          <p><strong>Çözüm:</strong> Serbest değişkenler \(x_2\) ve \(x_4\)'tür. \(x_2=0\), \(x_4=0\) seçilirse kalan denklemler</p>
+          <div class="equation-card" data-raw-latex="x_1+2x_3=1,\qquad 2x_3=3">
+            <div class="equation-content">
+              \[
+              x_1+2x_3=1,
+              \qquad
+              2x_3=3.
+              \]
+            </div>
+          </div>
+          <p>Buradan \(x_3=\frac{3}{2}\) ve \(x_1=-2\) bulunur:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_p=\begin{bmatrix}-2\\0\\\frac{3}{2}\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_p=
+              \begin{bmatrix}
+              -2\\0\\\frac{3}{2}\\0
+              \end{bmatrix}.
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu özel çözüm, serbest değişkenleri sıfır yapan en doğal temsilcidir.</p>
+        </section>
+
+        <section class="question-card">
+          <h3>Soru 3: İleri</h3>
+          <p>Bir \(m\times n\) matris için \(r=m<n\) olsun. \(A\mathbf{x}=\mathbf{b}\) sisteminin çözüm davranışını açıklayın.</p>
+          <p><strong>Çözüm:</strong> \(r=m\) olduğundan her satırda öncü vardır ve eliminasyon sonunda sıfır satır oluşmaz. Bu nedenle sağ taraf için tutarlılık engeli yoktur; her \(\mathbf{b}\in\mathbb{R}^m\) için en az bir çözüm vardır.</p>
+          <p>Öte yandan \(n>m=r\) olduğundan serbest değişken sayısı</p>
+          <div class="equation-card" data-raw-latex="n-r=n-m>0">
+            <div class="equation-content">
+              \[
+              n-r=n-m>0
+              \]
+            </div>
+          </div>
+          <p>olur. Serbest değişken bulunduğu için sıfır uzayı yalnızca sıfır vektöründen oluşmaz. Dolayısıyla her tutarlı sağ taraf için sonsuz çok çözüm vardır.</p>
+          <p><strong>Yorum:</strong> Tam satır rütbesi varlığı garanti eder; fakat sütun sayısı fazla olduğu için teklik yoktur.</p>
+        </section>
+      </section>
+
+      <section aria-labelledby="terim-sozlugu">
+        <h2 id="terim-sozlugu">İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">English Term</th>
+                <th scope="col">Türkçe Karşılık</th>
+                <th scope="col">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Augmented matrix</td><td>Artırılmış matris</td><td>Katsayı matrisiyle sağ taraf vektörünün birlikte yazıldığı matris.</td></tr>
+              <tr><td>Consistent system</td><td>Tutarlı sistem</td><td>En az bir çözümü bulunan lineer sistem.</td></tr>
+              <tr><td>Solvability condition</td><td>Çözülebilirlik koşulu</td><td>Sağ tarafın sistemle uyumlu olması için gereken koşul.</td></tr>
+              <tr><td>Column space</td><td>Sütun uzayı</td><td>Bir matrisin sütunlarının tüm doğrusal birleşimlerinden oluşan uzay.</td></tr>
+              <tr><td>Null space</td><td>Sıfır uzayı</td><td>\(A\mathbf{x}=\mathbf{0}\) denkleminin tüm çözümlerinden oluşan uzay.</td></tr>
+              <tr><td>Particular solution</td><td>Özel çözüm</td><td>\(A\mathbf{x}=\mathbf{b}\) denklemini sağlayan tek bir seçilmiş çözüm.</td></tr>
+              <tr><td>Complete solution</td><td>Tam çözüm</td><td>Bir özel çözüme sıfır uzayının tüm elemanlarının eklenmesiyle elde edilen çözüm kümesi.</td></tr>
+              <tr><td>Rank</td><td>Rütbe</td><td>Eliminasyon sonunda bulunan öncü sayısı.</td></tr>
+              <tr><td>Full column rank</td><td>Tam sütun rütbesi</td><td>Rütbenin sütun sayısına eşit olması durumu.</td></tr>
+              <tr><td>Full row rank</td><td>Tam satır rütbesi</td><td>Rütbenin satır sayısına eşit olması durumu.</td></tr>
+              <tr><td>Invertible matrix</td><td>Tersinir matris</td><td>Kare ve tam rütbeli matris.</td></tr>
+              <tr><td>Free variable</td><td>Serbest değişken</td><td>Öncü sütuna karşılık gelmeyen ve serbest seçilebilen değişken.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitLessonTitle() {
+        var title = document.getElementById("lesson-title");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        var current = parseFloat(window.getComputedStyle(title).fontSize);
+        var minimum = 30;
+        var guard = 0;
+
+        while (title.scrollWidth > title.clientWidth && current > minimum && guard < 80) {
+          current -= 1;
+          title.style.fontSize = current + "px";
+          guard += 1;
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            var successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("copy failed"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function initializeEquationCopyButtons() {
+        var cards = document.querySelectorAll(".lesson-page .equation-card");
+
+        cards.forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.dataset.copyType = "raw";
+          rawButton.dataset.tooltip = "Ham LaTeX";
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.dataset.copyType = "block";
+          blockButton.dataset.tooltip = "Blok LaTeX";
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.dataset.rawLatex || "" : "";
+            var text = button.dataset.copyType === "block" ? "\\[\\n" + rawLatex + "\\n\\]" : rawLatex;
+            var originalTooltip = button.dataset.tooltip;
+
+            copyText(text).then(function () {
+              button.dataset.tooltip = "Kopyalandı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            }).catch(function () {
+              button.dataset.tooltip = "Kopyalanamadı";
+              window.setTimeout(function () {
+                button.dataset.tooltip = originalTooltip;
+              }, 1200);
+            });
+          });
+        });
+      }
+
+      window.addEventListener("resize", fitLessonTitle);
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeEquationCopyButtons();
+        fitLessonTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

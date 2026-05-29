@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>22. Ders: Diferansiyel Denklemler ve Matris Üsteli</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.25rem, 5.2vw, 1.85rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" class="active" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, sabit katsayılı birinci mertebeden lineer diferansiyel denklem sistemlerini özdeğer ve özvektörlerle çözmeyi inceler.</p>
+        <p>Bir önceki bölümde \(u_{k+1}=Au_k\) türündeki ayrık sistemlerde \(A^k\) kuvvetleri kullanılmıştı. Burada sürekli zamanlı sistem</p>
+        <div class="equation-card" data-raw-latex="\frac{d\mathbf{u}}{dt}=A\mathbf{u}">
+          <div class="equation-content">
+            \[
+            \frac{d\mathbf{u}}{dt}=A\mathbf{u}
+            \]
+          </div>
+        </div>
+        <p>biçimindedir. Ayrık kuvvetlerin yerini matris üsteli alır. Çözümün temel yapısı, özvektör doğrultularında \(e^{\lambda t}\) çarpanlarıyla ilerleyen bağımsız bileşenlere ayrılır.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>\(\frac{d\mathbf{u}}{dt}=A\mathbf{u}\) sistemini özdeğer-özvektör yöntemiyle çözmek.</li>
+          <li>Saf üstel çözümlerin \(e^{\lambda t}\mathbf{x}\) biçiminde olduğunu doğrulamak.</li>
+          <li>Başlangıç koşulunu özvektör birleşimi olarak yazarak katsayıları bulmak.</li>
+          <li>Özdeğerlerin gerçek kısımlarına göre sönme, kararlı durum ve büyüme davranışını ayırt etmek.</li>
+          <li>İki boyutlu sistemlerde iz ve determinant üzerinden kararlılık koşullarını yorumlamak.</li>
+          <li>Matris üstelini kuvvet serisiyle tanımlamak.</li>
+          <li>Köşegenleştirilebilir durumda \(e^{At}=Se^{\Lambda t}S^{-1}\) formülünü kullanmak.</li>
+          <li>İkinci mertebeden tek bir denklemi iki boyutlu birinci mertebeden sisteme dönüştürmek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Özdeğer ve özvektör denklemi \(A\mathbf{x}=\lambda\mathbf{x}\).</li>
+          <li>Köşegenleştirme \(A=S\Lambda S^{-1}\).</li>
+          <li>Üstel fonksiyonun türevi ve \(e^{\lambda t}\) biçimli çözümler.</li>
+          <li>İz, determinant ve iki boyutlu karakteristik denklem.</li>
+          <li>Karmaşık özdeğerlerde gerçek kısım ve sanal kısım ayrımı.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Sabit katsayı matrisi</td>
+                <td>Diferansiyel denklem sisteminin matrisidir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{u}(t)\)</td>
+                <td>Zamana bağlı vektör</td>
+                <td>Sistemin bilinmeyen çözüm vektörüdür.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{u}(0)\)</td>
+                <td>Başlangıç vektörü</td>
+                <td>Katsayıları belirlemek için kullanılır.</td>
+              </tr>
+              <tr>
+                <td>\(\lambda_i\)</td>
+                <td>Özdeğer</td>
+                <td>Çözümde \(e^{\lambda_i t}\) çarpanını üretir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{x}_i\)</td>
+                <td>Özvektör</td>
+                <td>Saf çözüm doğrultusudur.</td>
+              </tr>
+              <tr>
+                <td>\(S\)</td>
+                <td>Özvektör matrisi</td>
+                <td>Sütunları özvektörlerdir.</td>
+              </tr>
+              <tr>
+                <td>\(\Lambda\)</td>
+                <td>Özdeğer matrisi</td>
+                <td>Köşegeninde özdeğerler bulunur.</td>
+              </tr>
+              <tr>
+                <td>\(e^{At}\)</td>
+                <td>Matris üsteli</td>
+                <td>Çözüm operatörü olarak \(\mathbf{u}(t)=e^{At}\mathbf{u}(0)\) verir.</td>
+              </tr>
+              <tr>
+                <td>\(\operatorname{Re}\lambda\)</td>
+                <td>Özdeğerin gerçek kısmı</td>
+                <td>Sürekli zamanlı kararlılığı belirler.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Sabit katsayılı lineer diferansiyel denklem sisteminde matris, bileşenleri birbirine bağlar. Özvektörler bu bağlantıyı çözer: her özvektör doğrultusunda sistem tek bir skaler diferansiyel denklem gibi davranır.</p>
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Ayrık sistemlerde \(\lambda^k\) nasıl \(A^k\)'nın davranışını belirliyorsa, sürekli sistemlerde \(e^{\lambda t}\) de \(e^{At}\)'nin davranışını belirler.</p>
+        </aside>
+        <p>Bu yüzden çözümün uzun dönem davranışı, matrisin bütün girişlerinden doğrudan okunmaz; özdeğerlerin gerçek kısımlarından okunur. Negatif gerçek kısım sönmeyi, sıfır özdeğer kararlı durum olasılığını, pozitif gerçek kısım ise büyümeyi işaret eder.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Sabit Katsayılı Lineer Sistem</h3>
+          <p>Sabit bir \(A\) matrisi için</p>
+          <div class="equation-card" data-raw-latex="\frac{d\mathbf{u}}{dt}=A\mathbf{u}">
+            <div class="equation-content">
+              \[
+              \frac{d\mathbf{u}}{dt}=A\mathbf{u}
+              \]
+            </div>
+          </div>
+          <p>biçimindeki sistem, birinci mertebeden sabit katsayılı lineer diferansiyel denklem sistemidir. Burada \(\mathbf{u}(t)\) zamana bağlı vektördür.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.2: Saf Üstel Çözümler</h3>
+          <p><strong>İfade:</strong> Eğer \(A\mathbf{x}=\lambda\mathbf{x}\) ise</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=e^{\lambda t}\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)=e^{\lambda t}\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>\(\frac{d\mathbf{u}}{dt}=A\mathbf{u}\) sisteminin bir çözümüdür.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Özvektör doğrultusunda \(A\)'nın etkisi yalnızca \(\lambda\) ile çarpmaktır. Bu nedenle sistem, \(\frac{du}{dt}=\lambda u\) skaler denklemine indirgenir.</p>
+          <p><strong>Formal İspat:</strong> Sol tarafın türevi</p>
+          <div class="equation-card" data-raw-latex="\frac{d}{dt}\left(e^{\lambda t}\mathbf{x}\right)=\lambda e^{\lambda t}\mathbf{x}">
+            <div class="equation-content">
+              \[
+              \frac{d}{dt}
+              \left(e^{\lambda t}\mathbf{x}\right)
+              =
+              \lambda e^{\lambda t}\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>olur. Sağ taraf ise</p>
+          <div class="equation-card" data-raw-latex="A\left(e^{\lambda t}\mathbf{x}\right)=e^{\lambda t}A\mathbf{x}=e^{\lambda t}\lambda\mathbf{x}">
+            <div class="equation-content">
+              \[
+              A\left(e^{\lambda t}\mathbf{x}\right)
+              =
+              e^{\lambda t}A\mathbf{x}
+              =
+              e^{\lambda t}\lambda\mathbf{x}
+              \]
+            </div>
+          </div>
+          <p>olduğundan iki taraf eşittir.</p>
+          <p><strong>Yorum:</strong> Genel çözüm, yeterli sayıda bağımsız özvektör varsa bu saf çözümlerin doğrusal birleşimi olarak kurulur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: İki Bileşenli Bir Sistem</h3>
+          <p>Başlangıç koşulu \(\mathbf{u}(0)=\begin{bmatrix}1\\0\end{bmatrix}\) olan</p>
+          <div class="equation-card" data-raw-latex="\frac{d\mathbf{u}}{dt}=\begin{bmatrix}-1&amp;2\\1&amp;-2\end{bmatrix}\mathbf{u}">
+            <div class="equation-content">
+              \[
+              \frac{d\mathbf{u}}{dt}
+              =
+              \begin{bmatrix}
+              -1&2\\
+              1&-2
+              \end{bmatrix}
+              \mathbf{u}
+              \]
+            </div>
+          </div>
+          <p>sistemini çözelim. Katsayı matrisi</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}-1&amp;2\\1&amp;-2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              -1&2\\
+              1&-2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>tekildir; bu nedenle \(\lambda_1=0\) bir özdeğerdir. İz \(-3\) olduğundan ikinci özdeğer \(\lambda_2=-3\)'tür. Karakteristik denklem de bunu doğrular:</p>
+          <div class="equation-card" data-raw-latex="\det(A-\lambda I)=\det\begin{bmatrix}-1-\lambda&amp;2\\1&amp;-2-\lambda\end{bmatrix}=\lambda^2+3\lambda=\lambda(\lambda+3)">
+            <div class="equation-content">
+              \[
+              \det(A-\lambda I)
+              =
+              \det
+              \begin{bmatrix}
+              -1-\lambda&2\\
+              1&-2-\lambda
+              \end{bmatrix}
+              =
+              \lambda^2+3\lambda
+              =
+              \lambda(\lambda+3)
+              \]
+            </div>
+          </div>
+          <p>\(\lambda_1=0\) için sıfır uzayından</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_1=\begin{bmatrix}2\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_1=
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>seçilir. \(\lambda_2=-3\) için \(A+3I\)'nin sıfır uzayından</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}_2=\begin{bmatrix}1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{x}_2=
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>seçilebilir. Genel çözüm</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=c_1e^{0t}\begin{bmatrix}2\\1\end{bmatrix}+c_2e^{-3t}\begin{bmatrix}1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)
+              =
+              c_1e^{0t}
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              c_2e^{-3t}
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir. Başlangıç koşulu için \(t=0\) yazılır:</p>
+          <div class="equation-card" data-raw-latex="c_1\begin{bmatrix}2\\1\end{bmatrix}+c_2\begin{bmatrix}1\\-1\end{bmatrix}=\begin{bmatrix}1\\0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              c_1
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1\\
+              0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Buradan \(c_1=c_2=\frac13\) bulunur. Çözüm</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=\frac13\begin{bmatrix}2\\1\end{bmatrix}+\frac13e^{-3t}\begin{bmatrix}1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)
+              =
+              \frac13
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              \frac13e^{-3t}
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\(e^{-3t}\) terimi zamanla sıfıra yaklaştığından çözüm şu kararlı duruma yaklaşır:</p>
+          <div class="equation-card" data-raw-latex="\lim_{t\to\infty}\mathbf{u}(t)=\frac13\begin{bmatrix}2\\1\end{bmatrix}=\begin{bmatrix}2/3\\1/3\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \lim_{t\to\infty}\mathbf{u}(t)
+              =
+              \frac13
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              2/3\\
+              1/3
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.4: Kararlılık, Kararlı Durum ve Büyüme</h3>
+          <p>\(\frac{d\mathbf{u}}{dt}=A\mathbf{u}\) sistemi için bütün çözümler sıfıra yaklaşıyorsa sistem kararlı kabul edilir. Bu davranış, bütün özdeğerlerin gerçek kısımlarının negatif olmasına dayanır.</p>
+          <p>Bir sıfır özdeğer varsa ve diğer özdeğerlerin gerçek kısımları negatifse, sıfır özdeğer doğrultusunda kararlı durum kalabilir. Herhangi bir özdeğerin gerçek kısmı pozitifse, bu doğrultudaki çözüm büyür.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Gerçek Kısım Kararlılığı Belirler</h3>
+          <p><strong>İfade:</strong> Köşegenleştirilebilir bir sistemde \(e^{At}\to0\) olması için bütün özdeğerlerin gerçek kısımlarının negatif olması gerekir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Her özdeğer çözümde \(e^{\lambda t}\) çarpanını üretir. Karmaşık özdeğerlerde sönmeyi belirleyen kısım \(\lambda\)'nın gerçek kısmıdır.</p>
+          <p><strong>Formal İspat:</strong> \(\lambda=a+bi\) ise</p>
+          <div class="equation-card" data-raw-latex="e^{\lambda t}=e^{(a+bi)t}=e^{at}e^{bit}">
+            <div class="equation-content">
+              \[
+              e^{\lambda t}
+              =
+              e^{(a+bi)t}
+              =
+              e^{at}e^{bit}
+              \]
+            </div>
+          </div>
+          <p>olur. \(e^{bit}\) çarpanının büyüklüğü \(1\)'dir; bu çarpan salınım üretir fakat büyüklüğü değiştirmez. Dolayısıyla büyüklük davranışını \(e^{at}\) belirler. \(a<0\) ise sönme, \(a>0\) ise büyüme görülür.</p>
+          <p><strong>Yorum:</strong> Ayrık sistemlerde ölçüt \(|\lambda|<1\) idi. Sürekli sistemlerde ölçüt \(\operatorname{Re}\lambda<0\)'dır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.6: Karmaşık Özdeğerin Etkisi</h3>
+          <p>\(\lambda=-3+6i\) olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="e^{(-3+6i)t}=e^{-3t}e^{6it}">
+            <div class="equation-content">
+              \[
+              e^{(-3+6i)t}
+              =
+              e^{-3t}e^{6it}
+              \]
+            </div>
+          </div>
+          <p>olur. \(e^{6it}\) birim büyüklüğe sahiptir; bu nedenle sönme hızını \(e^{-3t}\) belirler. Gerçek kısım negatif olduğu için bu bileşen zamanla kaybolur.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: İki Boyutlu Kararlılık Gözlemi</h3>
+          <p><strong>İfade:</strong> İki boyutlu bir sistemde iki özdeğerin gerçek kısımları negatifse iz negatiftir ve determinant pozitiftir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> İz özdeğerlerin toplamı, determinant özdeğerlerin çarpımıdır. Negatif gerçek kısımlar toplamı sola çeker; iki negatif gerçek özdeğer durumunda çarpım pozitiftir. Karmaşık eşlenik durumda da çarpım pozitiftir.</p>
+          <p><strong>Formal İspat:</strong> İki boyutlu bir matris için</p>
+          <div class="equation-card" data-raw-latex="\operatorname{tr}(A)=\lambda_1+\lambda_2,\qquad \det A=\lambda_1\lambda_2">
+            <div class="equation-content">
+              \[
+              \operatorname{tr}(A)=\lambda_1+\lambda_2,
+              \qquad
+              \det A=\lambda_1\lambda_2
+              \]
+            </div>
+          </div>
+          <p>eşitlikleri geçerlidir. İki gerçek özdeğer negatifse toplam negatiftir, çarpım pozitiftir. Karmaşık eşlenik özdeğerlerde \(\lambda=a+bi\), \(\overline{\lambda}=a-bi\) olur; toplam \(2a\), çarpım \(a^2+b^2\)'dir. Kararlılık için \(a<0\) olduğundan iz negatif, determinant pozitiftir.</p>
+          <p><strong>Yorum:</strong> Negatif iz tek başına yeterli değildir. Örneğin \(\begin{bmatrix}-2&0\\0&1\end{bmatrix}\) matrisinin izi negatiftir, fakat \(1\) özdeğeri büyüme üretir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.8: Matris Üsteli</h3>
+          <p>Matris üsteli, skaler üstel fonksiyonun kuvvet serisiyle tanımlanır:</p>
+          <div class="equation-card" data-raw-latex="e^{At}=I+At+\frac{(At)^2}{2!}+\frac{(At)^3}{3!}+\cdots+\frac{(At)^n}{n!}+\cdots">
+            <div class="equation-content">
+              \[
+              e^{At}
+              =
+              I+At+\frac{(At)^2}{2!}
+              +\frac{(At)^3}{3!}
+              +\cdots+
+              \frac{(At)^n}{n!}
+              +\cdots
+              \]
+            </div>
+          </div>
+          <p>Bu seri, matrisler için üstel fonksiyonu tanımlar. Çözüm operatörü de bu matristir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=e^{At}\mathbf{u}(0)">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)=e^{At}\mathbf{u}(0)
+              \]
+            </div>
+          </div>
+        </section>
+
+        <aside class="note-card">
+          <strong>Kavramsal Not:</strong>
+          <p>Üstel seri, terimlerin \(n!\) ile bölünmesi nedeniyle her \(A\) ve \(t\) için iyi tanımlıdır. Buna karşılık \(I+At+(At)^2+\cdots\) biçimli geometrik seri ancak \(At\)'nin özdeğerleri uygun biçimde küçükse yakınsar ve \((I-At)^{-1}\) ile ilişkilidir.</p>
+        </aside>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Köşegenleştirme ile Matris Üsteli</h3>
+          <p><strong>İfade:</strong> \(A=S\Lambda S^{-1}\) ise</p>
+          <div class="equation-card" data-raw-latex="e^{At}=Se^{\Lambda t}S^{-1}">
+            <div class="equation-content">
+              \[
+              e^{At}=Se^{\Lambda t}S^{-1}
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Köşegenleştirme, \(A\)'nın bütün kuvvetlerini \(S\Lambda^nS^{-1}\) biçiminde yazar. Üstel seri bu kuvvetlerin toplamıdır.</p>
+          <p><strong>Formal İspat:</strong> \(A=S\Lambda S^{-1}\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="A^n=S\Lambda^nS^{-1}">
+            <div class="equation-content">
+              \[
+              A^n=S\Lambda^nS^{-1}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu ifade üstel seriye yerleştirilirse</p>
+          <div class="equation-card" data-raw-latex="e^{At}=SS^{-1}+S(\Lambda t)S^{-1}+S\frac{(\Lambda t)^2}{2!}S^{-1}+\cdots">
+            <div class="equation-content">
+              \[
+              e^{At}
+              =
+              SS^{-1}
+              +
+              S(\Lambda t)S^{-1}
+              +
+              S\frac{(\Lambda t)^2}{2!}S^{-1}
+              +\cdots
+              \]
+            </div>
+          </div>
+          <p>Her terimden solda \(S\), sağda \(S^{-1}\) ortak alınır:</p>
+          <div class="equation-card" data-raw-latex="e^{At}=S\left(I+\Lambda t+\frac{(\Lambda t)^2}{2!}+\frac{(\Lambda t)^3}{3!}+\cdots\right)S^{-1}=Se^{\Lambda t}S^{-1}">
+            <div class="equation-content">
+              \[
+              e^{At}
+              =
+              S\left(
+              I+\Lambda t+\frac{(\Lambda t)^2}{2!}
+              +\frac{(\Lambda t)^3}{3!}
+              +\cdots
+              \right)S^{-1}
+              =
+              Se^{\Lambda t}S^{-1}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu formül köşegenleştirilebilirlik varsayımına dayanır. \(S^{-1}\) yoksa bu yol doğrudan kullanılamaz.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.10: Köşegen Matrisin Üsteli</h3>
+          <p>\(\Lambda=\operatorname{diag}(\lambda_1,\ldots,\lambda_n)\) ise</p>
+          <div class="equation-card" data-raw-latex="e^{\Lambda t}=\begin{bmatrix}e^{\lambda_1t}&amp;0&amp;\cdots&amp;0\\0&amp;e^{\lambda_2t}&amp;\cdots&amp;0\\\vdots&amp;\vdots&amp;\ddots&amp;\vdots\\0&amp;0&amp;\cdots&amp;e^{\lambda_nt}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              e^{\Lambda t}
+              =
+              \begin{bmatrix}
+              e^{\lambda_1t}&0&\cdots&0\\
+              0&e^{\lambda_2t}&\cdots&0\\
+              \vdots&\vdots&\ddots&\vdots\\
+              0&0&\cdots&e^{\lambda_nt}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. Köşegen matrisin üsteli yine köşegendir ve her köşegen girişe sıradan üstel fonksiyon uygulanır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: İkinci Mertebeden Denklemden Birinci Mertebeden Sisteme</h3>
+          <p>Tek bir ikinci mertebeden denklem</p>
+          <div class="equation-card" data-raw-latex="y''+by'+Ky=0">
+            <div class="equation-content">
+              \[
+              y''+by'+Ky=0
+              \]
+            </div>
+          </div>
+          <p>iki boyutlu birinci mertebeden sisteme çevrilebilir. Bunun için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}=\begin{bmatrix}y'\\y\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}=
+              \begin{bmatrix}
+              y'\\
+              y
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>seçilir. O zaman</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}'=\begin{bmatrix}y''\\y'\end{bmatrix}=\begin{bmatrix}-b&amp;-K\\1&amp;0\end{bmatrix}\begin{bmatrix}y'\\y\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}'
+              =
+              \begin{bmatrix}
+              y''\\
+              y'
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              -b&-K\\
+              1&0
+              \end{bmatrix}
+              \begin{bmatrix}
+              y'\\
+              y
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Böylece katsayı matrisi</p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}-b&amp;-K\\1&amp;0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              -b&-K\\
+              1&0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olan birinci mertebeden bir sistem oluşur. Bu sistemin özdeğerleri, ikinci mertebeden denklemin üstel çözümlerini belirler.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.12: Genel Çözümün Özvektör Açılımı</h3>
+          <p><strong>İfade:</strong> \(A\)'nın bağımsız özvektörleri \(\mathbf{x}_1,\ldots,\mathbf{x}_n\) varsa ve başlangıç vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(0)=c_1\mathbf{x}_1+\cdots+c_n\mathbf{x}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(0)
+              =
+              c_1\mathbf{x}_1+\cdots+c_n\mathbf{x}_n
+              \]
+            </div>
+          </div>
+          <p>biçiminde yazılırsa çözüm</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=c_1e^{\lambda_1t}\mathbf{x}_1+\cdots+c_ne^{\lambda_nt}\mathbf{x}_n">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)
+              =
+              c_1e^{\lambda_1t}\mathbf{x}_1
+              +\cdots+
+              c_ne^{\lambda_nt}\mathbf{x}_n
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> Başlangıç durumu saf özvektör bileşenlerine ayrılır; sonra her bileşen kendi üstel çarpanıyla ilerler.</p>
+          <p><strong>Formal İspat:</strong> Her \(e^{\lambda_i t}\mathbf{x}_i\) Teorem 1.2 ile çözümdür. Denklem lineer olduğu için bu çözümlerin doğrusal birleşimi de çözümdür. \(t=0\) yazıldığında başlangıç koşulu sağlanır.</p>
+          <p><strong>Yorum:</strong> Bu formül, \(S\mathbf{c}=\mathbf{u}(0)\) denkleminden katsayıları bulmayı gerektirir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.13: Matris Üstelinin Çözüm Operatörü Olması</h3>
+          <p><strong>İfade:</strong> Sabit \(A\) matrisi için</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=e^{At}\mathbf{u}(0)">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)=e^{At}\mathbf{u}(0)
+              \]
+            </div>
+          </div>
+          <p>\(\frac{d\mathbf{u}}{dt}=A\mathbf{u}\) sisteminin çözümüdür.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Skaler denklemde \(u'=au\) çözümü \(e^{at}u(0)\)'dır. Matris üsteli bunun matris karşılığıdır.</p>
+          <p><strong>Formal İspat:</strong> \(A\) köşegenleştirilebilir durumda \(e^{At}=Se^{\Lambda t}S^{-1}\) yazılır. \(S^{-1}\mathbf{u}(0)=\mathbf{c}\) olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="e^{At}\mathbf{u}(0)=Se^{\Lambda t}\mathbf{c}">
+            <div class="equation-content">
+              \[
+              e^{At}\mathbf{u}(0)
+              =
+              Se^{\Lambda t}\mathbf{c}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu ifade, özvektör açılımındaki \(c_ie^{\lambda_i t}\mathbf{x}_i\) terimlerinin matris biçimidir. Dolayısıyla diferansiyel sistemi sağlar ve \(t=0\) için \(\mathbf{u}(0)\)'a eşittir.</p>
+          <p><strong>Yorum:</strong> Matris üsteli, sürekli zamanlı sistemlerde \(A^k\)'nın ayrık zamanlı sistemlerde oynadığı role karşılık gelir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Sabit Katsayılı Sistemi Özdeğerlerle Çözme</h3>
+        <ol>
+          <li>Katsayı matrisi \(A\)'yı belirle.</li>
+          <li>\(\det(A-\lambda I)=0\) denklemiyle özdeğerleri bul.</li>
+          <li>Her özdeğer için ilgili özvektörü hesapla.</li>
+          <li>Saf çözümleri \(e^{\lambda_i t}\mathbf{x}_i\) biçiminde yaz.</li>
+          <li>Başlangıç koşulunu \(\mathbf{u}(0)=c_1\mathbf{x}_1+\cdots+c_n\mathbf{x}_n\) biçiminde çöz.</li>
+          <li>Bulunan katsayıları genel çözüme yerleştir.</li>
+        </ol>
+
+        <h3>Matris Üsteliyle Çözme</h3>
+        <ol>
+          <li>Matris köşegenleştirilebiliyorsa \(A=S\Lambda S^{-1}\) yaz.</li>
+          <li>\(e^{\Lambda t}\)'yi köşegen girişlere \(e^{\lambda_i t}\) yazarak oluştur.</li>
+          <li>\(e^{At}=Se^{\Lambda t}S^{-1}\) hesapla.</li>
+          <li>Çözümü \(\mathbf{u}(t)=e^{At}\mathbf{u}(0)\) olarak yaz.</li>
+        </ol>
+
+        <aside class="note-card">
+          <strong>Yaygın Hata Noktaları:</strong>
+          <p>Başlangıç katsayıları doğrudan çözümden tahmin edilmemeli; \(S\mathbf{c}=\mathbf{u}(0)\) sistemi çözülmelidir. Ayrıca \(e^{At}\), giriş giriş sıradan üstel alma işlemi değildir; matris üsteli kuvvet serisiyle veya köşegenleştirme yoluyla hesaplanır.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu dersin uygulama bağlantısı, sabit katsayılı lineer diferansiyel denklem sistemlerinin çözümüdür. Sistem bileşenleri birbirine bağlı olsa bile özvektörler uygun koordinatları verir ve denklemleri ayrıştırır.</p>
+        <p>İkinci mertebeden tek bir denklem de aynı çerçeveye alınabilir. \(y''+by'+Ky=0\) denklemi, \(\mathbf{u}=\begin{bmatrix}y'\\y\end{bmatrix}\) seçimiyle \(\mathbf{u}'=A\mathbf{u}\) sistemine çevrilir. Bundan sonra aynı özdeğer yöntemi uygulanır.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+
+        <section class="note-card">
+          <h3>Matris Üstelini Giriş Giriş Üstel Sanmak</h3>
+          <p><strong>Hata:</strong> \(e^{At}\)'yi \(A\)'nın her girişine üstel fonksiyon uygulamak gibi yorumlamak.</p>
+          <p><strong>Neden Yanlış:</strong> Matris üsteli kuvvet serisiyle tanımlanır ve matris çarpımlarını içerir.</p>
+          <p><strong>Doğru Yaklaşım:</strong> \(e^{At}=I+At+\frac{(At)^2}{2!}+\cdots\) veya köşegenleştirilebilir durumda \(e^{At}=Se^{\Lambda t}S^{-1}\) kullanılmalıdır.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Başlangıç Koşulunu Unutmak</h3>
+          <p><strong>Hata:</strong> Özdeğerleri ve özvektörleri bulup çözüm katsayılarını belirlemeden bırakmak.</p>
+          <p><strong>Neden Yanlış:</strong> Özdeğerler çözüm biçimini verir; başlangıç koşulu belirli çözümü seçer.</p>
+          <p><strong>Doğru Yaklaşım:</strong> \(\mathbf{u}(0)=S\mathbf{c}\) sistemi çözülerek \(c_i\) katsayıları bulunmalıdır.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Karmaşık Özdeğerde Sanal Kısmı Büyüme Nedeni Sanmak</h3>
+          <p><strong>Hata:</strong> \(\lambda=a+bi\) için \(b\)'nin büyümeyi belirlediğini düşünmek.</p>
+          <p><strong>Neden Yanlış:</strong> \(e^{bit}\)'nin büyüklüğü \(1\)'dir; salınım üretir, büyüme veya sönme üretmez.</p>
+          <p><strong>Doğru Yaklaşım:</strong> Kararlılık için \(a=\operatorname{Re}\lambda\) incelenir.</p>
+        </section>
+
+        <section class="note-card">
+          <h3>Negatif İzi Tek Başına Yeterli Saymak</h3>
+          <p><strong>Hata:</strong> İki boyutlu sistemde iz negatifse sistem mutlaka kararlıdır sonucuna varmak.</p>
+          <p><strong>Neden Yanlış:</strong> \(\begin{bmatrix}-2&0\\0&1\end{bmatrix}\) örneğinde iz negatiftir, fakat \(1\) özdeğeri büyüme üretir.</p>
+          <p><strong>Doğru Yaklaşım:</strong> İki boyutlu kararlılık için iz ve determinant birlikte değerlendirilmelidir; özdeğerlerin gerçek kısımları negatif olmalıdır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li>Sürekli sistem: \(\frac{d\mathbf{u}}{dt}=A\mathbf{u}\).</li>
+            <li>Özvektör doğrultusu: \(A\mathbf{x}=\lambda\mathbf{x}\).</li>
+            <li>Saf çözüm: \(e^{\lambda t}\mathbf{x}\).</li>
+            <li>Genel çözüm: saf çözümlerin doğrusal birleşimi.</li>
+            <li>Başlangıç koşulu: \(S\mathbf{c}=\mathbf{u}(0)\).</li>
+            <li>Matris üsteli: \(e^{At}=I+At+\frac{(At)^2}{2!}+\cdots\).</li>
+            <li>Köşegenleştirme: \(e^{At}=Se^{\Lambda t}S^{-1}\).</li>
+            <li>Kararlılık: bütün \(\operatorname{Re}\lambda_i<0\).</li>
+            <li>Kararlı durum: sıfır özdeğer ve sönümlenen diğer bileşenler.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Sabit katsayılı sistem</p>
+        <div class="equation-card" data-raw-latex="\frac{d\mathbf{u}}{dt}=A\mathbf{u}">
+          <div class="equation-content">
+            \[
+            \frac{d\mathbf{u}}{dt}=A\mathbf{u}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Saf üstel çözüm</p>
+        <div class="equation-card" data-raw-latex="A\mathbf{x}=\lambda\mathbf{x}\quad\Rightarrow\quad \mathbf{u}(t)=e^{\lambda t}\mathbf{x}">
+          <div class="equation-content">
+            \[
+            A\mathbf{x}=\lambda\mathbf{x}
+            \quad\Rightarrow\quad
+            \mathbf{u}(t)=e^{\lambda t}\mathbf{x}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Genel özvektör açılımı</p>
+        <div class="equation-card" data-raw-latex="\mathbf{u}(t)=\sum_{i=1}^n c_ie^{\lambda_it}\mathbf{x}_i">
+          <div class="equation-content">
+            \[
+            \mathbf{u}(t)=
+            \sum_{i=1}^n c_ie^{\lambda_it}\mathbf{x}_i
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Matris üsteli</p>
+        <div class="equation-card" data-raw-latex="e^{At}=I+At+\frac{(At)^2}{2!}+\frac{(At)^3}{3!}+\cdots">
+          <div class="equation-content">
+            \[
+            e^{At}
+            =
+            I+At+\frac{(At)^2}{2!}
+            +\frac{(At)^3}{3!}
+            +\cdots
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Köşegenleştirilmiş matris üsteli</p>
+        <div class="equation-card" data-raw-latex="e^{At}=Se^{\Lambda t}S^{-1}">
+          <div class="equation-content">
+            \[
+            e^{At}=Se^{\Lambda t}S^{-1}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Çözüm operatörü</p>
+        <div class="equation-card" data-raw-latex="\mathbf{u}(t)=e^{At}\mathbf{u}(0)">
+          <div class="equation-content">
+            \[
+            \mathbf{u}(t)=e^{At}\mathbf{u}(0)
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Sürekli zamanlı kararlılık ölçütü</p>
+        <div class="equation-card" data-raw-latex="\operatorname{Re}\lambda_i<0\quad\text{bütün }i\text{ için}">
+          <div class="equation-content">
+            \[
+            \operatorname{Re}\lambda_i<0
+            \quad
+            \text{bütün }i\text{ için}
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde sabit katsayılı diferansiyel denklem sistemleri özdeğer ve özvektörlerle çözüldü. Her özvektör doğrultusu, \(e^{\lambda t}\) çarpanlı saf bir çözüm verdi.</p>
+        <p>Başlangıç koşulu özvektör birleşimi olarak yazılarak belirli çözüm elde edildi. Örnekte \(\lambda=0\) kararlı durumu, \(\lambda=-3\) ise sönümlenen geçici bileşeni verdi.</p>
+        <p>Matris üsteli kuvvet serisiyle tanımlandı ve köşegenleştirilebilir durumda \(e^{At}=Se^{\Lambda t}S^{-1}\) formülü elde edildi. Kararlılık için ayrık sistemlerdeki \(|\lambda|<1\) ölçütü yerine sürekli sistemlerde \(\operatorname{Re}\lambda<0\) ölçütü kullanılır.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Örnek 1.14: Kolay Soru</h3>
+          <p><strong>Soru:</strong> \(A=\begin{bmatrix}-2&0\\0&-5\end{bmatrix}\) için \(\frac{d\mathbf{u}}{dt}=A\mathbf{u}\) sisteminin genel çözümünü yazın.</p>
+          <p><strong>Çözüm:</strong> Matris köşegendir; özdeğerler \(-2\) ve \(-5\), özvektörler standart eksen vektörleridir. Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=c_1e^{-2t}\begin{bmatrix}1\\0\end{bmatrix}+c_2e^{-5t}\begin{bmatrix}0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)
+              =
+              c_1e^{-2t}
+              \begin{bmatrix}
+              1\\
+              0
+              \end{bmatrix}
+              +
+              c_2e^{-5t}
+              \begin{bmatrix}
+              0\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> İki özdeğer de negatif olduğundan her bileşen sıfıra yaklaşır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.15: Orta Soru</h3>
+          <p><strong>Soru:</strong> Örnek 1.3'teki sistemde başlangıç koşulu \(\mathbf{u}(0)=\begin{bmatrix}0\\1\end{bmatrix}\) olsaydı çözüm ne olurdu?</p>
+          <p><strong>Çözüm:</strong> Aynı özvektörler kullanılır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=c_1\begin{bmatrix}2\\1\end{bmatrix}+c_2e^{-3t}\begin{bmatrix}1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)
+              =
+              c_1
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              c_2e^{-3t}
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Başlangıç koşulu için</p>
+          <div class="equation-card" data-raw-latex="c_1\begin{bmatrix}2\\1\end{bmatrix}+c_2\begin{bmatrix}1\\-1\end{bmatrix}=\begin{bmatrix}0\\1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              c_1
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              +
+              c_2
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\
+              1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>yazılır. Denklemler \(2c_1+c_2=0\) ve \(c_1-c_2=1\)'dir. Buradan \(c_1=\frac13\), \(c_2=-\frac23\) elde edilir. Çözüm</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}(t)=\frac13\begin{bmatrix}2\\1\end{bmatrix}-\frac23e^{-3t}\begin{bmatrix}1\\-1\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}(t)
+              =
+              \frac13
+              \begin{bmatrix}
+              2\\
+              1
+              \end{bmatrix}
+              -
+              \frac23e^{-3t}
+              \begin{bmatrix}
+              1\\
+              -1
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Başlangıç durumu değişse bile uzun dönem kararlı durum yine \(\frac13\begin{bmatrix}2\\1\end{bmatrix}\) olur.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.16: İleri Soru</h3>
+          <p><strong>Soru:</strong> \(y''+3y'+2y=0\) denklemini birinci mertebeden sisteme çevirin ve özdeğerlerden çözüm davranışını belirleyin.</p>
+          <p><strong>Çözüm:</strong> \(\mathbf{u}=\begin{bmatrix}y'\\y\end{bmatrix}\) alınır. O zaman</p>
+          <div class="equation-card" data-raw-latex="\mathbf{u}'=\begin{bmatrix}-3&amp;-2\\1&amp;0\end{bmatrix}\mathbf{u}">
+            <div class="equation-content">
+              \[
+              \mathbf{u}'
+              =
+              \begin{bmatrix}
+              -3&-2\\
+              1&0
+              \end{bmatrix}
+              \mathbf{u}
+              \]
+            </div>
+          </div>
+          <p>Karakteristik denklem</p>
+          <div class="equation-card" data-raw-latex="\det\begin{bmatrix}-3-\lambda&amp;-2\\1&amp;-\lambda\end{bmatrix}=\lambda^2+3\lambda+2=(\lambda+1)(\lambda+2)">
+            <div class="equation-content">
+              \[
+              \det
+              \begin{bmatrix}
+              -3-\lambda&-2\\
+              1&-\lambda
+              \end{bmatrix}
+              =
+              \lambda^2+3\lambda+2
+              =
+              (\lambda+1)(\lambda+2)
+              \]
+            </div>
+          </div>
+          <p>olduğundan özdeğerler \(-1\) ve \(-2\)'dir. İki özdeğer de negatif olduğu için bütün saf üstel bileşenler sönümlenir.</p>
+          <p><strong>Yorum:</strong> Bu sistemde çözüm sıfıra yaklaşır; çünkü bütün özdeğerlerin gerçek kısımları negatiftir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Differential equation</td>
+                <td>Diferansiyel denklem</td>
+                <td>Türev içeren denklem.</td>
+              </tr>
+              <tr>
+                <td>Constant coefficient system</td>
+                <td>Sabit katsayılı sistem</td>
+                <td>Katsayı matrisi zamana bağlı olmayan lineer sistem.</td>
+              </tr>
+              <tr>
+                <td>Matrix exponential</td>
+                <td>Matris üsteli</td>
+                <td>\(e^{At}\) ile gösterilen çözüm operatörü.</td>
+              </tr>
+              <tr>
+                <td>Steady state</td>
+                <td>Kararlı durum</td>
+                <td>Zaman ilerledikçe değişmeden kalan sınır davranışı.</td>
+              </tr>
+              <tr>
+                <td>Stability</td>
+                <td>Kararlılık</td>
+                <td>Çözümlerin sıfıra yaklaşması davranışı.</td>
+              </tr>
+              <tr>
+                <td>Real part</td>
+                <td>Gerçek kısım</td>
+                <td>Karmaşık özdeğerin sönme veya büyümeyi belirleyen kısmı.</td>
+              </tr>
+              <tr>
+                <td>Power series</td>
+                <td>Kuvvet serisi</td>
+                <td>Matris üsteli tanımında kullanılan sonsuz seri.</td>
+              </tr>
+              <tr>
+                <td>Second-order equation</td>
+                <td>İkinci mertebeden denklem</td>
+                <td>İkinci türev içeren skaler denklem.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const page = document.querySelector(".lesson-page");
+        const title = document.querySelector(".lesson-page h1");
+        if (!page || !title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        let currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        const availableWidth = title.parentElement ? title.parentElement.clientWidth : page.clientWidth;
+
+        while (title.scrollWidth > availableWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+          return Promise.resolve();
+        } catch (error) {
+          return Promise.reject(error);
+        } finally {
+          document.body.removeChild(textarea);
+        }
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.getAttribute("data-tooltip") || "";
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

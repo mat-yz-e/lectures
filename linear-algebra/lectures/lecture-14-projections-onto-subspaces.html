@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14. Ders: Alt Uzaylara İzdüşüm</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lesson-page .compact-list {
+      margin: 0.7rem 0 0;
+    }
+
+    .lesson-page .formula-label {
+      margin-top: 1.1rem;
+      color: var(--lesson-muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .lesson-page .concept-map {
+      margin: 1.2rem 0;
+      padding: 1.2rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .concept-map ul {
+      margin: 0;
+    }
+
+    .lesson-page .muted {
+      color: var(--lesson-muted);
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: 1rem;
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        font-size: clamp(1.35rem, 6vw, 2rem);
+        line-height: 1.12;
+        white-space: normal;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" class="active" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">14. Ders: Alt Uzaylara İzdüşüm</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölümün ana problemi, bir vektörün belirli bir alt uzay içinde kendisine en yakın vektörünü bulmaktır. Bu en yakın vektöre izdüşüm denir; aradaki fark ise hata vektörüdür.</p>
+        <p>Önce bir vektörün tek bir doğru üzerine izdüşümü incelenir. Bu durumda izdüşüm, doğrunun yön vektörünün bir katıdır ve doğru formülü veren temel koşul, hata vektörünün doğruya dik olmasıdır. Daha sonra aynı fikir, bir matrisin sütun uzayına izdüşüm problemine genişletilir. Böylece çözülemeyen \(A\mathbf{x}=\mathbf{b}\) sistemleri için doğrudan çözülemeyen sağ taraf yerine, sütun uzayındaki en yakın sağ taraf seçilir.</p>
+        <p>Bu bölüm, ortogonallik ve dört temel alt uzay bilgisini kullanır; bir sonraki temel adım olan en iyi yaklaşık çözüm ve en küçük kareler yaklaşımının cebirsel omurgasını kurar.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>Bir vektörün bir doğru üzerine izdüşümünü ortogonallik koşuluyla türetmek.</li>
+          <li>\(\hat{x}=\dfrac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}\) katsayısının neden ortaya çıktığını açıklamak.</li>
+          <li>Bir doğru üzerine izdüşüm matrisini \(P=\dfrac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\) biçiminde yazmak.</li>
+          <li>İzdüşüm matrislerinin simetrik olduğunu ve ikinci kez uygulandığında sonucu değiştirmediğini göstermek.</li>
+          <li>Bir matrisin sütun uzayına izdüşüm için normal denklemleri kurmak.</li>
+          <li>\(\hat{\mathbf{x}}\), \(\mathbf{p}\), hata vektörü \(\mathbf{e}\) ve izdüşüm matrisi \(P\) arasındaki ilişkiyi ayırt etmek.</li>
+          <li>Doğru uydurma problemini çözülemeyen bir lineer sistem ve izdüşüm problemi olarak modellemek.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Vektörlerde iç çarpım ve diklik koşulu.</li>
+          <li>Bir matrisin sütun uzayı ve sol sıfır uzayı.</li>
+          <li>Matris çarpımı ve transpoz işlemi.</li>
+          <li>Bağımsız sütunların oluşturduğu alt uzay ve bu alt uzaydaki doğrusal kombinasyonlar.</li>
+          <li>Tersinir kare matrislerin lineer sistem çözümündeki rolü.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table aria-label="Ders boyunca kullanılan temel notasyonlar">
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\mathbf{a}\)</td>
+                <td>Doğruyu belirleyen vektör</td>
+                <td>Bir boyutlu alt uzayın yönünü belirler.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{b}\)</td>
+                <td>İzdüşümü alınan vektör</td>
+                <td>Genellikle alt uzayın dışında olabilir.</td>
+              </tr>
+              <tr>
+                <td>\(\hat{x}\)</td>
+                <td>Doğru üzerindeki en iyi katsayı</td>
+                <td>\(\mathbf{a}\hat{x}\), \(\mathbf{b}\) vektörünün doğru üzerindeki izdüşümüdür.</td>
+              </tr>
+              <tr>
+                <td>\(\hat{\mathbf{x}}\)</td>
+                <td>Sütun uzayı izdüşüm katsayıları</td>
+                <td>\(A\hat{\mathbf{x}}\), sütun uzayındaki en yakın vektörü verir.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{p}\)</td>
+                <td>İzdüşüm vektörü</td>
+                <td>Alt uzay içinde \(\mathbf{b}\) vektörüne en yakın vektördür.</td>
+              </tr>
+              <tr>
+                <td>\(\mathbf{e}\)</td>
+                <td>Hata vektörü</td>
+                <td>\(\mathbf{e}=\mathbf{b}-\mathbf{p}\) biçiminde tanımlanır.</td>
+              </tr>
+              <tr>
+                <td>\(A\)</td>
+                <td>Sütunları alt uzayı belirleyen matris</td>
+                <td>\(A=[\mathbf{a}_1\ \mathbf{a}_2\ \cdots\ \mathbf{a}_n]\).</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{C}(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının tüm doğrusal kombinasyonlarıdır.</td>
+              </tr>
+              <tr>
+                <td>\(\mathcal{N}(A^T)\)</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{e}=\mathbf{0}\) koşulunu sağlayan vektörlerin uzayıdır.</td>
+              </tr>
+              <tr>
+                <td>\(P\)</td>
+                <td>İzdüşüm matrisi</td>
+                <td>\(P\mathbf{b}=\mathbf{p}\) olacak biçimde \(\mathbf{b}\) vektörünü alt uzaya indirger.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Lineer cebirde \(A\mathbf{x}=\mathbf{b}\) denkleminin çözülebilir olması, \(\mathbf{b}\) vektörünün \(A\) matrisinin sütun uzayında bulunmasına bağlıdır. Ancak birçok durumda \(\mathbf{b}\), bu sütun uzayının dışında kalır. O zaman eşitliği tam olarak sağlamak yerine, \(\mathbf{b}\) vektörünün sütun uzayına en yakın temsilini bulmak gerekir.</p>
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>İzdüşümün temel ölçütü uzaklık değil, ortogonalliktir. En yakın nokta seçildiğinde hata vektörü alt uzaya dik olur; bu diklik koşulu, çözülmesi gereken denklemleri üretir.</p>
+        </aside>
+        <p>Bu bakış açısı, bir doğruya izdüşümden başlayıp genel sütun uzayı izdüşümüne kadar aynı kalır. Değişen yalnızca tek bir katsayının yerini bir katsayı vektörünün, tek bir yön vektörünün yerini ise bir matrisin sütunlarının almasıdır.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: Bir Alt Uzaya Ortogonal İzdüşüm</h3>
+          <p>\(\mathbf{b}\) vektörünün \(W\) alt uzayı üzerindeki ortogonal izdüşümü, \(W\) içinde bulunan ve \(\mathbf{b}\) vektörüne en yakın olan \(\mathbf{p}\) vektörüdür. Bu seçimde hata vektörü</p>
+          <div class="equation-card" data-raw-latex="\mathbf{e}=\mathbf{b}-\mathbf{p}">
+            <div class="equation-content">
+              \[
+              \mathbf{e}=\mathbf{b}-\mathbf{p}
+              \]
+            </div>
+          </div>
+          <p>alt uzaya diktir. Başka bir deyişle, izdüşüm problemi uzaklığı küçültme problemi olarak başlar, fakat hesaplama ortogonallik denklemiyle yapılır.</p>
+        </section>
+
+        <h3>Bir Doğru Üzerine İzdüşüm</h3>
+        <p>İlk durum, \(\mathbf{a}\) vektörünün gerdiği bir doğruya izdüşümdür. İzdüşüm doğru üzerinde olduğundan \(\mathbf{a}\) vektörünün bir katıdır:</p>
+        <div class="equation-card" data-raw-latex="\mathbf{p}=\mathbf{a}\hat{x}">
+          <div class="equation-content">
+            \[
+            \mathbf{p}=\mathbf{a}\hat{x}
+            \]
+          </div>
+        </div>
+        <p>Buradaki bilinmeyen, \(\hat{x}\) katsayısıdır. En yakın nokta seçildiğinde hata vektörü \(\mathbf{b}-\mathbf{a}\hat{x}\), doğruya dik olur. Doğrunun yönü \(\mathbf{a}\) olduğundan diklik koşulu</p>
+        <div class="equation-card" data-raw-latex="\mathbf{a}^T(\mathbf{b}-\mathbf{a}\hat{x})=0">
+          <div class="equation-content">
+            \[
+            \mathbf{a}^T(\mathbf{b}-\mathbf{a}\hat{x})=0
+            \]
+          </div>
+        </div>
+        <p>şeklindedir. Bu denklem açılırsa</p>
+        <div class="equation-card" data-raw-latex="\hat{x}\,\mathbf{a}^T\mathbf{a}=\mathbf{a}^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            \hat{x}\,\mathbf{a}^T\mathbf{a}=\mathbf{a}^T\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>elde edilir. \(\mathbf{a}\neq \mathbf{0}\) ise \(\mathbf{a}^T\mathbf{a}\) pozitif bir sayıdır ve katsayı açıkça bulunur.</p>
+
+        <section class="example-card">
+          <h3>Örnek 1.2: Bir Doğru Üzerindeki En Yakın Noktanın Kurulması</h3>
+          <p>\(\mathbf{a}\) vektörünün belirlediği doğruya \(\mathbf{b}\) vektörü indirildiğinde, izdüşüm \(\mathbf{a}\hat{x}\) biçiminde aranır. Diklik koşulu tek denkleme indirgenir:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}^T\mathbf{b}-\hat{x}\,\mathbf{a}^T\mathbf{a}=0">
+            <div class="equation-content">
+              \[
+              \mathbf{a}^T\mathbf{b}-\hat{x}\,\mathbf{a}^T\mathbf{a}=0
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\hat{x}\), \(\mathbf{b}\) vektörünün doğru yönündeki uygun katsayısıdır; hata vektörü \(\mathbf{b}-\mathbf{a}\hat{x}\) ise doğruya diktir.</p>
+        </section>
+
+        <h3>İzdüşüm Matrisi</h3>
+        <p>Doğru üzerine izdüşüm formülü yalnızca bir vektör değil, aynı zamanda bir matris üretir. Çünkü \(\mathbf{p}\), \(\mathbf{b}\) vektörüne doğrusal olarak bağlıdır:</p>
+        <div class="equation-card" data-raw-latex="\mathbf{p}=\mathbf{a}\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}=\left(\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\right)\mathbf{b}">
+          <div class="equation-content">
+            \[
+            \mathbf{p}=\mathbf{a}\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}
+            =
+            \left(\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\right)\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>Bu nedenle doğru üzerine izdüşüm matrisi</p>
+        <div class="equation-card" data-raw-latex="P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}">
+          <div class="equation-content">
+            \[
+            P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}
+            \]
+          </div>
+        </div>
+        <p>biçimindedir. Paydadaki \(\mathbf{a}^T\mathbf{a}\) bir sayıdır; paydaki \(\mathbf{a}\mathbf{a}^T\) ise sütun ile satır çarpımı olduğu için kare bir matristir.</p>
+
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>\(\mathbf{a}\) vektörünü iki katına çıkarmak doğruyu değiştirmez. Bu yüzden izdüşüm noktası da değişmez. Formülde pay ve payda aynı oranda değiştiği için bu davranış cebirsel olarak da görülür.</p>
+        </aside>
+
+        <h3>Sütun Uzayına İzdüşüm</h3>
+        <p>Bir doğru yerine bir düzleme veya daha genel olarak bir sütun uzayına izdüşüm alınabilir. \(A\) matrisinin sütunları bağımsız olsun ve bu sütunlar \(\mathcal{C}(A)\) alt uzayını oluştursun. İzdüşüm bu sütunların doğrusal kombinasyonu olduğundan</p>
+        <div class="equation-card" data-raw-latex="\mathbf{p}=A\hat{\mathbf{x}}">
+          <div class="equation-content">
+            \[
+            \mathbf{p}=A\hat{\mathbf{x}}
+            \]
+          </div>
+        </div>
+        <p>biçimindedir. Hata vektörü</p>
+        <div class="equation-card" data-raw-latex="\mathbf{e}=\mathbf{b}-A\hat{\mathbf{x}}">
+          <div class="equation-content">
+            \[
+            \mathbf{e}=\mathbf{b}-A\hat{\mathbf{x}}
+            \]
+          </div>
+        </div>
+        <p>sütun uzayına dik olmalıdır. Sütun uzayına dik olmak, \(A\) matrisinin her sütununa dik olmak demektir. Bu koşul tek tek iç çarpımlar yerine matris denklemiyle yazılır:</p>
+        <div class="equation-card" data-raw-latex="A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}">
+          <div class="equation-content">
+            \[
+            A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}
+            \]
+          </div>
+        </div>
+        <p>Bu denklem, hata vektörünün \(\mathcal{N}(A^T)\) içinde olduğunu da gösterir. Önceki alt uzay geometrisiyle uyumlu olarak \(\mathcal{N}(A^T)\), \(\mathcal{C}(A)\) uzayına diktir.</p>
+
+        <h3>Normal Denklemler</h3>
+        <p>Diklik koşulu düzenlenirse temel denklem elde edilir:</p>
+        <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+            \]
+          </div>
+        </div>
+        <p>Bu denklem \(A\mathbf{x}=\mathbf{b}\) denklemi çözülemediğinde bile kurulabilir. Amaç, \(\mathbf{b}\) yerine sütun uzayındaki en yakın vektör \(\mathbf{p}\) ile çalışmaktır.</p>
+
+        <section class="example-card">
+          <h3>Örnek 1.3: Doğru Uydurma Probleminin Matris Modeli</h3>
+          <p>Üç nokta ele alınsın:</p>
+          <div class="equation-card" data-raw-latex="(1,1),\quad (2,2),\quad (3,2)">
+            <div class="equation-content">
+              \[
+              (1,1),\quad (2,2),\quad (3,2)
+              \]
+            </div>
+          </div>
+          <p>Bu noktalara \(b=C+Dt\) biçiminde bir doğru uydurulmak istenir. Tam olarak bütün noktalardan geçen bir doğru aranırsa şu üç denklem oluşur:</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix}\begin{bmatrix}C\\D\end{bmatrix}=\begin{bmatrix}1\\2\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              1&1\\
+              1&2\\
+              1&3
+              \end{bmatrix}
+              \begin{bmatrix}
+              C\\
+              D
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              1\\
+              2\\
+              2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Bu sistemin üç denklemi ve iki bilinmeyeni vardır; seçilen sayılar için tam çözüm yoktur. Bu yüzden doğru uydurma problemi, \(\mathbf{b}\) vektörünü \(A\) matrisinin sütun uzayına izdüşürme problemi hâline gelir. Sayısal çözüm için kurulacak denklem</p>
+          <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b},\qquad \hat{\mathbf{x}}=\begin{bmatrix}\hat{C}\\\hat{D}\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA\hat{\mathbf{x}}=A^T\mathbf{b},
+              \qquad
+              \hat{\mathbf{x}}=
+              \begin{bmatrix}
+              \hat{C}\\
+              \hat{D}
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Buradaki amaç, üç denklemi aynı anda tam sağlamak değil, hatayı sütun uzayına dik yapacak en iyi \(\hat{C}\) ve \(\hat{D}\) değerlerini bulmaktır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.4: Bir Doğru Üzerine İzdüşüm Formülü</h3>
+          <p><strong>İfade:</strong> \(\mathbf{a}\neq\mathbf{0}\) olmak üzere \(\mathbf{b}\) vektörünün \(\mathbf{a}\) tarafından gerilen doğru üzerindeki izdüşümü \(\mathbf{p}=\mathbf{a}\hat{x}\) ise</p>
+          <div class="equation-card" data-raw-latex="\hat{x}=\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}">
+            <div class="equation-content">
+              \[
+              \hat{x}=\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> En yakın nokta doğru üzerindedir; bu noktadan \(\mathbf{b}\) vektörüne kalan hata doğruya dik olmalıdır.</p>
+          <p><strong>Formal İspat:</strong> İzdüşüm \(\mathbf{p}=\mathbf{a}\hat{x}\) biçiminde yazılır. Hata vektörü \(\mathbf{e}=\mathbf{b}-\mathbf{a}\hat{x}\) olduğuna göre diklik koşulu \(\mathbf{a}^T\mathbf{e}=0\) verir. Buradan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}^T\mathbf{b}-\hat{x}\,\mathbf{a}^T\mathbf{a}=0">
+            <div class="equation-content">
+              \[
+              \mathbf{a}^T\mathbf{b}-\hat{x}\,\mathbf{a}^T\mathbf{a}=0
+              \]
+            </div>
+          </div>
+          <p>elde edilir. \(\mathbf{a}\neq\mathbf{0}\) olduğundan \(\mathbf{a}^T\mathbf{a}\neq0\), dolayısıyla bölme yapılabilir ve istenen formül bulunur.</p>
+          <p><strong>Yorum:</strong> Formülde trigonometrik açı kullanmaya gerek yoktur; açı bilgisi iç çarpım içinde zaten kodlanmıştır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.5: Bir Doğruya İzdüşüm Matrisinin Özellikleri</h3>
+          <p><strong>İfade:</strong> \(\mathbf{a}\neq\mathbf{0}\) için</p>
+          <div class="equation-card" data-raw-latex="P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}">
+            <div class="equation-content">
+              \[
+              P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}
+              \]
+            </div>
+          </div>
+          <p>matrisi simetriktir ve ikinci kez uygulandığında aynı sonucu verir:</p>
+          <div class="equation-card" data-raw-latex="P^T=P,\qquad P^2=P">
+            <div class="equation-content">
+              \[
+              P^T=P,\qquad P^2=P
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> İlk uygulama vektörü doğru üzerine taşır. Vektör zaten doğru üzerindeyse ikinci uygulama onu yerinde bırakır.</p>
+          <p><strong>Formal İspat:</strong> Paydadaki \(\mathbf{a}^T\mathbf{a}\) skaler olduğundan transpoz yalnızca payı etkiler:</p>
+          <div class="equation-card" data-raw-latex="P^T=\left(\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\right)^T=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}=P">
+            <div class="equation-content">
+              \[
+              P^T=
+              \left(\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\right)^T
+              =
+              \frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}
+              =
+              P
+              \]
+            </div>
+          </div>
+          <p>Ayrıca</p>
+          <div class="equation-card" data-raw-latex="P^2=\frac{\mathbf{a}\mathbf{a}^T\mathbf{a}\mathbf{a}^T}{(\mathbf{a}^T\mathbf{a})^2}=\frac{\mathbf{a}(\mathbf{a}^T\mathbf{a})\mathbf{a}^T}{(\mathbf{a}^T\mathbf{a})^2}=P">
+            <div class="equation-content">
+              \[
+              P^2=
+              \frac{\mathbf{a}\mathbf{a}^T\mathbf{a}\mathbf{a}^T}{(\mathbf{a}^T\mathbf{a})^2}
+              =
+              \frac{\mathbf{a}(\mathbf{a}^T\mathbf{a})\mathbf{a}^T}{(\mathbf{a}^T\mathbf{a})^2}
+              =
+              P
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu iki özellik, izdüşüm matrislerinin temel ayırt edici davranışıdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Sütun Uzayına İzdüşüm ve Normal Denklemler</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin sütunları bağımsız olsun. \(\mathbf{b}\) vektörünün \(\mathcal{C}(A)\) üzerine izdüşümü \(\mathbf{p}=A\hat{\mathbf{x}}\) ise \(\hat{\mathbf{x}}\) şu denklemi sağlar:</p>
+          <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+            <div class="equation-content">
+              \[
+              A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> \(\mathbf{p}\), sütun uzayındaki en yakın vektördür. Bu yüzden hata \(\mathbf{e}=\mathbf{b}-\mathbf{p}\), sütun uzayındaki bütün yönlere dik olmalıdır.</p>
+          <p><strong>Formal İspat:</strong> \(\mathbf{p}=A\hat{\mathbf{x}}\) yazılır. Hatanın \(A\) matrisinin her sütununa dik olması, bütün iç çarpımların aynı anda sıfır olması demektir:</p>
+          <div class="equation-card" data-raw-latex="A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>Bu denklem açıldığında \(A^T\mathbf{b}-A^TA\hat{\mathbf{x}}=\mathbf{0}\) olur ve ifade edilen normal denklemler elde edilir.</p>
+          <p><strong>Yorum:</strong> \(A\mathbf{x}=\mathbf{b}\) çözülemese bile \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) en iyi yaklaşık katsayıları belirleyen merkezi denklemdir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.7: Genel İzdüşüm Matrisi</h3>
+          <p><strong>İfade:</strong> \(A\) matrisinin sütunları bağımsız ise \(\mathcal{C}(A)\) üzerine izdüşüm matrisi</p>
+          <div class="equation-card" data-raw-latex="P=A(A^TA)^{-1}A^T">
+            <div class="equation-content">
+              \[
+              P=A(A^TA)^{-1}A^T
+              \]
+            </div>
+          </div>
+          <p>biçimindedir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Önce normal denklemlerden en iyi katsayılar bulunur; sonra bu katsayılarla sütunların doğrusal kombinasyonu alınır.</p>
+          <p><strong>Formal İspat:</strong> Teorem 1.6’dan</p>
+          <div class="equation-card" data-raw-latex="\hat{\mathbf{x}}=(A^TA)^{-1}A^T\mathbf{b}">
+            <div class="equation-content">
+              \[
+              \hat{\mathbf{x}}=(A^TA)^{-1}A^T\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p>elde edilir. İzdüşüm \(\mathbf{p}=A\hat{\mathbf{x}}\) olduğundan</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=A(A^TA)^{-1}A^T\mathbf{b}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=A(A^TA)^{-1}A^T\mathbf{b}
+              \]
+            </div>
+          </div>
+          <p>olur. \(\mathbf{p}=P\mathbf{b}\) karşılaştırması, \(P=A(A^TA)^{-1}A^T\) sonucunu verir.</p>
+          <p><strong>Yorum:</strong> Eğer \(A\) kare ve tersinir olsaydı sütun uzayı tüm uzay olurdu; bu durumda izdüşüm matrisi birim matrise indirgenirdi. Asıl ilginç durum, \(A\) matrisinin genellikle dikdörtgen olmasıdır.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.8: Genel İzdüşüm Matrisinin İki Temel Özelliği</h3>
+          <p><strong>İfade:</strong> \(P=A(A^TA)^{-1}A^T\) matrisi simetriktir ve ikinci kez uygulandığında değişmez:</p>
+          <div class="equation-card" data-raw-latex="P^T=P,\qquad P^2=P">
+            <div class="equation-content">
+              \[
+              P^T=P,\qquad P^2=P
+              \]
+            </div>
+          </div>
+          <p><strong>Sezgisel Gerekçe:</strong> İzdüşüm bir vektörü sütun uzayına indirir. Aynı vektör sütun uzayına indikten sonra tekrar izdüşüm almak onu değiştirmez.</p>
+          <p><strong>Formal İspat:</strong> \(A^TA\) simetrik olduğundan tersi de simetriktir. Bu nedenle transpoz alınca çarpım ters sıraya döner ve aynı ifade elde edilir:</p>
+          <div class="equation-card" data-raw-latex="P^T=\left(A(A^TA)^{-1}A^T\right)^T=A(A^TA)^{-1}A^T=P">
+            <div class="equation-content">
+              \[
+              P^T=
+              \left(A(A^TA)^{-1}A^T\right)^T
+              =
+              A(A^TA)^{-1}A^T
+              =
+              P
+              \]
+            </div>
+          </div>
+          <p>İkinci özellik için çarpım yapılır:</p>
+          <div class="equation-card" data-raw-latex="P^2=A(A^TA)^{-1}A^TA(A^TA)^{-1}A^T=A(A^TA)^{-1}A^T=P">
+            <div class="equation-content">
+              \[
+              P^2=
+              A(A^TA)^{-1}A^TA(A^TA)^{-1}A^T
+              =
+              A(A^TA)^{-1}A^T
+              =
+              P
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> İzdüşüm matrisini rastgele bir dönüşümden ayıran temel davranış budur: ilk uygulama indirger, ikinci uygulama korur.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Bir Doğru Üzerine İzdüşüm</h3>
+        <p><strong>Ne işe yarar?</strong> \(\mathbf{b}\) vektörüne, \(\mathbf{a}\) doğrusu üzerinde en yakın noktayı bulur.</p>
+        <ol>
+          <li>İzdüşümü \(\mathbf{p}=\mathbf{a}\hat{x}\) biçiminde yaz.</li>
+          <li>Hata vektörünü \(\mathbf{e}=\mathbf{b}-\mathbf{a}\hat{x}\) olarak tanımla.</li>
+          <li>Diklik koşulunu kur: \(\mathbf{a}^T\mathbf{e}=0\).</li>
+          <li>\(\hat{x}=\dfrac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}\) katsayısını bul.</li>
+          <li>\(\mathbf{p}=\mathbf{a}\hat{x}\) ve \(P=\dfrac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\) ifadelerini yaz.</li>
+        </ol>
+        <aside class="note-card">
+          <strong>Yaygın hata noktası:</strong>
+          <p>\(\mathbf{a}^T\mathbf{a}\) bir sayıdır; \(\mathbf{a}\mathbf{a}^T\) ise bir matristir. Bu iki ifade aynı türden değildir ve birbirini sadeleştirmez.</p>
+        </aside>
+
+        <h3>Yöntem 2: Sütun Uzayına İzdüşüm</h3>
+        <p><strong>Ne işe yarar?</strong> \(\mathbf{b}\) vektörünü \(A\) matrisinin sütun uzayındaki en yakın vektöre indirger.</p>
+        <ol>
+          <li>İzdüşümü \(\mathbf{p}=A\hat{\mathbf{x}}\) biçiminde yaz.</li>
+          <li>Hata vektörünü \(\mathbf{e}=\mathbf{b}-A\hat{\mathbf{x}}\) olarak tanımla.</li>
+          <li>Hatanın sütun uzayına dik olması gerektiğini kullan: \(A^T\mathbf{e}=\mathbf{0}\).</li>
+          <li>Normal denklemleri elde et: \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\).</li>
+          <li>\(A^TA\) tersinir ise \(\hat{\mathbf{x}}=(A^TA)^{-1}A^T\mathbf{b}\) kullan.</li>
+          <li>İzdüşümü \(\mathbf{p}=A\hat{\mathbf{x}}\) ile hesapla.</li>
+        </ol>
+
+        <h3>Yöntem 3: Doğru Uydurma İçin Denklem Kurma</h3>
+        <p><strong>Ne işe yarar?</strong> Tam çözülemeyen çok denklemli bir doğru uydurma problemini normal denklemlerle çözülebilir biçime getirir.</p>
+        <p>Örnek 1.3 için matrisler şöyledir:</p>
+        <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&1\\1&2\\1&3\end{bmatrix},\qquad \mathbf{x}=\begin{bmatrix}C\\D\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}1\\2\\2\end{bmatrix}">
+          <div class="equation-content">
+            \[
+            A=
+            \begin{bmatrix}
+            1&1\\
+            1&2\\
+            1&3
+            \end{bmatrix},
+            \qquad
+            \mathbf{x}=
+            \begin{bmatrix}
+            C\\
+            D
+            \end{bmatrix},
+            \qquad
+            \mathbf{b}=
+            \begin{bmatrix}
+            1\\
+            2\\
+            2
+            \end{bmatrix}
+            \]
+          </div>
+        </div>
+        <p>Doğrudan \(A\mathbf{x}=\mathbf{b}\) çözülemeyebilir; bu nedenle hesap \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) denklemi üzerinden yürütülür.</p>
+        <aside class="note-card">
+          <strong>Dikkat:</strong>
+          <p>\((A^TA)^{-1}\) ifadesini \(A^{-1}(A^T)^{-1}\) biçiminde ayırmak genel olarak geçerli değildir. Burada \(A\) çoğunlukla kare değildir ve ters matrisi yoktur.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>Bu bölümdeki uygulama bağlantısı, noktaları bir doğruyla yaklaşık temsil etme problemidir. Üç noktanın tek bir doğru üzerinde bulunması her zaman mümkün değildir; bu durumda üç denklem iki bilinmeyeni belirlemeye çalışır ve çoğunlukla tutarsızlık oluşur.</p>
+        <p>İzdüşüm yaklaşımı, tam sağ taraf \(\mathbf{b}\) yerine sütun uzayındaki en yakın vektör \(\mathbf{p}\) ile çalışır. Böylece \(A\mathbf{x}=\mathbf{b}\) yerine \(A\hat{\mathbf{x}}=\mathbf{p}\) anlamlı hâle gelir. Bu düşünce, ölçümlerde küçük hatalar olduğunda doğruyu doğrudan bütün noktalardan geçirmek yerine hatayı ortogonal kılan en iyi katsayıları seçmenin matematiksel temelidir.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <div class="two-column">
+          <aside class="note-card">
+            <strong>Hata 1:</strong>
+            <p>\(\mathbf{p}\) ile \(\hat{\mathbf{x}}\) karıştırılabilir. \(\hat{\mathbf{x}}\) katsayı vektörüdür; \(\mathbf{p}=A\hat{\mathbf{x}}\) ise alt uzaydaki gerçek izdüşüm vektörüdür.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 2:</strong>
+            <p>Hata vektörünün \(\mathbf{b}\) vektörüne değil, izdüşüm alınan alt uzaya dik olduğu unutulabilir. Doğru koşul \(A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}\) biçimindedir.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 3:</strong>
+            <p>\(A^TA\) ifadesinin tersinin her zaman var olduğu sanılabilir. Bu derste kullanılan formül, sütunların bağımsız olduğu durumda geçerlidir.</p>
+          </aside>
+          <aside class="note-card">
+            <strong>Hata 4:</strong>
+            <p>\((A^TA)^{-1}\) ifadesini, \(A\) kare değilken \(A^{-1}(A^T)^{-1}\) gibi parçalamak yanlıştır. \(A\) dikdörtgen olduğunda \(A^{-1}\) zaten tanımlı değildir.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <ul>
+            <li><strong>İzdüşüm problemi:</strong> \(\mathbf{b}\) vektörüne alt uzay içinde en yakın \(\mathbf{p}\) vektörünü bulur.</li>
+            <li><strong>Hata vektörü:</strong> \(\mathbf{e}=\mathbf{b}-\mathbf{p}\); izdüşüm doğru seçildiğinde alt uzaya diktir.</li>
+            <li><strong>Doğru üzerine izdüşüm:</strong> \(\mathbf{p}=\mathbf{a}\hat{x}\), \(\hat{x}=\dfrac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}\).</li>
+            <li><strong>İzdüşüm matrisi:</strong> \(\mathbf{p}=P\mathbf{b}\); bir doğru için \(P=\dfrac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}\).</li>
+            <li><strong>Sütun uzayına izdüşüm:</strong> \(\mathbf{p}=A\hat{\mathbf{x}}\), hata \(\mathcal{N}(A^T)\) içindedir.</li>
+            <li><strong>Normal denklemler:</strong> \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\); en iyi katsayıları belirler.</li>
+            <li><strong>Doğru uydurma:</strong> Fazla denklemli sistemin izdüşüm yaklaşımıyla çözülebilir biçime getirilmesidir.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+
+        <p class="formula-label">Bir doğru üzerindeki izdüşüm katsayısı</p>
+        <div class="equation-card" data-raw-latex="\hat{x}=\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}">
+          <div class="equation-content">
+            \[
+            \hat{x}=\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Bir doğru üzerindeki izdüşüm vektörü</p>
+        <div class="equation-card" data-raw-latex="\mathbf{p}=\mathbf{a}\hat{x}=\mathbf{a}\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}">
+          <div class="equation-content">
+            \[
+            \mathbf{p}=\mathbf{a}\hat{x}
+            =
+            \mathbf{a}\frac{\mathbf{a}^T\mathbf{b}}{\mathbf{a}^T\mathbf{a}}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Bir doğruya izdüşüm matrisi</p>
+        <div class="equation-card" data-raw-latex="P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}">
+          <div class="equation-content">
+            \[
+            P=\frac{\mathbf{a}\mathbf{a}^T}{\mathbf{a}^T\mathbf{a}}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Hata vektörünün ortogonallik koşulu</p>
+        <div class="equation-card" data-raw-latex="A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}">
+          <div class="equation-content">
+            \[
+            A^T(\mathbf{b}-A\hat{\mathbf{x}})=\mathbf{0}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Normal denklemler</p>
+        <div class="equation-card" data-raw-latex="A^TA\hat{\mathbf{x}}=A^T\mathbf{b}">
+          <div class="equation-content">
+            \[
+            A^TA\hat{\mathbf{x}}=A^T\mathbf{b}
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">Genel izdüşüm matrisi</p>
+        <div class="equation-card" data-raw-latex="P=A(A^TA)^{-1}A^T">
+          <div class="equation-content">
+            \[
+            P=A(A^TA)^{-1}A^T
+            \]
+          </div>
+        </div>
+
+        <p class="formula-label">İzdüşüm matrisinin iki temel özelliği</p>
+        <div class="equation-card" data-raw-latex="P^T=P,\qquad P^2=P">
+          <div class="equation-content">
+            \[
+            P^T=P,\qquad P^2=P
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde izdüşüm problemi, ortogonallik koşulu üzerinden kuruldu. Bir doğru üzerine izdüşümde tek katsayı \(\hat{x}\) bulunurken, bir sütun uzayına izdüşümde katsayı vektörü \(\hat{\mathbf{x}}\) normal denklemlerle belirlenir.</p>
+        <p>Ana fikir, en yakın noktanın hata vektörünü alt uzaya dik yapmasıdır. Bu nedenle \(\mathbf{e}=\mathbf{b}-A\hat{\mathbf{x}}\) vektörü \(\mathcal{N}(A^T)\) içinde yer alır ve \(\mathcal{C}(A)\) uzayına diktir. İzdüşüm matrisi hem simetriktir hem de ikinci kez uygulandığında sonucu değiştirmez.</p>
+        <p>Bu konu, çözülemeyen \(A\mathbf{x}=\mathbf{b}\) sistemlerinde en iyi yaklaşık çözümü aramanın temel cebirsel mekanizmasını sağlar.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 1: Bir Doğru Üzerine İzdüşüm</h3>
+          <p><strong>Soru:</strong> \(\mathbf{a}=(1,2)^T\) ve \(\mathbf{b}=(3,1)^T\) olsun. \(\mathbf{b}\) vektörünün \(\mathbf{a}\) doğrusu üzerindeki izdüşümünü bulun.</p>
+          <p><strong>Çözüm:</strong> Önce iç çarpımlar hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="\mathbf{a}^T\mathbf{b}=1\cdot3+2\cdot1=5,\qquad \mathbf{a}^T\mathbf{a}=1^2+2^2=5">
+            <div class="equation-content">
+              \[
+              \mathbf{a}^T\mathbf{b}=1\cdot3+2\cdot1=5,
+              \qquad
+              \mathbf{a}^T\mathbf{a}=1^2+2^2=5
+              \]
+            </div>
+          </div>
+          <p>Dolayısıyla \(\hat{x}=1\) ve</p>
+          <div class="equation-card" data-raw-latex="\mathbf{p}=\mathbf{a}\hat{x}=\begin{bmatrix}1\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \mathbf{p}=\mathbf{a}\hat{x}
+              =
+              \begin{bmatrix}
+              1\\
+              2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Hata \(\mathbf{b}-\mathbf{p}=(2,-1)^T\) olur ve \((1,2)^T\) ile iç çarpımı sıfırdır.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 2: Normal Denklemleri Kurma ve Çözme</h3>
+          <p><strong>Soru:</strong></p>
+          <div class="equation-card" data-raw-latex="A=\begin{bmatrix}1&0\\1&1\\1&2\end{bmatrix},\qquad \mathbf{b}=\begin{bmatrix}1\\2\\2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A=
+              \begin{bmatrix}
+              1&0\\
+              1&1\\
+              1&2
+              \end{bmatrix},
+              \qquad
+              \mathbf{b}=
+              \begin{bmatrix}
+              1\\
+              2\\
+              2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>\(\mathcal{C}(A)\) üzerine izdüşüm katsayılarını bulun.</p>
+          <p><strong>Çözüm:</strong> Önce normal denklemlerin iki tarafı hesaplanır:</p>
+          <div class="equation-card" data-raw-latex="A^TA=\begin{bmatrix}3&3\\3&5\end{bmatrix},\qquad A^T\mathbf{b}=\begin{bmatrix}5\\6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              A^TA=
+              \begin{bmatrix}
+              3&3\\
+              3&5
+              \end{bmatrix},
+              \qquad
+              A^T\mathbf{b}=
+              \begin{bmatrix}
+              5\\
+              6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Çözülecek sistem</p>
+          <div class="equation-card" data-raw-latex="\begin{bmatrix}3&3\\3&5\end{bmatrix}\hat{\mathbf{x}}=\begin{bmatrix}5\\6\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \begin{bmatrix}
+              3&3\\
+              3&5
+              \end{bmatrix}
+              \hat{\mathbf{x}}
+              =
+              \begin{bmatrix}
+              5\\
+              6
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>olur. İlk denklemden \(3x_1+3x_2=5\), ikinci denklemden \(3x_1+5x_2=6\). Çıkarma yapınca \(2x_2=1\), yani \(x_2=\frac12\). Böylece \(x_1=\frac76\).</p>
+          <div class="equation-card" data-raw-latex="\hat{\mathbf{x}}=\begin{bmatrix}7/6\\1/2\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \hat{\mathbf{x}}=
+              \begin{bmatrix}
+              7/6\\
+              1/2
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu katsayılar, \(\mathbf{b}\) vektörünün sütun uzayındaki en yakın temsilini üretir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Çalışma Sorusu 3: İzdüşüm Matrisinin Özellikleri</h3>
+          <p><strong>Soru:</strong> \(A\) matrisinin sütunları bağımsız ve \(P=A(A^TA)^{-1}A^T\) olsun. \(P^2=P\) olduğunu gösterin.</p>
+          <p><strong>Çözüm:</strong> Tanım doğrudan yerine yazılır:</p>
+          <div class="equation-card" data-raw-latex="P^2=A(A^TA)^{-1}A^T A(A^TA)^{-1}A^T">
+            <div class="equation-content">
+              \[
+              P^2=
+              A(A^TA)^{-1}A^T A(A^TA)^{-1}A^T
+              \]
+            </div>
+          </div>
+          <p>Ortadaki \(A^TA\) çarpımı kendi tersiyle yan yana gelir:</p>
+          <div class="equation-card" data-raw-latex="(A^TA)^{-1}(A^TA)(A^TA)^{-1}=(A^TA)^{-1}">
+            <div class="equation-content">
+              \[
+              (A^TA)^{-1}(A^TA)(A^TA)^{-1}
+              =
+              (A^TA)^{-1}
+              \]
+            </div>
+          </div>
+          <p>Bu nedenle</p>
+          <div class="equation-card" data-raw-latex="P^2=A(A^TA)^{-1}A^T=P">
+            <div class="equation-content">
+              \[
+              P^2=A(A^TA)^{-1}A^T=P
+              \]
+            </div>
+          </div>
+          <p><strong>Yorum:</strong> Bu sonuç, izdüşümü iki kez almanın ilk izdüşümden farklı bir sonuç üretmediğini cebirsel olarak gösterir.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table aria-label="İngilizce Türkçe terim sözlüğü">
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Projection</td>
+                <td>İzdüşüm</td>
+                <td>Bir vektörün alt uzaydaki en yakın temsilidir.</td>
+              </tr>
+              <tr>
+                <td>Projection matrix</td>
+                <td>İzdüşüm matrisi</td>
+                <td>Her \(\mathbf{b}\) vektörünü ilgili alt uzaydaki izdüşümüne götüren matristir.</td>
+              </tr>
+              <tr>
+                <td>Error vector</td>
+                <td>Hata vektörü</td>
+                <td>\(\mathbf{b}-\mathbf{p}\) farkıdır; izdüşüm doğruysa alt uzaya diktir.</td>
+              </tr>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>Bir matrisin sütunlarının tüm doğrusal kombinasyonlarından oluşur.</td>
+              </tr>
+              <tr>
+                <td>Normal equations</td>
+                <td>Normal denklemler</td>
+                <td>İzdüşüm katsayılarını veren \(A^TA\hat{\mathbf{x}}=A^T\mathbf{b}\) denklemleridir.</td>
+              </tr>
+              <tr>
+                <td>Least squares</td>
+                <td>En küçük kareler</td>
+                <td>Tam çözülemeyen sistemlerde en iyi yaklaşık çözüm yaklaşımıdır.</td>
+              </tr>
+              <tr>
+                <td>Symmetric matrix</td>
+                <td>Simetrik matris</td>
+                <td>Transpozu kendisine eşit olan matristir.</td>
+              </tr>
+              <tr>
+                <td>Idempotent matrix</td>
+                <td>Karesi kendisine eşit matris</td>
+                <td>\(P^2=P\) özelliğini sağlayan matristir.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        var title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.matchMedia("(max-width: 768px)").matches) return;
+
+        var minSize = 28;
+        var currentSize = parseFloat(window.getComputedStyle(title).fontSize);
+        var containerWidth = title.parentElement.clientWidth;
+
+        while (title.scrollWidth > containerWidth && currentSize > minSize) {
+          currentSize -= 1;
+          title.style.fontSize = currentSize + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand("copy");
+            resolve();
+          } catch (error) {
+            reject(error);
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        var original = button.getAttribute("data-tooltip");
+        button.setAttribute("data-tooltip", message);
+        window.setTimeout(function () {
+          button.setAttribute("data-tooltip", original);
+        }, 1200);
+      }
+
+      function setupEquationCopy() {
+        document.querySelectorAll(".lesson-page .equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          var actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+
+          var rawButton = document.createElement("button");
+          rawButton.className = "equation-copy-btn";
+          rawButton.type = "button";
+          rawButton.setAttribute("data-copy-type", "raw");
+          rawButton.setAttribute("data-tooltip", "Ham LaTeX");
+          rawButton.setAttribute("aria-label", "Ham LaTeX kopyala");
+          rawButton.innerHTML = '<span aria-hidden="true">∑</span>';
+
+          var blockButton = document.createElement("button");
+          blockButton.className = "equation-copy-btn";
+          blockButton.type = "button";
+          blockButton.setAttribute("data-copy-type", "block");
+          blockButton.setAttribute("data-tooltip", "Blok LaTeX");
+          blockButton.setAttribute("aria-label", "Blok LaTeX kopyala");
+          blockButton.innerHTML = '<span aria-hidden="true">⧉</span>';
+
+          actions.appendChild(rawButton);
+          actions.appendChild(blockButton);
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.querySelectorAll(".lesson-page .equation-copy-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var card = button.closest(".equation-card");
+            var rawLatex = card ? card.getAttribute("data-raw-latex") : "";
+            var copyType = button.getAttribute("data-copy-type");
+            var value = copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+            copyText(value).then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            }).catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+          });
+        });
+      }
+
+      window.addEventListener("load", function () {
+        fitTitle();
+        setupEquationCopy();
+      });
+      window.addEventListener("resize", fitTitle);
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>

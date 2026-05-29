@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>31. Ders: Sol ve Sağ Tersler; Sözde Ters</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .lesson-page {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --lesson-accent: #374151;
+      --lesson-accent-soft: #6b7280;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.5vw, 2.5rem);
+      overflow-x: hidden;
+      background: #ffffff;
+      color: var(--lesson-text);
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-size: 1.05rem;
+      line-height: 1.78;
+    }
+
+    .lesson-page h1,
+    .lesson-page h2,
+    .lesson-page h3,
+    .lesson-page h4 {
+      margin-bottom: 0.75rem;
+      color: #111827;
+      font-family: Georgia, Cambria, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lesson-page h1 {
+      margin: 0 0 2rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .lesson-page h2 {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--lesson-border);
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+
+    .lesson-page h3 {
+      margin-top: 1.75rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    }
+
+    .lesson-page h4 {
+      margin-top: 1.35rem;
+      font-size: 1.08rem;
+    }
+
+    .lesson-page p {
+      margin: 0.85rem 0;
+    }
+
+    .lesson-page p,
+    .lesson-page li {
+      color: var(--lesson-text);
+    }
+
+    .lesson-page ul,
+    .lesson-page ol {
+      padding-left: 1.35rem;
+    }
+
+    .lesson-page li + li {
+      margin-top: 0.4rem;
+    }
+
+    .lesson-page strong {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .lead {
+      color: var(--lesson-muted);
+      font-size: 1.08rem;
+    }
+
+    .lesson-page .definition-card,
+    .lesson-page .theorem-card,
+    .lesson-page .example-card,
+    .lesson-page .note-card {
+      min-width: 0;
+      margin: 1.5rem 0;
+      padding: 1.25rem 1.35rem;
+      border: 1px solid var(--lesson-border);
+      border-left: 4px solid var(--lesson-accent-soft);
+      border-radius: 0.85rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .note-card {
+      background: var(--lesson-soft);
+    }
+
+    .lesson-page .definition-card h3,
+    .lesson-page .theorem-card h3,
+    .lesson-page .example-card h3 {
+      margin-top: 0;
+    }
+
+    .lesson-page .table-wrap {
+      width: 100%;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .lesson-page th,
+    .lesson-page td {
+      padding: 0.85rem 0.95rem;
+      border-bottom: 1px solid var(--lesson-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lesson-page tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lesson-page th {
+      background: var(--lesson-soft);
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lesson-page .equation-card {
+      position: relative;
+      margin: 1.35rem 0;
+      padding: 2.25rem 1.25rem 1.35rem;
+      overflow-x: auto;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .lesson-page .equation-content {
+      min-width: max-content;
+      text-align: center;
+    }
+
+    .lesson-page .equation-content mjx-container {
+      margin: 0 !important;
+    }
+
+    .lesson-page .equation-actions {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 2;
+      display: inline-flex;
+      gap: 0.35rem;
+    }
+
+    .lesson-page .equation-copy-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--lesson-border-strong);
+      border-radius: 0.45rem;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .lesson-page .equation-copy-btn:hover,
+    .lesson-page .equation-copy-btn:focus-visible {
+      border-color: #9ca3af;
+      outline: none;
+      background: var(--lesson-soft);
+      color: #111827;
+    }
+
+    .lesson-page .equation-copy-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.45rem);
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.45rem;
+      background: #111827;
+      color: #ffffff;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(0.2rem, -50%);
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-page .equation-copy-btn:hover::after,
+    .lesson-page .equation-copy-btn:focus-visible::after {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+
+    .lesson-page .formula-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .lesson-page .formula-list article {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .lesson-page .formula-list h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .lesson-page .concept-map {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.85rem;
+      background: var(--lesson-soft);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .lesson-page .concept-map span {
+      display: block;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--lesson-border);
+      border-radius: 0.55rem;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .lesson-page .ui-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .lesson-page {
+        padding: clamp(0.9rem, 4vw, 1.35rem);
+        font-size: 1rem;
+        line-height: 1.72;
+      }
+
+      .lesson-page h1 {
+        white-space: normal;
+        font-size: clamp(1.35rem, 5.6vw, 1.85rem);
+        line-height: 1.12;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+
+      .lesson-page h2 {
+        margin-top: 2rem;
+      }
+
+      .lesson-page .definition-card,
+      .lesson-page .theorem-card,
+      .lesson-page .example-card,
+      .lesson-page .note-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .lesson-page .equation-card {
+        padding: 2.45rem 0.85rem 1.1rem;
+      }
+
+      .lesson-page .equation-copy-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .lesson-page .equation-copy-btn::after {
+        display: none;
+      }
+
+      .lesson-page table {
+        min-width: 560px;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+  <div class="portal-layout lesson-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-brand">
+        <img class="portal-logo" src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü Logosu">
+        <div class="brand-title">Matematik ve Yapay Zeka Enstitüsü</div>
+      </div>
+      <nav class="nav-list primary-nav" aria-label="Ana gezinme">
+        <a href="../index.html">Ana Sayfa</a>
+      </nav>
+      <details class="mobile-collapsible-nav" open>
+        <summary>Dersler</summary>
+        <div class="sidebar-search">
+          <label class="sr-only" for="lesson-search">Ders ara</label>
+          <input id="lesson-search" class="lesson-search" type="search" placeholder="Ders ara..." aria-label="Ders ara" data-lesson-search>
+        </div>
+        <nav class="nav-list" aria-label="Dersler">
+          <a href="lecture-1-the-geometry-of-linear-equations.html" data-lesson-link data-search-text="1. Ders: Lineer Denklemlerin Geometrisi">1. Ders: Lineer Denklemlerin Geometrisi</a>
+          <a href="lecture-2-elimination-with-matrices.html" data-lesson-link data-search-text="2. Ders: Matrislerle Eliminasyon">2. Ders: Matrislerle Eliminasyon</a>
+          <a href="lecture-3-multiplication-and-inverse-matrices.html" data-lesson-link data-search-text="3. Ders: Matris Çarpımı ve Ters Matrisler">3. Ders: Matris Çarpımı ve Ters Matrisler</a>
+          <a href="lecture-4-factorization-into-a-lu.html" data-lesson-link data-search-text="4. Ders: A = LU Ayrıştırması">4. Ders: A = LU Ayrıştırması</a>
+          <a href="lecture-5-transposes-permutations-spaces-rn.html" data-lesson-link data-search-text="5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları">5. Ders: Devrikler, Permütasyonlar ve R^n Uzayları</a>
+          <a href="lecture-6-column-space-and-nullspace.html" data-lesson-link data-search-text="6. Ders: Sütun Uzayı ve Sıfır Uzayı">6. Ders: Sütun Uzayı ve Sıfır Uzayı</a>
+          <a href="lecture-7-solving-ax-0-pivot-variables-special-solutions.html" data-lesson-link data-search-text="7. Ders: Ax = 0 Çözümü">7. Ders: Ax = 0 Çözümü</a>
+          <a href="lecture-8-solving-ax-b-row-reduced-form-r.html" data-lesson-link data-search-text="8. Ders: Ax = b Çözümü">8. Ders: Ax = b Çözümü</a>
+          <a href="lecture-9-independence-basis-and-dimension.html" data-lesson-link data-search-text="9. Ders: Bağımsızlık, Baz ve Boyut">9. Ders: Bağımsızlık, Baz ve Boyut</a>
+          <a href="lecture-10-the-four-fundamental-subspaces.html" data-lesson-link data-search-text="10. Ders: Dört Temel Alt Uzay">10. Ders: Dört Temel Alt Uzay</a>
+          <a href="lecture-11-matrix-spaces-rank-1-small-world-graphs.html" data-lesson-link data-search-text="11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri">11. Ders: Matris Uzayları, Rank 1 ve Küçük Dünya Grafleri</a>
+          <a href="lecture-12-graphs-networks-incidence-matrices.html" data-lesson-link data-search-text="12. Ders: Graflar, Ağlar ve İlişki Matrisleri">12. Ders: Graflar, Ağlar ve İlişki Matrisleri</a>
+          <a href="lecture-13-orthogonal-vectors-and-subspaces.html" data-lesson-link data-search-text="13. Ders: Ortogonal Vektörler ve Alt Uzaylar">13. Ders: Ortogonal Vektörler ve Alt Uzaylar</a>
+          <a href="lecture-14-projections-onto-subspaces.html" data-lesson-link data-search-text="14. Ders: Alt Uzaylara İzdüşüm">14. Ders: Alt Uzaylara İzdüşüm</a>
+          <a href="lecture-15-projection-matrices-and-least-squares.html" data-lesson-link data-search-text="15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler">15. Ders: İzdüşüm Matrisleri ve En Küçük Kareler</a>
+          <a href="lecture-16-orthogonal-matrices-and-gram-schmidt.html" data-lesson-link data-search-text="16. Ders: Ortogonal Matrisler ve Gram-Schmidt">16. Ders: Ortogonal Matrisler ve Gram-Schmidt</a>
+          <a href="lecture-17-properties-of-determinants.html" data-lesson-link data-search-text="17. Ders: Determinantların Özellikleri">17. Ders: Determinantların Özellikleri</a>
+          <a href="lecture-18-determinant-formulas-and-cofactors.html" data-lesson-link data-search-text="18. Ders: Determinant Formülleri ve Kofaktörler">18. Ders: Determinant Formülleri ve Kofaktörler</a>
+          <a href="lecture-19-cramers-rule-inverse-matrix-and-volume.html" data-lesson-link data-search-text="19. Ders: Cramer Kuralı, Ters Matris ve Hacim">19. Ders: Cramer Kuralı, Ters Matris ve Hacim</a>
+          <a href="lecture-20-eigenvalues-and-eigenvectors.html" data-lesson-link data-search-text="20. Ders: Özdeğerler ve Özvektörler">20. Ders: Özdeğerler ve Özvektörler</a>
+          <a href="lecture-21-diagonalization-and-powers-of-a.html" data-lesson-link data-search-text="21. Ders: Köşegenleştirme ve A'nın Kuvvetleri">21. Ders: Köşegenleştirme ve A'nın Kuvvetleri</a>
+          <a href="lecture-22-differential-equations-and-exp-at.html" data-lesson-link data-search-text="22. Ders: Diferansiyel Denklemler ve Matris Üsteli">22. Ders: Diferansiyel Denklemler ve Matris Üsteli</a>
+          <a href="lecture-23-markov-matrices-fourier-series.html" data-lesson-link data-search-text="23. Ders: Markov Matrisleri ve Fourier Serileri">23. Ders: Markov Matrisleri ve Fourier Serileri</a>
+          <a href="lecture-24-symmetric-matrices-and-positive-definiteness.html" data-lesson-link data-search-text="24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık">24. Ders: Simetrik Matrisler ve Pozitif Tanımlılık</a>
+          <a href="lecture-25-complex-matrices-fast-fourier-transform.html" data-lesson-link data-search-text="25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü">25. Ders: Karmaşık Matrisler ve Hızlı Fourier Dönüşümü</a>
+          <a href="lecture-26-positive-definite-matrices-and-minima.html" data-lesson-link data-search-text="26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar">26. Ders: Pozitif Tanımlı Matrisler ve Minimumlar</a>
+          <a href="lecture-27-similar-matrices-and-jordan-form.html" data-lesson-link data-search-text="27. Ders: Benzer Matrisler ve Jordan Biçimi">27. Ders: Benzer Matrisler ve Jordan Biçimi</a>
+          <a href="lecture-28-singular-value-decomposition.html" data-lesson-link data-search-text="28. Ders: Tekil Değer Ayrışımı">28. Ders: Tekil Değer Ayrışımı</a>
+          <a href="lecture-29-linear-transformations-and-their-matrices.html" data-lesson-link data-search-text="29. Ders: Lineer Dönüşümler ve Matrisleri">29. Ders: Lineer Dönüşümler ve Matrisleri</a>
+          <a href="lecture-30-change-of-basis-image-compression.html" data-lesson-link data-search-text="30. Ders: Baz Değişimi ve Görüntü Sıkıştırma">30. Ders: Baz Değişimi ve Görüntü Sıkıştırma</a>
+          <a href="lecture-31-left-and-right-inverses-pseudoinverse.html" class="active" data-lesson-link data-search-text="31. Ders: Sol ve Sağ Tersler; Sözde Ters">31. Ders: Sol ve Sağ Tersler; Sözde Ters</a>
+          <a href="lecture-32-final-course-review.html" data-lesson-link data-search-text="32. Ders: Final Ders Tekrarı">32. Ders: Final Ders Tekrarı</a>
+        </nav>
+        <div class="lesson-search-empty" data-lesson-search-empty hidden>Sonuç bulunamadı.</div>
+      </details>
+    </aside>
+
+    <main class="content">
+      <article class="lesson-page">
+<h1 id="lesson-title">31. Ders: Sol ve Sağ Tersler; Sözde Ters</h1>
+
+      <section>
+        <h2>Kapsam ve Bağlam</h2>
+        <p class="lead">Bu bölüm, bir matrisin neden her zaman klasik anlamda terslenemediğini ve ters kavramının rütbe ile dört temel alt uzay üzerinden nasıl genişletildiğini inceler.</p>
+        <p>Kare ve tam rütbeli bir matris için iki taraflı ters vardır. Ancak lineer cebirde en önemli matrislerin çoğu dikdörtgensel veya rütbe eksiktir. Bu durumda, matrisin sütunları bağımsızsa sol ters, satırları bağımsızsa sağ ters, en genel durumda ise satır uzayı ile sütun uzayı arasında çalışan sözde ters fikri ortaya çıkar.</p>
+        <p>Bu bölüm dört temel alt uzay resmine dayanır: satır uzayı, sıfır uzayı, sütun uzayı ve \(A^T\) matrisinin sıfır uzayı. Terslenebilirlik, bu alt uzayların hangilerinin yalnızca sıfır vektöründen oluştuğuna bağlıdır. Son kısımda tekil değer ayrışımı kullanılarak sözde tersin nasıl hesaplandığı açıklanır.</p>
+      </section>
+
+      <section>
+        <h2>Öğrenme Hedefleri</h2>
+        <ul>
+          <li>İki taraflı ters, sol ters, sağ ters ve sözde ters kavramlarını ayırt etmek.</li>
+          <li>Rütbe \(r\), satır sayısı \(m\) ve sütun sayısı \(n\) arasındaki ilişkilere göre terslenebilirlik durumlarını sınıflandırmak.</li>
+          <li>Tam sütun rütbesinde \((A^TA)^{-1}A^T\) matrisinin neden sol ters olduğunu göstermek.</li>
+          <li>Tam satır rütbesinde \(A^T(AA^T)^{-1}\) matrisinin neden sağ ters olduğunu göstermek.</li>
+          <li>Sol ve sağ terslerin ters sırada çarpıldığında neden projeksiyon verdiğini yorumlamak.</li>
+          <li>Genel rütbe durumunda \(A\) matrisinin satır uzayından sütun uzayına bire bir ve örten bir eşleme verdiğini ispatlamak.</li>
+          <li>Tekil değer ayrışımı üzerinden sözde ters formülünü kurmak.</li>
+          <li>\(AA^+\) ve \(A^+A\) çarpımlarının hangi alt uzaylara projeksiyon olduğunu açıklamak.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Ön Koşullar</h2>
+        <ul>
+          <li>Matris rütbesi, pivot değişkenler ve serbest değişkenler.</li>
+          <li>Dört temel alt uzay: satır uzayı, sütun uzayı, sıfır uzayı ve sol sıfır uzayı.</li>
+          <li>Ortogonal tamamlayıcılık: satır uzayı ile sıfır uzayı, sütun uzayı ile sol sıfır uzayı.</li>
+          <li>En küçük kareler denklemleri ve \(A^TA\) matrisinin rolü.</li>
+          <li>Projeksiyon matrisleri.</li>
+          <li>Tekil değer ayrışımı: \(A=U\Sigma V^T\).</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Notasyon Tablosu</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sembol</th>
+                <th>Anlamı</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(A\)</td>
+                <td>Matris</td>
+                <td>\(m\times n\) boyutlu genel matris.</td>
+              </tr>
+              <tr>
+                <td>\(m,n,r\)</td>
+                <td>Satır sayısı, sütun sayısı, rütbe</td>
+                <td>\(r=\operatorname{rank}(A)\) pivot sayısıdır.</td>
+              </tr>
+              <tr>
+                <td>\(A_L\)</td>
+                <td>Sol ters</td>
+                <td>\(A_LA=I_n\) eşitliğini sağlayan \(n\times m\) matris.</td>
+              </tr>
+              <tr>
+                <td>\(A_R\)</td>
+                <td>Sağ ters</td>
+                <td>\(AA_R=I_m\) eşitliğini sağlayan \(n\times m\) matris.</td>
+              </tr>
+              <tr>
+                <td>\(A^+\)</td>
+                <td>Sözde ters</td>
+                <td>Genel rütbe durumunda satır uzayı ile sütun uzayı arasında ters gibi çalışan matris.</td>
+              </tr>
+              <tr>
+                <td>\(C(A)\)</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının gerdiği alt uzay.</td>
+              </tr>
+              <tr>
+                <td>\(N(A)\)</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) eşitliğini sağlayan vektörler kümesi.</td>
+              </tr>
+              <tr>
+                <td>\(C(A^T)\)</td>
+                <td>Satır uzayı</td>
+                <td>\(A\) matrisinin satırlarının gerdiği alt uzay; \(A^T\) matrisinin sütun uzayıdır.</td>
+              </tr>
+              <tr>
+                <td>\(N(A^T)\)</td>
+                <td>Sol sıfır uzayı</td>
+                <td>\(A^T\mathbf{y}=\mathbf{0}\) eşitliğini sağlayan vektörler kümesi.</td>
+              </tr>
+              <tr>
+                <td>\(P_C,P_R\)</td>
+                <td>Projeksiyon matrisleri</td>
+                <td>Sırasıyla sütun uzayına ve satır uzayına dik izdüşüm yapan matrisler.</td>
+              </tr>
+              <tr>
+                <td>\(\Sigma^+\)</td>
+                <td>Tekil değer matrisinin sözde tersi</td>
+                <td>Sıfır olmayan tekil değerlerin terslerini içeren transpoz biçimli köşegen matris.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Büyük Resim</h2>
+        <p>Klasik ters, yalnızca kare ve tam rütbeli matrislerde vardır. Bu özel durumda matris hem hiçbir bilgiyi yok etmez hem de bütün hedef uzayı doldurur. Dikdörtgensel veya rütbe eksik bir matriste ise bu iki özellikten en az biri kaybolur.</p>
+        <p>Bir matrisin sıfır uzayı sıfırdan büyükse bazı vektörler \(\mathbf{0}\) vektörüne gider; bunları geri getirecek gerçek bir ters olamaz. Benzer biçimde sütun uzayı bütün hedef uzay değilse her sağ taraf için çözüm beklenemez. Bu nedenle sol ters, sağ ters ve sözde ters, tam tersin hangi parçasının korunabildiğini ayırır.</p>
+        <p>Genel durumda matrisin asıl düzenli davranışı, satır uzayından sütun uzayına olan eşlemede görülür. \(A\), sıfır uzayını yok eder; ancak satır uzayı içinde bilgiyi kaybetmez. Sözde ters, bu düzenli parçayı tersine çevirir ve sıfır uzaylarından gelen belirsizliği projeksiyonlarla ayıklar.</p>
+      </section>
+
+      <section>
+        <h2>Ana Anlatım</h2>
+
+        <section class="definition-card">
+          <h3>Tanım 1.1: İki Taraflı Ters</h3>
+          <p>Bir kare \(A\) matrisi için \(A^{-1}\) matrisi hem soldan hem sağdan ters ise</p>
+          <div class="equation-card" data-raw-latex="A^{-1}A=I,\qquad AA^{-1}=I">
+            <div class="equation-content">
+              \[
+              A^{-1}A=I,\qquad AA^{-1}=I
+              \]
+            </div>
+          </div>
+          <p>eşitlikleri sağlanır. Bu durum ancak matris kare ve tam rütbeli olduğunda gerçekleşir:</p>
+          <div class="equation-card" data-raw-latex="r=m=n">
+            <div class="equation-content">
+              \[
+              r=m=n
+              \]
+            </div>
+          </div>
+        </section>
+
+        <p>İki taraflı ters durumunda \(N(A)=\{\mathbf{0}\}\) ve \(N(A^T)=\{\mathbf{0}\}\) olur. Matris ne giriş tarafında bilgi yok eder ne de çıkış tarafında ulaşılmayan yön bırakır. Bu, terslenebilirliğin en güçlü biçimidir.</p>
+
+        <section class="definition-card">
+          <h3>Tanım 1.2: Sol Ters</h3>
+          <p>\(A\) matrisi \(m\times n\) boyutlu olsun. \(A_L\) matrisi</p>
+          <div class="equation-card" data-raw-latex="A_LA=I_n">
+            <div class="equation-content">
+              \[
+              A_LA=I_n
+              \]
+            </div>
+          </div>
+          <p>eşitliğini sağlıyorsa \(A_L\), \(A\) matrisinin sol tersi olarak adlandırılır. Sol tersin varlığı, sütunların bağımsız olduğu tam sütun rütbesi durumuyla ilişkilidir:</p>
+          <div class="equation-card" data-raw-latex="r=n,\qquad N(A)=\{\mathbf{0}\}">
+            <div class="equation-content">
+              \[
+              r=n,\qquad N(A)=\{\mathbf{0}\}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <p>Tam sütun rütbesinde \(A\mathbf{x}=\mathbf{b}\) denkleminin ya hiç çözümü yoktur ya da tam bir çözümü vardır. Çünkü iki çözüm arasındaki fark sıfır uzayında olmalıdır; sıfır uzayında yalnızca \(\mathbf{0}\) bulunduğu için çözüm varsa tektir.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.3: Tam Sütun Rütbesinde Sol Ters</h3>
+          <p><strong>İfade:</strong> \(A\), \(m\times n\) boyutlu ve \(r=n\) rütbeli olsun. O zaman \(A^TA\) terslenebilir ve</p>
+          <div class="equation-card" data-raw-latex="A_L=(A^TA)^{-1}A^T">
+            <div class="equation-content">
+              \[
+              A_L=(A^TA)^{-1}A^T
+              \]
+            </div>
+          </div>
+          <p>bir sol terstir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sütunlar bağımsızsa \(A\) hiçbir sıfır olmayan vektörü \(\mathbf{0}\) vektörüne göndermez. Bu nedenle giriş tarafındaki bilgi kaybolmaz. \(A^TA\) bu bağımsızlığı kare ve simetrik bir matrise taşır.</p>
+          <p><strong>Formal İspat:</strong> \(r=n\) olduğundan \(N(A)=\{\mathbf{0}\}\). Eğer \(A^TA\mathbf{x}=\mathbf{0}\) ise soldan \(\mathbf{x}^T\) ile çarpınca</p>
+          <div class="equation-card" data-raw-latex="\mathbf{x}^TA^TA\mathbf{x}=\|A\mathbf{x}\|^2=0">
+            <div class="equation-content">
+              \[
+              \mathbf{x}^TA^TA\mathbf{x}=\|A\mathbf{x}\|^2=0
+              \]
+            </div>
+          </div>
+          <p>olur. Böylece \(A\mathbf{x}=\mathbf{0}\), dolayısıyla \(\mathbf{x}=\mathbf{0}\). Bu nedenle \(A^TA\) terslenebilir. Şimdi</p>
+          <div class="equation-card" data-raw-latex="A_LA=(A^TA)^{-1}A^TA=I_n">
+            <div class="equation-content">
+              \[
+              A_LA=(A^TA)^{-1}A^TA=I_n
+              \]
+            </div>
+          </div>
+          <p>elde edilir. Dolayısıyla \(A_L\) sol terstir.</p>
+          <p><strong>Yorum:</strong> Bu matris en küçük kareler denkleminde görülen temel yapıdır. \(A^TA\) terslenebildiğinde normal denklemler tek bir en iyi çözüm verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.4: Tam Sütun Rütbesi Durumu</h3>
+          <p>\(A\) matrisinin \(n\) sütunu bağımsız ve \(m&gt;n\) olsun. Bu durumda \(A\) dikdörtgenseldir; iki taraflı ters beklenmez. Ancak sol ters vardır:</p>
+          <div class="equation-card" data-raw-latex="(A^TA)^{-1}A^TA=I_n">
+            <div class="equation-content">
+              \[
+              (A^TA)^{-1}A^TA=I_n
+              \]
+            </div>
+          </div>
+          <p>Bu eşitlik, \(A\) uygulandıktan sonra sol tersin giriş koordinatlarını geri getirdiğini söyler. Fakat aynı matris sağ tarafta kullanıldığında tam kimlik elde edilmez.</p>
+          <div class="equation-card" data-raw-latex="AA_L=A(A^TA)^{-1}A^T=P_C">
+            <div class="equation-content">
+              \[
+              AA_L=A(A^TA)^{-1}A^T=P_C
+              \]
+            </div>
+          </div>
+          <p>Buradaki \(P_C\), \(A\) matrisinin sütun uzayına projeksiyondur. Matris, yalnızca sütun uzayı üzerinde kimlik gibi davranabilir.</p>
+        </section>
+
+        <section class="definition-card">
+          <h3>Tanım 1.5: Sağ Ters</h3>
+          <p>\(A\) matrisi \(m\times n\) boyutlu olsun. \(A_R\) matrisi</p>
+          <div class="equation-card" data-raw-latex="AA_R=I_m">
+            <div class="equation-content">
+              \[
+              AA_R=I_m
+              \]
+            </div>
+          </div>
+          <p>eşitliğini sağlıyorsa \(A_R\), \(A\) matrisinin sağ tersi olarak adlandırılır. Sağ tersin varlığı, satırların bağımsız olduğu tam satır rütbesi durumuyla ilişkilidir:</p>
+          <div class="equation-card" data-raw-latex="r=m,\qquad N(A^T)=\{\mathbf{0}\}">
+            <div class="equation-content">
+              \[
+              r=m,\qquad N(A^T)=\{\mathbf{0}\}
+              \]
+            </div>
+          </div>
+        </section>
+
+        <p>Tam satır rütbesinde \(A\mathbf{x}=\mathbf{b}\) denklemi her \(\mathbf{b}\in\mathbb{R}^m\) için çözülebilir. Ancak \(n&gt;m\) ise serbest değişkenler vardır; çözüm genellikle tek değildir. Serbest değişken sayısı \(n-m\) olur.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.6: Tam Satır Rütbesinde Sağ Ters</h3>
+          <p><strong>İfade:</strong> \(A\), \(m\times n\) boyutlu ve \(r=m\) rütbeli olsun. O zaman \(AA^T\) terslenebilir ve</p>
+          <div class="equation-card" data-raw-latex="A_R=A^T(AA^T)^{-1}">
+            <div class="equation-content">
+              \[
+              A_R=A^T(AA^T)^{-1}
+              \]
+            </div>
+          </div>
+          <p>bir sağ terstir.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Satırlar bağımsızsa \(A\) hedef uzayın tüm yönlerine ulaşabilir. Bu nedenle her sağ taraf için bir çözüm vardır. \(AA^T\) bu tam satır rütbesini kare bir matrise taşır.</p>
+          <p><strong>Formal İspat:</strong> \(r=m\) olduğundan \(N(A^T)=\{\mathbf{0}\}\). Eğer \(AA^T\mathbf{y}=\mathbf{0}\) ise</p>
+          <div class="equation-card" data-raw-latex="\mathbf{y}^TAA^T\mathbf{y}=\|A^T\mathbf{y}\|^2=0">
+            <div class="equation-content">
+              \[
+              \mathbf{y}^TAA^T\mathbf{y}=\|A^T\mathbf{y}\|^2=0
+              \]
+            </div>
+          </div>
+          <p>olur. Buradan \(A^T\mathbf{y}=\mathbf{0}\), dolayısıyla \(\mathbf{y}=\mathbf{0}\). Bu nedenle \(AA^T\) terslenebilir. Ayrıca</p>
+          <div class="equation-card" data-raw-latex="AA_R=AA^T(AA^T)^{-1}=I_m">
+            <div class="equation-content">
+              \[
+              AA_R=AA^T(AA^T)^{-1}=I_m
+              \]
+            </div>
+          </div>
+          <p>olduğu için \(A_R\) sağ terstir.</p>
+          <p><strong>Yorum:</strong> Sağ ters, her çıktı vektörü için en az bir giriş vektörü seçmenin sistematik bir yolunu verir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.7: Tam Satır Rütbesi Durumu</h3>
+          <p>\(A\) matrisinin \(m\) satırı bağımsız ve \(n&gt;m\) olsun. Bu durumda \(A\mathbf{x}=\mathbf{b}\) her \(\mathbf{b}\) için çözülebilir; ancak çözüm tek değildir. Seçilen sağ ters</p>
+          <div class="equation-card" data-raw-latex="A_R=A^T(AA^T)^{-1}">
+            <div class="equation-content">
+              \[
+              A_R=A^T(AA^T)^{-1}
+              \]
+            </div>
+          </div>
+          <p>matrisidir. Ters sırada çarpıldığında ise kimlik değil, satır uzayına projeksiyon elde edilir:</p>
+          <div class="equation-card" data-raw-latex="A_RA=A^T(AA^T)^{-1}A=P_R">
+            <div class="equation-content">
+              \[
+              A_RA=A^T(AA^T)^{-1}A=P_R
+              \]
+            </div>
+          </div>
+          <p>Buradaki \(P_R\), \(\mathbb{R}^n\) içindeki satır uzayına projeksiyon matrisidir.</p>
+        </section>
+
+        <aside class="note-card">
+          <strong>Önemli Fikir:</strong>
+          <p>Dikdörtgensel bir matris, iki taraflı gerçek ters taşıyamaz. Bir taraflı ters, yalnızca matrisin bir yönde kusursuz davrandığını gösterir; ters sıradaki çarpım ise kimlik yerine uygun alt uzaya projeksiyon üretir.</p>
+        </aside>
+
+        <section class="definition-card">
+          <h3>Tanım 1.8: Sözde Ters</h3>
+          <p>Genel \(m\times n\) boyutlu ve rütbesi \(r\) olan bir \(A\) matrisi için \(A^+\) sözde tersi, \(A\) matrisinin satır uzayı ile sütun uzayı arasındaki ters davranışını temsil eder. Matris \(A\), satır uzayındaki vektörleri sütun uzayına bire bir ve örten biçimde taşır; \(A^+\) bu eşlemeyi tersine çevirir.</p>
+        </section>
+
+        <p>Genel durumda \(r&lt;m\) ve \(r&lt;n\) olabilir. Bu durumda hem \(N(A)\) hem de \(N(A^T)\) sıfırdan büyük boyutlu olabilir. Klasik ters yoktur; sol veya sağ ters de genel olarak yoktur. Buna rağmen \(A\) matrisinin iyi davrandığı bir çekirdek vardır: satır uzayından sütun uzayına olan eşleme.</p>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.9: Satır Uzayından Sütun Uzayına Bire Birlik</h3>
+          <p><strong>İfade:</strong> \(A\) matrisi \(C(A^T)\) satır uzayı üzerinde bire birdir. Başka bir deyişle \(\mathbf{x},\mathbf{y}\in C(A^T)\) ve \(\mathbf{x}\ne\mathbf{y}\) ise</p>
+          <div class="equation-card" data-raw-latex="A\mathbf{x}\ne A\mathbf{y}">
+            <div class="equation-content">
+              \[
+              A\mathbf{x}\ne A\mathbf{y}
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> Sıfır uzayı, \(A\) tarafından yok edilen yönleri içerir. Satır uzayı ise sıfır uzayına diktir. Dolayısıyla satır uzayı içinde sıfır uzayına ait sıfırdan farklı bir yön bulunamaz.</p>
+          <p><strong>Formal İspat:</strong> Aksini varsayalım: \(\mathbf{x},\mathbf{y}\in C(A^T)\) ve \(A\mathbf{x}=A\mathbf{y}\) olsun. O zaman</p>
+          <div class="equation-card" data-raw-latex="A(\mathbf{x}-\mathbf{y})=\mathbf{0}">
+            <div class="equation-content">
+              \[
+              A(\mathbf{x}-\mathbf{y})=\mathbf{0}
+              \]
+            </div>
+          </div>
+          <p>olur. Bu nedenle \(\mathbf{x}-\mathbf{y}\in N(A)\). Öte yandan satır uzayı bir alt uzay olduğundan \(\mathbf{x}-\mathbf{y}\in C(A^T)\) de geçerlidir. Fakat</p>
+          <div class="equation-card" data-raw-latex="C(A^T)\perp N(A)">
+            <div class="equation-content">
+              \[
+              C(A^T)\perp N(A)
+              \]
+            </div>
+          </div>
+          <p>olduğu için iki uzayın kesişimi yalnızca \(\mathbf{0}\) vektörüdür. Dolayısıyla \(\mathbf{x}-\mathbf{y}=\mathbf{0}\), yani \(\mathbf{x}=\mathbf{y}\). Bu, bire birliği kanıtlar.</p>
+          <p><strong>Yorum:</strong> Bu teorem sözde tersin kavramsal temelidir. \(A\), bütün uzayda terslenemez; fakat satır uzayından sütun uzayına kusursuz bir eşleme verir.</p>
+        </section>
+
+        <section class="theorem-card">
+          <h3>Teorem 1.10: Tekil Değer Ayrışımıyla Sözde Ters</h3>
+          <p><strong>İfade:</strong> \(A=U\Sigma V^T\) tekil değer ayrışımı olsun. \(\Sigma\) matrisinde sıfır olmayan tekil değerler \(\sigma_1,\ldots,\sigma_r\) ise \(\Sigma^+\), bu değerlerin terslerini uygun transpoz biçimli köşegen yerlerine koyarak tanımlanır. Bu durumda</p>
+          <div class="equation-card" data-raw-latex="A^+=V\Sigma^+U^T">
+            <div class="equation-content">
+              \[
+              A^+=V\Sigma^+U^T
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Sezgisel Gerekçe:</strong> \(U\) ve \(V\) ortogonal matrislerdir; bunların tersleri transpozlarıdır. Bütün terslenemezlik sorunu \(\Sigma\) matrisindeki sıfır tekil değerlerde toplanır. Sıfır olmayan tekil değerler terslenir, sıfır olanlar sıfır bırakılır.</p>
+          <p><strong>Formal İspat:</strong> Tekil değer matrisi şu biçimdedir:</p>
+          <div class="equation-card" data-raw-latex="\Sigma=\begin{bmatrix}\sigma_1 &amp; &amp; &amp; \\ &amp; \ddots &amp; &amp; \\ &amp; &amp; \sigma_r &amp; \\ &amp; &amp; &amp; 0\end{bmatrix}">
+            <div class="equation-content">
+              \[
+              \Sigma=\begin{bmatrix}
+              \sigma_1 &amp; &amp; &amp; \\
+              &amp; \ddots &amp; &amp; \\
+              &amp; &amp; \sigma_r &amp; \\
+              &amp; &amp; &amp; 0
+              \end{bmatrix}
+              \]
+            </div>
+          </div>
+          <p>Sözde ters matrisi ise sıfır olmayan tekil değerleri ters çevirir:</p>
+          <div class="equation-card" data-raw-latex="\Sigma^+=\begin{bmatrix}1/\sigma_1 &amp; &amp; &amp; \\ &amp; \ddots &amp; &amp; \\ &amp; &amp; 1/\sigma_r &amp; \\ &amp; &amp; &amp; 0\end{bmatrix}^{\!T\text{ biçimli}}">
+            <div class="equation-content">
+              \[
+              \Sigma^+=\begin{bmatrix}
+              1/\sigma_1 &amp; &amp; &amp; \\
+              &amp; \ddots &amp; &amp; \\
+              &amp; &amp; 1/\sigma_r &amp; \\
+              &amp; &amp; &amp; 0
+              \end{bmatrix}^{\!T\text{ biçimli}}
+              \]
+            </div>
+          </div>
+          <p>Ortogonal matrisler için \(U^{-1}=U^T\) ve \((V^T)^{-1}=V\) olduğundan, terslenebilen parçaların ters sırası</p>
+          <div class="equation-card" data-raw-latex="A^+=V\Sigma^+U^T">
+            <div class="equation-content">
+              \[
+              A^+=V\Sigma^+U^T
+              \]
+            </div>
+          </div>
+          <p>şeklindedir. Sıfır tekil değerler terslenmez; bu yönler sözde ters tarafından yok sayılır.</p>
+          <p><strong>Yorum:</strong> Tekil değer ayrışımı, sözde tersi hesaplamanın en düzenli yoludur. Bütün zorluk köşegen bir matrise taşındığı için hangi parçanın terslenip hangi parçanın sıfır kalacağı açıkça görülür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Örnek 1.11: Sözde Tersin Projeksiyonları</h3>
+          <p>\(\Sigma\) matrisi \(m\times n\) boyutlu, rütbesi \(r\) olan tekil değer matrisi olsun. \(\Sigma\Sigma^+\) çarpımı \(m\times m\) boyutludur ve ilk \(r\) köşegen girdisi \(1\), kalanları \(0\) olur:</p>
+          <div class="equation-card" data-raw-latex="\Sigma\Sigma^+=\begin{bmatrix}I_r &amp; 0\\0 &amp; 0\end{bmatrix}_{m\times m}">
+            <div class="equation-content">
+              \[
+              \Sigma\Sigma^+=\begin{bmatrix}
+              I_r &amp; 0\\
+              0 &amp; 0
+              \end{bmatrix}_{m\times m}
+              \]
+            </div>
+          </div>
+          <p>Bu, sütun uzayına projeksiyondur. Ters sıradaki çarpım ise \(n\times n\) boyutludur:</p>
+          <div class="equation-card" data-raw-latex="\Sigma^+\Sigma=\begin{bmatrix}I_r &amp; 0\\0 &amp; 0\end{bmatrix}_{n\times n}">
+            <div class="equation-content">
+              \[
+              \Sigma^+\Sigma=\begin{bmatrix}
+              I_r &amp; 0\\
+              0 &amp; 0
+              \end{bmatrix}_{n\times n}
+              \]
+            </div>
+          </div>
+          <p>Bu da satır uzayına projeksiyondur. Sözde ters, kimlik üretmeye en yakın şeyi üretir: iyi alt uzaylarda kimlik, sıfır uzaylarında sıfır.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>Teoremler ve İspatlar</h2>
+        <p>Bu bölümdeki ana sonuçlar, ters kavramının rütbe durumlarına göre nasıl değiştiğini gösterir.</p>
+        <div class="formula-list">
+          <article>
+            <h3>Sol Tersin Varlığı</h3>
+            <p>Tam sütun rütbesinde \(A^TA\) terslenebilir ve sol ters verir.</p>
+            <div class="equation-card" data-raw-latex="r=n\quad\Longrightarrow\quad A_L=(A^TA)^{-1}A^T,\qquad A_LA=I_n">
+              <div class="equation-content">
+                \[
+                r=n\quad\Longrightarrow\quad A_L=(A^TA)^{-1}A^T,\qquad A_LA=I_n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sağ Tersin Varlığı</h3>
+            <p>Tam satır rütbesinde \(AA^T\) terslenebilir ve sağ ters verir.</p>
+            <div class="equation-card" data-raw-latex="r=m\quad\Longrightarrow\quad A_R=A^T(AA^T)^{-1},\qquad AA_R=I_m">
+              <div class="equation-content">
+                \[
+                r=m\quad\Longrightarrow\quad A_R=A^T(AA^T)^{-1},\qquad AA_R=I_m
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Genel Durumun Terslenebilir Parçası</h3>
+            <p>\(A\), satır uzayından sütun uzayına bire bir ve örten bir eşleme verir.</p>
+            <div class="equation-card" data-raw-latex="A:C(A^T)\longrightarrow C(A)">
+              <div class="equation-content">
+                \[
+                A:C(A^T)\longrightarrow C(A)
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sözde Ters Formülü</h3>
+            <p>Tekil değer ayrışımından sözde ters doğrudan elde edilir.</p>
+            <div class="equation-card" data-raw-latex="A=U\Sigma V^T\quad\Longrightarrow\quad A^+=V\Sigma^+U^T">
+              <div class="equation-content">
+                \[
+                A=U\Sigma V^T\quad\Longrightarrow\quad A^+=V\Sigma^+U^T
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Hesaplama Yöntemleri</h2>
+
+        <h3>Yöntem 1: Rütbe Durumuna Göre Ters Türünü Belirleme</h3>
+        <p>Bir \(m\times n\) matris için ters türünü belirlemek üzere şu adımlar izlenir:</p>
+        <ol>
+          <li>Rütbeyi \(r\) olarak belirle.</li>
+          <li>Eğer \(r=m=n\) ise iki taraflı ters vardır.</li>
+          <li>Eğer \(r=n&lt;m\) ise tam sütun rütbesi vardır; sol ters kullanılabilir.</li>
+          <li>Eğer \(r=m&lt;n\) ise tam satır rütbesi vardır; sağ ters kullanılabilir.</li>
+          <li>Eğer \(r&lt;m\) ve \(r&lt;n\) ise genel durum vardır; sözde ters kullanılır.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\begin{array}{c|c}
+\text{Rütbe durumu} &amp; \text{Ters türü}\\
+\hline
+r=m=n &amp; \text{iki taraflı ters}\\
+r=n&lt;m &amp; \text{sol ters}\\
+r=m&lt;n &amp; \text{sağ ters}\\
+r&lt;m,\ r&lt;n &amp; \text{sözde ters}
+\end{array}">
+          <div class="equation-content">
+            \[
+            \begin{array}{c|c}
+            \text{Rütbe durumu} &amp; \text{Ters türü}\\
+            \hline
+            r=m=n &amp; \text{iki taraflı ters}\\
+            r=n&lt;m &amp; \text{sol ters}\\
+            r=m&lt;n &amp; \text{sağ ters}\\
+            r&lt;m,\ r&lt;n &amp; \text{sözde ters}
+            \end{array}
+            \]
+          </div>
+        </div>
+
+        <h3>Yöntem 2: Sol Tersi Hesaplama</h3>
+        <p>Tam sütun rütbesinde sol ters şu şekilde bulunur:</p>
+        <ol>
+          <li>\(A^TA\) matrisini hesapla.</li>
+          <li>\(A^TA\) matrisinin tersini al.</li>
+          <li>Sonucu \(A^T\) ile sağdan çarp.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="A_L=(A^TA)^{-1}A^T">
+          <div class="equation-content">
+            \[
+            A_L=(A^TA)^{-1}A^T
+            \]
+          </div>
+        </div>
+        <p>Yaygın hata, \(AA^T\) matrisini terslemeye çalışmaktır. Tam sütun rütbesinde güvenilir terslenen matris \(A^TA\) matrisidir.</p>
+
+        <h3>Yöntem 3: Sağ Tersi Hesaplama</h3>
+        <p>Tam satır rütbesinde sağ ters şu şekilde bulunur:</p>
+        <ol>
+          <li>\(AA^T\) matrisini hesapla.</li>
+          <li>\(AA^T\) matrisinin tersini al.</li>
+          <li>\(A^T\) matrisini solda tutarak \(A^T(AA^T)^{-1}\) çarpımını kur.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="A_R=A^T(AA^T)^{-1}">
+          <div class="equation-content">
+            \[
+            A_R=A^T(AA^T)^{-1}
+            \]
+          </div>
+        </div>
+        <p>Yaygın hata, sağ tersin \(A\) ile hangi sırada çarpıldığını karıştırmaktır. Sağ ters \(A\) matrisinin sağında durur ve \(AA_R=I_m\) verir.</p>
+
+        <h3>Yöntem 4: Sözde Tersi Tekil Değer Ayrışımıyla Bulma</h3>
+        <p>Genel rütbe durumunda sözde ters için en düzenli hesaplama yolu şudur:</p>
+        <ol>
+          <li>\(A=U\Sigma V^T\) ayrışımını kur.</li>
+          <li>\(\Sigma\) matrisindeki sıfır olmayan tekil değerleri belirle.</li>
+          <li>Bu değerlerin terslerini alarak \(\Sigma^+\) matrisini oluştur.</li>
+          <li>Ortogonal parçaların terslerini transpozla alarak \(A^+=V\Sigma^+U^T\) formülünü uygula.</li>
+        </ol>
+        <div class="equation-card" data-raw-latex="\sigma_i&gt;0\quad\Longrightarrow\quad \sigma_i^+=\frac{1}{\sigma_i},\qquad 0^+=0">
+          <div class="equation-content">
+            \[
+            \sigma_i&gt;0\quad\Longrightarrow\quad \sigma_i^+=\frac{1}{\sigma_i},\qquad 0^+=0
+            \]
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Uygulama Bağlantıları</h2>
+        <p>En küçük kareler problemlerinde tam sütun rütbesi varsa normal denklem matrisi \(A^TA\) terslenebilir ve çözüm doğrudan bulunur. Ancak ölçümlerde bağımlılıklar oluştuğunda veya bazı sütunlar birbirinden bağımsız olmadığında \(A^TA\) tekil hâle gelir. Bu durumda klasik formül bozulur.</p>
+        <p>Sözde ters, bu rütbe eksikliği durumunda doğal bir genelleme sağlar. Özellikle lineer regresyon gibi en küçük kareler temelli hesaplarda, matrisin tam rütbeli olmadığı durumlarda kullanılacak en düzenli ters kavramı sözde terstir. Buradaki temel fikir, çözülemeyen veya belirsiz yönleri projeksiyonlarla ayırıp iyi tanımlı alt uzaylar üzerinde terslemektir.</p>
+      </section>
+
+      <section>
+        <h2>Sık Yapılan Hatalar</h2>
+        <ul>
+          <li><strong>Dikdörtgensel matriste iki taraflı ters beklemek:</strong> \(m\ne n\) ise iki taraflı kimlik çarpımlarının boyutları bile aynı değildir. En fazla bir taraflı ters veya sözde ters beklenir.</li>
+          <li><strong>Tam sütun rütbesi ile tam satır rütbesini karıştırmak:</strong> \(r=n\) sütun bağımsızlığıdır ve sol ters verir; \(r=m\) satır bağımsızlığıdır ve sağ ters verir.</li>
+          <li><strong>\(A^TA\) ve \(AA^T\) rollerini ters yazmak:</strong> Sol ters için \(A^TA\), sağ ters için \(AA^T\) terslenir.</li>
+          <li><strong>Ters sıradaki çarpımı kimlik sanmak:</strong> \(A_LA=I_n\) olsa bile \(AA_L\) genellikle kimlik değildir; sütun uzayına projeksiyondur.</li>
+          <li><strong>Sözde tersi klasik ters gibi düşünmek:</strong> Genel durumda \(AA^+\) ve \(A^+A\) kimlik değil, uygun alt uzaylara projeksiyonlardır.</li>
+          <li><strong>Sıfır tekil değerleri terslemeye çalışmak:</strong> Sözde ters, yalnızca sıfır olmayan tekil değerlerin tersini alır; sıfır tekil değerleri sıfır kalır.</li>
+          <li><strong>Satır uzayı ile sıfır uzayının kesişimini gözden kaçırmak:</strong> Bu iki alt uzay dik tamamlayıcıdır ve kesişimleri yalnızca \(\mathbf{0}\) vektörüdür. Sözde tersin temel bire birlik kanıtı buna dayanır.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Kavram Haritası</h2>
+        <div class="concept-map">
+          <span>Rütbe \(r\) \(\rightarrow\) pivot sayısı ve ters türünü belirleyen ana ölçü</span>
+          <span>\(r=m=n\) \(\rightarrow\) iki taraflı ters</span>
+          <span>\(r=n&lt;m\) \(\rightarrow\) tam sütun rütbesi ve sol ters</span>
+          <span>\(r=m&lt;n\) \(\rightarrow\) tam satır rütbesi ve sağ ters</span>
+          <span>Sol ters \(\rightarrow\) \(A_LA=I_n\), ters sırada sütun uzayı projeksiyonu</span>
+          <span>Sağ ters \(\rightarrow\) \(AA_R=I_m\), ters sırada satır uzayı projeksiyonu</span>
+          <span>Genel rütbe \(\rightarrow\) sıfır uzayları terslenemezliği oluşturur</span>
+          <span>Satır uzayı \(\rightarrow\) \(A\) tarafından sütun uzayına bire bir taşınır</span>
+          <span>Sözde ters \(\rightarrow\) sütun uzayından satır uzayına geri dönüş</span>
+          <span>Tekil değer ayrışımı \(\rightarrow\) sözde tersin hesaplanmasını köşegen duruma indirger</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ana Formüller</h2>
+        <div class="formula-list">
+          <article>
+            <h3>İki Taraflı Ters</h3>
+            <p>Kare ve tam rütbeli durumda geçerlidir.</p>
+            <div class="equation-card" data-raw-latex="A^{-1}A=I,\qquad AA^{-1}=I,\qquad r=m=n">
+              <div class="equation-content">
+                \[
+                A^{-1}A=I,\qquad AA^{-1}=I,\qquad r=m=n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sol Ters</h3>
+            <p>Tam sütun rütbesinde kullanılır.</p>
+            <div class="equation-card" data-raw-latex="A_L=(A^TA)^{-1}A^T,\qquad A_LA=I_n">
+              <div class="equation-content">
+                \[
+                A_L=(A^TA)^{-1}A^T,\qquad A_LA=I_n
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sol Tersin Ters Sıradaki Çarpımı</h3>
+            <p>Sütun uzayına projeksiyon verir.</p>
+            <div class="equation-card" data-raw-latex="AA_L=A(A^TA)^{-1}A^T=P_C">
+              <div class="equation-content">
+                \[
+                AA_L=A(A^TA)^{-1}A^T=P_C
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sağ Ters</h3>
+            <p>Tam satır rütbesinde kullanılır.</p>
+            <div class="equation-card" data-raw-latex="A_R=A^T(AA^T)^{-1},\qquad AA_R=I_m">
+              <div class="equation-content">
+                \[
+                A_R=A^T(AA^T)^{-1},\qquad AA_R=I_m
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sağ Tersin Ters Sıradaki Çarpımı</h3>
+            <p>Satır uzayına projeksiyon verir.</p>
+            <div class="equation-card" data-raw-latex="A_RA=A^T(AA^T)^{-1}A=P_R">
+              <div class="equation-content">
+                \[
+                A_RA=A^T(AA^T)^{-1}A=P_R
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sözde Ters</h3>
+            <p>Tekil değer ayrışımıyla hesaplanır.</p>
+            <div class="equation-card" data-raw-latex="A=U\Sigma V^T,\qquad A^+=V\Sigma^+U^T">
+              <div class="equation-content">
+                \[
+                A=U\Sigma V^T,\qquad A^+=V\Sigma^+U^T
+                \]
+              </div>
+            </div>
+          </article>
+          <article>
+            <h3>Sözde Ters Projeksiyonları</h3>
+            <p>Genel durumda kimlik yerine projeksiyonlar elde edilir.</p>
+            <div class="equation-card" data-raw-latex="AA^+=P_C,\qquad A^+A=P_R">
+              <div class="equation-content">
+                \[
+                AA^+=P_C,\qquad A^+A=P_R
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Kısa Özet</h2>
+        <p>Bu bölümde ters kavramı rütbe ve dört temel alt uzay üzerinden sınıflandırıldı. Kare ve tam rütbeli durumda iki taraflı ters vardır. Tam sütun rütbesinde sol ters \((A^TA)^{-1}A^T\), tam satır rütbesinde sağ ters \(A^T(AA^T)^{-1}\) kullanılır.</p>
+        <p>Bir taraflı tersler ters sırada çarpıldığında kimlik değil, uygun alt uzaya projeksiyon verir. Genel rütbe durumunda klasik ters yoktur; ancak \(A\), satır uzayından sütun uzayına düzenli bir eşleme verir. Sözde ters bu eşlemeyi tersine çevirir ve tekil değer ayrışımıyla \(A^+=V\Sigma^+U^T\) biçiminde hesaplanır.</p>
+      </section>
+
+      <section>
+        <h2>Çözümlü Çalışma Soruları</h2>
+
+        <section class="example-card">
+          <h3>Soru 1: Kolay Seviye</h3>
+          <p>\(A\) matrisi \(5\times3\) boyutlu ve rütbesi \(3\) olsun. Bu matris için hangi ters türü beklenir? İlgili formülü yazın.</p>
+          <p><strong>Çözüm:</strong> Burada \(m=5\), \(n=3\), \(r=3\). Dolayısıyla \(r=n&lt;m\), yani tam sütun rütbesi vardır. Bu nedenle sol ters beklenir.</p>
+          <div class="equation-card" data-raw-latex="A_L=(A^TA)^{-1}A^T">
+            <div class="equation-content">
+              \[
+              A_L=(A^TA)^{-1}A^T
+              \]
+            </div>
+          </div>
+          <p>Bu sol ters</p>
+          <div class="equation-card" data-raw-latex="A_LA=I_3">
+            <div class="equation-content">
+              \[
+              A_LA=I_3
+              \]
+            </div>
+          </div>
+          <p>eşitliğini sağlar.</p>
+          <p><strong>Yorum:</strong> Sütunlar bağımsız olduğu için \(A\) giriş vektörlerini birbirine karıştırıp kaybetmez; bu yüzden soldan geri alma mümkündür.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 2: Orta Seviye</h3>
+          <p>\(A\) matrisi \(2\times5\) boyutlu ve rütbesi \(2\) olsun. \(A\mathbf{x}=\mathbf{b}\) denkleminin çözüm sayısı hakkında ne söylenebilir? Sağ ters formülünü yazın.</p>
+          <p><strong>Çözüm:</strong> Burada \(m=2\), \(n=5\), \(r=2\). Yani \(r=m&lt;n\), tam satır rütbesi vardır. Bu durumda her \(\mathbf{b}\in\mathbb{R}^2\) için çözüm vardır. Serbest değişken sayısı</p>
+          <div class="equation-card" data-raw-latex="n-r=5-2=3">
+            <div class="equation-content">
+              \[
+              n-r=5-2=3
+              \]
+            </div>
+          </div>
+          <p>olduğu için genellikle sonsuz çözüm bulunur. Sağ ters</p>
+          <div class="equation-card" data-raw-latex="A_R=A^T(AA^T)^{-1}">
+            <div class="equation-content">
+              \[
+              A_R=A^T(AA^T)^{-1}
+              \]
+            </div>
+          </div>
+          <p>biçimindedir ve \(AA_R=I_2\) sağlar.</p>
+          <p><strong>Yorum:</strong> Satırlar bağımsız olduğundan her çıktı üretilebilir; fakat değişken sayısı denklem sayısından fazla olduğu için çözüm tek değildir.</p>
+        </section>
+
+        <section class="example-card">
+          <h3>Soru 3: İleri Seviye</h3>
+          <p>\(A=U\Sigma V^T\) ve \(\Sigma\) matrisinin sıfır olmayan tekil değerleri \(\sigma_1,\ldots,\sigma_r\) olsun. \(A^+\) formülünü türetin ve \(A^+A\) çarpımının neden satır uzayına projeksiyon olduğunu açıklayın.</p>
+          <p><strong>Çözüm:</strong> \(U\) ve \(V\) ortogonal olduğundan tersleri transpozlarıdır. Terslenemeyen tek kısım, sıfır tekil değerleri içeren \(\Sigma\) matrisidir. Sıfır olmayan tekil değerlerin tersini alıp sıfırları sıfır bırakarak \(\Sigma^+\) tanımlanır:</p>
+          <div class="equation-card" data-raw-latex="\sigma_i^+=1/\sigma_i\quad (i=1,\ldots,r),\qquad 0^+=0">
+            <div class="equation-content">
+              \[
+              \sigma_i^+=1/\sigma_i\quad (i=1,\ldots,r),\qquad 0^+=0
+              \]
+            </div>
+          </div>
+          <p>Böylece</p>
+          <div class="equation-card" data-raw-latex="A^+=V\Sigma^+U^T">
+            <div class="equation-content">
+              \[
+              A^+=V\Sigma^+U^T
+              \]
+            </div>
+          </div>
+          <p>olur. Şimdi</p>
+          <div class="equation-card" data-raw-latex="A^+A=V\Sigma^+U^TU\Sigma V^T=V(\Sigma^+\Sigma)V^T">
+            <div class="equation-content">
+              \[
+              A^+A=V\Sigma^+U^TU\Sigma V^T=V(\Sigma^+\Sigma)V^T
+              \]
+            </div>
+          </div>
+          <p>elde edilir. \(\Sigma^+\Sigma\), ilk \(r\) yön üzerinde \(1\), kalan yönlerde \(0\) veren köşegen projeksiyondur. \(V\) bu projeksiyonu \(A\) matrisinin satır uzayına taşır. Dolayısıyla</p>
+          <div class="equation-card" data-raw-latex="A^+A=P_R">
+            <div class="equation-content">
+              \[
+              A^+A=P_R
+              \]
+            </div>
+          </div>
+          <p>olur.</p>
+          <p><strong>Yorum:</strong> Sözde ters, sıfır uzayındaki bilgiyi geri getirmez; satır uzayındaki terslenebilir kısmı korur.</p>
+        </section>
+      </section>
+
+      <section>
+        <h2>İngilizce-Türkçe Terim Sözlüğü</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>English Term</th>
+                <th>Türkçe Karşılık</th>
+                <th>Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Two-sided inverse</td>
+                <td>İki taraflı ters</td>
+                <td>Hem soldan hem sağdan çarpıldığında kimlik veren gerçek ters.</td>
+              </tr>
+              <tr>
+                <td>Left inverse</td>
+                <td>Sol ters</td>
+                <td>\(A_LA=I_n\) eşitliğini sağlayan matris.</td>
+              </tr>
+              <tr>
+                <td>Right inverse</td>
+                <td>Sağ ters</td>
+                <td>\(AA_R=I_m\) eşitliğini sağlayan matris.</td>
+              </tr>
+              <tr>
+                <td>Pseudoinverse</td>
+                <td>Sözde ters</td>
+                <td>Genel rütbe durumunda iyi alt uzaylar üzerinde ters gibi çalışan matris.</td>
+              </tr>
+              <tr>
+                <td>Full column rank</td>
+                <td>Tam sütun rütbesi</td>
+                <td>Sütunların bağımsız olduğu \(r=n\) durumu.</td>
+              </tr>
+              <tr>
+                <td>Full row rank</td>
+                <td>Tam satır rütbesi</td>
+                <td>Satırların bağımsız olduğu \(r=m\) durumu.</td>
+              </tr>
+              <tr>
+                <td>Row space</td>
+                <td>Satır uzayı</td>
+                <td>\(A\) matrisinin satırlarının gerdiği alt uzay.</td>
+              </tr>
+              <tr>
+                <td>Column space</td>
+                <td>Sütun uzayı</td>
+                <td>\(A\) matrisinin sütunlarının gerdiği alt uzay.</td>
+              </tr>
+              <tr>
+                <td>Null space</td>
+                <td>Sıfır uzayı</td>
+                <td>\(A\mathbf{x}=\mathbf{0}\) eşitliğini sağlayan giriş vektörleri kümesi.</td>
+              </tr>
+              <tr>
+                <td>Projection matrix</td>
+                <td>Projeksiyon matrisi</td>
+                <td>Vektörleri belirli bir alt uzaya izdüşüren matris.</td>
+              </tr>
+              <tr>
+                <td>Singular value decomposition</td>
+                <td>Tekil değer ayrışımı</td>
+                <td>\(A=U\Sigma V^T\) biçimindeki ortogonal-köşegen-ortogonal ayrışım.</td>
+              </tr>
+              <tr>
+                <td>Singular value</td>
+                <td>Tekil değer</td>
+                <td>\(\Sigma\) matrisindeki sıfır olmayan pozitif köşegen değerleri.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </article>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="toc-title">İçindekiler</div>
+      <nav class="toc" data-toc></nav>
+    </aside>
+  </div>
+  <script>
+    (function () {
+      function fitTitle() {
+        const title = document.querySelector(".lesson-page h1");
+        if (!title) return;
+
+        title.style.fontSize = "";
+        if (window.innerWidth <= 768) return;
+
+        const minSize = 26;
+        const computed = window.getComputedStyle(title);
+        let size = parseFloat(computed.fontSize);
+        const containerWidth = title.parentElement ? title.parentElement.clientWidth : title.clientWidth;
+
+        while (title.scrollWidth > containerWidth && size > minSize) {
+          size -= 1;
+          title.style.fontSize = size + "px";
+        }
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+
+        return new Promise(function (resolve, reject) {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            const successful = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            successful ? resolve() : reject(new Error("Kopyalama başarısız"));
+          } catch (error) {
+            document.body.removeChild(textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function setTemporaryTooltip(button, message) {
+        const original = button.dataset.tooltip;
+        button.dataset.tooltip = message;
+        button.classList.add("is-copied");
+
+        window.setTimeout(function () {
+          button.dataset.tooltip = original;
+          button.classList.remove("is-copied");
+        }, 1200);
+      }
+
+      function createCopyButton(type) {
+        const button = document.createElement("button");
+        const isRaw = type === "raw";
+        button.className = "equation-copy-btn";
+        button.type = "button";
+        button.dataset.copyType = type;
+        button.dataset.tooltip = isRaw ? "Ham LaTeX" : "Blok LaTeX";
+        button.setAttribute("aria-label", isRaw ? "Ham LaTeX kopyala" : "Blok LaTeX kopyala");
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = isRaw ? "∑" : "⧉";
+        button.appendChild(icon);
+
+        return button;
+      }
+
+      function setupEquationCopyButtons() {
+        document.querySelectorAll(".equation-card").forEach(function (card) {
+          if (card.querySelector(".equation-actions")) return;
+
+          const actions = document.createElement("div");
+          actions.className = "equation-actions";
+          actions.setAttribute("aria-label", "Denklem kopyalama seçenekleri");
+          actions.appendChild(createCopyButton("raw"));
+          actions.appendChild(createCopyButton("block"));
+          card.insertBefore(actions, card.firstChild);
+        });
+
+        document.addEventListener("click", function (event) {
+          const button = event.target.closest(".equation-copy-btn");
+          if (!button) return;
+
+          const card = button.closest(".equation-card");
+          const rawLatex = card ? card.getAttribute("data-raw-latex") || "" : "";
+          const text = button.dataset.copyType === "block" ? "\\[\n" + rawLatex + "\n\\]" : rawLatex;
+
+          copyText(text)
+            .then(function () {
+              setTemporaryTooltip(button, "Kopyalandı");
+            })
+            .catch(function () {
+              setTemporaryTooltip(button, "Kopyalanamadı");
+            });
+        });
+      }
+
+      window.addEventListener("resize", fitTitle);
+      window.addEventListener("DOMContentLoaded", function () {
+        setupEquationCopyButtons();
+        fitTitle();
+      });
+    })();
+  </script>
+  <script defer src="../assets/portal.js"></script>
+</body>
+</html>
