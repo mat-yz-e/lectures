@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta Koleksiyon Şemasıyla Uzun Süreli Bellek</title>
+  <style>
+
+:root {
+  --lesson-bg: #ffffff;
+  --lesson-text: #111827;
+  --lesson-muted: #4b5563;
+  --lesson-soft: #f9fafb;
+  --lesson-soft-2: #f3f4f6;
+  --lesson-border: #e5e7eb;
+  --lesson-border-strong: #d1d5db;
+  --lesson-card: #ffffff;
+  --lesson-card-muted: #f8fafc;
+  --langgraph-primary: #153f3b;
+  --langgraph-secondary: #0f766e;
+  --langgraph-soft: #dbe9e7;
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --output-text: rgb(0, 0, 0);
+  --output-bg: #f7f7f7;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: rgb(0, 0, 255);
+  --code-attribute: rgb(0, 0, 255);
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: var(--lesson-bg);
+}
+*,
+*::before,
+*::after { box-sizing: border-box; }
+.lesson-page {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: clamp(1rem, 2.5vw, 2.5rem);
+  background: var(--lesson-bg);
+  color: var(--lesson-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.lesson-page > article { margin: 0 auto; counter-reset: section; }
+.lesson-page,
+.lesson-page section,
+.title-block,
+.definition-card,
+.example-card,
+.note-card,
+.question-card,
+.mini-panel,
+.output-comment,
+.flow-step,
+.state-item,
+.chat-bubble { min-width: 0; max-width: 100%; }
+.title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0 0 2rem;
+  text-align: center;
+}
+.lesson-logo {
+  align-self: center;
+  display: block;
+  width: clamp(3.5rem, 8vw, 5.5rem);
+  height: clamp(3.5rem, 8vw, 5.5rem);
+  object-fit: contain;
+  margin: 0 auto 1rem;
+}
+.lesson-logo-fallback {
+  margin: 0 auto 1rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.4rem;
+  color: var(--langgraph-primary);
+  font-weight: 700;
+}
+.lesson-page h1,
+.lesson-page h2,
+.lesson-page h3,
+.lesson-page h4 {
+  color: var(--lesson-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+.lesson-page h1 {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(1.95rem, 3.6vw, 2.75rem);
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.lead-text {
+  width: 100%;
+  min-width: 0;
+  max-width: 760px;
+  margin: 0.9rem auto 0;
+  color: var(--lesson-muted);
+  font-size: 1.05rem;
+}
+.lesson-page p,
+.lesson-page li,
+.lead-text { overflow-wrap: anywhere; word-break: normal; }
+.lesson-page h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 2.2rem 0 0.85rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--lesson-border);
+  font-size: clamp(1.35rem, 2.1vw, 1.75rem);
+  counter-increment: section;
+  counter-reset: subsection;
+}
+.lesson-page h2::before { content: counter(section) "."; color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 1.45rem 0 0.65rem;
+  font-size: clamp(1.12rem, 1.65vw, 1.32rem);
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+.lesson-page h3::before { content: counter(section) "." counter(subsection); color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h4 { margin: 1rem 0 0.45rem; font-size: 1.02rem; counter-increment: subsubsection; }
+.lesson-page h4::before { content: counter(section) "." counter(subsection) "." counter(subsubsection) " "; font-variant-numeric: tabular-nums; }
+.definition-card h3,
+.example-card h3,
+.note-card h3,
+.question-card h3,
+.mini-panel h3,
+.output-comment h3,
+.mini-panel h4,
+.output-comment h4 {
+  display: block;
+  counter-increment: none;
+  counter-reset: none;
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+}
+.definition-card h3::before,
+.example-card h3::before,
+.note-card h3::before,
+.question-card h3::before,
+.mini-panel h3::before,
+.output-comment h3::before,
+.mini-panel h4::before,
+.output-comment h4::before { content: none; }
+p { margin: 0.55rem 0 0.9rem; }
+ul,
+ol { margin: 0.65rem 0 1rem; padding-left: 1.35rem; }
+li + li { margin-top: 0.32rem; }
+code:not(.code-body code):not(.output-body code):not(.line-tooltip code) {
+  padding: 0.08rem 0.24rem;
+  border-radius: 0.28rem;
+  background: #eeeeee;
+  color: #111111;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+.definition-card,
+.example-card,
+.note-card,
+.question-card,
+.mini-panel,
+.output-comment {
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.65rem;
+  background: var(--lesson-card);
+  padding: 0.95rem 1rem;
+}
+.definition-card { border-left: 4px solid var(--langgraph-primary); background: linear-gradient(90deg, rgba(219, 233, 231, 0.55), #fff 38%); }
+.note-card { border-left: 4px solid var(--langgraph-secondary); background: var(--lesson-card-muted); }
+.question-card { border-left: 4px solid var(--lesson-border-strong); background: var(--lesson-soft); }
+.explain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0 1rem 4.95rem;
+}
+.mini-panel p { margin-bottom: 0; color: var(--lesson-muted); }
+.output-comment { margin: 0.65rem 0 1rem 4.95rem; background: #ffffff; color: var(--lesson-muted); }
+.output-comment strong { color: var(--lesson-text); }
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.65rem;
+}
+.table-wrap table { width: 100%; min-width: 680px; border-collapse: collapse; background: #ffffff; }
+.table-wrap th { background: var(--lesson-soft); color: var(--langgraph-primary); font-weight: 700; }
+.table-wrap th,
+.table-wrap td { padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--lesson-border); text-align: left; vertical-align: top; }
+.table-wrap tr:last-child td { border-bottom: 0; }
+.concept-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin: 1.2rem 0; align-items: stretch; }
+.concept-map.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.concept-map.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.flow-step {
+  min-height: 5.5rem;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.6rem;
+  background: var(--lesson-soft);
+  overflow-wrap: anywhere;
+  position: relative;
+}
+.flow-step strong { display: block; margin-bottom: 0.35rem; color: var(--langgraph-primary); font-size: 0.98rem; }
+.flow-step span { color: var(--lesson-muted); font-size: 0.95rem; line-height: 1.45; }
+.flow-step:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.52rem; width: 0.5rem; height: 1px; background: var(--lesson-border-strong); }
+.state-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0; }
+.state-item { padding: 0.9rem 1rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); }
+.state-item strong { display: block; margin-bottom: 0.3rem; color: var(--langgraph-primary); }
+.state-item span { color: var(--lesson-muted); }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li { position: relative; padding-left: 1.25rem; }
+.checklist li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--langgraph-secondary); }
+.chat-flow { display: grid; gap: 0.65rem; margin: 1rem 0; }
+.chat-bubble { max-width: 78%; padding: 0.75rem 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-soft); }
+.chat-bubble.user { justify-self: end; background: #ffffff; border-color: var(--lesson-border-strong); }
+.chat-bubble.assistant { justify-self: start; border-left: 3px solid var(--langgraph-secondary); }
+.chat-bubble.tool { justify-self: start; border-left: 3px solid #9f1239; background: #ffffff; }
+.chat-bubble strong { display: block; margin-bottom: 0.25rem; color: var(--langgraph-primary); font-size: 0.9rem; }
+.walk-card { margin: 1.35rem 0 1.75rem; }
+.code-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  margin: 1.15rem 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  padding-top: 0.62rem;
+  color: #303f9f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-head {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.45rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.code-title { display: none; }
+.copy-btn { border: 1px solid #c4c8cf; border-radius: 0.35rem; background: rgba(255, 255, 255, 0.92); color: #374151; cursor: pointer; font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+.copy-btn:hover { background: #ffffff; }
+.code-body {
+  grid-column: 2;
+  margin: 0;
+  padding: 0.72rem 5.2rem 0.72rem 0.8rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  color: var(--code-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.91rem;
+  line-height: 1.48;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  tab-size: 4;
+  border: 1px solid var(--code-border);
+  border-radius: 0 0 0.2rem 0.2rem;
+  background: var(--code-bg);
+  scrollbar-gutter: stable;
+}
+.code-body code { display: block; min-width: max-content; font-family: inherit; }
+.code-line { display: block; width: auto; min-width: max-content; min-height: 1.48em; padding: 0 0.28rem; white-space: pre; overflow-wrap: normal; word-break: normal; border-radius: 0.14rem; }
+.output-line { display: block; min-height: 1.5em; padding: 0 0.28rem; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; border-radius: 0.14rem; }
+.code-line:empty::before,
+.output-line:empty::before { content: " "; }
+.code-line[data-note],
+.output-line[data-note] { position: relative; cursor: help; text-decoration: none; border-bottom: 0; }
+.code-line[data-note] *,
+.output-line[data-note] *,
+.code-line[data-note]:hover,
+.output-line[data-note]:hover,
+.code-line[data-note]:focus,
+.output-line[data-note]:focus { text-decoration: none; border-bottom: 0; }
+.code-line[data-note]:hover,
+.output-line[data-note]:hover,
+.code-line[data-note]:focus,
+.output-line[data-note]:focus { background: #fff7d6; outline: none; }
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 340px;
+  max-height: min(36vh, 220px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+.line-tooltip,
+.line-tooltip * { text-decoration: none !important; border-bottom: 0; }
+.line-tooltip .tooltip-section { display: block; }
+.line-tooltip .tooltip-section + .tooltip-section { margin-top: 0.38rem; padding-top: 0.38rem; }
+.line-tooltip .tooltip-label { display: block; margin-bottom: 0.12rem; color: #57606a; font-size: 11.5px; font-weight: 700; letter-spacing: 0.01em; }
+.line-tooltip code { padding: 1px 4px; border: 1px solid #d8dee4; border-radius: 3px; background: #f6f8fa; color: #24292f; font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12.5px; }
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  margin: 1rem 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  padding-top: 0.62rem;
+  color: #9f1239;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-head { grid-column: 2; padding: 0.42rem 0.55rem; border: 1px solid var(--code-border); border-bottom: 0; border-radius: 0.2rem 0.2rem 0 0; background: var(--code-surface); color: var(--code-muted); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.78rem; cursor: default; }
+.output-body { grid-column: 2; margin: 0; padding: 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--output-bg); color: var(--output-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.91rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.output-card.output-scroll .output-body,
+pre.output-body:not(.output-visual) { max-height: 28rem; overflow: auto; scrollbar-gutter: stable; scrollbar-color: #b8b8b8 #f2f2f2; scrollbar-width: auto; }
+.output-card.output-scroll .output-body::-webkit-scrollbar,
+pre.output-body:not(.output-visual)::-webkit-scrollbar { width: 13px; height: 13px; }
+.output-card.output-scroll .output-body::-webkit-scrollbar-track,
+pre.output-body:not(.output-visual)::-webkit-scrollbar-track { background: #f2f2f2; border-left: 1px solid #d6d6d6; }
+.output-card.output-scroll .output-body::-webkit-scrollbar-thumb,
+pre.output-body:not(.output-visual)::-webkit-scrollbar-thumb { background: #b8b8b8; border: 3px solid #f2f2f2; border-radius: 999px; }
+.output-visual,
+.graph-visual,
+.concept-map-visual { white-space: normal; text-align: center; overflow: auto; background: rgb(255, 255, 255); }
+.output-visual img,
+.output-visual svg { display: block; max-width: 100%; height: auto; margin: 0 auto; background: rgb(255, 255, 255); }
+.output-body,
+.output-body code,
+.output-body .tok-keyword,
+.output-body .tok-string,
+.output-body .tok-comment,
+.output-body .tok-function,
+.output-body .tok-attribute,
+.output-body .tok-number,
+.output-body .tok-class,
+.output-body .tok-name,
+.output-body .tok-builtin,
+.output-body .tok-operator,
+.output-body .tok-magic,
+.output-body .tok-flag,
+.output-body .tok-shell-command { color: rgb(0, 0, 0) !important; font-weight: 400 !important; font-style: normal !important; }
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-attribute); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.tok-magic { color: #008000; font-weight: 700; }
+.tok-flag { color: #aa22ff; }
+.tok-shell-command { color: #0000ff; font-weight: 700; }
+@media (max-width: 860px) {
+  .concept-map,
+  .concept-map.three,
+  .concept-map.four,
+  .state-list,
+  .explain-grid { grid-template-columns: 1fr; }
+  .flow-step:not(:last-child)::after { display: none; }
+  table { min-width: 620px; }
+}
+@media (max-width: 560px) {
+  .lesson-page { padding: 1rem; font-size: 1rem; line-height: 1.72; }
+  .title-block { display: block; }
+  .lesson-logo { margin-left: auto; margin-right: auto; }
+  .lesson-page h1 { display: block; width: 100%; font-size: clamp(1.55rem, 7vw, 1.9rem); line-height: 1.22; word-break: break-word; }
+  .lead-text { display: block; width: 100%; font-size: 1rem; }
+  .code-card,
+  .output-card { grid-template-columns: minmax(0, 1fr); }
+  .code-card::before,
+  .output-card::before { grid-column: 1; grid-row: auto; padding: 0 0 0.25rem; text-align: left; }
+  .code-body,
+  .output-head,
+  .output-body { grid-column: 1; }
+  .code-head { top: 1.8rem; right: 0.45rem; }
+  .code-body { font-size: 0.84rem; padding: 0.85rem 4.85rem 0.85rem 0.85rem; overflow-x: auto; }
+  .output-body { font-size: 0.84rem; padding: 0.85rem; color: rgb(0, 0, 0); }
+  .explain-grid,
+  .output-comment { margin-left: 0; }
+  .line-tooltip { max-width: calc(100vw - 32px); }
+  .chat-bubble { max-width: 100%; }
+}
+
+
+/* Codex course-wide notebook QA patch */
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html" class="is-active" aria-current="page">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu">
+        <h1 id="lesson-title">LangGraph’ta Koleksiyon Şemasıyla Uzun Süreli Bellek</h1>
+        <p class="lead-text">Bu ders, kullanıcı hakkında büyüyebilen bellek kayıtlarını Pydantic şemaları, Trustcall ve LangGraph Store ile nasıl yöneteceğinizi teknik bir akış içinde açıklar.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>Bu bölümde amaç, uzun süreli belleğin tek bir profil nesnesiyle sınırlı kalmadığı durumları ele almaktır. Kullanıcı hakkında zamanla biriken bilgi, tekil bir alanın sürekli ezilmesi yerine, bağımsız bellek kayıtlarından oluşan bir koleksiyon olarak tutulur.</p>
+        <p>Bu yaklaşım özellikle sohbet tabanlı sistemlerde önemlidir: kullanıcı bir konuşmada adını, başka bir konuşmada ilgi alanlarını, daha sonra da tercihlerini paylaşabilir. LangGraph Store bu bilgileri kullanıcıya bağlı bir namespace içinde taşırken, graph state kısa süreli mesaj akışını yönetir.</p>
+        <section class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Uzun süreli bellek yalnızca tek bir profil kaydı değildir; doğru şema, key ve metadata tasarımıyla güncellenebilir ve büyüyebilir bir koleksiyon olarak yönetilebilir.</p></section>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul class="checklist">
+          <li><code>Memory</code> ve <code>MemoryCollection</code> şemalarının hangi problemi çözdüğünü açıklayabilecek.</li>
+          <li><code>with_structured_output</code> ile Pydantic tabanlı bellek çıkarımını yorumlayabilecek.</li>
+          <li>LangGraph Store içinde namespace, key ve value ayrımını kod üzerinden ayırt edebilecek.</li>
+          <li>Trustcall metadata'sındaki <code>json_doc_id</code> alanının güncelleme mantığındaki rolünü açıklayabilecek.</li>
+          <li><code>StateGraph</code>, <code>MessagesState</code>, checkpointer ve store sorumluluklarını birbirinden ayırabilecek.</li>
+          <li><code>stream_mode="values"</code> çıktılarında kullanıcı ve asistan mesajlarını state evrimi açısından okuyabilecek.</li>
+        </ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title">
+        <h2 id="on-kosullar-title">Ön Koşullar</h2>
+        <p>Bu dersi izlemek için Python fonksiyonları, list/dict yapıları, class tanımları, type hint kullanımı ve ortam değişkeni mantığı bilinmelidir. <code>BaseModel</code>, <code>Field</code>, <code>HumanMessage</code>, <code>SystemMessage</code>, <code>StateGraph</code> ve <code>InMemoryStore</code> gibi terimler ilk kez kullanıldığında kod bağlamında açıklanacaktır.</p>
+        <p>LLM tarafında temel mesaj rolleri ve model çağrısı sezgisi; LangGraph tarafında ise state, node, edge, store ve checkpoint ayrımı yeterlidir. Async yürütme bu bölümün odağı değildir.</p>
+      </section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody><tr><td><code>Memory</code></td><td>Kullanıcı hakkında tekil ve doğrulanmış bellek kaydı.</td><td>Pydantic şeması olarak Trustcall ve structured output tarafından kullanılır.</td></tr><tr><td><code>MemoryCollection</code></td><td>Birden fazla <code>Memory</code> nesnesini taşıyan koleksiyon.</td><td>Tek profil yerine açık uçlu uzun süreli bellek listesini temsil eder.</td></tr><tr><td><code>Namespace</code></td><td>Store içinde kayıtların mantıksal adresi.</td><td>User id ile birlikte bellekleri kullanıcı bazında ayırır.</td></tr><tr><td><code>Key</code></td><td>Namespace içindeki tekil bellek anahtarı.</td><td>Yeni kayıtlar UUID alır; güncellenen kayıtlar mevcut key ile ezilir.</td></tr><tr><td><code>Store</code></td><td>Thread dışına taşan uzun süreli kayıt alanı.</td><td><code>InMemoryStore</code> örneği ders içinde bellek backend’i olarak kullanılır.</td></tr><tr><td><code>Checkpointer</code></td><td>Thread içindeki kısa süreli yürütme geçmişi.</td><td><code>MemorySaver</code>, mesaj state’inin thread düzeyinde korunmasına yardımcı olur.</td></tr><tr><td><code>Trustcall</code></td><td>Şemaya bağlı bellek çıkarımı ve güncelleme aracı.</td><td>Tool calling, JSON patch ve doğrulama sezgisiyle koleksiyonları günceller.</td></tr><tr><td><code>json_doc_id</code></td><td>Güncellenecek mevcut bellek dokümanının id bilgisi.</td><td>Metadata içinde varsa store yazımı yeni UUID yerine mevcut key ile yapılır.</td></tr><tr><td><code>MessagesState</code></td><td>Graph içinde taşınan mesaj listesi sözleşmesi.</td><td><code>call_model</code> ve <code>write_memory</code> node’larının ortak state biçimidir.</td></tr><tr><td><code>stream_mode=&quot;values&quot;</code></td><td>Graph stream sırasında güncel state değerlerini gösterme modu.</td><td>Kullanıcı ve asistan mesajlarının yürütme boyunca görülmesini sağlar.</td></tr></tbody></table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+        <h2 id="buyuk-resim-title">Büyük Resim</h2>
+        <p>Bu derste bellek üç katmanda düşünülür. İlk katman, modelin serbest metinden yapılandırılmış bellek nesneleri üretmesidir. İkinci katman, bu nesnelerin LangGraph Store içinde kullanıcı namespace'i altında saklanmasıdır. Üçüncü katman, graph çalışırken store'daki belleklerin prompt bağlamına geri yüklenmesidir.</p>
+        <div class="concept-map">
+          <div class="flow-step"><strong>Kullanıcı mesajı</strong><span>Mesaj state'ine giren doğal dil verisi.</span></div>
+          <div class="flow-step"><strong>Şema</strong><span><code>Memory</code> ve <code>MemoryCollection</code> ile doğrulanabilir yapı.</span></div>
+          <div class="flow-step"><strong>Trustcall</strong><span>Mevcut kaydı güncelleme veya yeni kayıt ekleme kararı.</span></div>
+          <div class="flow-step"><strong>Store</strong><span>Namespace ve key ile uzun süreli kayıt.</span></div>
+          <div class="flow-step"><strong>Graph cevabı</strong><span>Belleklerin prompt bağlamına taşınması.</span></div>
+        </div>
+        <section class="note-card"><h3 id="state-bir-local-degisken-degildir">State bir local değişken değildir</h3><p>Graph state, node'lar arasında taşınan sözleşmeli yürütme verisidir. Store ise thread dışına taşan uzun süreli bellek alanıdır. Bu iki katman aynı veri yapısı gibi düşünülürse bellek davranışı yanlış yorumlanır.</p></section>
+      </section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+        <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+        <h3 id="profil-ve-koleksiyon-farki">Profil ve koleksiyon farkı</h3>
+        <p>Profil yaklaşımında kullanıcı hakkında tek bir nesne tutulur ve yeni bilgi geldikçe aynı nesne güncellenir. Koleksiyon yaklaşımında ise kullanıcı hakkında birden fazla bellek kaydı bulunabilir. Bu, yapılacaklar listesi, tercih geçmişi, ilgi alanları veya olay temelli anılar gibi açık uçlu büyüyen veriler için daha uygundur.</p>
+        <h3 id="trustcall-in-rolu">Trustcall'ın rolü</h3>
+        <p>Trustcall, modelin çıkardığı bilgiyi bir şemaya bağlarken mevcut belleklerin güncellenmesini ve yeni belleklerin eklenmesini birlikte ele alır. <code>enable_inserts=True</code> ayarı bu dersin merkezindedir; çünkü koleksiyon yalnızca var olan kaydı düzeltmez, gerektiğinde yeni kayıt da açar.</p>
+        <h3 id="store-ve-checkpointer-ayrimi">Store ve checkpointer ayrımı</h3>
+        <p><code>InMemoryStore</code>, kullanıcıya bağlı uzun süreli belleği temsil eder. <code>MemorySaver</code> ise belirli bir thread içindeki kısa süreli mesaj state'ini korur. Aynı kullanıcı yeni bir thread açtığında eski thread mesajları taşınmayabilir, fakat store içindeki kullanıcı belleği yeniden kullanılabilir.</p>
+      </section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+        <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+        <p>Aşağıdaki akışta çalıştırılabilir kodlar doğal sırayla ele alınır. Her blokta kodun LangGraph açısından önemi, dikkat edilmesi gereken nokta ve varsa çıktı yorumu birlikte verilir.</p>
+        <article class="walk-card" id="kod-adimi-1">
+<h3 id="kurulum-paketleri">Kurulum paketleri</h3>
+<p>LangGraph, LangChain OpenAI, Trustcall ve temel mesaj paketleri aynı çalışma ortamında hazır edilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Kurulum paketleri</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install -U langchain_openai langgraph
+%pip install -U trustcall langchain_core</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bağımlılıkları açıkça göstermek, dersin hangi API ailelerine dayandığını görünür kılar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Magic komutları Python fonksiyonu değildir; yalnızca Jupyter-stil çalıştırma ortamında anlamlıdır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; kurulum komutu sessiz çalışacak biçimde yakalanır.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-2">
+<h3 id="ortam-degiskenlerinin-hazirlanmasi">Ortam değişkenlerinin hazırlanması</h3>
+<p>API anahtarları ve izleme ayarları kod içinde açık değer yazmadan mevcut sürece aktarılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Ortam değişkenlerinin hazırlanması</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Prepare an environment variable for the current process.
+
+    Args:
+        var: Environment variable to check. If missing,
+            request the value from the user.
+
+    Returns:
+        None: The function updates `os.environ` in place.
+    """
+    env_value = os.environ.get(var)
+    if not env_value:
+        env_value = getpass.getpass(f"{var}: ")
+
+    os.environ[var] = env_value
+
+
+_set_env("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "langchain-academy"</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangSmith izleme ve model erişimi graph davranışını gözlemlemek için altyapı sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Gizli değerler koda gömülmemeli; kullanıcıdan güvenli girişle veya ortamdan alınmalıdır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; amaç güvenli çalışma bağlamını hazırlamaktır.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-3">
+<h3 id="bellek-koleksiyonu-icin-pydantic-semasi">Bellek koleksiyonu için Pydantic şeması</h3>
+<p>Tekil bellek nesnesi ve bu nesneleri taşıyan koleksiyon şeması tanımlanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Bellek koleksiyonu için Pydantic şeması</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from pydantic import BaseModel, Field
+
+
+class Memory(BaseModel):
+    """
+    Represent one memory record to store about the user.
+    """
+
+    content: str = Field(
+        description=(
+            "The main content of the memory. "
+            "For example: User expressed interest in "
+            "learning about French."
+        )
+    )
+
+
+class MemoryCollection(BaseModel):
+    """
+    Carry memory records as an open-ended collection.
+    """
+
+    memories: list[Memory] = Field(
+        description="A list of memories about the user."
+    )</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Şema, modelden gelen serbest metni doğrulanabilir Python nesnelerine dönüştürmenin sözleşmesidir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Koleksiyon şeması açık uçlu büyümeye izin verir; tekil profil gibi tek anahtarı sürekli ezmez.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; daha sonraki structured output çağrısının tip sözleşmesini kurar.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-4">
+<h3 id="model-erisimi-icin-anahtar">Model erişimi için anahtar</h3>
+<p>Model çağrılarının yapılabilmesi için ilgili ortam değişkeni hazırlanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Model erişimi için anahtar</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">_set_env("OPENAI_API_KEY")</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Structured output, Trustcall ve chatbot graph akışı aynı model bağlantısını kullanır.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Anahtar değeri HTML içinde gösterilmez; kod yalnızca değişken adını kullanır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; güvenli model bağlantısı için hazırlıktır.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-5">
+<h3 id="modelden-yapilandirilmis-koleksiyon-uretimi">Modelden yapılandırılmış koleksiyon üretimi</h3>
+<p>Chat model, serbest bir kullanıcı mesajından <code>MemoryCollection</code> şemasına uygun bellekler çıkarır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Modelden yapılandırılmış koleksiyon üretimi</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
+
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+model_with_structure = model.with_structured_output(
+    MemoryCollection
+)
+
+memory_collection = model_with_structure.invoke(
+    [HumanMessage("My name is Lance. I like to bike.")]
+)
+memory_collection.memories</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>with_structured_output</code>, LLM çıktısını Pydantic şemasıyla sınırlar ve sonraki store yazımlarını düzenli hale getirir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Model cevabı düz metin değil, doğrulanmış nesne listesi olarak okunmalıdır.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">[Memory(content="User's name is Lance."),
+ Memory(content='Lance likes to bike.')]</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda iki ayrı <code>Memory</code> nesnesi görünür: ad bilgisi ve bisiklet ilgisi ayrı kayıtlar halindedir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-6">
+<h3 id="tekil-bellegi-sozluge-donusturme">Tekil belleği sözlüğe dönüştürme</h3>
+<p>Bir Pydantic nesnesi store&#x27;a yazılabilecek sözlük biçimine çevrilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Tekil belleği sözlüğe dönüştürme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">memory_collection.memories[0].model_dump()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph store değerleri JSON-benzeri dict yapılarıyla daha taşınabilir hale gelir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Nesnenin model davranışı değil, seri hale getirilen alanları store&#x27;a yazılır.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'content': "User's name is Lance."}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı yalnızca <code>content</code> alanının saklanacağını gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-7">
+<h3 id="bellekleri-farkli-anahtarlarla-store-a-yazma">Bellekleri farklı anahtarlarla store&#x27;a yazma</h3>
+<p>İki bellek kaydı aynı namespace altında farklı UUID anahtarlarıyla saklanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Bellekleri farklı anahtarlarla store&#x27;a yazma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">import uuid
+from langgraph.store.memory import InMemoryStore
+
+in_memory_store = InMemoryStore()
+
+user_id = "1"
+namespace_for_memory = (user_id, "memories")
+
+key = str(uuid.uuid4())
+value = memory_collection.memories[0].model_dump()
+in_memory_store.put(namespace_for_memory, key, value)
+
+key = str(uuid.uuid4())
+value = memory_collection.memories[1].model_dump()
+in_memory_store.put(namespace_for_memory, key, value)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Koleksiyon modelinin farkı burada belirginleşir: her bellek bağımsız bir kayıt olarak yönetilir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Tek sabit key kullanılsaydı yeni bellek eski kaydı ezerdi; koleksiyonda key ayrımı gereklidir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; store üzerinde kalıcı olmayan bellek kayıtları oluşturur.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-8">
+<h3 id="namespace-altinda-arama">Namespace altında arama</h3>
+<p>Store içindeki tüm bellek kayıtları namespace üzerinden aranır ve yazdırılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Namespace altında arama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in in_memory_store.search(namespace_for_memory):
+    print(m.dict())</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>search</code>, tekil <code>get</code> yerine koleksiyon mantığına uygun toplu okuma sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Namespace sırası ve key değerleri tutarlı kullanılmazsa aynı kullanıcıya ait bellekler bulunamayabilir.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'value': {'content': "User's name is Lance."}, 'key': 'e1c4e5ab-ab0f-4cbb-822d-f29240a983af', 'namespace': ['1', 'memories'], 'created_at': '2024-10-30T21:43:26.893775+00:00', 'updated_at': '2024-10-30T21:43:26.893779+00:00'}
+{'value': {'content': 'Lance likes to bike.'}, 'key': 'e132a1ea-6202-43ac-a9a6-3ecf2c1780a8', 'namespace': ['1', 'memories'], 'created_at': '2024-10-30T21:43:26.893833+00:00', 'updated_at': '2024-10-30T21:43:26.893834+00:00'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, her kaydın <code>value</code>, <code>key</code>, <code>namespace</code> ve zaman metadata&#x27;sı ile tutulduğunu gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-9">
+<h3 id="trustcall-extractor-olusturma">Trustcall extractor oluşturma</h3>
+<p>Trustcall, <code>Memory</code> şemasına göre hem güncelleme hem de yeni kayıt ekleme yapabilecek biçimde kurulur.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Trustcall extractor oluşturma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from trustcall import create_extractor
+
+trustcall_extractor = create_extractor(
+    model,
+    tools=[Memory],
+    tool_choice="Memory",
+    enable_inserts=True,
+)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>enable_inserts=True</code>, koleksiyon şemalarında yeni belleklerin mevcut listeye eklenmesini sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu bayrak olmadan yalnızca var olan yapıların güncellenmesi beklenebilir; koleksiyon büyümesi sınırlanır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; extractor sonraki konuşma örneklerinde kullanılır.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-10">
+<h3 id="ilk-konusmadan-bellek-cikarimi">İlk konuşmadan bellek çıkarımı</h3>
+<p>Sistem talimatı ve kısa konuşma geçmişi extractor&#x27;a gönderilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">İlk konuşmadan bellek çıkarımı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langchain_core.messages import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage,
+)
+
+instruction = (
+    "Extract memories from the following conversation:"
+)
+conversation = [
+    HumanMessage(content="Hi, I'm Lance."),
+    AIMessage(content="Nice to meet you, Lance."),
+    HumanMessage(
+        content=(
+            "This morning I had a nice bike ride "
+            "in San Francisco."
+        )
+    ),
+]
+
+result = trustcall_extractor.invoke(
+    {
+        "messages": [SystemMessage(content=instruction)]
+        + conversation
+    }
+)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Trustcall, mesaj geçmişinden şemaya uygun bellek nesnesi üretmek için model tool calling davranışını kullanır.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Talimat ve konuşma aynı <code>messages</code> listesinde taşınır; sıra modelin neyi bağlam kabul edeceğini etkiler.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; sonuç sonraki adımlarda incelenir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-11">
+<h3 id="tool-call-mesajini-goruntuleme">Tool call mesajını görüntüleme</h3>
+<p>Extractor sonucundaki model mesajları okunabilir biçimde yazdırılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Tool call mesajını görüntüleme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in result["messages"]:
+    m.pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Tool call, modelin hangi şemaya hangi argümanlarla kayıt üretmek istediğini gösterir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Tool call nihai kullanıcı cevabı değildir; bellek yazımı için ara yapıdır.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Tool Calls:
+  Memory (call_Pj4kctFlpg9TgcMBfMH33N30)
+ Call ID: call_Pj4kctFlpg9TgcMBfMH33N30
+  Args:
+    content: Lance had a nice bike ride in San Francisco this morning.</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı tek bir <code>Memory</code> tool call ve <code>content</code> argümanını gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-12">
+<h3 id="semaya-uyan-response-nesnesi">Şemaya uyan response nesnesi</h3>
+<p>Trustcall response listesi yazdırılarak doğrulanmış bellek nesnesi görülür.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Şemaya uyan response nesnesi</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in result["responses"]:
+    print(m)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu çıktı, tool call argümanının Pydantic şemasına uygun nesneye dönüştüğünü gösterir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Response nesnesini ham model metniyle karıştırmamak gerekir.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">content='Lance had a nice bike ride in San Francisco this morning.'</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, sabah yapılan bisiklet sürüşünün tek bellek kaydı olarak çıkarıldığını gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-13">
+<h3 id="response-metadata-bilgisini-okuma">Response metadata bilgisini okuma</h3>
+<p>Tool call kimliği metadata içinde görüntülenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Response metadata bilgisini okuma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in result["response_metadata"]:
+    print(m)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Metadata daha sonra güncelleme ile yeni kayıt eklemeyi ayırmak için kritik hale gelir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu ilk örnekte <code>json_doc_id</code> yoktur; kayıt yeni bir bellek gibi okunur.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'id': 'call_Pj4kctFlpg9TgcMBfMH33N30'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda yalnızca tool call id değeri bulunur.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-14">
+<h3 id="mevcut-bellegi-trustcall-a-baglam-olarak-verme">Mevcut belleği Trustcall&#x27;a bağlam olarak verme</h3>
+<p>Yeni konuşma parçaları ve daha önce çıkarılmış bellekler extractor&#x27;a hazırlanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Mevcut belleği Trustcall&#x27;a bağlam olarak verme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">updated_conversation = [
+    AIMessage(content="That's great, did you do after?"),
+    HumanMessage(
+        content="I went to Tartine and ate a croissant."
+    ),
+    AIMessage(content="What else is on your mind?"),
+    HumanMessage(
+        content=(
+            "I was thinking about my Japan, "
+            "and going back this winter!"
+        )
+    ),
+]
+
+system_msg = (
+    "Update existing memories and create new ones based on the "
+    "following conversation:"
+)
+tool_name = "Memory"
+existing_memories = (
+    [
+        (str(i), tool_name, memory.model_dump())
+        for i, memory in enumerate(result["responses"])
+    ]
+    if result["responses"]
+    else None
+)
+existing_memories</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Mevcut kayıtlar <code>(id, tool_name, value)</code> üçlüsü olarak verildiğinde Trustcall hangi kaydı güncelleyebileceğini bilir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu id değerleri sonradan store key olarak kullanılacağından rastgele değiştirilmemelidir.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">[('0',
+  'Memory',
+  {'content': 'Lance had a nice bike ride in San Francisco this morning.'})]</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, mevcut belleğin <code>0</code> id değeriyle extractor&#x27;a verildiğini gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-15">
+<h3 id="guncelleme-ve-ekleme-cagrisi">Güncelleme ve ekleme çağrısı</h3>
+<p>Extractor, yeni konuşma ve mevcut bellek listesiyle tekrar çalıştırılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Güncelleme ve ekleme çağrısı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">result = trustcall_extractor.invoke(
+    {
+        "messages": updated_conversation,
+        "existing": existing_memories,
+    }
+)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu çağrı aynı anda mevcut kaydı güncelleyebilir ve yeni bellek ekleyebilir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>existing</code> alanı verilmezse model önceki kayıtlarla ilişki kuramaz.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu adım çıktı üretmez; sonuç sonraki kodlarda incelenir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-16">
+<h3 id="iki-tool-call-olusmasi">İki tool call oluşması</h3>
+<p>Model mesajı, bir güncelleme ve bir yeni bellek çıkarımı ürettiğini gösterir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">İki tool call oluşması</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in result["messages"]:
+    m.pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Koleksiyon şemalarında aynı konuşmadan birden fazla bellek eylemi çıkabilir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Tool call sayısı tek başına başarı ölçütü değildir; metadata ve response nesneleri birlikte okunmalıdır.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Tool Calls:
+  Memory (call_vxks0YH1hwUxkghv4f5zdkTr)
+ Call ID: call_vxks0YH1hwUxkghv4f5zdkTr
+  Args:
+    content: Lance had a nice bike ride in San Francisco this morning. He went to Tartine and ate a croissant. He was thinking about his trip to Japan and going back this winter!
+  Memory (call_Y4S3poQgFmDfPy2ExPaMRk8g)
+ Call ID: call_Y4S3poQgFmDfPy2ExPaMRk8g
+  Args:
+    content: Lance went to Tartine and ate a croissant. He was thinking about his trip to Japan and going back this winter!</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, ilk belleğin genişletildiğini ve ikinci ayrı bellek önerildiğini gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-17">
+<h3 id="guncellenmis-response-nesneleri">Güncellenmiş response nesneleri</h3>
+<p>Trustcall response listesinde iki bellek nesnesi görünür.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Güncellenmiş response nesneleri</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in result["responses"]:
+    print(m)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Birinci kayıt önceki belleği genişletir; ikinci kayıt yeni ayrı bilgi olarak saklanabilir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Benzer içerikli iki kayıt oluşabileceği için schema ve talimat tasarımı önemlidir.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">content='Lance had a nice bike ride in San Francisco this morning. He went to Tartine and ate a croissant. He was thinking about his trip to Japan and going back this winter!'
+content='Lance went to Tartine and ate a croissant. He was thinking about his trip to Japan and going back this winter!'</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda bisiklet, Tartine, kruvasan ve Japonya seyahati bilgileri iki ayrı response içinde yer alır.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-18">
+<h3 id="guncelleme-metadata-sini-ayirt-etme">Güncelleme metadata&#x27;sını ayırt etme</h3>
+<p>Metadata içinde <code>json_doc_id</code> bulunan kayıt ile yeni kayıt ayrılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Güncelleme metadata&#x27;sını ayırt etme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for m in result["response_metadata"]:
+    print(m)</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>json_doc_id</code>, hangi mevcut bellek dokümanının değiştirileceğini bildirir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu alan yoksa store yazımı yeni UUID ile yapılmalıdır; varsa mevcut key korunmalıdır.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'id': 'call_vxks0YH1hwUxkghv4f5zdkTr', 'json_doc_id': '0'}
+{'id': 'call_Y4S3poQgFmDfPy2ExPaMRk8g'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, bir tool call&#x27;ın <code>json_doc_id: 0</code> ile güncelleme, diğerinin yeni ekleme olduğunu gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-19">
+<h3 id="bellek-koleksiyonlu-chatbot-graph-i">Bellek koleksiyonlu chatbot graph&#x27;ı</h3>
+<p>Model çağrısı ve bellek yazımı iki node olarak graph içine yerleştirilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Bellek koleksiyonlu chatbot graph&#x27;ı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from IPython.display import Image, display
+
+import uuid
+
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import merge_message_runs
+from langchain_core.runnables.config import RunnableConfig
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import (
+    END,
+    START,
+    MessagesState,
+    StateGraph,
+)
+from langgraph.store.base import BaseStore
+from langgraph.store.memory import InMemoryStore
+
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+
+
+class Memory(BaseModel):
+    """
+    Represent one memory record to store about the user.
+    """
+
+    content: str = Field(
+        description=(
+            "The main content of the memory. "
+            "For example: User expressed interest in "
+            "learning about French."
+        )
+    )
+
+
+trustcall_extractor = create_extractor(
+    model,
+    tools=[Memory],
+    tool_choice="Memory",
+    enable_inserts=True,
+)
+
+MODEL_SYSTEM_MESSAGE = (
+    "You are a helpful chatbot. You are designed to be a "
+    "companion to a user.\n\n"
+    "You have a long term memory which keeps track of "
+    "information you learn about the user over time.\n\n"
+    "Current Memory (may include updated memories "
+    "from this conversation):\n\n"
+    "{memory}"
+)
+
+TRUSTCALL_INSTRUCTION = (
+    "Reflect on following interaction.\n\n"
+    "Use the provided tools to retain any necessary memories "
+    "about the user.\n\n"
+    "Use parallel tool calling to handle updates "
+    "and insertions simultaneously:"
+)
+
+
+def call_model(
+    state: MessagesState,
+    config: RunnableConfig,
+    store: BaseStore,
+):
+    """
+    Load long-term memories from the store and personalize the
+    chatbot response with that context.
+
+    Args:
+        state: Message state carried by LangGraph.
+        config: Runtime configuration with values such as
+            `thread_id` and `user_id`.
+        store: Store that holds long-term memories for the
+            user.
+
+    Returns:
+        dict: Model response to append to the `messages` field.
+    """
+    user_id = config["configurable"]["user_id"]
+
+    namespace = ("memories", user_id)
+    memories = store.search(namespace)
+
+    info = "\n".join(
+        f"- {mem.value['content']}" for mem in memories
+    )
+    system_msg = MODEL_SYSTEM_MESSAGE.format(memory=info)
+
+    response = model.invoke(
+        [SystemMessage(content=system_msg)] + state["messages"]
+    )
+
+    return {"messages": response}
+
+
+def write_memory(
+    state: MessagesState,
+    config: RunnableConfig,
+    store: BaseStore,
+):
+    """
+    Reflect on the chat history and update the memory
+    collection.
+
+    Args:
+        state: Message history accumulated during graph
+            execution.
+        config: Runtime settings that identify the user receiving
+            memory writes.
+        store: LangGraph store where existing and new memories are
+            saved.
+
+    Returns:
+        None: Memory updates are written to the store as a side
+            effect.
+    """
+    user_id = config["configurable"]["user_id"]
+    namespace = ("memories", user_id)
+
+    existing_items = store.search(namespace)
+
+    tool_name = "Memory"
+    existing_memories = (
+        [
+            (existing_item.key, tool_name, existing_item.value)
+            for existing_item in existing_items
+        ]
+        if existing_items
+        else None
+    )
+
+    updated_messages = list(
+        merge_message_runs(
+            messages=(
+                [SystemMessage(content=TRUSTCALL_INSTRUCTION)]
+                + state["messages"]
+            )
+        )
+    )
+
+    result = trustcall_extractor.invoke(
+        {
+            "messages": updated_messages,
+            "existing": existing_memories,
+        }
+    )
+
+    for r, rmeta in zip(
+        result["responses"],
+        result["response_metadata"],
+    ):
+        store.put(
+            namespace,
+            rmeta.get("json_doc_id", str(uuid.uuid4())),
+            r.model_dump(mode="json"),
+        )
+
+
+builder = StateGraph(MessagesState)
+builder.add_node("call_model", call_model)
+builder.add_node("write_memory", write_memory)
+builder.add_edge(START, "call_model")
+builder.add_edge("call_model", "write_memory")
+builder.add_edge("write_memory", END)
+
+across_thread_memory = InMemoryStore()
+within_thread_memory = MemorySaver()
+
+graph = builder.compile(
+    checkpointer=within_thread_memory,
+    store=across_thread_memory,
+)
+
+display(Image(graph.get_graph(xray=1).draw_mermaid_png()))</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>call_model</code> store&#x27;dan okur; <code>write_memory</code> Trustcall ile store&#x27;a yazar. Böylece kısa süreli mesaj state&#x27;i ve uzun süreli store ayrılır.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Store ve checkpointer farklı sorumluluklara sahiptir; biri kullanıcılar arası bellek, diğeri thread içi konuşma sürekliliği içindir.</p></section>
+</div>
+<div class="output-card">
+  <div class="output-head">Graph görseli</div>
+  <div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akış görseli"></div>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel çıktı, <code>START -&gt; call_model -&gt; write_memory -&gt; END</code> akışını doğrular.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-20">
+<h3 id="ilk-thread-icinde-ad-bilgisini-verme">İlk thread içinde ad bilgisini verme</h3>
+<p>Kullanıcı aynı thread ve user id altında kendini tanıtır; graph streaming ile çalıştırılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">İlk thread içinde ad bilgisini verme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">config = {
+    "configurable": {
+        "thread_id": "1",
+        "user_id": "1",
+    }
+}
+input_messages = [
+    HumanMessage(content="Hi, my name is Lance")
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>stream_mode=&quot;values&quot;</code>, her adımda state&#x27;in güncel değerini okumayı sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu çıktı memory write node&#x27;unun nihai kullanıcı cevabı üretmediğini; cevabın <code>call_model</code> tarafından üretildiğini gösterir.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Hi, my name is Lance
+================================== Ai Message ==================================
+
+Hi Lance! It's great to meet you. How can I assist you today?</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda kullanıcı mesajı ve kişiselleştirilmemiş ilk asistan cevabı görünür.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-21">
+<h3 id="ayni-thread-icinde-ilgi-bilgisi-verme">Aynı thread içinde ilgi bilgisi verme</h3>
+<p>Kullanıcı bisiklet sevdiğini belirtir ve aynı config ile graph tekrar çalışır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Aynı thread içinde ilgi bilgisi verme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">input_messages = [
+    HumanMessage(content="I like to bike around San Francisco")
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Aynı user id kullanıldığı için uzun süreli bellek aynı namespace&#x27;e yazılır.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Thread id ile user id farklı kavramlardır; biri konuşma çizgisini, diğeri kalıcı kullanıcı belleğini temsil eder.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+I like to bike around San Francisco
+================================== Ai Message ==================================
+
+That sounds like a lot of fun! San Francisco has some beautiful routes for biking. Do you have a favorite trail or area you like to explore?</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, asistanın yeni bilgiye konuşma içinde doğal yanıt verdiğini gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-22">
+<h3 id="uzun-sureli-bellegi-store-dan-okuma">Uzun süreli belleği store&#x27;dan okuma</h3>
+<p>Kullanıcı namespace&#x27;i aranarak kaydedilen bellekler listelenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Uzun süreli belleği store&#x27;dan okuma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">user_id = "1"
+namespace = ("memories", user_id)
+memories = across_thread_memory.search(namespace)
+
+for m in memories:
+    print(m.dict())</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu kontrol, memory write node&#x27;unun store üzerinde beklenen kayıtları ürettiğini doğrular.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Key değerleri çalışma anında değişebilir; önemli olan namespace ve value alanlarıdır.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'value': {'content': "User's name is Lance."}, 'key': 'dee65880-dd7d-4184-8ca1-1f7400f7596b', 'namespace': ['memories', '1'], 'created_at': '2024-10-30T22:18:52.413283+00:00', 'updated_at': '2024-10-30T22:18:52.413284+00:00'}
+{'value': {'content': 'User likes to bike around San Francisco.'}, 'key': '662195fc-8ea4-4f64-a6b6-6b86d9cb85c0', 'namespace': ['memories', '1'], 'created_at': '2024-10-30T22:18:56.597813+00:00', 'updated_at': '2024-10-30T22:18:56.597814+00:00'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, ad ve bisiklet ilgisinin iki ayrı bellek kaydı olduğunu gösterir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-23">
+<h3 id="yeni-tercih-bilgisini-ekleme">Yeni tercih bilgisini ekleme</h3>
+<p>Kullanıcı fırınlardan hoşlandığını söyler; graph aynı user id ile çalışır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Yeni tercih bilgisini ekleme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">input_messages = [
+    HumanMessage(content="I also enjoy going to bakeries")
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Koleksiyon şeması, yeni tercihi ayrı bir bellek olarak ekleyebilecek esnekliği sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Asistan cevabı ile bellek yazımı ayrı adımlardır; kullanıcıya görünen cevap store yazımının tamamını göstermez.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+I also enjoy going to bakeries
+================================== Ai Message ==================================
+
+Biking and bakeries make a great combination! Do you have a favorite bakery in San Francisco, or are you on the hunt for new ones to try?</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, bisiklet ve fırın ilgisini konuşma bağlamında birleştiren bir asistan cevabı üretir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-24">
+<h3 id="yeni-thread-de-ayni-kullanici-bellegini-kullanma">Yeni thread&#x27;de aynı kullanıcı belleğini kullanma</h3>
+<p>Farklı thread id fakat aynı user id ile öneri istenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Yeni thread&#x27;de aynı kullanıcı belleğini kullanma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">config = {
+    "configurable": {
+        "thread_id": "2",
+        "user_id": "1",
+    }
+}
+input_messages = [
+    HumanMessage(
+        content="What bakeries do you recommend for me?"
+    )
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu bölüm, uzun süreli belleğin thread&#x27;ler arasında taşındığını gösterir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Thread değişse bile user id aynı kalmadığında aynı bellekler okunamaz.</p></section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+What bakeries do you recommend for me?
+================================== Ai Message ==================================
+
+Since you enjoy biking around San Francisco, you might like to check out some of these bakeries that are both delicious and located in areas that are great for a bike ride:
+
+1. **Tartine Bakery** - Located in the Mission District, it's famous for its bread and pastries. The area is vibrant and perfect for a leisurely ride.
+
+2. **Arsicault Bakery** - Known for its incredible croissants, it's in the Richmond District, which offers a nice ride through Golden Gate Park.
+
+3. **B. Patisserie** - Situated in Lower Pacific Heights, this bakery is renowned for its kouign-amann and other French pastries. The neighborhood is charming and bike-friendly.
+
+4. **Mr. Holmes Bakehouse** - Famous for its cruffins, it's located in the Tenderloin, which is a bit more urban but still accessible by bike.
+
+5. **Noe Valley Bakery** - A cozy spot in Noe Valley, perfect for a stop after exploring the hilly streets of the area.
+
+Do any of these sound like a good fit for your next biking adventure?</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, önceki bisiklet ve fırın ilgilerinin yeni konuşmada öneriyi kişiselleştirdiğini gösterir.</p></section>
+</article>
+      </section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+        <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+        <p>Çıktılarda üç farklı temsil görülür. Pydantic repr çıktıları, modelden çıkarılan doğrulanmış bellek nesnelerini gösterir. Store çıktıları, value/key/namespace/metadata ayrımını görünür kılar. Pretty print mesaj çıktıları ise graph streaming sırasında son mesajın kullanıcı mı asistan mı olduğunu okumayı kolaylaştırır.</p>
+        <section class="note-card"><h3 id="okuma-rehberi">Okuma rehberi</h3><p><code>json_doc_id</code> bulunan metadata bir güncelleme işaretidir. <code>json_doc_id</code> bulunmayan kayıt yeni insert olarak yorumlanabilir. Store çıktılarında <code>key</code> kayıt kimliğidir; <code>value.content</code> ise kullanıcı hakkında saklanan anlamlı bilgidir.</p></section>
+      </section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title">
+        <h2 id="graph-akisi-title">Graph Akışı</h2>
+        <div class="concept-map four">
+          <div class="flow-step"><strong>START</strong><span>Yürütme mesaj state'i ile başlar.</span></div>
+          <div class="flow-step"><strong>call_model</strong><span>Store'daki bellekler okunur ve model cevabı üretilir.</span></div>
+          <div class="flow-step"><strong>write_memory</strong><span>Sohbet geçmişi Trustcall ile değerlendirilir ve store güncellenir.</span></div>
+          <div class="flow-step"><strong>END</strong><span>Graph bu turu tamamlar.</span></div>
+        </div>
+        <p>Bu graph'ta conditional edge yoktur; yürütme her çağrıda model cevabından sonra bellek yazma adımına geçer. Bu tasarım, kullanıcıya cevap üretme ile bellek güncelleme sorumluluğunu ayrı node'larda tutar.</p>
+      </section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title">
+        <h2 id="state-evrimi-title">State’in Evrimi</h2>
+        <div class="state-list">
+          <div class="state-item"><strong>Başlangıç state'i</strong><span><code>messages</code> alanına kullanıcı mesajı eklenir.</span></div>
+          <div class="state-item"><strong>Model cevabı</strong><span><code>call_model</code>, store'dan okunan bellekleri sistem mesajına ekler ve assistant mesajını döndürür.</span></div>
+          <div class="state-item"><strong>Bellek yazımı</strong><span><code>write_memory</code>, state'teki mesajları Trustcall'a verir ve store üzerinde yan etki üretir.</span></div>
+          <div class="state-item"><strong>Yeni thread</strong><span><code>thread_id</code> değişse bile aynı <code>user_id</code> ile uzun süreli store belleği yeniden okunur.</span></div>
+        </div>
+        <p>Bu bölümde reducer veya conditional routing kullanılmaz. Odak, mesaj state'i ile store belleğinin ayrı fakat birlikte çalışan iki katman olarak tasarlanmasıdır.</p>
+      </section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+        <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+        <p>Bu derste tam bir agent-tool döngüsü veya <code>ToolNode</code> kullanılmaz. Buna rağmen Trustcall içinde model tool calling davranışı vardır: model <code>Memory</code> şemasına uygun tool call üretir, Trustcall bunu doğrulanmış response nesnelerine ve metadata kayıtlarına dönüştürür.</p>
+        <div class="chat-flow">
+          <div class="chat-bubble user"><strong>Kullanıcı</strong>Yeni kişisel bilgi verir.</div>
+          <div class="chat-bubble assistant"><strong>Model</strong>Sohbet cevabı üretir.</div>
+          <div class="chat-bubble tool"><strong>Trustcall</strong>Güncellenecek veya eklenecek bellekleri şemaya bağlı çıkarır.</div>
+          <div class="chat-bubble tool"><strong>Store</strong>Belirlenen namespace ve key altında kayıtları saklar.</div>
+        </div>
+      </section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+        <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+        <ul>
+          <li>State'i local değişken sanmak ve node'lar arası sözleşme olduğunu gözden kaçırmak.</li>
+          <li>Store ile checkpointer'ı aynı bellek katmanı gibi düşünmek.</li>
+          <li>Tek profil güncelleme mantığını koleksiyon belleğine aynen uygulamak.</li>
+          <li><code>json_doc_id</code> alanını dikkate almadan her sonucu yeni UUID ile kaydetmek.</li>
+          <li>Tool call çıktısını doğrudan nihai kullanıcı cevabı sanmak.</li>
+          <li>Namespace sırasını tutarsız kurarak kayıtları yanlış kullanıcı altında aramak.</li>
+          <li><code>stream_mode="values"</code> çıktısını token streaming ile karıştırmak.</li>
+          <li>API anahtarını kod içine açık değer olarak yazmak.</li>
+          <li>Çok geniş veya belirsiz şema açıklamalarıyla yinelenen bellekler üretmek.</li>
+        </ul>
+      </section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+        <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+        <ol>
+          <li>Koleksiyon belleği, kullanıcı hakkında birden çok bağımsız kaydı saklamak için profil belleğinden daha uygundur.</li>
+          <li><code>Memory</code> şeması tek kayıt biçimini; <code>MemoryCollection</code> birden fazla kaydı temsil eder.</li>
+          <li><code>with_structured_output</code>, model çıktısını doğrulanmış Pydantic nesnelerine yaklaştırır.</li>
+          <li>Store yazımı namespace, key ve value ayrımıyla düşünülmelidir.</li>
+          <li>Yeni belleklerde UUID, güncellemelerde <code>json_doc_id</code> kaynaklı mevcut key kullanılmalıdır.</li>
+          <li><code>call_model</code> ve <code>write_memory</code> ayrımı graph sorumluluklarını sadeleştirir.</li>
+          <li>Checkpointer thread içi sürekliliği; store kullanıcılar arası uzun süreli belleği temsil eder.</li>
+          <li>Aynı <code>user_id</code>, farklı thread içinde önceki uzun süreli belleğin yeniden kullanılmasını sağlar.</li>
+          <li>Pretty print çıktıları mesaj temsilidir; store çıktıları kalıcı bellek kayıtlarını gösterir.</li>
+          <li>Bu yapı, sonraki daha kapsamlı memory agent tasarımları için temel oluşturur.</li>
+        </ol>
+      </section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+        <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+        <p>Aşağıdaki tek parça akış, derste kullanılan çalıştırılabilir kodları sırasıyla bir araya getirir. Kopyalama düğmesi ham kodu alır; tooltip metinleri kopyalanmaz.</p>
+        <div class="code-card">
+  <div class="code-head"><span class="code-title">Dersin Kod Akışı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install -U langchain_openai langgraph
+%pip install -U trustcall langchain_core
+
+import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Prepare an environment variable for the current process.
+
+    Args:
+        var: Environment variable to check. If missing,
+            request the value from the user.
+
+    Returns:
+        None: The function updates `os.environ` in place.
+    """
+    env_value = os.environ.get(var)
+    if not env_value:
+        env_value = getpass.getpass(f"{var}: ")
+
+    os.environ[var] = env_value
+
+
+_set_env("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "langchain-academy"
+
+from pydantic import BaseModel, Field
+
+
+class Memory(BaseModel):
+    """
+    Represent one memory record to store about the user.
+    """
+
+    content: str = Field(
+        description=(
+            "The main content of the memory. "
+            "For example: User expressed interest in "
+            "learning about French."
+        )
+    )
+
+
+class MemoryCollection(BaseModel):
+    """
+    Carry memory records as an open-ended collection.
+    """
+
+    memories: list[Memory] = Field(
+        description="A list of memories about the user."
+    )
+
+_set_env("OPENAI_API_KEY")
+
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
+
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+model_with_structure = model.with_structured_output(
+    MemoryCollection
+)
+
+memory_collection = model_with_structure.invoke(
+    [HumanMessage("My name is Lance. I like to bike.")]
+)
+memory_collection.memories
+
+memory_collection.memories[0].model_dump()
+
+import uuid
+from langgraph.store.memory import InMemoryStore
+
+in_memory_store = InMemoryStore()
+
+user_id = "1"
+namespace_for_memory = (user_id, "memories")
+
+key = str(uuid.uuid4())
+value = memory_collection.memories[0].model_dump()
+in_memory_store.put(namespace_for_memory, key, value)
+
+key = str(uuid.uuid4())
+value = memory_collection.memories[1].model_dump()
+in_memory_store.put(namespace_for_memory, key, value)
+
+for m in in_memory_store.search(namespace_for_memory):
+    print(m.dict())
+
+from trustcall import create_extractor
+
+trustcall_extractor = create_extractor(
+    model,
+    tools=[Memory],
+    tool_choice="Memory",
+    enable_inserts=True,
+)
+
+from langchain_core.messages import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage,
+)
+
+instruction = (
+    "Extract memories from the following conversation:"
+)
+conversation = [
+    HumanMessage(content="Hi, I'm Lance."),
+    AIMessage(content="Nice to meet you, Lance."),
+    HumanMessage(
+        content=(
+            "This morning I had a nice bike ride "
+            "in San Francisco."
+        )
+    ),
+]
+
+result = trustcall_extractor.invoke(
+    {
+        "messages": [SystemMessage(content=instruction)]
+        + conversation
+    }
+)
+
+for m in result["messages"]:
+    m.pretty_print()
+
+for m in result["responses"]:
+    print(m)
+
+for m in result["response_metadata"]:
+    print(m)
+
+updated_conversation = [
+    AIMessage(content="That's great, did you do after?"),
+    HumanMessage(
+        content="I went to Tartine and ate a croissant."
+    ),
+    AIMessage(content="What else is on your mind?"),
+    HumanMessage(
+        content=(
+            "I was thinking about my Japan, "
+            "and going back this winter!"
+        )
+    ),
+]
+
+system_msg = (
+    "Update existing memories and create new ones based on the "
+    "following conversation:"
+)
+tool_name = "Memory"
+existing_memories = (
+    [
+        (str(i), tool_name, memory.model_dump())
+        for i, memory in enumerate(result["responses"])
+    ]
+    if result["responses"]
+    else None
+)
+existing_memories
+
+result = trustcall_extractor.invoke(
+    {
+        "messages": updated_conversation,
+        "existing": existing_memories,
+    }
+)
+
+for m in result["messages"]:
+    m.pretty_print()
+
+for m in result["responses"]:
+    print(m)
+
+for m in result["response_metadata"]:
+    print(m)
+
+from IPython.display import Image, display
+
+import uuid
+
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import merge_message_runs
+from langchain_core.runnables.config import RunnableConfig
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import (
+    END,
+    START,
+    MessagesState,
+    StateGraph,
+)
+from langgraph.store.base import BaseStore
+from langgraph.store.memory import InMemoryStore
+
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+
+
+class Memory(BaseModel):
+    """
+    Represent one memory record to store about the user.
+    """
+
+    content: str = Field(
+        description=(
+            "The main content of the memory. "
+            "For example: User expressed interest in "
+            "learning about French."
+        )
+    )
+
+
+trustcall_extractor = create_extractor(
+    model,
+    tools=[Memory],
+    tool_choice="Memory",
+    enable_inserts=True,
+)
+
+MODEL_SYSTEM_MESSAGE = (
+    "You are a helpful chatbot. You are designed to be a "
+    "companion to a user.\n\n"
+    "You have a long term memory which keeps track of "
+    "information you learn about the user over time.\n\n"
+    "Current Memory (may include updated memories "
+    "from this conversation):\n\n"
+    "{memory}"
+)
+
+TRUSTCALL_INSTRUCTION = (
+    "Reflect on following interaction.\n\n"
+    "Use the provided tools to retain any necessary memories "
+    "about the user.\n\n"
+    "Use parallel tool calling to handle updates "
+    "and insertions simultaneously:"
+)
+
+
+def call_model(
+    state: MessagesState,
+    config: RunnableConfig,
+    store: BaseStore,
+):
+    """
+    Load long-term memories from the store and personalize the
+    chatbot response with that context.
+
+    Args:
+        state: Message state carried by LangGraph.
+        config: Runtime configuration with values such as
+            `thread_id` and `user_id`.
+        store: Store that holds long-term memories for the
+            user.
+
+    Returns:
+        dict: Model response to append to the `messages` field.
+    """
+    user_id = config["configurable"]["user_id"]
+
+    namespace = ("memories", user_id)
+    memories = store.search(namespace)
+
+    info = "\n".join(
+        f"- {mem.value['content']}" for mem in memories
+    )
+    system_msg = MODEL_SYSTEM_MESSAGE.format(memory=info)
+
+    response = model.invoke(
+        [SystemMessage(content=system_msg)] + state["messages"]
+    )
+
+    return {"messages": response}
+
+
+def write_memory(
+    state: MessagesState,
+    config: RunnableConfig,
+    store: BaseStore,
+):
+    """
+    Reflect on the chat history and update the memory
+    collection.
+
+    Args:
+        state: Message history accumulated during graph
+            execution.
+        config: Runtime settings that identify the user receiving
+            memory writes.
+        store: LangGraph store where existing and new memories are
+            saved.
+
+    Returns:
+        None: Memory updates are written to the store as a side
+            effect.
+    """
+    user_id = config["configurable"]["user_id"]
+    namespace = ("memories", user_id)
+
+    existing_items = store.search(namespace)
+
+    tool_name = "Memory"
+    existing_memories = (
+        [
+            (existing_item.key, tool_name, existing_item.value)
+            for existing_item in existing_items
+        ]
+        if existing_items
+        else None
+    )
+
+    updated_messages = list(
+        merge_message_runs(
+            messages=(
+                [SystemMessage(content=TRUSTCALL_INSTRUCTION)]
+                + state["messages"]
+            )
+        )
+    )
+
+    result = trustcall_extractor.invoke(
+        {
+            "messages": updated_messages,
+            "existing": existing_memories,
+        }
+    )
+
+    for r, rmeta in zip(
+        result["responses"],
+        result["response_metadata"],
+    ):
+        store.put(
+            namespace,
+            rmeta.get("json_doc_id", str(uuid.uuid4())),
+            r.model_dump(mode="json"),
+        )
+
+
+builder = StateGraph(MessagesState)
+builder.add_node("call_model", call_model)
+builder.add_node("write_memory", write_memory)
+builder.add_edge(START, "call_model")
+builder.add_edge("call_model", "write_memory")
+builder.add_edge("write_memory", END)
+
+across_thread_memory = InMemoryStore()
+within_thread_memory = MemorySaver()
+
+graph = builder.compile(
+    checkpointer=within_thread_memory,
+    store=across_thread_memory,
+)
+
+display(Image(graph.get_graph(xray=1).draw_mermaid_png()))
+
+config = {
+    "configurable": {
+        "thread_id": "1",
+        "user_id": "1",
+    }
+}
+input_messages = [
+    HumanMessage(content="Hi, my name is Lance")
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()
+
+input_messages = [
+    HumanMessage(content="I like to bike around San Francisco")
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()
+
+user_id = "1"
+namespace = ("memories", user_id)
+memories = across_thread_memory.search(namespace)
+
+for m in memories:
+    print(m.dict())
+
+input_messages = [
+    HumanMessage(content="I also enjoy going to bakeries")
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()
+
+config = {
+    "configurable": {
+        "thread_id": "2",
+        "user_id": "1",
+    }
+}
+input_messages = [
+    HumanMessage(
+        content="What bakeries do you recommend for me?"
+    )
+]
+
+for chunk in graph.stream(
+    {"messages": input_messages},
+    config,
+    stream_mode="values",
+):
+    chunk["messages"][-1].pretty_print()</code></pre>
+</div>
+      </section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+        <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+        <div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody><tr><td>Collection schema</td><td>Koleksiyon şeması</td><td>Aynı türden çok sayıda bellek kaydının büyüyebilen yapı olarak modellenmesi.</td></tr><tr><td>Profile</td><td>Profil</td><td>Kullanıcıyı temsil eden tekil ve genellikle güncellenen bellek nesnesi.</td></tr><tr><td>Long-term memory</td><td>Uzun süreli bellek</td><td>Thread değişse bile kullanıcıya bağlı olarak saklanan bilgi.</td></tr><tr><td>Short-term memory</td><td>Kısa süreli bellek</td><td>Belirli bir thread veya konuşma çizgisi içinde taşınan mesaj geçmişi.</td></tr><tr><td>Structured output</td><td>Yapılandırılmış çıktı</td><td>LLM cevabının Pydantic gibi bir şemaya uygun nesneye dönüştürülmesi.</td></tr><tr><td>Tool call</td><td>Araç çağrısı</td><td>Modelin belirli bir şema veya aracı argümanlarla çağırma niyeti.</td></tr><tr><td>Insert</td><td>Yeni kayıt ekleme</td><td>Koleksiyonda daha önce bulunmayan bellek nesnesi oluşturma.</td></tr><tr><td>Update</td><td>Güncelleme</td><td>Mevcut bir bellek kaydını aynı id üzerinden değiştirme.</td></tr><tr><td>Namespace</td><td>Ad alanı</td><td>Store kayıtlarını kullanıcı veya bellek türü gibi ölçütlerle ayıran tuple.</td></tr><tr><td>Checkpoint</td><td>Kontrol noktası</td><td>Graph yürütmesinde state sürekliliğini sağlayan kayıt mekanizması.</td></tr><tr><td>Node</td><td>Düğüm</td><td>Graph içinde çalıştırılan fonksiyon veya işlem adımı.</td></tr><tr><td>Edge</td><td>Kenar</td><td>Bir node’dan diğerine sabit yürütme geçişi.</td></tr><tr><td>State</td><td>Durum</td><td>Graph boyunca taşınan ve node’lar tarafından okunan/yazılan sözleşmeli veri.</td></tr><tr><td>Metadata</td><td>Üst veri</td><td>Response nesnelerine eşlik eden id ve güncelleme bilgileri.</td></tr></tbody></table></div>
+      </section>
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta Koleksiyon Şemasıyla Uzun Süreli Bellek</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l3"><a href="#profil-ve-koleksiyon-farki">Profil ve koleksiyon farkı</a></li>
+<li class="toc-l3"><a href="#trustcall-in-rolu">Trustcall'ın rolü</a></li>
+<li class="toc-l3"><a href="#store-ve-checkpointer-ayrimi">Store ve checkpointer ayrımı</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#kurulum-paketleri">Kurulum paketleri</a></li>
+<li class="toc-l3"><a href="#ortam-degiskenlerinin-hazirlanmasi">Ortam değişkenlerinin hazırlanması</a></li>
+<li class="toc-l3"><a href="#bellek-koleksiyonu-icin-pydantic-semasi">Bellek koleksiyonu için Pydantic şeması</a></li>
+<li class="toc-l3"><a href="#model-erisimi-icin-anahtar">Model erişimi için anahtar</a></li>
+<li class="toc-l3"><a href="#modelden-yapilandirilmis-koleksiyon-uretimi">Modelden yapılandırılmış koleksiyon üretimi</a></li>
+<li class="toc-l3"><a href="#tekil-bellegi-sozluge-donusturme">Tekil belleği sözlüğe dönüştürme</a></li>
+<li class="toc-l3"><a href="#bellekleri-farkli-anahtarlarla-store-a-yazma">Bellekleri farklı anahtarlarla store'a yazma</a></li>
+<li class="toc-l3"><a href="#namespace-altinda-arama">Namespace altında arama</a></li>
+<li class="toc-l3"><a href="#trustcall-extractor-olusturma">Trustcall extractor oluşturma</a></li>
+<li class="toc-l3"><a href="#ilk-konusmadan-bellek-cikarimi">İlk konuşmadan bellek çıkarımı</a></li>
+<li class="toc-l3"><a href="#tool-call-mesajini-goruntuleme">Tool call mesajını görüntüleme</a></li>
+<li class="toc-l3"><a href="#semaya-uyan-response-nesnesi">Şemaya uyan response nesnesi</a></li>
+<li class="toc-l3"><a href="#response-metadata-bilgisini-okuma">Response metadata bilgisini okuma</a></li>
+<li class="toc-l3"><a href="#mevcut-bellegi-trustcall-a-baglam-olarak-verme">Mevcut belleği Trustcall'a bağlam olarak verme</a></li>
+<li class="toc-l3"><a href="#guncelleme-ve-ekleme-cagrisi">Güncelleme ve ekleme çağrısı</a></li>
+<li class="toc-l3"><a href="#iki-tool-call-olusmasi">İki tool call oluşması</a></li>
+<li class="toc-l3"><a href="#guncellenmis-response-nesneleri">Güncellenmiş response nesneleri</a></li>
+<li class="toc-l3"><a href="#guncelleme-metadata-sini-ayirt-etme">Güncelleme metadata'sını ayırt etme</a></li>
+<li class="toc-l3"><a href="#bellek-koleksiyonlu-chatbot-graph-i">Bellek koleksiyonlu chatbot graph'ı</a></li>
+<li class="toc-l3"><a href="#ilk-thread-icinde-ad-bilgisini-verme">İlk thread içinde ad bilgisini verme</a></li>
+<li class="toc-l3"><a href="#ayni-thread-icinde-ilgi-bilgisi-verme">Aynı thread içinde ilgi bilgisi verme</a></li>
+<li class="toc-l3"><a href="#uzun-sureli-bellegi-store-dan-okuma">Uzun süreli belleği store'dan okuma</a></li>
+<li class="toc-l3"><a href="#yeni-tercih-bilgisini-ekleme">Yeni tercih bilgisini ekleme</a></li>
+<li class="toc-l3"><a href="#yeni-thread-de-ayni-kullanici-bellegini-kullanma">Yeni thread'de aynı kullanıcı belleğini kullanma</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+  <script>
+
+(function () {
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+  function spanToken(klass, value) {
+    return "<span class=\"" + klass + "\">" + escapeHtml(value) + "</span>";
+  }
+  var pythonKeywords = {
+    class: 1, def: 1, return: 1, if: 1, else: 1, elif: 1, for: 1, in: 1,
+    async: 1, await: 1, from: 1, import: 1, as: 1, with: 1, None: 1,
+    True: 1, False: 1, and: 1, or: 1, not: 1, raise: 1, try: 1,
+    except: 1, finally: 1, pass: 1, while: 1, break: 1, continue: 1,
+    lambda: 1, yield: 1, is: 1
+  };
+  var builtins = {
+    print: 1, len: 1, list: 1, str: 1, int: 1, dict: 1, set: 1,
+    tuple: 1, range: 1, isinstance: 1, super: 1, zip: 1, enumerate: 1
+  };
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+  function span(cls, value) {
+    return spanToken(cls, value);
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function previousNonSpace(line, start) {
+    for (var i = start - 1; i >= 0; i -= 1) {
+      if (!/\s/.test(line[i])) return line[i];
+    }
+    return "";
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta Çoklu State Şemaları: Private State ve Input/Output Sözleşmeleri</title>
+  <style>
+:root {
+  --lesson-bg: #ffffff;
+  --lesson-text: #111827;
+  --lesson-muted: #4b5563;
+  --lesson-soft: #f9fafb;
+  --lesson-soft-2: #f3f4f6;
+  --lesson-border: #e5e7eb;
+  --lesson-border-strong: #d1d5db;
+  --lesson-card: #ffffff;
+  --lesson-card-muted: #f8fafc;
+  --langgraph-primary: #153f3b;
+  --langgraph-secondary: #0f766e;
+  --langgraph-soft: #dbe9e7;
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+html, body { margin: 0; padding: 0; max-width: 100%; overflow-x: hidden; background: var(--lesson-bg); }
+*, *::before, *::after { box-sizing: border-box; }
+.lesson-page { width: min(100%, 1040px); margin: 0 auto; padding: clamp(1rem, 2.5vw, 2.5rem); background: var(--lesson-bg); color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.55; }
+.lesson-page > article { margin: 0 auto; counter-reset: section; }
+.lesson-page, .lesson-page section, .title-block, .definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment, .flow-step, .state-item { min-width: 0; max-width: 100%; }
+.title-block { display: flex; flex-direction: column; align-items: stretch; margin: 0 0 2rem; text-align: center; }
+.lesson-logo { align-self: center; display: block; width: clamp(3.5rem, 8vw, 5.5rem); height: clamp(3.5rem, 8vw, 5.5rem); object-fit: contain; margin: 0 auto 1rem; }
+.lesson-logo-fallback { margin: 0 auto 1rem; padding: 0.55rem 0.8rem; border: 1px solid var(--lesson-border); border-radius: 0.4rem; color: var(--langgraph-primary); font-weight: 700; }
+.lesson-page h1, .lesson-page h2, .lesson-page h3, .lesson-page h4 { color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1.25; }
+.lesson-page h1 { width: 100%; min-width: 0; max-width: 100%; margin: 0; font-size: clamp(1.95rem, 3.6vw, 2.75rem); text-align: center; text-wrap: balance; overflow-wrap: anywhere; word-break: normal; }
+.lead-text { width: 100%; min-width: 0; max-width: 760px; margin: 0.9rem auto 0; color: var(--lesson-muted); font-size: 1.05rem; }
+.lesson-page p, .lesson-page li, .lead-text { overflow-wrap: anywhere; word-break: normal; }
+.lesson-page h2 { display: flex; align-items: center; gap: 0.55rem; margin: 2.2rem 0 0.85rem; padding-top: 1.1rem; border-top: 1px solid var(--lesson-border); font-size: clamp(1.35rem, 2.1vw, 1.75rem); counter-increment: section; counter-reset: subsection; }
+.lesson-page h2::before { content: counter(section) "."; color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h3 { display: flex; align-items: center; gap: 0.55rem; margin: 1.45rem 0 0.65rem; font-size: clamp(1.12rem, 1.65vw, 1.32rem); counter-increment: subsection; counter-reset: subsubsection; }
+.lesson-page h3::before { content: counter(section) "." counter(subsection); color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h4 { margin: 1rem 0 0.45rem; font-size: 1.02rem; counter-increment: subsubsection; }
+.lesson-page h4::before { content: counter(section) "." counter(subsection) "." counter(subsubsection) " "; font-variant-numeric: tabular-nums; }
+.definition-card h3, .example-card h3, .note-card h3, .question-card h3, .mini-panel h3, .output-comment h3 { display: block; counter-increment: none; counter-reset: none; margin: 0 0 0.45rem; font-size: 1rem; }
+.definition-card h3::before, .example-card h3::before, .note-card h3::before, .question-card h3::before, .mini-panel h3::before, .output-comment h3::before { content: none; }
+p { margin: 0.55rem 0 0.9rem; } ul, ol { margin: 0.65rem 0 1rem; padding-left: 1.35rem; } li + li { margin-top: 0.32rem; }
+code:not(.code-body code):not(.output-body code) { padding: 0.08rem 0.24rem; border-radius: 0.28rem; background: #eeeeee; color: #111111; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.9em; }
+.definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment { border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); padding: 0.95rem 1rem; }
+.definition-card { border-left: 4px solid var(--langgraph-primary); background: linear-gradient(90deg, rgba(219,233,231,0.55), #ffffff 38%); }
+.note-card { border-left: 4px solid var(--langgraph-secondary); background: var(--lesson-card-muted); }
+.question-card { border-left: 4px solid var(--lesson-border-strong); background: var(--lesson-soft); }
+.definition-card strong, .note-card strong, .question-card strong, .mini-panel strong { color: var(--lesson-text); }
+.explain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0; }
+.mini-panel p { margin-bottom: 0; color: var(--lesson-muted); }
+.output-comment { margin: 0.65rem 0 1rem 4.95rem; background: #ffffff; color: var(--lesson-muted); }
+.output-comment strong { color: var(--lesson-text); }
+.table-wrap { width: 100%; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--lesson-border); border-radius: 0.65rem; }
+table { width: 100%; border-collapse: collapse; min-width: 680px; background: #ffffff; }
+th, td { padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--lesson-border); text-align: left; vertical-align: top; }
+th { background: var(--lesson-soft); color: var(--langgraph-primary); font-size: 0.95rem; }
+tr:last-child td { border-bottom: 0; }
+.concept-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin: 1.2rem 0; align-items: stretch; }
+.flow-step { min-height: 5.5rem; padding: 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: var(--lesson-soft); position: relative; }
+.flow-step strong { display: block; margin-bottom: 0.35rem; color: var(--langgraph-primary); font-size: 0.98rem; }
+.flow-step span { color: var(--lesson-muted); font-size: 0.95rem; line-height: 1.45; }
+.flow-step:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.52rem; width: 0.5rem; height: 1px; background: var(--lesson-border-strong); }
+.state-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0; }
+.state-item { padding: 0.9rem 1rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); }
+.state-item strong { display: block; margin-bottom: 0.3rem; color: var(--langgraph-primary); }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li { position: relative; padding-left: 1.25rem; }
+.checklist li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--langgraph-secondary); }
+.walk-card { margin: 1.35rem 0 1.75rem; }
+.code-card { position: relative; display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1.15rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+.code-card::before { content: "In [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #303f9f; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+.code-head { position: absolute; top: 0.35rem; right: 0.45rem; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0; border: 0; background: transparent; }
+.code-title { display: none; }
+.copy-btn { border: 1px solid #c4c8cf; border-radius: 0.35rem; background: rgba(255,255,255,0.92); color: #374151; cursor: pointer; font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+.copy-btn:hover { background: #ffffff; }
+.code-body, .output-body { margin: 0; overflow-x: auto; color: var(--code-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.91rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; tab-size: 4; }
+.code-body { grid-column: 2; padding: 0.72rem 5.2rem 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+.code-line { display: block; width: 100%; min-width: 0; padding: 0 0.25rem; border-radius: 0.18rem; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.code-line[data-note] { cursor: help; text-decoration: none; border-bottom: 0; }
+.code-line[data-note] * { text-decoration: none; }
+.code-line[data-note]:hover, .code-line[data-note]:focus { background: #fff7d6; outline: 0; text-decoration: none; }
+.line-tooltip { position: fixed; z-index: 50; max-width: 420px; padding: 10px 12px; border: 1px solid #d0d7de; border-left: 3px solid #4c78a8; border-radius: 4px; background: #fffdf5; color: #24292f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; line-height: 1.5; font-weight: 400; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity 120ms ease, transform 120ms ease; }
+.line-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+.line-tooltip .tooltip-section + .tooltip-section { margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px solid #eaeef2; }
+.line-tooltip code { padding: 1px 4px; border: 1px solid #d8dee4; border-radius: 3px; background: #f6f8fa; color: #24292f; font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12.5px; }
+.output-card, .output-details { display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+.output-card::before, .output-details::before { content: "Out [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #9f1239; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+.output-head, .output-details summary { grid-column: 2; padding: 0.42rem 0.55rem; border: 1px solid var(--code-border); border-bottom: 0; border-radius: 0.2rem 0.2rem 0 0; background: var(--code-surface); color: var(--code-muted); font-size: 0.78rem; cursor: default; }
+.output-details summary { cursor: pointer; }
+.output-body { grid-column: 2; padding: 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+.output-details .output-body { max-height: 24rem; overflow: auto; }
+.output-visual { white-space: normal; text-align: center; }
+.output-visual img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+@media (max-width: 860px) { .concept-map, .explain-grid, .state-list { grid-template-columns: 1fr; } .flow-step:not(:last-child)::after { display: none; } table { min-width: 620px; } }
+@media (max-width: 560px) { .lesson-page { padding: 1rem; font-size: 1rem; line-height: 1.72; } .title-block { display: block; } .lesson-logo { margin-left: auto; margin-right: auto; } .lesson-page h1 { display: block; width: 100%; font-size: clamp(1.55rem, 7vw, 1.9rem); line-height: 1.22; word-break: break-word; } .lead-text { display: block; width: 100%; font-size: 1rem; } .code-card, .output-card, .output-details { grid-template-columns: minmax(0, 1fr); } .code-card::before, .output-card::before, .output-details::before { grid-column: 1; grid-row: auto; padding: 0 0 0.25rem; text-align: left; } .code-body, .output-head, .output-details summary, .output-body { grid-column: 1; } .code-head { top: 1.8rem; right: 0.45rem; } .code-body { font-size: 0.84rem; padding: 0.85rem 4.85rem 0.85rem 0.85rem; } .output-body { font-size: 0.84rem; padding: 0.85rem; } .output-comment { margin-left: 0; } .line-tooltip { max-width: calc(100vw - 32px); } }
+
+.definition-card h4, .example-card h4, .note-card h4, .question-card h4, .mini-panel h4, .output-comment h4 { display: block; counter-increment: none; counter-reset: none; margin: 0 0 0.45rem; font-size: 1rem; }
+.definition-card h4::before, .example-card h4::before, .note-card h4::before, .question-card h4::before, .mini-panel h4::before, .output-comment h4::before { content: none; }
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html" class="is-active" aria-current="page">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAKACAMAAAA7EzkRAAAAJFBMVEVMaXEcPDwbOzsbOzsbOzsbOzsbOzsbOzsbOzsbOzsbOzscPDxK0an6AAAAC3RSTlMAFTC+14TrTWei95KdkU4AAAAJcEhZcwAACxMAAAsTAQCanBgAABL+SURBVHja7d3rWuM4DIDh+HzI/d/vtgwzS4FC0ya2pHzv7312KKg+yLK1LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfMf5UmtqLcSLnHNf8bR++QVef4+htVRr8Y74+iHwLmEXIvF2bEReYjFVAvHWJfRCJjhGyoEwfI+9FgmHWWKr/sRzbmHckzAph1ROOBSWxMAnaShMZxoJXW2MfAJHwnqKgdAz9DEQEn04YQwSfcTgzHVf4C+rKAaNrQd944BD256kFTuDH1Mvw+C88EukXBQPg1793MtfUbegeSYubDwIwYnhx9LPzGKQ8AMhSPgRgoQf5oWglrWgZ+thdTviVeT9+EPZ1cSnpitpZ9NyYvEHloJ3Zl+OPZiHZw5/zL5nmYclpmQce1/2wzM3HxT8nUqvDH+YOwg6Vn9gJcjml+0wwx9OnBPk5O3UErsPnHgv4jl6Yxr2JP9wzpQgu1/82Q2z/MPpFoIs/zBzIejJ/uGDXNh+4DxbEbLPWCfmpNn+YuZmmPjDzAgk/nAvHUP6D8YTgsQfZkagI/2MH0XH+AezYyDxh5kRODz+aJi+3us7HUOQ2t076I+/3NK/9vLO+ZJoKvyxkVHxH1veniYCR33S8G0TZUeD1ztttAQ2oQp688/9pz5lp+/3de8Wmrg3QZvS+oOe3K8dDzM3wRU8jLd7ZUIVs386beevX66BJ1k7kp2rs0qX9DOf8RnW3+vtZNWo96Kt/nlLTa1LZ8vOZK/tmCDvWKXvsrif92RP8T9250JYBDpNCZjuqcp+/dspKwKDpgRM5V7eHt9OWcUiTc8GuFEasc+303dzW+ERH+nZ5UKgznhKvuy4hdWcDcjz35QzRODGb6e1jciIzxMpENvv2+ltnQon4UsF+yXaWfelsRfP5IZ8nboTvkTVtZCXNQSuXv4VkCb/lHriOt4pX5a8dElkzGheuCew67ezminNGvRJnIJ9+jRPfDtdX20UxgxaXsVXN0rFcgA6/XPC09nAsGqYgW0fC0cLv48geQLe5WXDyJtnoqeEpybhMSuJfS6RFpIwghMxTybagqbLK4E9yEergWtyVdXVFbPp6OfW713/SD4kt5F4NPiYAMzaKyrGpKD3vLpnNRloJQC3LraKusvLiQAUHYAbP0lU93yD0SHQyCZka0azKnzIsJKG+fdl1P5RRowm+/d2yiSiRadFN+xDGq/XqD7Fqsq/TF54DeqZVoF5MZSW93J+/kQDsQOXKln3cK50ADQ6BCZLJ+NeygDY6KF44BzcdK9oi4oSwPMMgUV7QfTWDzMgB92XhSHwsH1w0v1hiuZ3/F1nCJT9OygiiosrnbTXw6rym+4PU8TfVWYjrLo4vEjIYR7YTSyd+nlABU+VBAG3CfJyoHzuDpRBeWY9qLgIfLqimGBoAmjzr1Md29g9nviBjqT9cLEZCMBy3h6oSfuXaVAK6dgAFJ6HOG4d6Jr6977SaiEAnc0rmr89IaGnaUCavXyKxwag2RcDf2oW55qBzPqo1VM/OADNvpNwt5mo09U9r8z+u/3dB9XgOA/ZFoLNf9c5L5vY07vR34Cy09tY53oxMKbibhooRyuPHqbR34C3723wLAO3B2Fo6SpES6fbeXCV798gCeXThNLIxRgXZ09b5XbJmVv1f0ZlX1vfp1wr8GdWtg1po1ehn9J1Pee+550l/RHY46ne/s+DzwP9walq/b006wvL8lC0XbUqo8s76tG3lrR38QrPH2/0Kv1guMxetdefA3CXwxLdEfj+lEp64mDxT2YhqJqDRx+gdp+OvzaiOgL//gZ8eGL4E/9scZ+eus1hwHmx4gj8sAyuffvwJz4ZWqTnzeq5I/DmLbMNg2BPShIBTfq76juVzPhsIlH2aLFB9FrOxLP4w9Ny5ghsz5VXZEVn4kV6MfdeZasaI/BL+XN78pBV8IlkEn+Tx583AsvTtRVezRo4in/Ver82StoiMD1f3/h57PSripqsauZ1WgsRGF851m5qbspV8fv1ctII9C8VNxYtRRlBdHO7nd9R9VHvBLzxRONzNwSxByJd/EJhzzdk9GSk46t1ZUFLdbgX/yOWE0bgl6ew0suHSFIn4So+W7TrW+ZKIrC+3gn5cwxLPRBp4p802/cdNxURGPZ4LCDoOBDJ8nNF/mwR+KWfWtplH9Nk/3mrrVZ9miOw7jR26TgQqTYam+iOwByu8p0ahLjTVrq833IKb9eJW8iiFoFRT92sqQj8/zbqnwupObvdps6vByIh+ZvXZFoWk3Hq1hqGa7gr990rL27HzUP55f99/d8HGeOLt9avWUEE5uQOfmPpofbQvknYhVRr/ZrlR2Bzx1+tfyyJWuL8XUiy1q9ZegTGMuSBpSr/YfMk/w2LQ97OCvLfG9/houyj/W1KnzzBZU2JMf1jYBr2LQnii9Wy2Grog1tbT4zAOvCFwyQ+OeWEb4IPe9B8WgSmkU/9P/zK2LQx0It/TPSoB80nRWAb+sbr40msWVWrVX57naNau06ZduLQN16D/DeNk/zHbA9rbj0hArf0XX29im/bM5/zZgTh7zi2xU4EpqFP/VcF/aWC/Aa7B7ZVGl0pHIemK6OGVt/XH3JdT7kLmbD527qa8EPrOOYU7kvPwhy4Cxm++ctDT2y2zxxpTiLQaysS3tXIY6g0tOHT9n/NzRleipFm4fKbej0xlPe9u2GJ2wgX+U2tgpHernFov6eopL9Zld/m/ejmrklwba0vD6q7/GsE4PBdyMA7WeXIz+B2+dfyjKOQtp56FzJu7eOGBqBTUifZFLRUS0cH4JAjkbyMDMAsejWiLADD0QE4JCEdhwZg1NJlOSwKnqs4PABHpAPD0AAMWgIwKgjAY1dPo371GgKwEIDj94+jlj8E4J0AzCu7kBE7QKZgvQEYRgTg0cUgGjYhacYCX0EA9hEBeHRlTB8agF1ySv42APvKInDIBDQ2Ee2VJKL7sq4sAocMABzFfWtZVxaBy4iHEp8pKyvpUXv8a1NKQ1VMwXlQAB66DIxD58SoYw9ymYKzxuZVKrOBfmiNshc2AWjeBQ8oiBmxDG9Dt0VJxwysJABHLQIPzQZ2N3JIyk5BEkbJUdyoTODRp1Fp6M+y9V+bczNdSQAOygQePA5sHZTi0H+trQTg9EzgwZNwG7ojSvJXgNcADCoCMA8LwEMPRMrQKdFL3wK/re6Dzi7iOnfCW6bF13+M6KRPwNdJoa3MweNW42FoRATpzwNeAzCtzMED/xpt6FK0LdIfyk9aAnDgPvjY9VAbmg9Koh/oXa9HDFVJALaBAegFtAnZaW3UZDcKuQRgURKA3Q2MwEMXxtGPzAf9Hu9p7sTmlQTgyG3IwfX5PY08lMlFcuMyrycAR25Djl6YPDYItgGtEVOffuVWSwCOK4kZkZcNZeCTIf1ec9g6/RxMdL/0offKhl+RjenzMOj9YZuh3r4GvE8yeqYHNUPgyEzMkF9LbLX8GZtcqS1+7SOy5/4gt+rd/w8Ptiilzq6tDIFzD+d7vvsJ946SHEMIMYpKriU1ATh0Izzni5nkpIiHfd6q58ftfrFxJPx40UWyHYBlWfTkYUaW5s9rHeREdXcf8X1zmn7gaiYb/ejZme1J2C3ym8W9eNVG2xD4Za9fDcdf1jfIN/NDYD7RJBwUrnOL+SGwifgeDNz06xrjo7M+BJ5oEq4z70NpmISrjIVuWw1vgpdl6SuTsKghMJxkEu5zb+Rp2AlXGdmmYjMAo9IRPpgfAvs5JuGmdZGbrG+ETzIJ17mvMqg4EJn1l7/9jrlmeQ+i6yzkzxRVrA+BN3UXJRs+B9G5whi3EXF9dvGjs3oU0jRnOqPtusAPk3DNttPQOheBA/PRfuoKyRk+Cf6wyuhqD7IND4HXQ8dquBiray+4CM74ENi86WrUoP64O3o7F+S+HyMsx99NLs3p/AiDsjFlxXpw87xo4Fuk95mEU4o2Ll81wyUJ9+SQavHOeV9Si7qLUfXPMkO2IoJScV9e9PA1qr2RuehOxLyPB97sedyjbxr51hWfw6mv9xmwFXEy/sDh7ndNX7VCM7TT6/UUQ+DPL036qLuu3anOORWzyegNi92k9RjEQM3t8Y/GBAVFuJrO7ZqxbGu0PgfXRfhz96/PWdnMuY7BOfjBj6fmIZksqOhDSUI6qrgEUxT/uYqZ0gpzc3BTe2izadcYCUCZc/Cm+wdB75I9EYAyj+OKhmt8OywpHAEocg5uqisn1l8rsWw8RBeM3w0xVTzWDBZeBrNVgU158diWNUUkAOX9Yb3m4rGNpwaJABQ3BEbFxWObs5qKKxKC1cLoqrJyYn2y83MjAKXl2Ly5OyxN73dn92oEL/6prKzpKv0OX6mg/6WlTUNF3FZJOP6wvxm4RLXlE+kdAp/dVmwLweEFT0lp+ezTawq1Q6B/el8bq5MbgU/VejvFi/Vyqqr89zVdTo+H7+DHIp8r9e6K/07RxD3nzSnb8HAA+yw/ALPizWI5U0Xqxz9UTk5gBFoLwGKkoGynbfCnqao9Ngy6SAAemK4tJ9qFfJ0hHtqQDIxAY2vAYqamdp9F4Df/m968pAi0tQsOFo4Sd3w43219AWP8OrCaygN6Q9cK9vhb+e2PsIw+EzF1EhJsVFPsNwSWFyb0KviMu2l/v6KdJBOTXll8hanXJzTmcpOtm1U7rNjbK53ZC/WAx81Q9Rw1WfmV8dSLLXRMBtbo0cDD669mPIuMfKkzMgNHS1Xd+6Rtw2tv/yah+c1i4qCg2Q9A/0ivrPnv8XVnYgBsSho1jxvlHzjN+G39NeZZXBMvI2zPkVXrqeiww99+zNvg3sDIURU+SnvohvHBNqhNwrO40alfOwW9rQm+roly36FlTdhr/htxKtzONwEL/Sy9letHcaV+bVGVjqmY+zWsR0Rgkntt78gHlIO48PsYDK6k8O9vn5s/aqv4pT2Hb2542qNIvC5w+KsBgr5OoXr/3VDkfLnw/tDz+r+1MbXVS4vAEj81KnZixhCh8fd8E41q9wlyvzX+b0fND8X7LkmZxaR2aXihg0Gz2wVkc9jk2+Glh5ZSamHYoNO0dkp6ZfRw0W4fpKTtKbCos1dcdMp7pL2vwP3ufYFdCsqOe+7vtFyy2kUtidhDuWtD3J+H8ktq5qJsDFPnro3Hr0pN8kuA7tyYktwvOC3au/Rd1rB/jht+2Mz7/9OCMT3/lfMKTn9i/fT5XA2m322cf7YY2y9fps8960PRvuv6ZTvUavFvY3dJTfawHXdYOAnKBsb6a/iFdP3bfElQ1NYee3lDd8tGm210q6wB3aVyN/zidx+4XFdI33RVd85auyirPUybpJTSJdvfy53JN9wdIL9UN/uW3+YydxOpITICStqAiDsUTu+nTW/Tqfu89rvmqy8HxOHDVvH9P/k8Ffj2zYKRwU/sw/FiihzTv8x4CPG77XK8iap/EVo/Jc36bW7jcsTrayRi5G1ApJ1y5x+jJH4YqWP6sEG8PcqrTLND/la7nl+Vrvl34ZXl+kxsgMuyGGiUtvtpeOrExir2XTnNDcgeqgf3LPS0bYANRKD/Zu8LbQWc6l9OdYXFn+740xqBlxTM5cw0sPZb9XeOVBmBmayLnc6lzGJ4/SLrK0ciRCAmxp+USyJYT3EAxxgIWeMfEYjZ8af3DX2o3v8SgVgn5Z+pW4es+CMCsQ6pP7BaH4j99boM5TngwvrDK4rHRyApaaw/3oclIQhL6T/SMZi//Z3RKghsP1gIQtLyb3SrILD8YxrGOjv7fCcnzTTM9LswDWPC7tctMhSORU4o10UMktLsPtiL4CTJPwZBCBv+WAmy+hMxCFKnyuaXnCDOkPu7vxlhHrY9+6ZFOMcbpIb3voJn3297IMDW3tcvOrAUNLn4K4sehCDhRwji2DaRhCAIv59DkOM5C1uPsujFjpid7/S8IKlpvXm/5Bb9HI0otS79LITf+0zM8Yi6Q4+ymMKGhMFv9jCYmIp1RF/yi1HEINFHDOK80fd3W9xIzcjbdQSL674fBkI2JZLSzecY+j4NhJcgZCQUMPKl4pbT8rWxJpy35mvVL3hrKE0YDpVDIvY+z8gltRA5Mjl2wo2hpeId8fZTIJaarrF4kXMmIl+Jt8sv8Pp7vERdqoXAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADc8x/qP7eo8FAiJwAAAABJRU5ErkJggg==" alt="LangGraph logosu">
+        <h1 id="lesson-title">LangGraph’ta Çoklu State Şemaları: Private State ve Input/Output Sözleşmeleri</h1>
+        <p class="lead-text">Bu ders, LangGraph graph’larında tek bir state şemasıyla yetinmek yerine iç çalışma alanlarını, dış input sözleşmesini ve dış output sözleşmesini ayrı ayrı tasarlamanın neden gerekli olduğunu açıklar.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>LangGraph’ta çoğu başlangıç örneği tek bir state şeması kullanır: graph dışarıdan aynı şemayla veri alır, node’lar aynı şemadaki alanları okur ve graph tamamlandığında yine aynı state alanları döner. Bu yaklaşım basittir; ancak gerçek uygulamalarda graph’ın iç hesaplama alanları ile kullanıcının görmesi gereken giriş/çıkış alanları her zaman aynı değildir.</p>
+        <div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Çoklu state şemaları, graph’ın iç veri dolaşımını dış API sözleşmesinden ayırır. <code>PrivateState</code> ara node iletişimi için, <code>InputState</code> dış girişin daraltılması için, <code>OutputState</code> ise dışarıya sunulacak sonucun sınırlandırılması için kullanılır.</p></div>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul class="checklist">
+          <li>Tek overall state şemasının hangi durumlarda yeterli, hangi durumlarda fazla geniş olduğunu ayırt etmek.</li>
+          <li>Node fonksiyonlarında parametre tipi ve dönüş tipi üzerinden farklı state şemaları kullanabilmek.</li>
+          <li><code>PrivateState</code> ile graph içi ara bilgiyi final çıktısından ayırmak.</li>
+          <li><code>input_schema</code> ve <code>output_schema</code> argümanlarının graph dış sözleşmesini nasıl daralttığını açıklamak.</li>
+          <li>Graph akışında hangi node’un hangi state kanalını okuyup hangi kanala yazdığını izleyebilmek.</li>
+          <li>Çalıştırma çıktılarında görünen state alanlarını schema tasarımı açısından yorumlamak.</li>
+        </ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title">
+        <h2 id="on-kosullar-title">Ön Koşullar</h2>
+        <p>Bu ders, Python fonksiyonları, dictionary erişimi, type hint yazımı ve <code>TypedDict</code> mantığına aşinalık varsayar. LangGraph tarafında <code>StateGraph</code>, node, edge, <code>START</code>, <code>END</code> ve <code>invoke</code> kavramlarının temel sezgisi yeterlidir.</p>
+      </section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead>
+          <tbody>
+            <tr><td><code>OverallState</code></td><td>Graph içinde taşınabilecek ana state alanlarının toplam şeması.</td><td><code>StateGraph(...)</code> çağrısının temel state sözleşmesi.</td></tr>
+            <tr><td><code>PrivateState</code></td><td>Dış input/output içinde görünmesi gerekmeyen ara çalışma alanı.</td><td>Node’lar arasında özel kanal gibi kullanılır.</td></tr>
+            <tr><td><code>InputState</code></td><td>Kullanıcının graph’a vereceği dış girdi alanlarını sınırlar.</td><td><code>input_schema</code> argümanına verilir.</td></tr>
+            <tr><td><code>OutputState</code></td><td>Graph sonunda dışarıya gösterilmesi hedeflenen alanları belirtir.</td><td><code>output_schema</code> argümanına verilir.</td></tr>
+            <tr><td><code>StateGraph</code></td><td>Node ve edge tanımlarıyla graph builder oluşturur.</td><td>Şema, node ve edge sözleşmelerini bir araya getirir.</td></tr>
+            <tr><td><code>add_node</code></td><td>Adlandırılmış çalıştırma adımı ekler.</td><td>Node fonksiyonu state alır ve kısmi state update döndürür.</td></tr>
+            <tr><td><code>add_edge</code></td><td>İki düğüm arasında sabit yönlü akış kurar.</td><td><code>START</code> ve <code>END</code> dahil graph topolojisini belirler.</td></tr>
+            <tr><td><code>invoke</code></td><td>Graph’ı tek input ile çalıştırır.</td><td>Input sözleşmesine uygun dictionary alır, final sonucu döndürür.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+        <h2 id="buyuk-resim-title">Büyük Resim</h2>
+        <p>Bu derste model veya tool çağrısı yoktur; odak doğrudan state sözleşmesindedir. LangGraph açısından kritik ayrım şudur: graph’ın içeride işlediği state alanları ile dış çağıranın vermesi veya görmesi gereken alanlar ayrı tasarlanabilir.</p>
+        <div class="concept-map" aria-label="Çoklu schema zihinsel modeli">
+          <div class="flow-step"><strong>Dış input</strong><span>Kullanıcı yalnızca gerekli alanları verir.</span></div>
+          <div class="flow-step"><strong>Overall state</strong><span>Graph içindeki toplam çalışma alanı tutulur.</span></div>
+          <div class="flow-step"><strong>Private state</strong><span>Node’lar arası ara bilgi taşınabilir.</span></div>
+          <div class="flow-step"><strong>Node update’i</strong><span>Her node kısmi state sözlüğü döndürür.</span></div>
+          <div class="flow-step"><strong>Dış output</strong><span>Kullanıcıya yalnızca hedeflenen sonuç sunulur.</span></div>
+        </div>
+      </section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+        <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+        <h3 id="tek-sema-ile-baslamak">Tek Şema ile Başlamak</h3>
+        <p>Tek şemalı graph’ta her alan aynı düzlemde yer alır. Bu, küçük örneklerde anlaşılırdır; fakat ara not, geçici hesaplama veya node’lar arası yardımcı değer gibi bilgilerin final çıktıya karışma riskini artırır.</p>
+        <h3 id="private-state-kullanmak">Private State Kullanmak</h3>
+        <p><code>PrivateState</code>, bir node’un ürettiği ve başka bir node’un okuyacağı ara alanları temsil eder. Bu derste <code>node_1</code>, <code>foo</code> değerinden <code>baz</code> üretir; <code>node_2</code> ise <code>baz</code> değerini okuyup yeniden <code>foo</code> üretir. Böylece ara kanal graph içinde kalır.</p>
+        <h3 id="input-ve-output-semalarini-ayirmak">Input ve Output Şemalarını Ayırmak</h3>
+        <p><code>input_schema</code>, graph’ın dışarıdan beklediği minimum alanları tanımlar. <code>output_schema</code> ise dışarıya gösterilmesi hedeflenen cevap alanlarını sınırlar. Bu ayrım, graph içindeki zengin state’i korurken dış API yüzeyini sade ve kontrollü tutmayı amaçlar.</p>
+      </section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+        <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+
+<article class="walk-card" id="kod-adimi-1">
+  <h3 id="ortam-bagimliliklarini-hazirlama">Ortam bağımlılıklarını hazırlama</h3>
+  <p>Bu blok, çoklu state şeması örneklerinin çalışması için gerekli LangGraph paketini kurar. Çıktı bastırıldığı için görünür terminal log’u oluşmaz.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Ortam bağımlılıklarını hazırlama</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langgraph</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Kurulum, sonraki hücrelerde kullanılan <code>StateGraph</code>, <code>START</code> ve <code>END</code> sembollerinin çalışma ortamında bulunmasını sağlar.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Belirli bir LangGraph sürümü açıkça sabitlenmediği için ders, güncel paket davranışına bağlıdır.</p></section>
+  </div>
+
+</article>
+
+<article class="walk-card" id="kod-adimi-2">
+  <h3 id="private-state-ile-ic-graph-kanalini-kurma">Private state ile iç graph kanalını kurma</h3>
+  <p>Bu blokta graph’ın dış sözleşmesi ile iç çalışma alanı ayrılır. <code>OverallState</code> dışarıdan görünen <code>foo</code> kanalını, <code>PrivateState</code> ise node’lar arasında taşınan <code>baz</code> kanalını temsil eder.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Private state ile iç graph kanalını kurma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">from typing_extensions import TypedDict
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+
+class OverallState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: int
+
+
+class PrivateState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    baz: int
+
+
+def node_1(state: OverallState) -&gt; PrivateState:
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"baz": state["foo"] + 1}
+
+
+def node_2(state: PrivateState) -&gt; OverallState:
+    """
+    Run the node_2 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"foo": state["baz"] + 1}
+
+
+# Build graph
+builder = StateGraph(OverallState)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_2", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>PrivateState</code>, graph içinde kullanılan ama graph’ın dış giriş/çıkış sözleşmesinde yer alması gerekmeyen ara kanalları modellemek için kullanılır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Node parametre ve dönüş tipleri yalnızca dokümantasyon değildir; hangi node’un hangi state kanalını okuyup hangi kanala yazdığını öğrencinin takip etmesini sağlar.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/png;base64,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" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel çıktı, private kanal kullanan iki node’lu lineer graph topolojisini gösterir: başlangıç <code>node_1</code> adımına, oradan <code>node_2</code> adımına ve son olarak bitişe bağlanır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-3">
+  <h3 id="private-state-graphini-calistirma">Private state graph’ını çalıştırma</h3>
+  <p>Bu çağrı graph’a yalnızca <code>foo</code> alanını verir. İlk node bu değerden private <code>baz</code> üretir; ikinci node private değeri okuyup tekrar dış state alanı olan <code>foo</code> değerini yazar.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Private state graph’ını çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">graph.invoke({"foo": 1})</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Çıktının yalnızca <code>foo</code> içermesi, <code>baz</code> kanalının graph içinde hesaplama taşıdığı halde dış sonuca yansıtılmadığını gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>invoke</code> girdisi <code>OverallState</code> içinde tanımlı dış alanlarla uyumlu olmalıdır. Private alanı başlangıç girdisi olarak vermek bu örneğin amacı değildir.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">---Node 1---
+---Node 2---</code></pre></div>
+<div class="output-card"><div class="output-head">Python dict çıktısı</div><pre class="output-body"><code data-lang="output">{'foo': 3}</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Terminal satırları node çalışma sırasını doğrular. Final sözlükte <code>baz</code> bulunmaz; bu alan yalnızca graph içi geçişte kullanılmıştır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-4">
+  <h3 id="tek-overall-schema-ile-ara-not-alani-tasima">Tek overall schema ile ara not alanı taşıma</h3>
+  <p>Bu blokta tek <code>OverallState</code> hem giriş, hem ara çalışma alanı, hem de çıkış sözleşmesi olarak kullanılır. <code>notes</code> alanı graph içi akıl yürütme notu gibi taşınır ve final state’te görünür kalır.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Tek overall schema ile ara not alanı taşıma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">class OverallState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    question: str
+    answer: str
+    notes: str
+
+
+def thinking_node(state: OverallState):
+    """
+    Run the thinking_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye", "notes": "... his name is Lance"}
+
+
+def answer_node(state: OverallState):
+    """
+    Run the answer_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye Lance"}
+
+
+graph = StateGraph(OverallState)
+graph.add_node("answer_node", answer_node)
+graph.add_node("thinking_node", thinking_node)
+graph.add_edge(START, "thinking_node")
+graph.add_edge("thinking_node", "answer_node")
+graph.add_edge("answer_node", END)
+
+graph = graph.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Tek overall şema yaklaşımı hızlıdır; fakat iç çalışma alanlarının final state’te de görünebilmesi nedeniyle dış API sözleşmesi açısından daha gevşektir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>notes</code> gibi ara alanlar dış sözleşmeden gizlenmek isteniyorsa tek overall schema yeterli olmayabilir; sonraki blokta input/output filtreleri bu nedenle tanıtılır.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/png;base64,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" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel çıktı, <code>thinking_node</code> ve <code>answer_node</code> sırasını gösterir. Bu örnekte tüm alanlar aynı overall schema içinde taşınır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-5">
+  <h3 id="overall-schema-ciktisini-gozlemleme">Overall schema çıktısını gözlemleme</h3>
+  <p>Bu çağrı, tek overall şema kullanıldığında graph’ın ara alanları da final state içinde döndürebildiğini gösterir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Overall schema çıktısını gözlemleme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">graph.invoke({"question": "hi"})</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Çıktı, <code>question</code>, <code>answer</code> ve <code>notes</code> alanlarının birlikte döndüğünü gösterir. Bu, input/output sözleşmesi ayrıştırılmadığında tüm overall state alanlarının görünür kalabileceği anlamına gelir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu blokta ara notların görünür olması bilinçli bir gözlemdir; private state veya output schema kullanılmadığında bu alanlar dışarı sızabilir.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Python dict çıktısı</div><pre class="output-body"><code data-lang="output">{'question': 'hi', 'answer': 'bye Lance', 'notes': '... his name is Lance'}</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Final state; giriş sorusunu, nihai cevabı ve ara notu birlikte döndürür. Bu, tek overall schema yaklaşımının dışarıya daha geniş state gösterebileceğini açık hale getirir.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-6">
+  <h3 id="input-ve-output-semalarini-ayristirma">Input ve output şemalarını ayrıştırma</h3>
+  <p>Bu blok, dışarıdan alınan input şemasını, graph içinde kullanılan overall şemadan ve hedeflenen output şemasından ayırır. Amaç, kullanıcıya yalnızca gerekli giriş ve çıkış alanlarını açmaktır.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Input ve output şemalarını ayrıştırma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">class InputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    question: str
+
+
+class OutputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    answer: str
+
+
+class OverallState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    question: str
+    answer: str
+    notes: str
+
+
+def thinking_node(state: InputState):
+    """
+    Run the thinking_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye", "notes": "... his is name is Lance"}
+
+
+def answer_node(state: OverallState) -&gt; OutputState:
+    """
+    Run the answer_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye Lance"}
+
+
+graph = StateGraph(
+    OverallState,
+    input_schema=InputState,
+    output_schema=OutputState,
+)
+graph.add_node("answer_node", answer_node)
+graph.add_node("thinking_node", thinking_node)
+graph.add_edge(START, "thinking_node")
+graph.add_edge("thinking_node", "answer_node")
+graph.add_edge("answer_node", END)
+
+graph = graph.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"question": "hi"})</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>input_schema</code> ve <code>output_schema</code>, overall state’i graph’ın iç belleği gibi bırakırken dış çağrı arayüzünü daha dar ve kontrollü hale getirmek için kullanılır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Görünen çalıştırma sonucu tüm state alanlarını göstermektedir. Bu farkın ortam ya da sürüm farkından doğup doğmadığı açıkça belirtilmiyor; bu nedenle çıktı değiştirilmeden korunmuştur.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/png;base64,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" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-card"><div class="output-head">Python dict çıktısı</div><pre class="output-body"><code data-lang="output">{'question': 'hi', 'answer': 'bye Lance', 'notes': '... his is name is Lance'}</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu blok hem graph görselini hem de çalıştırma sonucunu üretir. Sonuçta görünen alanların tamamı korunmuştur; dış output şemasının davranış farkı açıkça ayrıca sürümlendirilmemiştir.</p></div>
+</article>
+
+      </section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+        <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+        <p>Çıktılar üç ayrı fikri görünür kılar: private state final çıktıya taşınmaz, tek overall schema ara alanları da dışarı gösterebilir, input/output şemaları ise dış sözleşmeyi daraltmak için kullanılır. Görsel çıktılar graph topolojisini, terminal çıktıları node çalışma sırasını, dictionary çıktıları ise final state görünümünü doğrular.</p>
+      </section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title">
+        <h2 id="graph-akisi-title">Graph Akışı</h2>
+        <div class="concept-map" aria-label="Graph akışları">
+          <div class="flow-step"><strong>START</strong><span>Graph yürütmesi başlar.</span></div>
+          <div class="flow-step"><strong>node_1 / thinking_node</strong><span>İlk gerçek node input state’i okur.</span></div>
+          <div class="flow-step"><strong>Private veya overall update</strong><span>Ara alanlar graph içinde taşınır.</span></div>
+          <div class="flow-step"><strong>node_2 / answer_node</strong><span>Sonraki node ara sonucu kullanır.</span></div>
+          <div class="flow-step"><strong>END</strong><span>Final state veya hedef output döner.</span></div>
+        </div>
+      </section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title">
+        <h2 id="state-evrimi-title">State’in Evrimi</h2>
+        <div class="state-list">
+          <div class="state-item"><strong>Başlangıç</strong><code>{"foo": 1}</code><span>Dış input ana state alanıyla başlar.</span></div>
+          <div class="state-item"><strong>Private ara kanal</strong><code>{"baz": 2}</code><span><code>node_1</code> iç geçiş için private değer üretir.</span></div>
+          <div class="state-item"><strong>Final ana kanal</strong><code>{"foo": 3}</code><span><code>node_2</code> private değeri ana state’e geri yazar.</span></div>
+          <div class="state-item"><strong>Soru akışı</strong><code>{"question": "hi", "answer": "bye Lance", "notes": "..."}</code><span>Tek overall schema ara notu da final görünümde tutabilir.</span></div>
+        </div>
+      </section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+        <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+        <p>Bu derste agent döngüsü veya tool çağrısı kurulmaz. Buna rağmen çoklu schema mantığı agent graph’ları için doğrudan önemlidir: tool sonuçları, ara karar notları veya kullanıcıya gösterilmemesi gereken çalışma verileri private/internal state alanlarında tutulabilir.</p>
+      </section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+        <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+        <ul>
+          <li><code>OverallState</code> içindeki her alanın kullanıcıya gösterilmesi gerektiğini sanmak.</li>
+          <li><code>PrivateState</code> alanlarını graph input’u gibi düşünmek.</li>
+          <li>Node dönüş tipinin yalnızca dekoratif olduğunu varsaymak; oysa hangi kanala yazıldığını belgeleyen kritik bir sözleşmedir.</li>
+          <li><code>input_schema</code> ile <code>output_schema</code> farkını karıştırmak.</li>
+          <li>Graph compile edilmeden <code>invoke</code> çağırmaya çalışmak.</li>
+          <li>Tek overall schema kullanıldığında ara notların final çıktıda görünebileceğini gözden kaçırmak.</li>
+          <li>Çalıştırma çıktısındaki tüm alanları dış API tasarımı için zorunlu sanmak.</li>
+        </ul>
+      </section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+        <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+        <ul class="checklist">
+          <li>LangGraph state’i tek bir dictionary değil, graph sözleşmesini taşıyan alanlar kümesidir.</li>
+          <li>Tek overall schema basit graph’larda yeterlidir, fakat dış arayüzü gereğinden genişletebilir.</li>
+          <li><code>PrivateState</code>, ara hesaplamayı node’lar arasında taşırken final çıktıyı sade tutar.</li>
+          <li>Node parametre tipi okunan state sözleşmesini, dönüş tipi yazılan state sözleşmesini açıklar.</li>
+          <li><code>input_schema</code> dış çağrı girdisini daraltır.</li>
+          <li><code>output_schema</code> dışarıya verilmesi hedeflenen cevap alanlarını tanımlar.</li>
+          <li><code>add_edge</code> şemaları değil, node çalışma sırasını belirler; şema davranışı node imzaları ve graph builder argümanlarıyla anlaşılır.</li>
+          <li>Graph görselleri topolojiyi gösterir; state alanlarının görünürlüğü ayrıca schema tasarımına bağlıdır.</li>
+          <li>Ara alanlar kullanıcıya gösterilmemeli ise private state veya output schema tasarımı erken düşünülmelidir.</li>
+        </ul>
+      </section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+        <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+        <p>Bu bölüm, derste kullanılan çalıştırılabilir kod parçalarını ders akışındaki sırayla tek yerde toplar.</p>
+        <div class="code-card"><div class="code-head"><span class="code-title">Dersin Kod Akışı</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langgraph
+
+from typing_extensions import TypedDict
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+
+class OverallState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: int
+
+
+class PrivateState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    baz: int
+
+
+def node_1(state: OverallState) -&gt; PrivateState:
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"baz": state["foo"] + 1}
+
+
+def node_2(state: PrivateState) -&gt; OverallState:
+    """
+    Run the node_2 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"foo": state["baz"] + 1}
+
+
+# Build graph
+builder = StateGraph(OverallState)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_2", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"foo": 1})
+
+class OverallState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    question: str
+    answer: str
+    notes: str
+
+
+def thinking_node(state: OverallState):
+    """
+    Run the thinking_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye", "notes": "... his name is Lance"}
+
+
+def answer_node(state: OverallState):
+    """
+    Run the answer_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye Lance"}
+
+
+graph = StateGraph(OverallState)
+graph.add_node("answer_node", answer_node)
+graph.add_node("thinking_node", thinking_node)
+graph.add_edge(START, "thinking_node")
+graph.add_edge("thinking_node", "answer_node")
+graph.add_edge("answer_node", END)
+
+graph = graph.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"question": "hi"})
+
+class InputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    question: str
+
+
+class OutputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    answer: str
+
+
+class OverallState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    question: str
+    answer: str
+    notes: str
+
+
+def thinking_node(state: InputState):
+    """
+    Run the thinking_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye", "notes": "... his is name is Lance"}
+
+
+def answer_node(state: OverallState) -&gt; OutputState:
+    """
+    Run the answer_node helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"answer": "bye Lance"}
+
+
+graph = StateGraph(
+    OverallState,
+    input_schema=InputState,
+    output_schema=OutputState,
+)
+graph.add_node("answer_node", answer_node)
+graph.add_node("thinking_node", thinking_node)
+graph.add_edge(START, "thinking_node")
+graph.add_edge("thinking_node", "answer_node")
+graph.add_edge("answer_node", END)
+
+graph = graph.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"question": "hi"})</code></pre></div>
+      </section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+        <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead>
+          <tbody>
+            <tr><td>State</td><td>Durum</td><td>Graph boyunca taşınan veri sözlüğü.</td></tr>
+            <tr><td>Schema</td><td>Şema</td><td>State alanlarının adlarını ve tiplerini belirleyen sözleşme.</td></tr>
+            <tr><td>Overall State</td><td>Genel durum</td><td>Graph içinde kullanılabilecek toplam state alanları.</td></tr>
+            <tr><td>Private State</td><td>Özel iç durum</td><td>Dışarıya gösterilmeden node’lar arasında taşınan ara veri.</td></tr>
+            <tr><td>Input Schema</td><td>Girdi şeması</td><td>Graph’ın dış çağrıdan kabul ettiği alanları sınırlar.</td></tr>
+            <tr><td>Output Schema</td><td>Çıktı şeması</td><td>Graph’ın dışarıya göstermesi hedeflenen alanları tanımlar.</td></tr>
+            <tr><td>Node</td><td>Düğüm</td><td>State alanlarını okuyup kısmi update döndüren çalışma adımı.</td></tr>
+            <tr><td>Edge</td><td>Kenar</td><td>Node’lar arasındaki sabit yönlü akış ilişkisi.</td></tr>
+            <tr><td>START</td><td>Başlangıç</td><td>Graph yürütmesinin sanal giriş düğümü.</td></tr>
+            <tr><td>END</td><td>Bitiş</td><td>Graph yürütmesinin sanal çıkış düğümü.</td></tr>
+            <tr><td>Partial State Update</td><td>Kısmi durum güncellemesi</td><td>Node’un yalnızca değiştirdiği state alanlarını döndürmesi.</td></tr>
+            <tr><td>Invoke</td><td>Çalıştırma çağrısı</td><td>Graph’ı tek input state ile yürütme işlemi.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta Çoklu State Şemaları: Private State ve Input/Output Sözleşmeleri</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l3"><a href="#tek-sema-ile-baslamak">Tek Şema ile Başlamak</a></li>
+<li class="toc-l3"><a href="#private-state-kullanmak">Private State Kullanmak</a></li>
+<li class="toc-l3"><a href="#input-ve-output-semalarini-ayirmak">Input ve Output Şemalarını Ayırmak</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#ortam-bagimliliklarini-hazirlama">Ortam bağımlılıklarını hazırlama</a></li>
+<li class="toc-l3"><a href="#private-state-ile-ic-graph-kanalini-kurma">Private state ile iç graph kanalını kurma</a></li>
+<li class="toc-l3"><a href="#private-state-graphini-calistirma">Private state graph’ını çalıştırma</a></li>
+<li class="toc-l3"><a href="#tek-overall-schema-ile-ara-not-alani-tasima">Tek overall schema ile ara not alanı taşıma</a></li>
+<li class="toc-l3"><a href="#overall-schema-ciktisini-gozlemleme">Overall schema çıktısını gözlemleme</a></li>
+<li class="toc-l3"><a href="#input-ve-output-semalarini-ayristirma">Input ve output şemalarını ayrıştırma</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+  <script>
+(function () {
+  const keywords = new Set(['from','import','class','def','return','if','else','elif','for','in','try','except','as','with','None','True','False','or','and','not']);
+  const builtins = new Set(['print','str','int','list','dict','set','len','range','super']);
+  function escapeHtml(value) { return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function span(cls, value) { return '<span class="' + cls + '">' + escapeHtml(value) + '</span>'; }
+  function highlightShell(line) {
+    const tokenPattern = /(#[^\n]*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+|\b[A-Za-z_][A-Za-z0-9_\-]*\b)/g;
+    let result = '', last = 0, match;
+    while ((match = tokenPattern.exec(line)) !== null) {
+      const value = match[0];
+      result += escapeHtml(line.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('%%') || value.startsWith('%')) result += span('tok-keyword', value);
+      else if (/^-[A-Z]$/.test(value)) result += span('tok-operator', value);
+      else if (value.startsWith('-')) result += span('tok-builtin', value);
+      else if (['pip','install','capture'].includes(value)) result += span('tok-function', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(line.slice(last));
+  }
+  function findTripleQuote(line) {
+    const tripleDouble = String.fromCharCode(34, 34, 34);
+    const tripleSingle = String.fromCharCode(39, 39, 39);
+    const doubleIndex = line.indexOf(tripleDouble);
+    const singleIndex = line.indexOf(tripleSingle);
+    if (doubleIndex === -1) return singleIndex === -1 ? null : { index: singleIndex, quote: tripleSingle };
+    if (singleIndex === -1) return { index: doubleIndex, quote: tripleDouble };
+    return doubleIndex < singleIndex ? { index: doubleIndex, quote: tripleDouble } : { index: singleIndex, quote: tripleSingle };
+  }
+  function highlightPythonBase(line) {
+    const tokenPattern = /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_]*\b|->|==|!=|<=|>=|[=+\-*\/|:\[\]{}(),.])/g;
+    let result = '', last = 0, match, expectFunction = false, expectClass = false;
+    while ((match = tokenPattern.exec(line)) !== null) {
+      const value = match[0];
+      result += escapeHtml(line.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+      else if (/^\d/.test(value)) result += span('tok-number', value);
+      else if (expectFunction && /^[A-Za-z_]/.test(value)) { result += span('tok-function', value); expectFunction = false; }
+      else if (expectClass && /^[A-Za-z_]/.test(value)) { result += span('tok-class', value); expectClass = false; }
+      else if (keywords.has(value)) { result += span('tok-keyword', value); expectFunction = value === 'def'; expectClass = value === 'class'; }
+      else if (builtins.has(value)) result += span('tok-builtin', value);
+      else if (/^(->|==|!=|<=|>=|=|\+|-|\*|\/|\||:)$/.test(value)) result += span('tok-operator', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(line.slice(last));
+  }
+  function highlightPythonWithTripleState(line, state) {
+    if (state.inTriple) {
+      const end = line.indexOf(state.quote);
+      if (end === -1) return span('tok-string', line);
+      const before = line.slice(0, end + state.quote.length);
+      const after = line.slice(end + state.quote.length);
+      state.inTriple = false;
+      state.quote = '';
+      return span('tok-string', before) + highlightPythonWithTripleState(after, state);
+    }
+    const found = findTripleQuote(line);
+    if (!found) return highlightPythonBase(line);
+    const before = line.slice(0, found.index);
+    const rest = line.slice(found.index);
+    const close = rest.indexOf(found.quote, found.quote.length);
+    if (close === -1) {
+      state.inTriple = true;
+      state.quote = found.quote;
+      return highlightPythonBase(before) + span('tok-string', rest);
+    }
+    const literal = rest.slice(0, close + found.quote.length);
+    const after = rest.slice(close + found.quote.length);
+    return highlightPythonBase(before) + span('tok-string', literal) + highlightPythonWithTripleState(after, state);
+  }
+  function highlightOutput(text) {
+    const tokenPattern = /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_]*\b|[{}\[\]():,=])/g;
+    let result = '', last = 0, match;
+    while ((match = tokenPattern.exec(text)) !== null) {
+      const value = match[0];
+      result += escapeHtml(text.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+      else if (/^\d/.test(value)) result += span('tok-number', value);
+      else if (['Error','TypeError','InvalidUpdateError','Validation','LangChainBetaWarning'].includes(value)) result += span('tok-keyword', value);
+      else if (/^[{}\[\]():,=]$/.test(value)) result += span('tok-operator', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(text.slice(last));
+  }
+  function noteHtml(parts) {
+    return parts.map(function (part) { return '<div class="tooltip-section">' + part + '</div>'; }).join('');
+  }
+
+  function noteForLine(line) {
+    const t = line.trim();
+    if (!t) return '';
+    if (t.startsWith('%%capture')) return noteHtml(['<code>%%capture --no-stderr</code>, Jupyter hücresinin standart çıktısını yakalar. <code>--no-stderr</code> stderr akışını gizlemez; böylece gerçek hata mesajları kaybolmadan kurulum logları sadeleşir.']);
+    if (t.startsWith('%pip install')) return noteHtml(['<code>%pip install --quiet -U langgraph</code>, Jupyter kernel ortamına paket kurar. <code>--quiet</code> terminal çıktısını azaltır, <code>-U</code> paketi günceller, son argüman kurulacak paket adıdır. Bu satır graph API örneklerinin çalışması için ortamı hazırlar.']);
+    if (t.startsWith('from typing_extensions import TypedDict')) return noteHtml(['<code>TypedDict</code>, state’in hangi dictionary anahtarlarına sahip olacağını tip ipuçlarıyla tanımlar. LangGraph bu şemayı state kanallarını okumak için kullanır; tek başına Python runtime doğrulaması yapmaz.']);
+    if (t.startsWith('from IPython.display import Image, display')) return noteHtml(['<code>Image</code> PNG verisini Jupyter çıktısı olarak sarar; <code>display</code> bu nesneyi hücre altında gösterir. Graph mantığını değiştirmez, yalnızca <code>draw_mermaid_png()</code> çıktısını görselleştirir.']);
+    if (t.startsWith('from langgraph.graph import StateGraph')) return noteHtml(['Bu import üç temel sembol getirir: <code>StateGraph</code> graph builder sınıfıdır, <code>START</code> sanal başlangıç düğümüdür, <code>END</code> sanal bitiş düğümüdür. Edge tanımlarında bu semboller akışın giriş ve çıkış noktalarını belirtir.']);
+    if (t.startsWith('class OverallState(TypedDict):')) return noteHtml(['<code>OverallState</code>, graph’ın ana state şemasıdır. Bu şema graph içinde taşınabilecek tüm ana kanalları tanımlar; derse göre bazen dışarıya açık alanları, bazen de iç çalışma alanlarını kapsar.']);
+    if (t.startsWith('class PrivateState(TypedDict):')) return noteHtml(['<code>PrivateState</code>, node’lar arasında kullanılan iç state sözleşmesidir. Bu örnekte kullanıcıdan alınmaz ve final çıktıda görünmez; ara hesaplamayı <code>baz</code> kanalıyla taşır.']);
+    if (t.startsWith('class InputState(TypedDict):')) return noteHtml(['<code>InputState</code>, graph’ın dışarıdan kabul ettiği input sözleşmesini daraltır. Bu sınıf içindeki alanlar kullanıcının <code>invoke(...)</code> sırasında vermesi beklenen anahtarları temsil eder.']);
+    if (t.startsWith('class OutputState(TypedDict):')) return noteHtml(['<code>OutputState</code>, graph tamamlandığında dışarıya gösterilmesi hedeflenen output sözleşmesini belirtir. Bu örnekte yalnızca <code>answer</code> alanı dış cevap olarak modellenir.']);
+    if (t === 'foo: int') return noteHtml(['<code>foo: int</code>, ana state içinde tamsayı formatında taşınan dış kanaldır. İlk örnekte graph <code>{&quot;foo&quot;: 1}</code> girdisini alır ve finalde yine <code>foo</code> değerini döndürür.']);
+    if (t === 'baz: int') return noteHtml(['<code>baz: int</code>, private state içindeki ara tamsayı kanalıdır. <code>node_1</code> bu alanı üretir, <code>node_2</code> bu alanı okur; dış final state içinde yer almaz.']);
+    if (t === 'question: str') return noteHtml(['<code>question: str</code>, kullanıcı girdisini temsil eden metin kanalıdır. Input schema kullanıldığında dış çağrıda verilmesi gereken ana alan bu olur.']);
+    if (t === 'answer: str') return noteHtml(['<code>answer: str</code>, graph’ın kullanıcıya dönmek istediği cevap metnidir. Output schema örneğinde dış cevap sözleşmesinin tek alanı olarak kullanılır.']);
+    if (t === 'notes: str') return noteHtml(['<code>notes: str</code>, graph içi ara not veya çalışma alanıdır. Tek overall schema kullanılırsa final state’te görünür; output schema ile dış arayüzden saklanması hedeflenir.']);
+    if (t.startsWith('def node_1')) return noteHtml(['<code>node_1(state: OverallState) -> PrivateState</code>, ana state’i okuyan ve private state güncellemesi döndüren node’dur. Parametre formatı <code>OverallState</code>, dönüş formatı <code>PrivateState</code> olarak işaretlenmiştir.']);
+    if (t.startsWith('def node_2')) return noteHtml(['<code>node_2(state: PrivateState) -> OverallState</code>, private kanalı okuyup ana state’e geri yazan node’dur. Bu satır, graph içinde node’ların farklı state şemalarıyla konuşabileceğini gösterir.']);
+    if (t.startsWith('def thinking_node')) return noteHtml(['<code>thinking_node</code>, soruyu alıp hem dış cevap alanına hem de iç not alanına kısmi update döndürür. Parametre tipi hangi state alanlarını okuyabileceğini; dönüş sözlüğü hangi alanları yazdığını gösterir.']);
+    if (t.startsWith('def answer_node')) return noteHtml(['<code>answer_node</code>, önceki node’un ürettiği overall state’i okuyup nihai <code>answer</code> alanını yazar. Dönüş tipi <code>OutputState</code> verilirse bu node’un dış cevap sözleşmesine uygun değer üretmesi beklenir.']);
+    if (t.startsWith('print(')) return noteHtml(['<code>print(...)</code>, node’un çalışma sırasını terminal çıktısında görünür kılar. State’i değiştirmez; yalnızca graph yürütmesinin hangi node’lardan geçtiğini denetlemeyi sağlar.']);
+    if (t.includes('return {"baz": state["foo"] + 1}')) return noteHtml(['Bu dönüş, kısmi state update formatındadır: anahtar <code>baz</code>, değer ise <code>state[&quot;foo&quot;] + 1</code> sonucudur. Yani akış <code>OverallState.foo</code> değerinden <code>PrivateState.baz</code> kanalına geçer.']);
+    if (t.includes('return {"foo": state["baz"] + 1}')) return noteHtml(['Bu dönüş, private kanaldaki <code>baz</code> değerini okuyup ana state kanalına <code>foo</code> olarak geri yazar. Akış yönü <code>PrivateState.baz</code> → <code>OverallState.foo</code> biçimindedir.']);
+    if (t.includes('return {"answer": "bye", "notes":')) return noteHtml(['Bu node iki alanı birlikte günceller: <code>answer</code> dış cevap adayını, <code>notes</code> ise graph içi ara bilgiyi taşır. Dönüş formatı normal Python <code>dict</code> olup anahtarlar state şemasındaki alanlarla eşleşmelidir.']);
+    if (t === 'return {"answer": "bye Lance"}') return noteHtml(['Bu dönüş yalnızca <code>answer</code> alanını günceller. LangGraph node dönüşlerini kısmi update olarak ele alır; döndürülmeyen diğer state alanları bu node tarafından silinmez.']);
+    if (t.startsWith('builder = StateGraph(OverallState)')) return noteHtml(['<code>StateGraph(OverallState)</code>, ana state şemasını kullanarak graph builder oluşturur. Bu builder node, edge ve compile çağrılarını kabul eder; henüz çalıştırılabilir graph değildir.']);
+    if (t === 'graph = StateGraph(OverallState)') return noteHtml(['Burada değişken adı doğrudan <code>graph</code> olsa da nesne hâlâ builder’dır. <code>add_node</code> ve <code>add_edge</code> çağrılarından sonra <code>compile()</code> ile çalıştırılabilir graph’a dönüştürülür.']);
+    if (t === 'graph = StateGraph(') return noteHtml(['Çok satırlı <code>StateGraph(...)</code> çağrısı başlar. İlk argüman overall state şemasıdır; devamındaki keyword argümanları dış input ve output sözleşmelerini daraltır.']);
+    if (t === 'OverallState,') return noteHtml(['Bu argüman graph’ın iç çalışma şemasını verir. <code>OverallState</code>, node’ların graph içinde okuyup yazabileceği toplam state alanlarını temsil eder.']);
+    if (t === 'input_schema=InputState,') return noteHtml(['<code>input_schema</code>, graph’ın dışarıdan kabul edeceği girdi formatını belirtir. Değer olarak <code>TypedDict</code> tabanlı <code>InputState</code> verilir; bu örnekte dış input yalnızca <code>question</code> alanıdır.']);
+    if (t === 'output_schema=OutputState,') return noteHtml(['<code>output_schema</code>, graph’ın dışarıya göstermesi hedeflenen çıktı formatını belirtir. Değer olarak <code>OutputState</code> verilir; bu örnekte hedeflenen dış çıktı yalnızca <code>answer</code> alanıdır.']);
+    if (t.startsWith('builder.add_node(') || t.startsWith('graph.add_node(')) return noteHtml(['<code>add_node(name, action)</code>, graph’a çalıştırılabilir bir düğüm ekler. <code>name</code> string node adıdır; <code>action</code> ise genellikle <code>state -> partial_state</code> formatında Python fonksiyonudur.']);
+    if (t.startsWith('builder.add_edge(START,') || t.startsWith('graph.add_edge(START,')) return noteHtml(['<code>add_edge(START, hedef)</code>, sanal başlangıçtan ilk gerçek node’a sabit yönlü edge kurar. Bu satır graph çalışınca hangi node’un önce çağrılacağını belirler.']);
+    if (t.includes('add_edge("node_1", "node_2")')) return noteHtml(['Bu edge, <code>node_1</code> tamamlandıktan sonra akışı <code>node_2</code> düğümüne taşır. Şema açısından bu geçiş <code>PrivateState</code> kanalının ikinci node tarafından okunacağı adımdır.']);
+    if (t.includes('add_edge("node_2", END)')) return noteHtml(['Bu edge, <code>node_2</code> tamamlandıktan sonra graph’ı sanal <code>END</code> düğümüne bağlar. Böylece final state hesaplanıp çağırana döndürülür.']);
+    if (t.includes('add_edge("thinking_node", "answer_node")')) return noteHtml(['Bu edge, ara çalışma adımından cevap üretim adımına geçer. <code>thinking_node</code> tarafından yazılan <code>notes</code> ve <code>answer</code> alanları sonraki node’un okuyabileceği overall state içinde bulunur.']);
+    if (t.includes('add_edge("answer_node", END)')) return noteHtml(['Bu edge, cevap node’u bittikten sonra yürütmeyi sonlandırır. Output schema verilmişse dışarıya hangi alanların gösterileceği bu kapanıştan sonra uygulanması hedeflenen sözleşmedir.']);
+    if (t === 'graph = builder.compile()' || t === 'graph = graph.compile()') return noteHtml(['<code>compile()</code>, builder üzerinde biriken node, edge ve schema kurallarını çalıştırılabilir graph nesnesine dönüştürür. Bu çağrıdan sonra <code>invoke</code> kullanılabilir.']);
+    if (t.startsWith('display(Image(graph.get_graph().draw_mermaid_png()))')) return noteHtml(['Bu satır graph topolojisini görselleştirir: <code>get_graph()</code> çizilebilir temsili alır, <code>draw_mermaid_png()</code> PNG üretir, <code>Image</code> ve <code>display</code> bunu hücre çıktısı olarak gösterir.']);
+    if (t === 'graph.invoke({"foo": 1})') return noteHtml(['<code>invoke(input_state)</code>, graph’ı tek sefer çalıştırır. Buradaki input formatı <code>{&quot;foo&quot;: int}</code> şeklindedir; akış <code>START → node_1 → node_2 → END</code> yönünde ilerler.']);
+    if (t === 'graph.invoke({"question": "hi"})') return noteHtml(['Bu çağrı graph’a dış kullanıcı sorusunu verir. Input formatı <code>{&quot;question&quot;: str}</code> biçimindedir; final sonuçta görünür alanlar kullanılan schema sözleşmesine bağlıdır.']);
+    if (t.startsWith('# Build graph')) return noteHtml(['Bu yorumdan sonraki satırlar graph topolojisinin node listesini kurar. Önce node’lar adlandırılır, sonra edge’lerle yürütme sırası tanımlanır.']);
+    if (t.startsWith('# Logic')) return noteHtml(['Bu bölüm graph’ın yönlü akışını tanımlar. Edge’ler hangi node’un hangi node’dan sonra çalışacağını açıkça belirtir.']);
+    if (t.startsWith('# Add')) return noteHtml(['Bu bölümde builder çalıştırılabilir graph’a çevrilir. Node ve edge ekleme işlemleri bittikten sonra compile aşamasına geçilir.']);
+    if (t.startsWith('# View')) return noteHtml(['Bu bölüm yalnızca graph yapısını görselleştirir. Hesaplama sonucunu üretmez; yürütme için ayrıca <code>invoke</code> çağrısı gerekir.']);
+    return noteHtml(['Bu satır ders kodunun çalıştırılabilir parçasıdır. Bağlamı, bulunduğu bloktaki state şeması ve edge akışıyla birlikte değerlendirilmelidir.']);
+  }
+
+  function renderCodeLines(block, raw, lang) {
+    const lines = raw.split('\n');
+    const tripleState = { inTriple: false, quote: '' };
+    block.innerHTML = '';
+    lines.forEach(function (line) {
+      const lineEl = document.createElement('span');
+      lineEl.className = 'code-line';
+      const trimmed = line.trim();
+      let htmlLine;
+      if (lang === 'shell' || (trimmed.startsWith('%') && !tripleState.inTriple)) htmlLine = highlightShell(line);
+      else if (lang === 'python') htmlLine = highlightPythonWithTripleState(line, tripleState);
+      else htmlLine = highlightOutput(line);
+      lineEl.innerHTML = htmlLine || '&nbsp;';
+      const note = noteForLine(line);
+      if (note) { lineEl.dataset.note = note; lineEl.tabIndex = 0; }
+      block.appendChild(lineEl);
+    });
+  }
+  document.querySelectorAll('pre code[data-lang]').forEach(function (block) {
+    try {
+      const lang = block.getAttribute('data-lang');
+      const raw = block.textContent;
+      block.dataset.rawCode = raw;
+      if (block.closest('.code-body')) renderCodeLines(block, raw, lang);
+      else block.innerHTML = highlightOutput(raw);
+    } catch (err) {
+      block.dataset.renderError = err && err.message ? err.message : 'true';
+    }
+  });
+  const tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  let activeLine = null;
+  function positionTooltip(line) {
+    const rect = line.getBoundingClientRect();
+    tooltip.style.maxWidth = window.innerWidth <= 560 ? 'calc(100vw - 32px)' : '420px';
+    const tipRect = tooltip.getBoundingClientRect();
+    let left = rect.right + 12;
+    let top = rect.top - 4;
+    if (left + tipRect.width > window.innerWidth - 16) {
+      left = Math.max(16, rect.left);
+      top = rect.bottom + 8;
+    }
+    if (top + tipRect.height > window.innerHeight - 16) top = Math.max(16, rect.top - tipRect.height - 8);
+    if (left + tipRect.width > window.innerWidth - 16) left = Math.max(16, window.innerWidth - tipRect.width - 16);
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(line) {
+    activeLine = line;
+    tooltip.innerHTML = line.dataset.note || '';
+    tooltip.classList.add('is-visible');
+    positionTooltip(line);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line); });
+  document.addEventListener('pointerout', function (event) { if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip(); });
+  document.addEventListener('scroll', function () { if (activeLine) positionTooltip(activeLine); }, true);
+  window.addEventListener('resize', function () { if (activeLine) positionTooltip(activeLine); });
+  document.addEventListener('focusin', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line); });
+  document.addEventListener('focusout', function (event) { if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip(); });
+  document.querySelectorAll('.copy-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const card = button.closest('.code-card');
+      const code = card ? card.querySelector('code[data-lang]') : null;
+      const text = code ? (code.dataset.rawCode || code.textContent) : '';
+      function done() { const old = button.textContent; button.textContent = 'Kopyalandı!'; setTimeout(function () { button.textContent = old; }, 1500); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+      else fallback();
+      function fallback() {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.left = '-9999px';
+        document.body.appendChild(area);
+        area.select();
+        try { document.execCommand('copy'); done(); } catch (err) { button.textContent = 'Kopyalanamadı'; }
+        document.body.removeChild(area);
+      }
+    });
+  });
+  function fitTitle() {
+    const title = document.getElementById('lesson-title');
+    if (!title) return;
+    title.style.fontSize = '';
+    const min = 28;
+    let size = parseFloat(window.getComputedStyle(title).fontSize);
+    while (title.scrollWidth > title.clientWidth && size > min) {
+      size -= 1;
+      title.style.fontSize = size + 'px';
+    }
+  }
+  fitTitle();
+  window.addEventListener('resize', fitTitle);
+})();
+</script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

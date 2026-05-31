@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph Platform’da Assistant Sürümleri ve Konfigürasyon Yönetimi</title>
+  <style>
+:root{--lesson-bg:#fff;--lesson-text:#111827;--lesson-muted:#4b5563;--lesson-soft:#f9fafb;--lesson-soft-2:#f3f4f6;--lesson-border:#e5e7eb;--lesson-border-strong:#d1d5db;--lesson-card:#fff;--lesson-card-muted:#f8fafc;--langgraph-primary:#153f3b;--langgraph-secondary:#0f766e;--langgraph-soft:#dbe9e7;--code-bg:#f7f7f7;--code-surface:#f7f7f7;--code-text:#000;--code-muted:#4b5563;--code-border:#ccc;--code-keyword:#008000;--code-string:#ba2121;--code-comment:#408080;--code-function:#0000ff;--code-number:#666;--code-class:#000;--code-builtin:#008000;--code-operator:#aa22ff}html,body{margin:0;padding:0;max-width:100%;overflow-x:hidden;background:var(--lesson-bg)}*,*::before,*::after{box-sizing:border-box}.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.55}.lesson-page>article{margin:0 auto;counter-reset:section}.lesson-page,.lesson-page section,.title-block,.definition-card,.example-card,.note-card,.question-card,.mini-panel,.output-comment,.flow-step,.state-item{min-width:0;max-width:100%}.title-block{display:flex;flex-direction:column;align-items:stretch;margin:0 0 2rem;text-align:center}.lesson-logo{align-self:center;display:block;width:clamp(3.5rem,8vw,5.5rem);height:clamp(3.5rem,8vw,5.5rem);object-fit:contain;margin:0 auto 1rem}.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-weight:700;line-height:1.25}.lesson-page h1{width:100%;min-width:0;max-width:100%;margin:0;font-size:clamp(1.95rem,3.6vw,2.75rem);text-align:center;text-wrap:balance;overflow-wrap:anywhere;word-break:normal}.lead-text{width:100%;min-width:0;max-width:760px;margin:.9rem auto 0;color:var(--lesson-muted);font-size:1.05rem}.lesson-page p,.lesson-page li,.lead-text{overflow-wrap:anywhere;word-break:normal}.lesson-page h2{display:flex;align-items:center;gap:.55rem;margin:2.2rem 0 .85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.75rem);counter-increment:section;counter-reset:subsection}.lesson-page h2::before{content:counter(section) ".";font-variant-numeric:tabular-nums}.lesson-page h3{display:flex;align-items:center;gap:.55rem;margin:1.45rem 0 .65rem;font-size:clamp(1.12rem,1.65vw,1.32rem);counter-increment:subsection;counter-reset:subsubsection}.lesson-page h3::before{content:counter(section) "." counter(subsection);font-variant-numeric:tabular-nums}.lesson-page h4{margin:1rem 0 .45rem;font-size:1.02rem;counter-increment:subsubsection}.lesson-page h4::before{content:counter(section) "." counter(subsection) "." counter(subsubsection) " ";font-variant-numeric:tabular-nums}.definition-card h3,.example-card h3,.note-card h3,.question-card h3,.mini-panel h3,.output-comment h3,.mini-panel h4,.output-comment h4{display:block;counter-increment:none;counter-reset:none;margin:0 0 .45rem;font-size:1rem}.definition-card h3::before,.example-card h3::before,.note-card h3::before,.question-card h3::before,.mini-panel h3::before,.output-comment h3::before,.mini-panel h4::before,.output-comment h4::before{content:none}p{margin:.55rem 0 .9rem}ul,ol{margin:.65rem 0 1rem;padding-left:1.35rem}li+li{margin-top:.32rem}code:not(.code-body code):not(.output-body code):not(.line-tooltip code){padding:.08rem .24rem;border-radius:.28rem;background:#eee;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.9em}.definition-card,.example-card,.note-card,.question-card,.mini-panel,.output-comment{border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-card);padding:.95rem 1rem}.definition-card{border-left:4px solid var(--langgraph-primary);background:linear-gradient(90deg,rgba(219,233,231,.55),#fff 38%)}.note-card{border-left:4px solid var(--langgraph-secondary);background:var(--lesson-card-muted)}.question-card{border-left:4px solid var(--lesson-border-strong);background:var(--lesson-soft)}.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1rem 4.95rem}.explain-grid .mini-panel{padding:.9rem 1rem}.mini-panel p{margin-bottom:0;color:var(--lesson-muted)}.output-comment{margin:.65rem 0 1rem 4.95rem;background:#fff;color:var(--lesson-muted)}.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:.65rem}.table-wrap table{width:100%;min-width:680px;border-collapse:collapse;background:#fff}.table-wrap th{background:var(--lesson-soft);color:var(--langgraph-primary);font-weight:700}.table-wrap th,.table-wrap td{padding:.7rem .8rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top}.table-wrap tr:last-child td{border-bottom:0}.concept-map{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.65rem;margin:1.2rem 0;align-items:stretch}.concept-map.three{grid-template-columns:repeat(3,minmax(0,1fr))}.flow-step{min-height:5.5rem;padding:.85rem;border:1px solid var(--lesson-border);border-radius:.6rem;background:var(--lesson-soft);position:relative}.flow-step strong{display:block;margin-bottom:.35rem;color:var(--langgraph-primary);font-size:.98rem}.flow-step span{color:var(--lesson-muted);font-size:.95rem;line-height:1.45}.flow-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-.52rem;width:.5rem;height:1px;background:var(--lesson-border-strong)}.state-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0}.state-item{padding:.9rem 1rem;border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-card)}.state-item strong{display:block;margin-bottom:.3rem;color:var(--langgraph-primary)}.state-item span{color:var(--lesson-muted)}.checklist{list-style:none;padding-left:0}.checklist li{position:relative;padding-left:1.25rem}.checklist li::before{content:"";position:absolute;left:0;top:.72em;width:.45rem;height:.45rem;border-radius:50%;background:var(--langgraph-secondary)}.chat-flow{display:grid;gap:.65rem;margin:1rem 0}.chat-bubble{max-width:78%;padding:.75rem .85rem;border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-soft)}.chat-bubble.user{justify-self:end;background:#fff;border-color:var(--lesson-border-strong)}.chat-bubble.assistant{justify-self:start;border-left:3px solid var(--langgraph-secondary)}.chat-bubble.tool{justify-self:start;border-left:3px solid #9f1239;background:#fff}.chat-bubble strong{display:block;margin-bottom:.25rem;color:var(--langgraph-primary);font-size:.9rem}.walk-card{margin:1.35rem 0 1.75rem}.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 .65rem;margin:1.15rem 0;border:0;border-radius:0;overflow:visible;background:transparent}.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1 / span 2;padding-top:.62rem;color:#303f9f;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.88rem;line-height:1.4;text-align:right;white-space:nowrap}.code-head{position:absolute;top:.35rem;right:.45rem;z-index:2;display:flex;align-items:center;justify-content:flex-end;padding:0;border:0;background:transparent}.code-title{display:none}.copy-btn{border:1px solid #c4c8cf;border-radius:.35rem;background:rgba(255,255,255,.92);color:#374151;cursor:pointer;font-size:.78rem;padding:.22rem .5rem}.copy-btn:hover{background:#fff}.code-body{grid-column:2;margin:0;padding:.72rem 5.2rem .72rem .8rem;overflow-x:auto;overflow-y:hidden;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.91rem;line-height:1.48;white-space:pre;overflow-wrap:normal;word-break:normal;tab-size:4;border:1px solid var(--code-border);border-radius:0 0 .2rem .2rem;background:var(--code-bg);scrollbar-gutter:stable}.code-body code{display:block;min-width:max-content;font-family:inherit}.code-line{display:block;width:auto;min-width:max-content;min-height:1.48em;padding:0 .28rem;white-space:pre;overflow-wrap:normal;word-break:normal;border-radius:.14rem}.code-line:empty::before{content:" "}.code-line[data-note]{position:relative;cursor:help;text-decoration:none;border-bottom:0}.code-line[data-note] *,.code-line[data-note]:hover,.code-line[data-note]:focus{text-decoration:none;border-bottom:0}.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:none}.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid #4c78a8;border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;font-weight:400;line-height:1.45;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease}.line-tooltip.is-visible{opacity:1;transform:translateY(0)}.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12.5px}.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 .65rem;margin:1rem 0;border:0;border-radius:0;overflow:visible;background:transparent}.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1 / span 2;padding-top:.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.88rem;line-height:1.4;text-align:right;white-space:nowrap}.output-head{grid-column:2;padding:.42rem .55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:.2rem .2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:.78rem;cursor:default}.output-body{grid-column:2;margin:0;padding:.72rem .8rem;border:1px solid var(--code-border);border-radius:0 0 .2rem .2rem;background:var(--code-bg);color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.91rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.output-card.output-scroll .output-body,pre.output-body:not(.output-visual){max-height:28rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;scrollbar-width:auto}.output-card.output-scroll .output-body::-webkit-scrollbar,pre.output-body:not(.output-visual)::-webkit-scrollbar{width:13px;height:13px}.output-card.output-scroll .output-body::-webkit-scrollbar-track,pre.output-body:not(.output-visual)::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d6d6d6}.output-card.output-scroll .output-body::-webkit-scrollbar-thumb,pre.output-body:not(.output-visual)::-webkit-scrollbar-thumb{background:#b8b8b8;border:3px solid #f2f2f2;border-radius:999px}.output-body,.output-body code,.output-body .tok-keyword,.output-body .tok-string,.output-body .tok-comment,.output-body .tok-function,.output-body .tok-number,.output-body .tok-class,.output-body .tok-name,.output-body .tok-builtin,.output-body .tok-operator,.output-body .tok-magic,.output-body .tok-flag,.output-body .tok-shell-command{color:var(--code-text)!important;font-weight:400!important;font-style:normal!important}.tok-keyword{color:var(--code-keyword);font-weight:700}.tok-string{color:var(--code-string)}.tok-comment{color:var(--code-comment);font-style:italic}.tok-function{color:var(--code-function)}.tok-number{color:var(--code-number)}.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }.tok-builtin{color:var(--code-builtin)}.tok-operator{color:var(--code-operator)}.tok-magic{color:#008000;font-weight:700}.tok-flag{color:#aa22ff}.tok-shell-command{color:#0000ff;font-weight:700}.tok-attribute{color:#795e26}@media(max-width:860px){.concept-map,.concept-map.three,.state-list,.explain-grid{grid-template-columns:1fr}.flow-step:not(:last-child)::after{display:none}table{min-width:620px}}@media(max-width:560px){.lesson-page{padding:1rem;font-size:1rem;line-height:1.72}.title-block{display:block}.lesson-logo{margin-left:auto;margin-right:auto}.lesson-page h1{display:block;width:100%;font-size:clamp(1.55rem,7vw,1.9rem);line-height:1.22;word-break:break-word}.lead-text{display:block;width:100%;font-size:1rem}.code-card,.output-card{grid-template-columns:minmax(0,1fr)}.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 .25rem;text-align:left}.code-body,.output-head,.output-body{grid-column:1}.code-head{top:1.8rem;right:.45rem}.code-body{font-size:.84rem;padding:.85rem 4.85rem .85rem .85rem;overflow-x:auto}.output-body{font-size:.84rem;padding:.85rem}.explain-grid,.output-comment{margin-left:0}.line-tooltip{max-width:calc(100vw - 32px)}.chat-bubble{max-width:100%}}
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html" class="is-active" aria-current="page">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+
+<main class="lesson-page notebook-main" id="main-content" tabindex="-1"><article>
+<header class="title-block"><img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu"><h1 id="lesson-title">LangGraph Platform’da Assistant Sürümleri ve Konfigürasyon Yönetimi</h1><p class="lead-text">Bu ders, aynı deployed graph üzerinde farklı assistant davranışları oluşturmayı, konfigürasyon alanlarını sürümlemeyi ve SDK ile assistant yaşam döngüsünü yönetmeyi açıklar.</p></header>
+<section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title"><h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2><p>Bu bölümde amaç, LangGraph Platform üzerinde yayınlanmış bir graph için birden fazla assistant davranışı tanımlamaktır. Aynı <code>task_maistro</code> graph’ı korunur; buna karşılık <code>todo_category</code>, <code>user_id</code> ve <code>task_maistro_role</code> gibi yapılandırılabilir alanlar assistant seviyesinde farklılaştırılır.</p><section class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Assistant, deployed graph’ın kendisi değildir; graph üzerinde varsayılan konfigürasyon, sürüm ve davranış politikası taşıyan yönetilebilir bir çalışma profilidir.</p></section></section>
+<section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title"><h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2><ul class="checklist"><li>Bir deployed graph için assistant kaydı oluşturmanın graph çalıştırmaktan nasıl ayrıldığını açıklayabilecek.</li><li><code>config.configurable</code> alanının davranışı nasıl etkilediğini yorumlayabilecek.</li><li><code>client.assistants.create</code>, <code>update</code>, <code>search</code> ve <code>delete</code> çağrılarını ayırt edebilecek.</li><li><code>assistant_id</code> ile run başlatıldığında hangi assistant varsayılanlarının kullanıldığını takip edebilecek.</li><li><code>stream_mode="values"</code> çıktılarında insan mesajı, tool çağrısı, tool mesajı ve final cevabı ayırabilecek.</li></ul></section>
+<section id="on-kosullar" aria-labelledby="on-kosullar-title"><h2 id="on-kosullar-title">Ön Koşullar</h2><p>Python sözlükleri, listeler, asenkron <code>await</code> kullanımı, mesaj temelli LLM etkileşimi ve deployment kavramı temel düzeyde bilinmelidir. Bu derste graph’ın daha önce deploy edilmiş olduğu ve SDK istemcisinin bu deployment ile konuştuğu kabul edilir.</p></section>
+<section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title"><h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2><div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody><tr><td><code>Assistant</code></td><td>Deployed graph için kaydedilen konfigürasyon ve davranış profili.</td><td>Aynı graph’ın farklı sürümlerle çalışmasını sağlar.</td></tr><tr><td><code>graph_id</code></td><td>Çalıştırılacak graph kimliği.</td><td>Assistant belirli bir graph’a bağlanır.</td></tr><tr><td><code>assistant_id</code></td><td>Run çağrısında kullanılacak assistant kimliği.</td><td>Hangi varsayılan konfigürasyonun uygulanacağını belirler.</td></tr><tr><td><code>config.configurable</code></td><td>Assistant için varsayılan çalışma zamanı değerleri.</td><td>Graph node’larının okuyabildiği configurable sözleşmesini doldurur.</td></tr><tr><td><code>todo_category</code></td><td>Görevleri personal veya work gibi ayıran kategori.</td><td>Bellek namespace ayrımını destekler.</td></tr><tr><td><code>task_maistro_role</code></td><td>Assistant rolünü ve cevap politikasını belirleyen metin.</td><td>Model prompt’una davranış ilkesi olarak taşınır.</td></tr><tr><td><code>Thread</code></td><td>Konuşma yürütmesinin süreklilik bağlamı.</td><td>Mesaj geçmişi ve run state’i bu bağlamda izlenir.</td></tr><tr><td><code>Tool Message</code></td><td>Tool çalışmasının görünür sonucu.</td><td>Agent-tool döngüsünde model cevabından ayrılır.</td></tr></tbody></table></div></section>
+<section id="buyuk-resim" aria-labelledby="buyuk-resim-title"><h2 id="buyuk-resim-title">Büyük Resim</h2><p>Graph kodu node ve tool akışını tanımlar; assistant ise bu graph’ın hangi varsayılan kullanıcı, kategori ve rol talimatıyla çalışacağını belirler.</p><div class="concept-map"><section class="flow-step"><strong>Deployed graph</strong><span>Temel agent uygulaması platformda çalışır.</span></section><section class="flow-step"><strong>Configurable alanlar</strong><span>Kullanıcı, kategori ve rol bilgisi taşınır.</span></section><section class="flow-step"><strong>Assistant kaydı</strong><span>Bu alanlar varsayılan değerlerle sürümlenir.</span></section><section class="flow-step"><strong>Thread ve run</strong><span>Kullanıcı mesajı belirli assistant kimliğiyle yürütülür.</span></section><section class="flow-step"><strong>Tool ve bellek</strong><span>Görevler kategori ve talimata göre işlenir.</span></section></div><section class="question-card"><h3 id="kritik-ayrim">Kritik Ayrım</h3><p>Bu derste yeni bir <code>StateGraph</code> kurulmaz. Odak, daha önce deploy edilmiş graph’ın assistant API ile farklı varsayılanlara bağlanmasıdır.</p></section></section>
+<section id="ana-anlatim" aria-labelledby="ana-anlatim-title"><h2 id="ana-anlatim-title">Ana Anlatım</h2><p>LangGraph Platform’daki assistant yapısı, agent uygulamasını tek bir sabit prompt veya tek bir bellek alanıyla sınırlamaz. Deployed graph aynı kalırken farklı görev kategorileri ve davranış politikaları assistant konfigürasyonu üzerinden tanımlanabilir.</p><section class="definition-card"><h3 id="assistant-surumleme-mantigi">Assistant Sürümleme Mantığı</h3><p>Bir assistant oluşturulduğunda platform bir <code>assistant_id</code>, <code>graph_id</code>, konfigürasyon ve sürüm bilgisi döndürür. Güncelleme yapıldığında aynı assistant kimliği yeni bir konfigürasyonla sürümlenir.</p></section><section class="example-card"><h3 id="personal-ve-work-ayrimi">Personal ve Work Ayrımı</h3><p>Kişisel assistant daha destekleyici bir rol metni kullanır. Work assistant deadline ve süre tahmini konusunda daha katı davranacak şekilde yapılandırılır.</p></section></section>
+<section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title"><h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2><p>Aşağıdaki yürüyüş, çalıştırılabilir kodları doğal sırayla ele alır. Kod blokları assistant yönetimi, konfigürasyon sürümleme, SDK ile run başlatma ve message/tool çıktılarının okunması ekseninde ilerler.</p><article class="walk-card" id="kod-adimi-1">
+  <h3 id="sdk-bagimliligini-hazirlama">SDK bağımlılığını hazırlama</h3>
+  <p>LangGraph SDK paketini çalışma ortamına ekler.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">SDK bağımlılığını hazırlama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install -U langgraph_sdk
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>SDK, deployment üzerindeki assistant kaynaklarına Python içinden erişim sağlar.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu komut notebook ortamına özgüdür; üretim projelerinde bağımlılık yönetimi proje dosyalarında tutulmalıdır.</p></section>
+  </div>
+
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu blok ekrana çıktı üretmez; amacı sonraki adımlar için nesne veya değişken hazırlamaktır.</p></section>
+</article><article class="walk-card" id="kod-adimi-2">
+  <h3 id="deployment-istemcisine-baglanma">Deployment istemcisine bağlanma</h3>
+  <p>Yerel deployment adresi için SDK istemcisi oluşturulur.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Deployment istemcisine bağlanma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langgraph_sdk import get_client
+url_for_cli_deployment = "http://localhost:8123"
+client = get_client(url=url_for_cli_deployment)
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Sonraki assistant ve run çağrılarının tamamı bu istemci üzerinden yapılır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Deployment çalışmıyorsa bu aşamada bağlantı hatası alınır.</p></section>
+  </div>
+
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu blok ekrana çıktı üretmez; amacı sonraki adımlar için nesne veya değişken hazırlamaktır.</p></section>
+</article><article class="walk-card" id="kod-adimi-3">
+  <h3 id="personal-assistant-olusturma">Personal assistant oluşturma</h3>
+  <p>Aynı graph için kişisel görev kategorisine bağlı bir assistant kaydı oluşturulur.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Personal assistant oluşturma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">personal_assistant = await client.assistants.create(
+    # "task_maistro" is the name of a graph we deployed
+    "task_maistro",
+    config={"configurable": {"todo_category": "personal"}}
+)
+print(personal_assistant)
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Assistant, graph üzerinde varsayılan configurable değerler taşıyan ayrı bir çalışma profilidir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Graph kimliği sabit kalır; davranış farkı assistant konfigürasyonundan gelir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'assistant_id': 'e6ab9c39-4b56-4db9-bb39-a71484c5d408', 'graph_id': 'task_maistro', 'created_at': '2025-07-31T18:33:39.897312+00:00', 'updated_at': '2025-07-31T18:33:39.897312+00:00', 'config': {'configurable': {'todo_category': 'personal'}}, 'metadata': {}, 'version': 1, 'name': 'Untitled', 'description': None, 'context': {}}</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-4">
+  <h3 id="personal-assistant-rolunu-guncelleme">Personal assistant rolünü güncelleme</h3>
+  <p>Kişisel assistant daha ayrıntılı rol talimatı ve kullanıcı bilgisiyle güncellenir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Personal assistant rolünü güncelleme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">task_maistro_role = """You are a friendly and organized personal task assistant. Your main focus is helping users stay on top of their personal tasks and commitments. Specifically:
+
+- Help track and organize personal tasks
+- When providing a 'todo summary':
+  1. List all current tasks grouped by deadline (overdue, today, this week, future)
+  2. Highlight any tasks missing deadlines and gently encourage adding them
+  3. Note any tasks that seem important but lack time estimates
+- Proactively ask for deadlines when new tasks are added without them
+- Maintain a supportive tone while helping the user stay accountable
+- Help prioritize tasks based on deadlines and importance
+
+Your communication style should be encouraging and helpful, never judgmental.
+
+When tasks are missing deadlines, respond with something like "I notice [task] doesn't have a deadline yet. Would you like to add one to help us track it better?"""
+
+configurations = {
+    "todo_category": "personal",
+    "user_id": "lance",
+    "task_maistro_role": task_maistro_role,
+}
+
+personal_assistant = await client.assistants.update(
+    personal_assistant["assistant_id"],
+    config={"configurable": configurations},
+)
+print(personal_assistant)
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Update işlemi assistant davranışını sürümlendirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Rol metni graph kodunu değil, graph çalışırken kullanılan prompt davranışını değiştirir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'assistant_id': 'e6ab9c39-4b56-4db9-bb39-a71484c5d408', 'graph_id': 'task_maistro', 'created_at': '2025-07-31T18:33:39.908742+00:00', 'updated_at': '2025-07-31T18:33:39.908742+00:00', 'config': {'configurable': {'user_id': 'lance', 'todo_category': 'personal', 'task_maistro_role': 'You are a friendly and organized personal task assistant. Your main focus is helping users stay on top of their personal tasks and commitments. Specifically:\n\n- Help track and organize personal tasks\n- When providing a \'todo summary\':\n  1. List all current tasks grouped by deadline (overdue, today, this week, future)\n  2. Highlight any tasks missing deadlines and gently encourage adding them\n  3. Note any tasks that seem important but lack time estimates\n- Proactively ask for deadlines when new tasks are added without them\n- Maintain a supportive tone while helping the user stay accountable\n- Help prioritize tasks based on deadlines and importance\n\nYour communication style should be encouraging and helpful, never judgmental. \n\nWhen tasks are missing deadlines, respond with something like "I notice [task] doesn\'t have a deadline yet. Would you like to add one to help us track it better?'}}, 'metadata': {}, 'version': 2, 'name': 'Untitled', 'description': None, 'context': {}}</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-5">
+  <h3 id="work-assistant-olusturma">Work assistant oluşturma</h3>
+  <p>İş görevleri için deadline ve süre tahminini daha sıkı isteyen ikinci assistant oluşturulur.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Work assistant oluşturma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">task_maistro_role = """You are a focused and efficient work task assistant.
+
+Your main focus is helping users manage their work commitments with realistic timeframes.
+
+Specifically:
+
+- Help track and organize work tasks
+- When providing a 'todo summary':
+  1. List all current tasks grouped by deadline (overdue, today, this week, future)
+  2. Highlight any tasks missing deadlines and gently encourage adding them
+  3. Note any tasks that seem important but lack time estimates
+- When discussing new tasks, suggest that the user provide realistic time-frames based on task type:
+  • Developer Relations features: typically 1 day
+  • Course lesson reviews/feedback: typically 2 days
+  • Documentation sprints: typically 3 days
+- Help prioritize tasks based on deadlines and team dependencies
+- Maintain a professional tone while helping the user stay accountable
+
+Your communication style should be supportive but practical.
+
+When tasks are missing deadlines, respond with something like "I notice [task] doesn't have a deadline yet. Based on similar tasks, this might take [suggested timeframe]. Would you like to set a deadline with this in mind?"""
+
+configurations = {
+    "todo_category": "work",
+    "user_id": "lance",
+    "task_maistro_role": task_maistro_role,
+}
+
+work_assistant = await client.assistants.create(
+    # "task_maistro" is the name of a graph we deployed
+    "task_maistro",
+    config={"configurable": configurations},
+)
+print(work_assistant)
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Aynı deployed graph farklı role ve kategoriyle çalıştırılabilir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu davranış ayrımı yeni graph yazmadan yapılır.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'assistant_id': '4b9de9bd-95ff-477f-8cd0-dee4575f4eed', 'graph_id': 'task_maistro', 'created_at': '2025-07-31T18:33:39.914775+00:00', 'updated_at': '2025-07-31T18:33:39.914775+00:00', 'config': {'configurable': {'user_id': 'lance', 'todo_category': 'work', 'task_maistro_role': 'You are a focused and efficient work task assistant. \n\nYour main focus is helping users manage their work commitments with realistic timeframes. \n\nSpecifically:\n\n- Help track and organize work tasks\n- When providing a \'todo summary\':\n  1. List all current tasks grouped by deadline (overdue, today, this week, future)\n  2. Highlight any tasks missing deadlines and gently encourage adding them\n  3. Note any tasks that seem important but lack time estimates\n- When discussing new tasks, suggest that the user provide realistic time-frames based on task type:\n  • Developer Relations features: typically 1 day\n  • Course lesson reviews/feedback: typically 2 days\n  • Documentation sprints: typically 3 days\n- Help prioritize tasks based on deadlines and team dependencies\n- Maintain a professional tone while helping the user stay accountable\n\nYour communication style should be supportive but practical. \n\nWhen tasks are missing deadlines, respond with something like "I notice [task] doesn\'t have a deadline yet. Based on similar tasks, this might take [suggested timeframe]. Would you like to set a deadline with this in mind?'}}, 'metadata': {}, 'version': 1, 'name': 'Untitled', 'description': None, 'context': {}}</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-6">
+  <h3 id="assistant-listesini-arama">Assistant listesini arama</h3>
+  <p>Kayıtlı assistantlar kimlik, sürüm ve konfigürasyon bilgileriyle listelenir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Assistant listesini arama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">assistants = await client.assistants.search()
+for assistant in assistants:
+    print({
+        'assistant_id': assistant['assistant_id'],
+        'version': assistant['version'],
+        'config': assistant['config']
+    })
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Search çağrısı assistant kaynaklarının deployment içinde yönetilebilir olduğunu gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Liste sırası kalıcı uygulama mantığı için tek başına güvenilir seçim kriteri değildir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'assistant_id': '4b9de9bd-95ff-477f-8cd0-dee4575f4eed', 'version': 1, 'config': {'configurable': {'user_id': 'lance', 'todo_category': 'work', 'task_maistro_role': 'You are a focused and efficient work task assistant. \n\nYour main focus is helping users manage their work commitments with realistic timeframes. \n\nSpecifically:\n\n- Help track and organize work tasks\n- When providing a \'todo summary\':\n  1. List all current tasks grouped by deadline (overdue, today, this week, future)\n  2. Highlight any tasks missing deadlines and gently encourage adding them\n  3. Note any tasks that seem important but lack time estimates\n- When discussing new tasks, suggest that the user provide realistic time-frames based on task type:\n  • Developer Relations features: typically 1 day\n  • Course lesson reviews/feedback: typically 2 days\n  • Documentation sprints: typically 3 days\n- Help prioritize tasks based on deadlines and team dependencies\n- Maintain a professional tone while helping the user stay accountable\n\nYour communication style should be supportive but practical. \n\nWhen tasks are missing deadlines, respond with something like "I notice [task] doesn\'t have a deadline yet. Based on similar tasks, this might take [suggested timeframe]. Would you like to set a deadline with this in mind?'}}}
+{'assistant_id': 'e6ab9c39-4b56-4db9-bb39-a71484c5d408', 'version': 2, 'config': {'configurable': {'user_id': 'lance', 'todo_category': 'personal', 'task_maistro_role': 'You are a friendly and organized personal task assistant. Your main focus is helping users stay on top of their personal tasks and commitments. Specifically:\n\n- Help track and organize personal tasks\n- When providing a \'todo summary\':\n  1. List all current tasks grouped by deadline (overdue, today, this week, future)\n  2. Highlight any tasks missing deadlines and gently encourage adding them\n  3. Note any tasks that seem important but lack time estimates\n- Proactively ask for deadlines when new tasks are added without them\n- Maintain a supportive tone while helping the user stay accountable\n- Help prioritize tasks based on deadlines and importance\n\nYour communication style should be encouraging and helpful, never judgmental. \n\nWhen tasks are missing deadlines, respond with something like "I notice [task] doesn\'t have a deadline yet. Would you like to add one to help us track it better?'}}}
+{'assistant_id': '4a2980c5-2812-4d8e-ae62-3fb72f9ef98f', 'version': 1, 'config': {'configurable': {'user_id': 'lance', 'todo_category': 'work', 'task_maistro_role': 'You are a focused and efficient work task assistant. \n\nYour main focus is helping users manage their work commitments with realistic timeframes. \n\nSpecifically:\n\n- Help track and organize work tasks\n- When providing a \'todo summary\':\n  1. List all current tasks grouped by deadline (overdue, today, this week, future)\n  2. Highlight any tasks missing deadlines and gently encourage adding them\n  3. Note any tasks that seem important but lack time estimates\n- When discussing new tasks, suggest that the user provide realistic time-frames based on task type:\n  • Developer Relations features: typically 1 day\n  • Course lesson reviews/feedback: typically 2 days\n  • Documentation sprints: typically 3 days\n- Help prioritize tasks based on deadlines and team dependencies\n- Maintain a professional tone while helping the user stay accountable\n\nYour communication style should be supportive but practical. \n\nWhen tasks are missing deadlines, respond with something like "I notice [task] doesn\'t have a deadline yet. Based on similar tasks, this might take [suggested timeframe]. Would you like to set a deadline with this in mind?'}}}
+{'assistant_id': '4955437e-b617-4a25-8470-11f49f71f388', 'version': 1, 'config': {'configurable': {'user_id': 'lance', 'todo_category': 'work', 'task_maistro_role': 'You are a focused and efficient work task assistant. \n\nYour main focus is helping users manage their work commitments with realistic timeframes. \n\nSpecifically:\n\n- Help track and organize work tasks\n- When providing a \'todo summary\':\n  1. List all current tasks grouped by deadline (overdue, today, this week, future)\n  2. Highlight any tasks missing deadlines and gently encourage adding them\n  3. Note any tasks that seem important but lack time estimates\n- When discussing new tasks, suggest that the user provide realistic time-frames based on task type:\n  • Developer Relations features: typically 1 day\n  • Course lesson reviews/feedback: typically 2 days\n  • Documentation sprints: typically 3 days\n- Help prioritize tasks based on deadlines and team dependencies\n- Maintain a professional tone while helping the user stay accountable\n\nYour communication style should be supportive but practical. \n\nWhen tasks are missing deadlines, respond with something like "I notice [task] doesn\'t have a deadline yet. Based on similar tasks, this might take [suggested timeframe]. Would you like to set a deadline with this in mind?'}}}</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-7">
+  <h3 id="gecici-assistant-olusturup-silme">Geçici assistant oluşturup silme</h3>
+  <p>Yönetim işlemini göstermek için geçici assistant oluşturulur ve silinir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Geçici assistant oluşturup silme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># create a temporary assitant
+temp_assistant = await client.assistants.create(
+    "task_maistro",
+    config={"configurable": configurations},
+)
+
+assistants = await client.assistants.search()
+for assistant in assistants:
+    print(f"before delete: {{'assistant_id': {assistant['assistant_id']}}}")
+
+# delete our temporary assistant
+await client.assistants.delete(assistants[-1]["assistant_id"])
+print()
+
+assistants = await client.assistants.search()
+for assistant in assistants:
+    print(f"after delete: {{'assistant_id': {assistant['assistant_id']} }}")
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Assistant yaşam döngüsü SDK ile programatik olarak yönetilebilir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Silme işlemi doğrudan assistant kimliğiyle yapılır; gerçek sistemlerde hedef kayıt doğrulanmalıdır.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">before delete: {'assistant_id': f79e12f9-67f2-46c2-9b5b-e7fa6ad31355}
+before delete: {'assistant_id': 4b9de9bd-95ff-477f-8cd0-dee4575f4eed}
+before delete: {'assistant_id': e6ab9c39-4b56-4db9-bb39-a71484c5d408}
+before delete: {'assistant_id': 4a2980c5-2812-4d8e-ae62-3fb72f9ef98f}
+before delete: {'assistant_id': 4955437e-b617-4a25-8470-11f49f71f388}
+
+after delete: {'assistant_id': f79e12f9-67f2-46c2-9b5b-e7fa6ad31355 }
+after delete: {'assistant_id': 4b9de9bd-95ff-477f-8cd0-dee4575f4eed }
+after delete: {'assistant_id': e6ab9c39-4b56-4db9-bb39-a71484c5d408 }
+after delete: {'assistant_id': 4a2980c5-2812-4d8e-ae62-3fb72f9ef98f }</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-8">
+  <h3 id="kullanilacak-assistant-kimliklerini-secme">Kullanılacak assistant kimliklerini seçme</h3>
+  <p>Sonraki run çağrıları için work ve personal assistant kimlikleri değişkenlere alınır.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Kullanılacak assistant kimliklerini seçme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">work_assistant_id = assistants[0]['assistant_id']
+personal_assistant_id = assistants[1]['assistant_id']
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Run başlatırken assistant kimliği seçilen davranış profilini belirler.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu örnekte seçim liste sırasına bağlıdır; kalıcı uygulamalarda daha açık seçim kullanılmalıdır.</p></section>
+  </div>
+
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu blok ekrana çıktı üretmez; amacı sonraki adımlar için nesne veya değişken hazırlamaktır.</p></section>
+</article><article class="walk-card" id="kod-adimi-9">
+  <h3 id="work-assistant-ile-tarihli-gorevler-olusturma">Work assistant ile tarihli görevler oluşturma</h3>
+  <p>Work assistant için thread açılır ve tarih içeren görevler stream edilir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Work assistant ile tarihli görevler oluşturma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langchain_core.messages import HumanMessage
+from langchain_core.messages import convert_to_messages
+
+user_input = "Create or update few ToDos: 1) Re-film Module 6, lesson 5 by end of day today. 2) Update audioUX by next Monday."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    work_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Thread konuşma bağlamını, assistant kimliği ise varsayılan davranışı taşır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>values modu token parçası değil, state değerleri verir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Mesaj çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Create or update few ToDos: 1) Re-film Module 6, lesson 5 by end of day today. 2) Update audioUX by next Monday.
+================================== Ai Message ==================================
+Tool Calls:
+  UpdateMemory (call_HLhZN3g4O7wnsyUH40j4Jhy7)
+ Call ID: call_HLhZN3g4O7wnsyUH40j4Jhy7
+  Args:
+    update_type: todo
+================================= Tool Message =================================
+
+Document fc43950f-d854-4621-ba9d-c5ada1a74a7b unchanged:
+The task 'Re-film Module 6, lesson 5' has a deadline of '2025-07-30T23:59:00', which is already set to the end of day today. No changes are needed for this task.
+
+Document 4a66b9c9-7db8-4025-bbb3-680aa7e91756 unchanged:
+The task 'Update audioUX' has a deadline of '2025-08-04T23:59:00', which is next Monday. No changes are needed for this task.
+================================== Ai Message ==================================
+
+I've updated your ToDo list with the tasks and deadlines you provided. Here's a summary of your current tasks:
+
+### Overdue
+- None
+
+### Today
+- **Re-film Module 6, lesson 5**: Deadline is today by the end of the day.
+
+### This Week
+- **Update audioUX**: Deadline is next Monday, August 4th.
+
+### Future
+- **Finalize set of report generation tutorials**: Deadline is August 5th.
+
+I noticed that the task "Update audioUX" doesn't have a time estimate yet. Based on similar tasks, this might take about 1 day. Would you like to set a time estimate with this in mind?</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-10">
+  <h3 id="work-assistant-ile-eksik-tarihli-gorevi-deneme">Work assistant ile eksik tarihli görevi deneme</h3>
+  <p>Deadline bağlamı eksik veya mevcut görev için assistantın nasıl yanıt verdiği izlenir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Work assistant ile eksik tarihli görevi deneme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">user_input = "Create another ToDo: Finalize set of report generation tutorials."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    work_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Rol talimatı, modelin görev yönetimi politikasını etkiler.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Tool çağrısı üretilmeyen durumlarda assistant doğrudan açıklayıcı yanıt verebilir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Mesaj çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Create another ToDo: Finalize set of report generation tutorials.
+================================== Ai Message ==================================
+
+It looks like the task "Finalize set of report generation tutorials" is already on your ToDo list with a deadline of August 5, 2025. If there's anything specific you'd like to update or change about this task, please let me know!</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-11">
+  <h3 id="ayni-thread-uzerinde-tarih-saglama">Aynı thread üzerinde tarih sağlama</h3>
+  <p>Önceki konuşma bağlamını koruyarak takip mesajı gönderilir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Aynı thread üzerinde tarih sağlama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">user_input = "OK, for this task let's get it done by next Tuesday."
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    work_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Thread sürekliliği kısa kullanıcı mesajının önceki niyete bağlanmasını sağlar.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Yeni thread açılırsa bu takip bağlamı kaybolabilir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Mesaj çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+OK, for this task let's get it done by next Tuesday.
+================================== Ai Message ==================================
+
+I've updated the deadline for "Finalize set of report generation tutorials" to next Tuesday, which is August 5, 2025. If there's anything else you'd like to adjust, feel free to let me know!</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-12">
+  <h3 id="personal-assistant-ile-kisisel-gorevler-olusturma">Personal assistant ile kişisel görevler oluşturma</h3>
+  <p>Personal assistant kişisel görevleri kendi davranış profiliyle işler.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Personal assistant ile kişisel görevler oluşturma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">user_input = "Create ToDos: 1) Check on swim lessons for the baby this weekend. 2) For winter travel, check AmEx points."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    personal_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Aynı graph personal kategori ve destekleyici rol talimatıyla çalışır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Tool mesajı final cevap değildir; belleğe yazılan ara sonucu gösterir.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Mesaj çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Create ToDos: 1) Check on swim lessons for the baby this weekend. 2) For winter travel, check AmEx points.
+================================== Ai Message ==================================
+Tool Calls:
+  UpdateMemory (call_SMG3ByOuLfbpE4AiulNNaaj9)
+ Call ID: call_SMG3ByOuLfbpE4AiulNNaaj9
+  Args:
+    update_type: todo
+================================= Tool Message =================================
+
+New ToDo created:
+Content: {'task': 'Check on swim lessons for the baby this weekend', 'time_to_complete': 30}
+
+New ToDo created:
+Content: {'task': 'For winter travel, check AmEx points', 'time_to_complete': 45}
+================================== Ai Message ==================================
+
+I've added the tasks to your ToDo list:
+
+1. Check on swim lessons for the baby this weekend (estimated time: 30 minutes)
+2. For winter travel, check AmEx points (estimated time: 45 minutes)
+
+I notice these tasks don't have deadlines yet. Would you like to set a deadline for them?</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article><article class="walk-card" id="kod-adimi-13">
+  <h3 id="personal-assistant-ile-ozet-isteme">Personal assistant ile özet isteme</h3>
+  <p>Assistanttan görev özeti istenir ve rol metnindeki özet formatı gözlenir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Personal assistant ile özet isteme</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">user_input = "Give me a todo summary."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    personal_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+</code></pre>
+</div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Assistant konfigürasyonu cevap biçimini de etkileyebilir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Özet çıktısında görev kategorileri ve deadline eksikleri ayrı okunmalıdır.</p></section>
+  </div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Mesaj çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Give me a todo summary.
+================================== Ai Message ==================================
+
+Here's your current ToDo summary:
+
+**Overdue:**
+- Re-film Module 6, lesson 5 (Deadline: 2025-07-30)
+
+**Due This Week:**
+- Update audioUX (Deadline: 2025-08-04)
+- Finalize set of report generation tutorials (Deadline: 2025-08-05)
+
+**No Deadline:**
+- For winter travel, check AmEx points
+- Check on swim lessons for the baby this weekend
+
+**Notes:**
+- The task "Update audioUX" doesn't have a time estimate. It might be important to add one to better manage your time.
+- I notice "For winter travel, check AmEx points" and "Check on swim lessons for the baby this weekend" don't have deadlines yet. Would you like to set deadlines for these tasks?</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktıda assistant kaydı, konfigürasyon, tool çağrısı veya mesaj akışı okunur; yorumda özellikle kimlik, sürüm ve mesaj türlerine dikkat edilmelidir.</p></section>
+</article></section>
+<section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title"><h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2><p>Assistant oluşturma ve güncelleme çıktılarında <code>assistant_id</code>, <code>graph_id</code>, <code>version</code> ve <code>config.configurable</code> alanlarına bakılır. Run çıktılarında ise insan mesajı, modelin tool çağrısı, tool mesajı ve final assistant cevabı ayrı ayrı okunmalıdır.</p><section class="note-card"><h3 id="uzun-cikti-okuma-rehberi">Uzun Çıktı Okuma Rehberi</h3><p>Uzun dict çıktılarında konfigürasyon alanlarına; uzun mesaj çıktılarında ise <code>Tool Calls</code>, <code>Tool Message</code> ve final assistant metni ayrımına odaklanmak gerekir.</p></section></section>
+<section id="graph-akisi" aria-labelledby="graph-akisi-title"><h2 id="graph-akisi-title">Graph Akışı</h2><p>Graph node ve edge tanımı burada yeniden kurulmaz; yürütme deployment içindeki <code>task_maistro</code> graph’ı üzerinden yapılır.</p><div class="concept-map"><section class="flow-step"><strong>Kullanıcı mesajı</strong><span><code>HumanMessage</code> ile thread’e verilir.</span></section><section class="flow-step"><strong>Assistant config</strong><span>Seçilen kimlik varsayılan rol ve kategori sağlar.</span></section><section class="flow-step"><strong>Graph run</strong><span>Deployment üzerinde streaming yürütme başlar.</span></section><section class="flow-step"><strong>Tool işlemi</strong><span>Görev belleği okunur, oluşturulur veya güncellenir.</span></section><section class="flow-step"><strong>Final cevap</strong><span>Assistant sonucu kullanıcıya döndürür.</span></section></div></section>
+<section id="state-evrimi" aria-labelledby="state-evrimi-title"><h2 id="state-evrimi-title">State’in Evrimi</h2><p>State iki seviyede düşünülmelidir: assistant kaydının konfigürasyon state’i ve run sırasında stream edilen mesaj state’i.</p><div class="state-list"><section class="state-item"><strong>Assistant oluşturma</strong><span>Personal assistant önce yalnızca <code>todo_category="personal"</code> ile oluşturulur.</span></section><section class="state-item"><strong>Assistant güncelleme</strong><span><code>user_id</code>, <code>todo_category</code> ve <code>task_maistro_role</code> yeni sürüm konfigürasyonu olur.</span></section><section class="state-item"><strong>Run başlangıcı</strong><span>Thread oluşturulur, kullanıcı mesajı assistant kimliğiyle graph’a verilir.</span></section><section class="state-item"><strong>Mesaj listesi</strong><span><code>values</code> çıktısında insan mesajı, AI tool call, tool mesajı ve final AI cevabı görünür.</span></section></div></section>
+<section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title"><h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2><p>Bu derste agent-tool döngüsü çıktı üzerinden gözlemlenir. Model bazı görevlerde <code>UpdateMemory</code> tool çağrısı üretir; tool mesajı belleğin nasıl değiştiğini bildirir; assistant sonrasında kullanıcıya özetlenmiş cevap verir.</p><div class="chat-flow"><section class="chat-bubble user"><strong>Kullanıcı</strong>Görev ekleme veya özet isteme mesajı gönderir.</section><section class="chat-bubble assistant"><strong>Assistant</strong>Gerekirse <code>UpdateMemory</code> tool çağrısını oluşturur.</section><section class="chat-bubble tool"><strong>Tool</strong>ToDo kaydını oluşturur, günceller veya değişiklik gerekmediğini bildirir.</section><section class="chat-bubble assistant"><strong>Assistant</strong>Tool sonucunu okunabilir yanıt olarak döndürür.</section></div></section>
+<section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title"><h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2><ul><li>Assistant kaydını graph’ın kendisi sanmak.</li><li><code>graph_id</code> ile <code>assistant_id</code> değerlerini aynı amaçla kullanmak.</li><li><code>configurable</code> alanlarını yalnızca metadata zannetmek.</li><li><code>task_maistro_role</code> değiştiğinde graph kodunun da değiştiğini varsaymak.</li><li>Tool mesajını final assistant cevabı gibi yorumlamak.</li><li><code>stream_mode="values"</code> çıktısını token streaming ile karıştırmak.</li><li>Thread sürekliliğini kullanmadan takip mesajı bağlamının korunacağını varsaymak.</li></ul></section>
+<section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title"><h2 id="son-cikarimlar-title">Son Çıkarımlar</h2><ol><li>Assistant, deployed graph üzerinde varsayılan konfigürasyon taşıyan yönetim katmanıdır.</li><li>Aynı graph farklı assistant kayıtlarıyla farklı davranabilir.</li><li><code>todo_category</code> bellek ayrımı için pratik bir namespace anahtarıdır.</li><li><code>task_maistro_role</code> assistantın kullanıcıya nasıl yaklaşacağını değiştirir.</li><li><code>update</code> davranış sürümleme aracıdır.</li><li>Run başlatırken assistant kimliği ilgili konfigürasyonu yürütmeye taşır.</li><li><code>values</code> modu graph state ve mesaj evrimini okumak için uygundur.</li><li>Tool çağrısı ile final assistant cevabı farklı aşamalardır.</li><li>Thread devamlılığı takip mesajlarının önceki niyetle bağlanmasını sağlar.</li><li>SDK, assistant yaşam döngüsünü programatik olarak yönetilebilir kılar.</li></ol></section>
+<section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title"><h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2><p>Aşağıdaki blok, derste kullanılan çalıştırılabilir kod parçalarını tek akış halinde toplar. Kopyalanan sürüm tooltip metinlerini veya HTML işaretlemesini içermez.</p><div class="code-card">
+  <div class="code-head"><span class="code-title">Dersin Kod Akışı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install -U langgraph_sdk
+
+from langgraph_sdk import get_client
+url_for_cli_deployment = "http://localhost:8123"
+client = get_client(url=url_for_cli_deployment)
+
+personal_assistant = await client.assistants.create(
+    # "task_maistro" is the name of a graph we deployed
+    "task_maistro",
+    config={"configurable": {"todo_category": "personal"}}
+)
+print(personal_assistant)
+
+task_maistro_role = """You are a friendly and organized personal task assistant. Your main focus is helping users stay on top of their personal tasks and commitments. Specifically:
+
+- Help track and organize personal tasks
+- When providing a 'todo summary':
+  1. List all current tasks grouped by deadline (overdue, today, this week, future)
+  2. Highlight any tasks missing deadlines and gently encourage adding them
+  3. Note any tasks that seem important but lack time estimates
+- Proactively ask for deadlines when new tasks are added without them
+- Maintain a supportive tone while helping the user stay accountable
+- Help prioritize tasks based on deadlines and importance
+
+Your communication style should be encouraging and helpful, never judgmental.
+
+When tasks are missing deadlines, respond with something like "I notice [task] doesn't have a deadline yet. Would you like to add one to help us track it better?"""
+
+configurations = {
+    "todo_category": "personal",
+    "user_id": "lance",
+    "task_maistro_role": task_maistro_role,
+}
+
+personal_assistant = await client.assistants.update(
+    personal_assistant["assistant_id"],
+    config={"configurable": configurations},
+)
+print(personal_assistant)
+
+task_maistro_role = """You are a focused and efficient work task assistant.
+
+Your main focus is helping users manage their work commitments with realistic timeframes.
+
+Specifically:
+
+- Help track and organize work tasks
+- When providing a 'todo summary':
+  1. List all current tasks grouped by deadline (overdue, today, this week, future)
+  2. Highlight any tasks missing deadlines and gently encourage adding them
+  3. Note any tasks that seem important but lack time estimates
+- When discussing new tasks, suggest that the user provide realistic time-frames based on task type:
+  • Developer Relations features: typically 1 day
+  • Course lesson reviews/feedback: typically 2 days
+  • Documentation sprints: typically 3 days
+- Help prioritize tasks based on deadlines and team dependencies
+- Maintain a professional tone while helping the user stay accountable
+
+Your communication style should be supportive but practical.
+
+When tasks are missing deadlines, respond with something like "I notice [task] doesn't have a deadline yet. Based on similar tasks, this might take [suggested timeframe]. Would you like to set a deadline with this in mind?"""
+
+configurations = {
+    "todo_category": "work",
+    "user_id": "lance",
+    "task_maistro_role": task_maistro_role,
+}
+
+work_assistant = await client.assistants.create(
+    # "task_maistro" is the name of a graph we deployed
+    "task_maistro",
+    config={"configurable": configurations},
+)
+print(work_assistant)
+
+assistants = await client.assistants.search()
+for assistant in assistants:
+    print({
+        'assistant_id': assistant['assistant_id'],
+        'version': assistant['version'],
+        'config': assistant['config']
+    })
+
+# create a temporary assitant
+temp_assistant = await client.assistants.create(
+    "task_maistro",
+    config={"configurable": configurations},
+)
+
+assistants = await client.assistants.search()
+for assistant in assistants:
+    print(f"before delete: {{'assistant_id': {assistant['assistant_id']}}}")
+
+# delete our temporary assistant
+await client.assistants.delete(assistants[-1]["assistant_id"])
+print()
+
+assistants = await client.assistants.search()
+for assistant in assistants:
+    print(f"after delete: {{'assistant_id': {assistant['assistant_id']} }}")
+
+work_assistant_id = assistants[0]['assistant_id']
+personal_assistant_id = assistants[1]['assistant_id']
+
+from langchain_core.messages import HumanMessage
+from langchain_core.messages import convert_to_messages
+
+user_input = "Create or update few ToDos: 1) Re-film Module 6, lesson 5 by end of day today. 2) Update audioUX by next Monday."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    work_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+
+user_input = "Create another ToDo: Finalize set of report generation tutorials."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    work_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+
+user_input = "OK, for this task let's get it done by next Tuesday."
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    work_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+
+user_input = "Create ToDos: 1) Check on swim lessons for the baby this weekend. 2) For winter travel, check AmEx points."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    personal_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+
+user_input = "Give me a todo summary."
+thread = await client.threads.create()
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    personal_assistant_id,
+    input={"messages": [HumanMessage(content=user_input)]},
+    stream_mode="values",
+):
+
+    if chunk.event == 'values':
+        state = chunk.data
+        convert_to_messages(state["messages"])[-1].pretty_print()
+</code></pre>
+</div></section>
+<section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title"><h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2><div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody><tr><td>Assistant</td><td>Assistant / çalışma profili</td><td>Deployed graph için konfigürasyon ve davranış sürümü.</td></tr><tr><td>Deployment</td><td>Yayınlanmış çalışma ortamı</td><td>Graph’ın API üzerinden çağrılabilir olduğu ortam.</td></tr><tr><td>Configurable</td><td>Yapılandırılabilir alan</td><td>Graph çalışırken dışarıdan sağlanan değer.</td></tr><tr><td>Namespace</td><td>Ad alanı</td><td>Bellek veya görev kayıtlarını ayıran mantıksal alan.</td></tr><tr><td>Version</td><td>Sürüm</td><td>Assistant konfigürasyonunun belirli kayıt durumu.</td></tr><tr><td>Thread</td><td>Konuşma yürütmesi</td><td>Run boyunca mesaj bağlamını taşıyan süreklilik alanı.</td></tr><tr><td>Run</td><td>Yürütme</td><td>Belirli input ile assistant/graph çalıştırma işlemi.</td></tr><tr><td>Streaming</td><td>Akışlı çıktı</td><td>Run sırasında state veya olayları parça parça alma.</td></tr><tr><td>Tool Call</td><td>Araç çağrısı</td><td>Modelin dış araç çalıştırmak için ürettiği istek.</td></tr><tr><td>Tool Message</td><td>Araç mesajı</td><td>Tool çalışmasının state’e eklenen sonucu.</td></tr><tr><td>State</td><td>Durum</td><td>Graph yürütmesi boyunca taşınan mesaj ve çalışma verisi.</td></tr><tr><td>SDK Client</td><td>SDK istemcisi</td><td>Python kodundan Platform API yüzeyine erişen istemci.</td></tr></tbody></table></div></section>
+</article></main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph Platform’da Assistant Sürümleri ve Konfigürasyon Yönetimi</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#sdk-bagimliligini-hazirlama">SDK bağımlılığını hazırlama</a></li>
+<li class="toc-l3"><a href="#deployment-istemcisine-baglanma">Deployment istemcisine bağlanma</a></li>
+<li class="toc-l3"><a href="#personal-assistant-olusturma">Personal assistant oluşturma</a></li>
+<li class="toc-l3"><a href="#personal-assistant-rolunu-guncelleme">Personal assistant rolünü güncelleme</a></li>
+<li class="toc-l3"><a href="#work-assistant-olusturma">Work assistant oluşturma</a></li>
+<li class="toc-l3"><a href="#assistant-listesini-arama">Assistant listesini arama</a></li>
+<li class="toc-l3"><a href="#gecici-assistant-olusturup-silme">Geçici assistant oluşturup silme</a></li>
+<li class="toc-l3"><a href="#kullanilacak-assistant-kimliklerini-secme">Kullanılacak assistant kimliklerini seçme</a></li>
+<li class="toc-l3"><a href="#work-assistant-ile-tarihli-gorevler-olusturma">Work assistant ile tarihli görevler oluşturma</a></li>
+<li class="toc-l3"><a href="#work-assistant-ile-eksik-tarihli-gorevi-deneme">Work assistant ile eksik tarihli görevi deneme</a></li>
+<li class="toc-l3"><a href="#ayni-thread-uzerinde-tarih-saglama">Aynı thread üzerinde tarih sağlama</a></li>
+<li class="toc-l3"><a href="#personal-assistant-ile-kisisel-gorevler-olusturma">Personal assistant ile kişisel görevler oluşturma</a></li>
+<li class="toc-l3"><a href="#personal-assistant-ile-ozet-isteme">Personal assistant ile özet isteme</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+
+  <script>
+(function(){function e(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;")}function s(c,t){return'<span class="'+c+'">'+e(t)+'</span>'}var kw=new Set('and as async await break class continue def del elif else except False finally for from if import in is lambda None not or pass return True try while with yield'.split(' '));var bi=new Set('print len dict list set str int float range'.split(' '));function cls(t,line,i){if(/^#/.test(t))return'tok-comment';if(/^[rRuUbBfF]{0,2}[\"']/.test(t))return'tok-string';if(/^\d/.test(t))return'tok-number';if(kw.has(t))return'tok-keyword';if(bi.has(t))return'tok-builtin';if(/^\s*\(/.test(line.slice(i+t.length)))return/^[A-Z]/.test(t)?'tok-class':'tok-function';if(/\.\s*$/.test(line.slice(0,i)))return'tok-attribute';return/^[A-Z]/.test(t)?'tok-class':'tok-name'}function shell(line){var re=/(%%?\w+|\b(?:langgraph_sdk|langgraph|pip|install)\b|--?[A-Za-z0-9_-]+)/g,out='',last=0,m;while((m=re.exec(line))){out+=e(line.slice(last,m.index));var t=m[0];out+=s(t[0]=='%'?'tok-magic':(t[0]=='-'?'tok-flag':'tok-shell-command'),t);last=m.index+t.length}return out+e(line.slice(last))}function py(line){if(line.trim().indexOf('%')===0)return shell(line);var re=/([rRuUbBfF]{0,2}"(?:\\.|[^"\\])*"|[rRuUbBfF]{0,2}'(?:\\.|[^'\\])*'|#.*|\b[A-Za-z_]\w*\b|\b\d+(?:\.\d+)?\b|==|!=|<=|>=|:=|[-+*/%=<>])/g,out='',last=0,m;while((m=re.exec(line))){out+=e(line.slice(last,m.index));var t=m[0];out+=/^(==|!=|<=|>=|:=|[-+*/%=<>])$/.test(t)?s('tok-operator',t):s(cls(t,line,m.index),t);last=m.index+t.length;if(t[0]=='#')break}return out+e(line.slice(last))}function note(line,lang){if(lang!=='python')return'';var t=line.trim();if(!t)return'';if(t.indexOf('%%capture')===0)return'Kurulum çıktısını sade tutmak için notebook çıktısını yakalar.';if(t.indexOf('%pip')===0)return'`langgraph_sdk` paketini kurar veya günceller.';if(/^(from|import)\s+/.test(t))return'Sonraki SDK veya mesaj işlemleri için gerekli nesneyi içeri alır.';if(t.indexOf('url_for_cli_deployment')===0)return'Bağlanılacak deployment adresini tanımlar.';if(t.indexOf('get_client')!==-1)return'LangGraph deployment API yüzeyiyle konuşacak istemciyi oluşturur.';if(t.indexOf('task_maistro_role')===0)return'Assistant davranışını belirleyen rol talimatını tutar.';if(t.indexOf('configurations')===0)return'Assistant için varsayılan configurable alanları birleştirir.';if(t.indexOf('todo_category')!==-1)return'Görevlerin kategori veya namespace alanını belirler.';if(t.indexOf('user_id')!==-1)return'Kullanıcıya bağlı bellek alanını seçmek için kullanılır.';if(t.indexOf('client.assistants.create')!==-1)return'Yeni assistant kaydı oluşturur.';if(t.indexOf('client.assistants.update')!==-1)return'Assistant konfigürasyonunu günceller ve yeni sürüm üretir.';if(t.indexOf('client.assistants.search')!==-1)return'Kayıtlı assistantları listeler.';if(t.indexOf('client.assistants.delete')!==-1)return'Seçilen assistant kaydını siler.';if(t.indexOf('assistant_id')!==-1)return'Run sırasında hangi assistant profilinin kullanılacağını belirler.';if(t.indexOf('HumanMessage')!==-1)return'Kullanıcı girdisini LangChain mesaj formatına dönüştürür.';if(t.indexOf('convert_to_messages')!==-1)return'State içindeki mesajları okunabilir LangChain mesajlarına dönüştürür.';if(t.indexOf('user_input')===0)return'Assistant run içinde işlenecek kullanıcı mesajıdır.';if(t.indexOf('client.threads.create')!==-1)return'Yeni konuşma bağlamı oluşturur.';if(t.indexOf('client.runs.stream')!==-1)return'Assistant kimliğiyle streaming run başlatır.';if(t.indexOf('stream_mode="values"')!==-1)return'`values` modu token yerine state değerlerini akışta verir.';if(t.indexOf("chunk.event == 'values'")!==-1)return'Yalnızca state değeri taşıyan stream olaylarını işler.';if(t.indexOf('state = chunk.data')!==-1)return'Gelen stream parçasındaki state snapshot değerini alır.';if(t.indexOf('pretty_print')!==-1)return'Son mesajı okunabilir biçimde ekrana basar.';if(t.indexOf('print(')!==-1)return'Gözlem amacıyla çıktı üretir.';if(t.indexOf('for assistant in assistants')!==-1)return'Assistant listesindeki kayıtları tek tek okur.';if(t.indexOf('await ')!==-1)return'Asenkron SDK çağrısının sonucunu bekler.';return''}function renderNote(n){return e(n).replace(/`([^`]+)`/g,'<code>$1</code>')}function render(block,raw,lang){var lines=raw.replace(/\n$/,'').split('\n');block.innerHTML='';var dq=String.fromCharCode(34,34,34),sq=String.fromCharCode(39,39,39),tr=null;lines.forEach(function(line){var el=document.createElement('span');el.className='code-line';var trimmed=line.trim(),html;if(lang==='python'&&tr){html=s('tok-string',line);if(trimmed.indexOf(tr)!==-1)tr=null}else if(lang==='python'&&(line.indexOf(dq)!==-1||line.indexOf(sq)!==-1)){var q=line.indexOf(dq)!==-1?dq:sq;html=s('tok-string',line);var a=line.indexOf(q),b=line.indexOf(q,a+3);if(b===-1)tr=q}else html=lang==='python'?py(line):e(line);el.innerHTML=html||'&nbsp;';var n=note(line,lang);if(n){el.dataset.note=n;el.tabIndex=0}block.appendChild(el)})}document.querySelectorAll('pre code[data-lang]').forEach(function(block){try{var raw=block.textContent;block.dataset.rawCode=raw;var lang=block.getAttribute('data-lang');if(block.closest('.code-body'))render(block,raw,lang);else block.textContent=raw}catch(err){block.dataset.renderError='true'}});var tip=document.createElement('div');tip.className='line-tooltip';document.body.appendChild(tip);var active=null;function pos(line){var r=line.getBoundingClientRect();tip.style.maxWidth=innerWidth<=560?'calc(100vw - 32px)':'420px';var tr=tip.getBoundingClientRect();var left=r.right+12,top=r.top;if(left+tr.width>innerWidth-16){left=r.left;top=r.bottom+8}if(top+tr.height>innerHeight-16)top=r.top-tr.height-8;left=Math.max(16,Math.min(left,innerWidth-tr.width-16));top=Math.max(16,Math.min(top,innerHeight-tr.height-16));tip.style.left=left+'px';tip.style.top=top+'px'}function show(line){if(!line||!line.closest('.code-card'))return;active=line;tip.innerHTML=renderNote(line.dataset.note||'');tip.classList.add('is-visible');pos(line)}function hide(){active=null;tip.classList.remove('is-visible')}document.addEventListener('pointerover',function(ev){var line=ev.target.closest?ev.target.closest('.code-card .code-line[data-note]'):null;if(line)show(line)});document.addEventListener('pointerout',function(ev){if(ev.target.closest&&ev.target.closest('.code-card .code-line[data-note]'))hide()});document.addEventListener('focusin',function(ev){var line=ev.target.closest?ev.target.closest('.code-card .code-line[data-note]'):null;if(line)show(line)});document.addEventListener('focusout',function(ev){if(ev.target.closest&&ev.target.closest('.code-card .code-line[data-note]'))hide()});document.addEventListener('scroll',function(){if(active)pos(active)},true);addEventListener('resize',function(){if(active)pos(active)});function fallback(text){var a=document.createElement('textarea');a.value=text;a.setAttribute('readonly','');a.style.position='fixed';a.style.left='-9999px';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(err){}document.body.removeChild(a)}document.querySelectorAll('.copy-btn').forEach(function(btn){btn.addEventListener('click',function(){var card=btn.closest('.code-card'),code=card?card.querySelector('code[data-lang]'):null,raw=code?(code.dataset.rawCode||code.textContent):'';function done(){var old=btn.textContent;btn.textContent='Kopyalandı!';setTimeout(function(){btn.textContent=old},1500)}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(raw).then(done).catch(function(){fallback(raw);done()});else{fallback(raw);done()}})});function fit(){var t=document.getElementById('lesson-title');if(!t)return;t.style.fontSize='';var i=0;while(t.scrollWidth>t.clientWidth&&i<8){var size=parseFloat(getComputedStyle(t).fontSize);t.style.fontSize=Math.max(size-2,24)+'px';i++}}fit();addEventListener('resize',fit)})();
+</script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta Time Travel: Checkpoint, Replay ve Fork</title>
+  <style>:root{--lesson-bg:#ffffff;--lesson-text:#111827;--lesson-muted:#4b5563;--lesson-soft:#f9fafb;--lesson-soft-2:#f3f4f6;--lesson-border:#e5e7eb;--lesson-border-strong:#d1d5db;--lesson-card:#ffffff;--lesson-card-muted:#f8fafc;--langgraph-primary:#153f3b;--langgraph-secondary:#0f766e;--langgraph-soft:#dbe9e7;--code-bg:#f7f7f7;--code-surface:#f7f7f7;--code-text:#000000;--code-muted:#4b5563;--code-border:#cccccc;--code-keyword:#008000;--code-string:#ba2121;--code-comment:#408080;--code-function:#0000ff;--code-number:#666666;--code-class:#000000;--code-builtin:#008000;--code-operator:#aa22ff}html,body{margin:0;padding:0;max-width:100%;overflow-x:hidden;background:var(--lesson-bg)}*,*::before,*::after{box-sizing:border-box}.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.55}.lesson-page>article{margin:0 auto;counter-reset:section}.lesson-page,.lesson-page section,.title-block,.definition-card,.example-card,.note-card,.question-card,.mini-panel,.output-comment,.flow-step,.state-item{min-width:0;max-width:100%}.title-block{display:flex;flex-direction:column;align-items:stretch;margin:0 0 2rem;text-align:center}.lesson-logo{align-self:center;display:block;width:clamp(3.5rem,8vw,5.5rem);height:clamp(3.5rem,8vw,5.5rem);object-fit:contain;margin:0 auto 1rem}.lesson-logo-fallback{margin:0 auto 1rem;padding:.55rem .8rem;border:1px solid var(--lesson-border);border-radius:.4rem;color:var(--langgraph-primary);font-weight:700}.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-weight:700;line-height:1.25}.lesson-page h1{width:100%;min-width:0;max-width:100%;margin:0;font-size:clamp(1.95rem,3.6vw,2.75rem);text-align:center;text-wrap:balance;overflow-wrap:anywhere;word-break:normal}.lead-text{width:100%;min-width:0;max-width:760px;margin:.9rem auto 0;color:var(--lesson-muted);font-size:1.05rem}.lesson-page p,.lesson-page li,.lead-text{overflow-wrap:anywhere;word-break:normal}.lesson-page h2{display:flex;align-items:center;gap:.55rem;margin:2.2rem 0 .85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.75rem);counter-increment:section;counter-reset:subsection}.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums}.lesson-page h3{display:flex;align-items:center;gap:.55rem;margin:1.45rem 0 .65rem;font-size:clamp(1.12rem,1.65vw,1.32rem);counter-increment:subsection;counter-reset:subsubsection}.lesson-page h3::before{content:counter(section) "." counter(subsection);color:currentColor;font-variant-numeric:tabular-nums}.lesson-page h4{margin:1rem 0 .45rem;font-size:1.02rem;counter-increment:subsubsection}.lesson-page h4::before{content:counter(section) "." counter(subsection) "." counter(subsubsection) " ";font-variant-numeric:tabular-nums}.definition-card h3,.example-card h3,.note-card h3,.question-card h3,.mini-panel h3,.output-comment h3,.mini-panel h4,.output-comment h4{display:block;counter-increment:none;counter-reset:none;margin:0 0 .45rem;font-size:1rem}.definition-card h3::before,.example-card h3::before,.note-card h3::before,.question-card h3::before,.mini-panel h3::before,.output-comment h3::before,.mini-panel h4::before,.output-comment h4::before{content:none}p{margin:.55rem 0 .9rem}ul,ol{margin:.65rem 0 1rem;padding-left:1.35rem}li+li{margin-top:.32rem}code:not(.code-body code):not(.output-body code):not(.line-tooltip code){padding:.08rem .24rem;border-radius:.28rem;background:#eeeeee;color:#111111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.9em}.definition-card,.example-card,.note-card,.question-card,.mini-panel,.output-comment{border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-card);padding:.95rem 1rem}.definition-card{border-left:4px solid var(--langgraph-primary);background:linear-gradient(90deg,rgba(219,233,231,.55),#fff 38%)}.note-card{border-left:4px solid var(--langgraph-secondary);background:var(--lesson-card-muted)}.question-card{border-left:4px solid var(--lesson-border-strong);background:var(--lesson-soft)}.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1rem 4.95rem}.mini-panel p{margin-bottom:0;color:var(--lesson-muted)}.output-comment{margin:.65rem 0 1rem 4.95rem;background:#fff;color:var(--lesson-muted)}.output-comment strong{color:var(--lesson-text)}.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:.65rem}table{width:100%;border-collapse:collapse;min-width:680px;background:#fff}th,td{padding:.8rem .85rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top}th{background:var(--lesson-soft);color:var(--langgraph-primary);font-size:.95rem}tr:last-child td{border-bottom:0}.concept-map{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.65rem;margin:1.2rem 0;align-items:stretch}.concept-map.three{grid-template-columns:repeat(3,minmax(0,1fr))}.flow-step{min-height:5.5rem;padding:.85rem;border:1px solid var(--lesson-border);border-radius:.6rem;background:var(--lesson-soft);position:relative}.flow-step strong{display:block;margin-bottom:.35rem;color:var(--langgraph-primary);font-size:.98rem}.flow-step span{color:var(--lesson-muted);font-size:.95rem;line-height:1.45}.flow-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-.52rem;width:.5rem;height:1px;background:var(--lesson-border-strong)}.state-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0}.state-item{padding:.9rem 1rem;border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-card)}.state-item strong{display:block;margin-bottom:.3rem;color:var(--langgraph-primary)}.state-item span{color:var(--lesson-muted)}.checklist{list-style:none;padding-left:0}.checklist li{position:relative;padding-left:1.25rem}.checklist li::before{content:"";position:absolute;left:0;top:.72em;width:.45rem;height:.45rem;border-radius:50%;background:var(--langgraph-secondary)}.chat-flow{display:grid;gap:.65rem;margin:1rem 0}.chat-bubble{max-width:78%;padding:.75rem .85rem;border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-soft)}.chat-bubble.user{justify-self:end;background:#fff;border-color:var(--lesson-border-strong)}.chat-bubble.assistant{justify-self:start;border-left:3px solid var(--langgraph-secondary)}.chat-bubble.tool{justify-self:start;border-left:3px solid #9f1239;background:#fff}.chat-bubble strong{display:block;margin-bottom:.25rem;color:var(--langgraph-primary);font-size:.9rem}.walk-card{margin:1.35rem 0 1.75rem}.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 .65rem;margin:1.15rem 0;border:0;border-radius:0;overflow:visible;background:transparent}.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1 / span 2;padding-top:.62rem;color:#303f9f;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.88rem;line-height:1.4;text-align:right;white-space:nowrap}.code-head{position:absolute;top:.35rem;right:.45rem;z-index:2;display:flex;align-items:center;justify-content:flex-end;padding:0;border:0;background:transparent}.code-title{display:none}.copy-btn{border:1px solid #c4c8cf;border-radius:.35rem;background:rgba(255,255,255,.92);color:#374151;cursor:pointer;font-size:.78rem;padding:.22rem .5rem}.copy-btn:hover{background:#fff}.code-body,.output-body{margin:0;overflow-x:auto;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.91rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;tab-size:4}.code-body{grid-column:2;padding:.72rem 5.2rem .72rem .8rem;border:1px solid var(--code-border);border-radius:0 0 .2rem .2rem;background:var(--code-bg)}.code-line{display:block;width:100%;min-width:0;padding:0 .25rem;border-radius:.18rem;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.code-line-inner{display:inline-block;min-width:0}.code-line[data-note]{position:relative;cursor:help;text-decoration:none;border-bottom:0}.code-line[data-note] *{text-decoration:none}.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:none;text-decoration:none}.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid #4c78a8;border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.45;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease}.line-tooltip.is-visible{opacity:1;transform:translateY(0)}.line-tooltip .tooltip-section+.tooltip-section{margin-top:.55rem;padding-top:.55rem;border-top:1px solid #eaeef2}.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12.5px}.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 .65rem;margin:1rem 0;border:0;border-radius:0;overflow:visible;background:transparent}.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1 / span 2;padding-top:.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.88rem;line-height:1.4;text-align:right;white-space:nowrap}.output-head{grid-column:2;padding:.42rem .55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:.2rem .2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-size:.78rem;cursor:default}.output-body{grid-column:2;padding:.72rem .8rem;border:1px solid var(--code-border);border-radius:0 0 .2rem .2rem;background:var(--code-bg)}.output-card.output-scroll .output-body{max-height:28rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;scrollbar-width:auto}.output-card.output-scroll .output-body::-webkit-scrollbar{width:13px;height:13px}.output-card.output-scroll .output-body::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d6d6d6}.output-card.output-scroll .output-body::-webkit-scrollbar-thumb{background:#b8b8b8;border:3px solid #f2f2f2;border-radius:999px}.output-visual{white-space:normal;text-align:center;overflow:auto;background:#fff}.output-visual img{display:block;max-width:100%;height:auto;margin:0 auto}.tok-keyword{color:var(--code-keyword);font-weight:700}.tok-string{color:var(--code-string)}.tok-comment{color:var(--code-comment);font-style:italic}.tok-function{color:var(--code-function)}.tok-number{color:var(--code-number)}.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }.tok-builtin{color:var(--code-builtin)}.tok-operator{color:var(--code-operator)}.tok-magic{color:#008000;font-weight:700}.tok-flag{color:#aa22ff}.tok-shell-command{color:#0000ff;font-weight:700}@media(max-width:860px){.concept-map,.concept-map.three,.explain-grid,.state-list{grid-template-columns:1fr}.flow-step:not(:last-child)::after{display:none}table{min-width:620px}}@media(max-width:560px){.lesson-page{padding:1rem;font-size:1rem;line-height:1.72}.title-block{display:block}.lesson-logo{margin-left:auto;margin-right:auto}.lesson-page h1{display:block;width:100%;font-size:clamp(1.55rem,7vw,1.9rem);line-height:1.22;word-break:break-word}.lead-text{display:block;width:100%;font-size:1rem}.code-card,.output-card{grid-template-columns:minmax(0,1fr)}.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 .25rem;text-align:left}.code-body,.output-head,.output-body{grid-column:1}.code-head{top:1.8rem;right:.45rem}.code-body{font-size:.84rem;padding:.85rem 4.85rem .85rem .85rem}.output-body{font-size:.84rem;padding:.85rem}.explain-grid,.output-comment{margin-left:0}.line-tooltip{max-width:calc(100vw - 32px)}.chat-bubble{max-width:100%}}.flow-step code,.state-item code,.mini-panel code{white-space:normal;overflow-wrap:anywhere}.concept-map.four{grid-template-columns:repeat(4,minmax(0,1fr))}.checkpoint-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:1rem 0}.checkpoint-strip .state-item{border-left:3px solid var(--langgraph-secondary)}.code-body code,.output-body code{font-family:inherit}.line-tooltip{white-space:normal}.output-card.output-scroll .output-body{min-height:8rem}@media(max-width:860px){.concept-map.four,.checkpoint-strip{grid-template-columns:1fr}}
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html" class="is-active" aria-current="page">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+<main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+  <article>
+    <header class="title-block">
+      <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu">
+      <h1 id="lesson-title">LangGraph’ta Time Travel: Checkpoint, Replay ve Fork</h1>
+      <p class="lead-text">Bu ders, LangGraph’ta geçmiş state kayıtlarını incelemeyi, belirli checkpoint’lerden replay yapmayı ve eski bir state’ten yeni yürütme dalları fork etmeyi açıklar.</p>
+    </header>
+
+<section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title"><h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+  <p>Human-in-the-loop akışlarında onay ve state düzenleme kadar, agent’ın hangi ara durumlardan geçtiğini görmek de önemlidir. LangGraph bu ihtiyacı checkpoint tabanlı time travel yaklaşımıyla karşılar: current state okunur, history gezilir, eski checkpoint replay edilir veya eski checkpoint değiştirilerek yeni bir dal fork edilir.</p>
+  <div class="definition-card"><h3 id="temel-fikir">Temel fikir</h3><p>Her thread, zaman içinde üretilmiş checkpoint’lerden oluşan bir yürütme geçmişidir. <code>get_state</code> current checkpoint’i, <code>get_state_history</code> geçmiş checkpoint listesini, <code>checkpoint_id</code> ise belirli bir zaman noktasını hedefler.</p></div>
+  <div class="concept-map">
+    <div class="flow-step"><strong>Run</strong><span>Agent bir thread içinde çalışır ve state adımları üretir.</span></div>
+    <div class="flow-step"><strong>Checkpoint</strong><span>Her önemli adım state, metadata ve config ile kaydedilir.</span></div>
+    <div class="flow-step"><strong>History</strong><span>Geçmiş snapshot’lar current state’ten geriye doğru okunur.</span></div>
+    <div class="flow-step"><strong>Replay</strong><span>Önceden yürütülmüş checkpoint’ler yeniden çağrılmadan oynatılır.</span></div>
+    <div class="flow-step"><strong>Fork</strong><span>Eski checkpoint değiştirilir ve yeni dal yeniden yürütülür.</span></div>
+  </div>
+</section>
+
+<section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title"><h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+  <ul class="checklist">
+    <li><code>StateSnapshot</code> içindeki <code>values</code>, <code>next</code>, <code>config</code> ve <code>checkpoint_id</code> alanlarını yorumlamak.</li>
+    <li><code>graph.get_state</code> ile current checkpoint’i, <code>graph.get_state_history</code> ile geçmiş checkpoint dizisini okumak.</li>
+    <li>Replay ile re-execution arasındaki farkı teknik olarak ayırmak.</li>
+    <li><code>update_state</code> çağrılarıyla eski checkpoint’ten fork oluşturmak.</li>
+    <li><code>MessagesState</code> içindeki mesaj ID’sinin append/overwrite davranışını nasıl etkilediğini açıklamak.</li>
+  </ul>
+</section>
+
+<section id="kavramsal-model" aria-labelledby="kavramsal-model-title"><h2 id="kavramsal-model-title">Kavramsal Model</h2>
+  <p>Graph topolojisi node ve edge’lerden oluşur; time travel ise bu topolojinin çalışırken bıraktığı state izlerini kullanır. Aynı graph üzerinde iki farklı zaman işlemi mümkündür: geçmişte zaten yürütülmüş adımları replay etmek veya geçmiş bir checkpoint’i değiştirerek yeni bir dalı re-execute etmek.</p>
+  <div class="checkpoint-strip">
+    <div class="state-item"><strong>Current state</strong><span>Thread’in en yeni checkpoint’i. Graph bitmişse <code>next</code> boştur.</span></div>
+    <div class="state-item"><strong>Historical state</strong><span>History içindeki eski snapshot. <code>next</code> devam node’unu gösterebilir.</span></div>
+    <div class="state-item"><strong>Replay config</strong><span>Önceden yürütülmüş <code>checkpoint_id</code> ile aynı yolu yeniden yayınlar.</span></div>
+    <div class="state-item"><strong>Fork config</strong><span>Update sonrası oluşan yeni <code>checkpoint_id</code> ile downstream node’ları yeniden çalıştırır.</span></div>
+  </div>
+</section>
+
+<section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title"><h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+  <p>Aşağıdaki adımlar agent kurulumundan yerel replay/fork işlemlerine, oradan SDK tabanlı time travel akışına kadar tek çizgide ilerler. Kod satırlarının üzerine gelerek satır bazlı açıklamaları görebilirsiniz.</p>
+  <article class="walk-card" id="kod-adimi-1">
+<h3 id="gerekli-paketleri-hazirlama">Gerekli paketleri hazırlama</h3>
+<p>LangGraph, OpenAI entegrasyonu, SDK ve hazır agent bileşenleri aynı çalışma ortamına kurulur.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Gerekli paketleri hazırlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langgraph langchain_openai langgraph_sdk langgraph-prebuilt</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-2">
+<h3 id="api-anahtarini-guvenli-bicimde-alma">API anahtarını güvenli biçimde alma</h3>
+<p>Ortam değişkeni yoksa kullanıcıdan gizli giriş alınır ve model çağrıları için hazır edilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">API anahtarını güvenli biçimde alma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+
+_set_env("OPENAI_API_KEY")</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-3">
+<h3 id="aritmetik-araclari-ve-modeli-baglama">Aritmetik araçları ve modeli bağlama</h3>
+<p>Üç aritmetik fonksiyon tool olarak tanımlanır; model bu araç listesini kullanabilecek şekilde bağlanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Aritmetik araçları ve modeli bağlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langchain_openai import ChatOpenAI
+
+
+def multiply(a: int, b: int) -&gt; int:
+    """
+    Multiply a and b.
+
+    Args:
+        a: first int
+        b: second int
+    """
+    return a * b
+
+
+# This will be a tool
+def add(a: int, b: int) -&gt; int:
+    """
+    Adds a and b.
+
+    Args:
+        a: first int
+        b: second int
+    """
+    return a + b
+
+
+def divide(a: int, b: int) -&gt; float:
+    """
+    Divide a by b.
+
+    Args:
+        a: first int
+        b: second int
+    """
+    return a / b
+
+
+tools = [add, multiply, divide]
+llm = ChatOpenAI(model="gpt-4o")
+llm_with_tools = llm.bind_tools(tools)</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-4">
+<h3 id="agent-graphini-kurma">Agent graph’ını kurma</h3>
+<p>Assistant node’u model çağrısını, tools node’u seçilen Python fonksiyonunu yürütür; checkpoint desteği eklenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Agent graph’ını kurma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from IPython.display import Image, display
+
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import MessagesState
+from langgraph.graph import START, END, StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+
+# System message
+sys_msg = SystemMessage(
+    content=(
+        "You are a helpful assistant tasked with performing arithmetic "
+        "on a set of inputs."
+    )
+)
+
+# Node
+def assistant(state: MessagesState):
+    """
+    Run the assistant graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {
+        "messages": [
+            llm_with_tools.invoke([sys_msg] + state["messages"])
+        ]
+    }
+
+# Graph
+builder = StateGraph(MessagesState)
+
+# Define nodes: these do the work
+builder.add_node("assistant", assistant)
+builder.add_node("tools", ToolNode(tools))
+
+# Define edges: these determine the control flow
+builder.add_edge(START, "assistant")
+builder.add_conditional_edges(
+    "assistant",
+    # If the latest message from assistant is a tool call,
+    # tools_condition routes to tools.
+    # If it is not a tool call, tools_condition routes to END.
+    tools_condition,
+)
+builder.add_edge("tools", "assistant")
+
+memory = MemorySaver()
+graph = builder.compile(checkpointer=MemorySaver())
+
+# Show
+display(Image(graph.get_graph(xray=True).draw_mermaid_png()))</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Graph görseli</div>
+  <pre class="output-body output-visual"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCADbAMcDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAUGBwgBAwQJAv/EAFcQAAEDBAADAgcIDAkJCQEAAAECAwQABQYRBxIhEzEIFBYiQVGUFRcjVVZh0dMyNkJUcXSBkZOVtNIJNThSU3WSstQkM2JjcnOhs8EYNEVXgoOEscPx/8QAGgEBAQADAQEAAAAAAAAAAAAAAAECAwQFB//EADURAQABAwAFCgMIAwAAAAAAAAABAgMRBBIhMVETFEFSYXGRobHBFSPRBSIyM1OB4fBCQ8L/2gAMAwEAAhEDEQA/APqnSlKBSlKBSvJdLnHs1vfmylFLDKeY8qSpSj3BKUjqpROgEjqSQB1NQfk9Lyb4e/OOsxVbLdnjulCEJ9HbKSduL9YB5BvQCtc6ttNETGtVOI/u5cJmTfbbCcKJFwisLHQpdfSkj8hNdPlVZfjiB7Sj6a6o+F4/EbCGLFbWkAAaREbHd0Hort8lbL8TwPZkfRWfye3yNh5VWX44ge0o+mnlVZfjiB7Sj6aeStl+J4HsyPop5K2X4ngezI+inye3yXYeVVl+OIHtKPpp5VWX44ge0o+mnkrZfieB7Mj6KeStl+J4HsyPop8nt8jYeVVl+OIHtKPprlGTWdxQSi7QVKPoTJQT/wDdceStl+J4HsyPorheJ2NxBSqzW9ST0IMVBB/4U+T2+RsSiVBaQpJCkkbBB2CK5qsLwKDBWp+wKVjssnm/yIajrP8ArGPsFA+kgBXfpQJ3UjY7y5PW/DmMeKXOLoPMg7QsHucbPpQrR0e8EEHqKxqojGtROY8JTHBLUpStKFKUoFKUoFKUoFKUoFKUoFKUoKvdtXbOLTbl6VGgsLuTiD907zBtn8IG3VdfSEHvGxaKrDo8T4ksOL2ET7WppCtdOZl3m1v1kPEj/ZPqqz10Xd1ERux9c+ayUpSudFAhceMHuWUXLHYd4cmXa3KfRIajQJLiA4ykqdbS6lsoW4kA7QlRVsa1vpVZ4U+E9jfEPhnMzC4NS7AxAK1TUPwJXZtI7dxprkcUykPKIQNhvmKSrRAPSqjhwvGOeEAYOF2TLbZityudwkZNBvluKLU25yqUmZCkK9LroSezQpQIWSUoIquYvc86w7wd7hhFnx3J7VllinuplzI1rUrtITlzUp12A4oFt93xdwqSkbOwemwKDOVq8ILAbziGQZPFv27Rj6Su6qdhyGn4aeXm2thbYdGx1HmddHW9VVM78LHFMYtNjuNrbn3yHcb3GtSpLNrm9kG3DtbzSgwQ/pPVIbJ5yfNJ1qsG3bDbxLsvH1NmxvO5MPIcQiItb2RsSpEue8yZCXEjtOZxKtup5WlBKtbKU8vWs7cfrDcU8PcHm2myzLonGshtN1k262sFyT4swsBwNNDqtSQd8o69DQZfs92j320w7lE7bxWWyl9rxhhbDnKobHM24ErQdHqlQBHcQK9lRuOXxvJbJEubUSbAbkp50x7lGXGkIGyNLbWApJ6b0R6RUlQKrGXatdzsN5RpK25iIDx6+ezIUGwn9KWVfkPrqz1WM8T43Fs9vSCXZd1iFIA30ZdEhRPqHKyrr84rosfmRE7unu6fJY3rPSlK50KUpQKUpQKUpQKUpQKUpQKUpQRWRWZV4iNFhxLFwiOiTDfWCQ26AR1AIJSpKlIUAeqVqAI7667XfI18D9vlNCNcUJKZNueOzy9xUnYHO2d9FgaPcdEFImajrzj1uyFptu4RG5PZEqacO0uNKI0VIWNKQddNpINbqaqZjVr3en9/vbe9SB4NnCdJBHDfFgR3EWhj92uP+zXwn/8ALbFf1Qx+7VhODFvpHyK+x0dAEeOB3Q/C4lSj+U7p5EyPlVfv0zP1VZalvr+UmI4rJHjtRI7TDLaWmWkhCG0DSUpA0AB6ABXZVX8iZHyqv36Zn6qnkTI+VV+/TM/VU5O31/KTEcVopWvvgtXrIeMfBe05VfsouqLnKky2nBDU023ytSXG06BbJ+xQN9e+steRMj5VX79Mz9VTk7fX8pMRxeDIuB3DzLrzIu17wiwXe6SeXtpk23NOuucqQlPMpSSTpKQPwAVHq8G/hStKArhxi6ggcqQbSweUbJ0PN9ZJ/LU/5EyPlVfv0zP1VBhLxBCsnvy0nprt2h/xDYNOTt9fykxHF3Wy04vwtx0RbdCt2NWZtZUmPEaSw12ij3JQkDalH0AbJ7tmubPCkXW7C+z2DGKWlMwYq/s2m1EFS1j0LVyp6fcgAd5VXZa8LtVqmiaGnZlwAIEyc+uQ6nfeEqWTyA+pOh81TtSaqaImLfT0/Q2RuKUpWhClKUClKUClKUClKUClKUClKUClKUClKUClKUGu/gB/yYce/Hbj+2vVsRWu/gB/yYce/Hbj+2vVsRQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQa7+AH/Jhx78duP7a9WxFa7+AH/Jhx78duP7a9WxFApSlApSlApSlApSlApSlApSlApSlApSlApSlApSq3e8oksXFdttENqbNaQlchyQ8WmWAr7EEhKipZAJ5QOgAJKeZO9lFuq5OKV3rJSqR7u5h94WP2t76unu7mH3hY/a3vq66Oa18Y8YMLvWjf8J/wLVlOE2ziTbI5cuNgAh3HkGyqEtZKFf8AtuKPd6HVE9E1tb7u5h94WP2t76uo/IU5FlVhuNlulnsMu23CO5Ekx1y3tONLSUqSfg/SCac1r4x4wYfMf+Dy4KOcU+O8K9yW1CyYkpu6vuDYCpIVuM3sdx508/qIaUPTX1/rXXwdODF08HDBXccszFpuCpEtyZJnyJDiXHlK0EggN6ASgJTodN7PTmNZT93cw+8LH7W99XTmtfGPGDC70qke7uYfeFj9re+rp7u5h94WP2t76unNa+MeMGF3pVLRmF4tI7e+W6Ei3D/OyYElbimB/PUhSBtA6bIOx360CaulaLlqq3+IxgpSlakKUpQKUpQKUpQKUpQKUpQKUpQKoVoPNleZ79FyaA6ejxGMf+pq+1QbP9teaf1m1+wxa7tF/wBnd/1DKN0pulYE4/Z1kdsyI2vDcjvLN5h2pVwetFmskWYlKeZYQ7JekKSENqKSkIQQs8qiN1W8j4wZnPs/D3KZN7fwbCbxjkefNvVutDdwZYuLvIezkhYUpqPyq6LGupPMsVlNUQxbP15LfeIF3MoQZsaaYj6o0gR3Uudi8kAqbXonlUNjaT1GxWEPLrKIPHpy25JksjHMdmS2mseiItTTtuvDSmQSgzNFSJBXz6QVJ2EjlCt1SIWT8QrRh2R+5NxlSEQM9mwr1e7RY4jtxRCQ0nTwjIaSh1fPyBauRS+XuB10aw2vU4hCkJUpKVLOkgnqTrfSv1WrmQtXDPeKXAy42XiRLktTbRdi1ebdAiJDpQlkrcDbjSwlSwQhSSPN7PoEnm3xxv40ZVh+QZLeMUv11u9sxqRGbuFrYscU2uOT2XaMPS1rS8pwpXzfA75OdIUO801htJX5LiA4lBUkLUCQknqQNbOvyj89a/ZZkue3jOOLUOzZibBBxK3xJsGO3bY7/auuRVuFDi3Ek9mS31A0rzuigBqoK1u3viRx44ZZGxks2wLuuAG6uRoceM4hIU9DW4yO1bWeVZWNnfMOQcpGztrDYbNQDht+BAI8QkdCNg/Bqq5WklVqhEkkllBJP+yKp2a/abfvxB//AJaquFn/AIphf7hH90Vb/wCTT3z6QvQ9lKUrzkKUpQKUpQKUpQKUpQKUpQKUpQKoNn+2vNP6za/YYtX6qPdYsrG8guM9MKROt9zWh5a4bRccYdS2hohSAOYpKUJIUN6IIIHTfbosxmqnpmPeJ9mUdKo5jwStWYZS9fjeL5ZZMyEi3XFm0TAw3cI6VKKUO+aVDXaLAU2pCtKI3UFP8Ge0T8QteLeVmWR8ehW4Wly3R7g2hqZFCiQ28Oy/mq5OZHKopABJ76u134lWewWyVcrozdrdb4rZdfly7TKaaaQO9SlqbASB6ya67FxSseUWmNdbMi6XW2SU87EyFapLzLo2RtK0tkEbBHQ+iurkK+rJqzwQU7gLabpllvvEy+5BKgW+axcImPuzUm3MSGUBLS0I5OcBOgQnn5ebqQTXL/A2GiFc2bXlOS4+7cL2/fnpNrmNNuds6kJW3otKSprQ2EqSog9d7A1a/LON8WX79SS/qqeWcYf+GX79SS/qqchX1ZNWeCkveDjjjeN4larVcr3YHsXU+q3XS2y0iWC/vxjnUtC0r7QqKlbT392q8WTeC/juVIyGNJv2SxrTf1iRcbVEnpbjvyeRKPGTpvm5/g0KI5uQqSCUHuq5Y/xXx/LLW3c7Gbjeba6VJRMt9skvsrKVFKgFobIJCgQevQgipHyzjfFl+/Ukv6qpyFfVNWeCJi8KLZHuGYTlzrhIlZTDjwp7jq2+iWmVMpUgBAAUUrJO9jfcAOlQk7wf7M/Bw1uBfL9Yp2K20WmFc7ZJbbkOxeRtBbe5m1IUD2SFHSRojY1Vx8s43xZfv1JL+qqGyfjPi2FR4z+QyZtiYkuhhl25W6RHS64e5CStABUfUOtXkK+rJqzwT+a/abfvxB//AJaquFn/AIphf7hH90VRJ8qTmFvk2m3224sGa0phyXOhLjNx0KBSpfwqQVEDekgHZI3pO1DIjLKY7LbSBpCEhKR6gOgrRpH3bdNE78z7E7IfulKV57EpSlApSlApSlApSlApSlApSvytaW0KUpQSlI2VE6AFB+qpXFjilD4SY5Husq0Xi+uSpjUCNAskNUmQ685vlGh0A6HqSPQBskA+e6cQr0c9xK02DFXr/jN3jOTJmUsS2xEiNBPwYT1JcUtRQRrXmnaebSuXv4VcK4XCe0XKFFu94vjtxnu3GTNvUxUl5bi9DQJ6ABKUjoOutnZoOiBgN7f4i5JfLzlT94xW5wUQYmJPRGxFjp0O1U5sbcUo8w6681ZB5tJ1eWGG4zLbLLaWmm0hCG0JCUpSBoAAdwFdlKBWuPh4cc/eW4Gz2oEjscjyLmtlv5TpbaVD4Z4ekcqDoEdyloNbHVgbwg/A4xDwk8ktt5ye+ZJDct8TxRiJa5TDbCRzqWpfK4ys86uYAkEbCE9OlBqb/Bd8dfcfI7pwvukgJiXTmuNqLivsZKUjtWh/ttpCgO4dkr0qr6V18+vAn8DDDMnxDDeKki8ZFHyKDdnZLceNKYTFUY0taUJUkslZSoNgKHON7VrW6+gtArplQ2JzXZSWG5DfMlfI6gKHMkhSTo+kEAg+ggV3UoMdysRv+IZNmWZWu93nJxOt/NFwyS+0mKmW2gBPYOKA7ILCUpI3ralKPMdamcIzsZPjdhm3i2P4jebq2tSbDd3EJlpWgnnSEg+eBrm2OvKUkhO9C11Vcy4W4rxAuuP3PILLHuVxsEtM22SnNhyM6Ck7SQRsEpSSk7B5RsdBQWqlYqdy3KuFTHEHI+Ic+33DCoLqZlods8J0zWY6iQpp5sbCuTzNKG97UokDonIeN5Fbsux+3Xu0SPG7XcY6JUWQEKR2jS0hSVaUARsEHqBQSVKUoFKUoFKUoFKUoFKUoIjKsusuD2R28ZBc41ntbS223JktwIbQpa0oRtR6DalJG/nqmXDH8k4k3POcXzOyW2Pw6lxkQoC4c53x6ZzJ26tZTyhtPUJCehBQfskkGrHxOsdoyLAL7Cv1lTkdq8WU+9alDfjXZfCpQOo6lSE6+fVccMMyb4g8PbBkbVtkWdu4xEPiBLSQ7H2NFCtgdxGt6699BK4zjNrw3H7fY7JCat1pgMpYjRWRpLaB3Aek/hPUnqak6UoFKUoFdMuWxAivSpTzcaMwhTjrzywlDaANlSiegAAJJNR+VZXZ8Hx6dfb9cWLVaILZdkS5KuVCE/8AUk6AA6kkAAk1rExByfw3Z7cq5Nz8R4EsuBbEAkszsnIOwtzXVuNsAgDqrvGzooC0+AAoL8F7HFpIUlUy4lKgdgjx17qK2KrxWWyW/G7TEtdqhMW62xG0sx4sZsIbaQBoJSkdAK9tApSlApSlBwRsaPUVTL5w1N1z7GcniZHeLQmzNOR3LRDkagzWVJOkutEa2lXKQoddJ16iLpSgpPDvNr9kaLs1lWKuYdNi3F2JFQ/MafbnMjzm3WlJOztJTsEdDsddEC7Vini/Fwl/P+Fq8omTY16avDirA3FBLb0nsjzJd0k6Ty+sjr6aytQKUpQKUpQKUpQKUr8rcQ2NrUEj/SOqDEnhDeEvj3g1Wyz3HJbLf7lAubrjCJNmitutsuJCVBDqnHEBKlgqKQNkhtf82tK4X8JznlymLsOPY5bbtdJ19W3bLheUlO4biylhhcdlSdOjaNrDqh3jR6Kr6D8SMExzivhd0xbI2WptquDRbcSVDmbV9y4gn7FaTog+givmhwj8FC88MfDixTGL0343ZYMpd6h3ZKfgpMdhKnGl9/RXaJbSpJO0k+kEE3Ej6s0rq8aZ/pm/7Qp40z/TN/2hTEjtqn8VeLGM8GMOl5LlVxTAt7HmoQPOdkOEea00jvWs67vwkkAEiC448fce4GY0xOuCXbteLg54taLFbxzyrjI6ANtpG9Dak7VrpsdCSlJxzwq4CZFnuYROKXGtTM/JmvPsmLNnmgWBBOx5vULf7tqO9EA7JCSmCJxXhdlPhS5DBzji3AcsuDxHBIx/h84o/CfzZM8fdKIPRs929EAcwXtO22hltDbaEobQAlKUjQAHcAK/VKBSlKBSlKBSlfhbqG9c60p33cx1QfuvJdn5cW1TXrfFROntsrXHiuvdil5wJJSgr5VcgJ0ObR1vej3V3eNM/wBM3/aFPGmf6Zv+0KuJHzoyD+FJQ5eIouXBeL4/apCykTrwFvRnRtKuQmKC2vvBPf6K298F3j3J8I7hs9lz+MLxVr3QdhsR1zPGg+hCEEupX2bfTmUtGtHq2evoGjfh0eC3Pe8I2xTcTjpci5/KDZCB8HHn7AeUsgealSSHST/rT3Jr6M8NcKs3C3ArFidnU2i32mKiM2dgFwjqpxWvulqKlH51GmJFqpXV40z/AEzf9oVyJDSiAHUEnuAUKYkdlKUqBSlKDy3Sb7m2yXL5ebsGVu8vr5Uk/wDSseWvErVfrdEuV5t8S8XKUyh56TOYS8ragCUp5h5qB3BI0ND17NXnKvtYvH4m9/cNV7GvtctX4o1/cFelo8zRbmqmcTlluh4ve+xb5NWf2Br92nvfYt8mrP7A1+7VF4V+EVYuJIykuNSbMixzJiFvTYclljxVhYT2y3nWkIQo75i0TzoG9joTVgwjjbhXEWe/CsN7EqW1H8bLL8Z6MpbG9ds32qE9o3sgc6Np6jr1FbYv3J/znxTM8U1732LfJqz+wNfu0977Fvk1Z/YGv3agMS48YJnV/RZrJkDc2e6lxcdJjvNNykt/Zlh1aAh4J9JbUrp17qrWD+EPa18HsTy7Npce1zr4XG241uivvF1xK3BpplAccOko2e/XedU5xc68+JmeLIZ4fYz0Ldgt0dwdUvRoyGXEH1pWgBST84IIqxYJdJF0sBMp0yJEaTIhqeOtuBp1SEqOgBzFKQToAb3rpXgsl5h5HZ4V1tz3jECayiQw9ylPO2obSrSgCNgjvFfrhn/Elw/rad+0LrC9VNyzM1TnEx7rnMbVupSleWxKUpQK8t0ukWy2+ROmvJjxGEFbjiu4AfMOpPqA6k9BXqrEHHW8uOzrNY0K0wUrnSE7+yKSEtD5xsrV+FCa7ND0edKv02uPosK5lXEW85Y+4lmRIs9q2Q3Fjr7N5xPoLjifOBP81JAG9Hm1uqaqw21xaluQI7ritcy3WgtSvwk9TXupX0ezao0enUtRiGOtKP8AJ61fFkP2dH0U8nrV8WQ/Z0fRUhVQvPFzEsfvLlrn3hDEppSUPHsXFNMKVrlS66lJQ2TsdFKHeK2VXYojNVWP3MzxT/k9aviyH7Oj6KeT1q+LIfs6Poqu3zjDiOOXOdb7hdizLgKQJaERXnBHCkJWlTikoISgpWnzyQnvG9ggevKOJmNYc/DZut0Sy/LQXWWmWnH1qbHe5ytpUQj/AEjofPWPL0Rn7+7ftMzxS/k9aviyH7Oj6KHHbUQR7mQ9Hp/3dH0VBcJ8ul55w7sl/nNsNSpzJccRGSUtg8yh5oJJ7gO8mrbWVFzXpiqJ2SZni77Jcbhi7iV2ae/bwkj4BKiphQ9RaPm/lAB9RFZx4fZ8zmcNbbyExbtHA8YjJO0kHoHEE96Tr8IPQ+gnA9eux3hzG8ltN1bVyhqQhl7r9kw4oIcB9ethWvWgV5Wn6DRpVuaoj78bp9pWJzsls3SlK+eiLyr7WLx+Jvf3DVexr7XLV+KNf3BVkyNlcjHro02kqcXFdSlI9JKCBVaxdaXMatKknaVRGSD6xyCvQs/kz3+y9DWa6YnkV44fcauGrWP3di93e73S7W6YuItNvmMuupebQJP2AUsbbKSQQd70KkMut978IHKbT7iYxfMPjWrG7zCkTL7BVB5X5kZLLUdoHq4EKHOVJBQOROiSa2cpTVRrDjyL3m7vBbHI+FXzGZGGSGZV4m3KCY8aOliG5HUww6fNeDiljRbJHKNnVQ2P2BVp4H4fa79jWdWfK8VuMyNDuuOWtUiRDf2s9shI5g9HdQ6Ek8qkq6g61sbb0pqio8JLjk124a47MzKImDk70RCp7CUhPK586QSEqI0SkdxJHoqx8M/4kuH9bTv2hdeuvNw1QU2GYv7ly6TlJOu8eMuDf/A//wArKvZYq74916FspSleahSlKBWEON0VUfNbVKV/m5UBbKTr7ptzmI/M6PzH1Vm+qzxAw5OaWExULSzOYWH4jy96Q4ARpWvuVAlJ+Y77wK9L7P0inRtJprr3bp/dYa/0pLjOR5Ei3z4yo8praH4rw6j0f+pJ9BHQiqaODGBA7GG2MH+r2v3a+hTVVMRNGJjv/iWC5VrlEwtm3XTKLDk9jzO5e6l3kvtO2eXL9z5caQvYLgbcS2ggKIWFgdE+mste8vgPyMsX6va/dq4ssojtIaaQlttCQlKEjQSB0AFaK7M3sa8RGP39YGHHsXmse/XHatsosTILLMEFlavGQm2pb02SPhDzDl6b69O+vBiarnw8yxm53PHbzdI92x22RWX4EJT7kR1hCg4w4kdW+YrCtnQ2Ds9OmdKVObRmKonExmfGZn3FA4CW2ZaOEGMw58R+BMajqDkaS2W3Gz2ijpST1B61f6rt+4dYtlE7x28Y7bLpL5A328uKhxfKO4bI3rqajveWwH5GWL9Xtfu1soprt0xRTETEbN/8C511PxVXFyJBb6uy5TMdA1vqpxI3+QbP5KjrFjNkw2E8zaLbCs0Ra+1cRFaSygq0BzHQA3oAb+asu8JcEffnsZJcWVMstJV4hHcSQslQ5S8oHu83YSPUpR9IrXpOkxotmble/o71p35ZfpSlfM1Kqcrh8nt3F2y93KxsrUVmLDDC2Qo9SUpdaXy7PXSSBsk661bKVsouVW/wyucKb5AXD5Z3v9BC/wAPTyAuHyzvf6CF/h6uVK3c5udnhH0Mqb5AXD5Z3v8AQQv8PTyAuHyzvf6CF/h6uVKc5udnhH0Mqgjh/IX5srKr1KZP2TX+TM8w9I52mUrH4UqB9RFWmHDYt0RmLFZRHjMoDbbTSQlKEgaAAHcK7qVrru13NlU+3oZyUpStKFKUoFKUoIXJMNs2XNIRdYKJC2wQ28CUOt77+VxJCk/kPWqU9wDtalks329R0HuQFsLA/AVNE/nJrJ9K7LWmaRYjVt1zELliz3gYPylvf5ov1FPeBg/KW9/mi/UVlOlb/iel/qen0MsWe8DB+Ut7/NF+op7wMH5S3v8ANF+orKdKfE9L/U9PoZYs94GD8pb3+aL9RXI4AwN9ckvZH/xR/wDhWUqU+J6X+p6GVKsHCDHLDIbkqYeuktshSHri52vKR3EI0EA/OEg1daUriu3rl6rWuVTM9pkpSlaUf//Z" alt="Agent graph görseli"></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-5">
+<h3 id="ilk-agent-calistirmasi">İlk agent çalıştırması</h3>
+<p>“Multiply 2 and 3” isteği thread içinde çalıştırılır ve mesaj akışı görünür hale gelir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">İlk agent çalıştırması</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Input
+initial_input = {"messages": HumanMessage(content="Multiply 2 and 3")}
+
+# Thread
+thread = {"configurable": {"thread_id": "1"}}
+
+# Run the graph until the first interruption
+for event in graph.stream(initial_input, thread, stream_mode="values"):
+    event["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Multiply 2 and 3
+================================== Ai Message ==================================
+Tool Calls:
+  multiply (call_ikJxMpb777bKMYgmM3d9mYjW)
+ Call ID: call_ikJxMpb777bKMYgmM3d9mYjW
+  Args:
+    a: 2
+    b: 3
+================================= Tool Message =================================
+Name: multiply
+
+6
+================================== Ai Message ==================================
+
+The result of multiplying 2 and 3 is 6.</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-6">
+<h3 id="mevcut-state-snapshoti">Mevcut state snapshot’ı</h3>
+<p>Thread’in en güncel checkpoint’i okunur; final state, mesaj listesi ve checkpoint metadata’sı birlikte görünür.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Mevcut state snapshot’ı</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">graph.get_state({"configurable": {"thread_id": "1"}})</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(values={'messages': [HumanMessage(content='Multiply 2 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d'), AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_ikJxMpb777bKMYgmM3d9mYjW', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}], 'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 17, 'prompt_tokens': 131, 'total_tokens': 148}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-bc24d334-8013-4f85-826f-e1ed69c86df0-0', tool_calls=[{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_ikJxMpb777bKMYgmM3d9mYjW', 'type': 'tool_call'}], usage_metadata={'input_tokens': 131, 'output_tokens': 17, 'total_tokens': 148}), ToolMessage(content='6', name='multiply', id='1012611a-30c5-4732-b789-8c455580c7b4', tool_call_id='call_ikJxMpb777bKMYgmM3d9mYjW'), AIMessage(content='The result of multiplying 2 and 3 is 6.', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 14, 'prompt_tokens': 156, 'total_tokens': 170}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5', 'finish_reason': 'stop', 'logprobs': None}, id='run-b46f3fed-ca3b-4e09-83f4-77ea5071e9bf-0', usage_metadata={'input_tokens': 156, 'output_tokens': 14, 'total_tokens': 170})]}, next=(), config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-ac9e-6024-8003-6fd8435c1d3b'}}, metadata={'source': 'loop', 'writes': {'assistant': {'messages': [AIMessage(content='The result of multiplying 2 and 3 is 6.', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 14, 'prompt_tokens': 156, 'total_tokens': 170}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5', 'finish_reason': 'stop', 'logprobs': None}, id='run-b46f3fed-ca3b-4e09-83f4-77ea5071e9bf-0', usage_metadata={'input_tokens': 156, 'output_tokens': 14, 'total_tokens': 170})]}}, 'step': 3, 'parents': {}}, created_at='2024-09-03T22:29:54.309727+00:00', parent_config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-a759-6d02-8002-f1da6393e1ab'}}, tasks=())</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-7">
+<h3 id="checkpoint-gecmisini-listeleme">Checkpoint geçmişini listeleme</h3>
+<p>Thread boyunca oluşan tüm state snapshot’ları history olarak alınır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Checkpoint geçmişini listeleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">all_states = [s for s in graph.get_state_history(thread)]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-8">
+<h3 id="history-uzunlugunu-kontrol-etme">History uzunluğunu kontrol etme</h3>
+<p>İlk run’ın kaç checkpoint ürettiği sayılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">History uzunluğunu kontrol etme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">len(all_states)</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">5</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-9">
+<h3 id="erken-checkpointi-inceleme">Erken checkpoint’i inceleme</h3>
+<p>History içinden yalnızca insan mesajını içeren ve sıradaki node’u assistant olan checkpoint seçilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Erken checkpoint’i inceleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">all_states[-2]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(values={'messages': [HumanMessage(content='Multiply 2 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]}, next=('assistant',), config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-a003-6c74-8000-8a2d82b0d126'}}, metadata={'source': 'loop', 'writes': None, 'step': 0, 'parents': {}}, created_at='2024-09-03T22:29:52.988265+00:00', parent_config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-9ffe-6512-bfff-9e6d8dc24bba'}}, tasks=(PregelTask(id='ca669906-0c4f-5165-840d-7a6a3fce9fb9', name='assistant', error=None, interrupts=(), state=None),))</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-10">
+<h3 id="replay-referansini-hazirlama">Replay referansını hazırlama</h3>
+<p>Seçilen eski checkpoint replay değişkenine atanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Replay referansını hazırlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_replay = all_states[-2]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-11">
+<h3 id="replay-checkpointini-goruntuleme">Replay checkpoint’ini görüntüleme</h3>
+<p>Replay için hedeflenen StateSnapshot tekrar kontrol edilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Replay checkpoint’ini görüntüleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_replay</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(values={'messages': [HumanMessage(content='Multiply 2 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]}, next=('assistant',), config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-a003-6c74-8000-8a2d82b0d126'}}, metadata={'source': 'loop', 'writes': None, 'step': 0, 'parents': {}}, created_at='2024-09-03T22:29:52.988265+00:00', parent_config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-9ffe-6512-bfff-9e6d8dc24bba'}}, tasks=(PregelTask(id='ca669906-0c4f-5165-840d-7a6a3fce9fb9', name='assistant', error=None, interrupts=(), state=None),))</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-12">
+<h3 id="replay-state-degerlerini-okuma">Replay state değerlerini okuma</h3>
+<p>Snapshot içindeki `messages` state değeri görüntülenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Replay state değerlerini okuma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_replay.values</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>`values` state verisini gösterir; checkpoint’e nasıl gidileceğini belirleyen alan `config`tir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'messages': [HumanMessage(content='Multiply 2 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-13">
+<h3 id="replay-next-alanini-okuma">Replay next alanını okuma</h3>
+<p>Graph’ın bu checkpoint’ten sonra hangi node’a gideceği doğrulanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Replay next alanını okuma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_replay.next</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>`next` boş değilse bu snapshot final state değildir; graph buradan devam edebilir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">('assistant',)</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-14">
+<h3 id="replay-config-alanini-okuma">Replay config alanını okuma</h3>
+<p>Thread ve checkpoint kimliğini taşıyan config alınır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Replay config alanını okuma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_replay.config</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Yalnızca `thread_id` current state’i hedefler; belirli geçmiş için `checkpoint_id` gerekir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'configurable': {'thread_id': '1',
+  'checkpoint_ns': '',
+  'checkpoint_id': '1ef6a440-a003-6c74-8000-8a2d82b0d126'}}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-15">
+<h3 id="gecmis-checkpointten-replay">Geçmiş checkpoint’ten replay</h3>
+<p>Yeni input vermeden, seçili checkpoint config’iyle geçmiş akış yeniden oynatılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Geçmiş checkpoint’ten replay</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for event in graph.stream(None, to_replay.config, stream_mode="values"):
+    event["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım replay davranışını gösterir: checkpoint geçmişte çalıştığı için downstream kayıtlar yeniden yürütülmeden oynatılır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Multiply 2 and 3
+================================== Ai Message ==================================
+Tool Calls:
+  multiply (call_SABfB57CnDkMu9HJeUE0mvJ9)
+ Call ID: call_SABfB57CnDkMu9HJeUE0mvJ9
+  Args:
+    a: 2
+    b: 3
+================================= Tool Message =================================
+Name: multiply
+
+6
+================================== Ai Message ==================================
+
+The result of multiplying 2 and 3 is 6.</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-16">
+<h3 id="fork-icin-checkpoint-secme">Fork için checkpoint seçme</h3>
+<p>Aynı erken checkpoint bu kez alternatif dal oluşturmak için seçilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork için checkpoint seçme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_fork = all_states[-2]
+to_fork.values["messages"]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">[HumanMessage(content='Multiply 2 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-17">
+<h3 id="fork-configini-kontrol-etme">Fork config’ini kontrol etme</h3>
+<p>Fork edilecek checkpoint’in thread ve checkpoint kimlikleri doğrulanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork config’ini kontrol etme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_fork.config</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'configurable': {'thread_id': '1',
+  'checkpoint_ns': '',
+  'checkpoint_id': '1ef6a440-a003-6c74-8000-8a2d82b0d126'}}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-18">
+<h3 id="gecmis-checkpoint-uzerinde-state-update">Geçmiş checkpoint üzerinde state update</h3>
+<p>İnsan mesajı aynı ID korunarak “Multiply 5 and 3” içeriğine çevrilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Geçmiş checkpoint üzerinde state update</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">fork_config = graph.update_state(
+    to_fork.config,
+    {
+        "messages": [
+            HumanMessage(
+                content="Multiply 5 and 3",
+                id=to_fork.values["messages"][0].id,
+            )
+        ]
+    },
+)</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Aynı mesaj ID’si korunarak `MessagesState` reducer üzerinde append yerine overwrite davranışı hedeflenir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-19">
+<h3 id="yeni-fork-configi">Yeni fork config’i</h3>
+<p>State update sonrası oluşan yeni checkpoint config’i görüntülenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Yeni fork config’i</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">fork_config</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'configurable': {'thread_id': '1',
+  'checkpoint_ns': '',
+  'checkpoint_id': '1ef6a442-3661-62f6-8001-d3c01b96f98b'}}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-20">
+<h3 id="fork-sonrasi-mesaji-dogrulama">Fork sonrası mesajı doğrulama</h3>
+<p>History tekrar okunur ve current state’te yeni human mesajı görünür.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork sonrası mesajı doğrulama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">all_states = [state for state in graph.get_state_history(thread)]
+all_states[0].values["messages"]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">[HumanMessage(content='Multiply 5 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-21">
+<h3 id="fork-edilmis-current-state">Fork edilmiş current state</h3>
+<p>Thread’in güncel snapshot’ı fork sonrası state’i gösterir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork edilmiş current state</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">graph.get_state({"configurable": {"thread_id": "1"}})</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(values={'messages': [HumanMessage(content='Multiply 5 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]}, next=('assistant',), config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a442-3661-62f6-8001-d3c01b96f98b'}}, metadata={'source': 'update', 'step': 1, 'writes': {'__start__': {'messages': [HumanMessage(content='Multiply 5 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d')]}}, 'parents': {}}, created_at='2024-09-03T22:30:35.598707+00:00', parent_config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a440-a003-6c74-8000-8a2d82b0d126'}}, tasks=(PregelTask(id='f8990132-a8d3-5ddd-8d9e-1efbfc220da1', name='assistant', error=None, interrupts=(), state=None),))</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-22">
+<h3 id="fork-checkpointten-yeniden-yurutme">Fork checkpoint’ten yeniden yürütme</h3>
+<p>Yeni checkpoint daha önce çalışmadığı için assistant/tool adımları yeniden execute edilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork checkpoint’ten yeniden yürütme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">for event in graph.stream(None, fork_config, stream_mode="values"):
+    event["messages"][-1].pretty_print()</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım fork davranışını gösterir: yeni checkpoint daha önce execute edilmediği için model ve tool yeniden çağrılır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================ Human Message =================================
+
+Multiply 5 and 3
+================================== Ai Message ==================================
+Tool Calls:
+  multiply (call_KP2CVNMMUKMJAQuFmamHB21r)
+ Call ID: call_KP2CVNMMUKMJAQuFmamHB21r
+  Args:
+    a: 5
+    b: 3
+================================= Tool Message =================================
+Name: multiply
+
+15
+================================== Ai Message ==================================
+
+The result of multiplying 5 and 3 is 15.</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-23">
+<h3 id="fork-sonrasi-final-state">Fork sonrası final state</h3>
+<p>Re-execution tamamlandıktan sonra yeni final checkpoint okunur.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork sonrası final state</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">graph.get_state({"configurable": {"thread_id": "1"}})</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(values={'messages': [HumanMessage(content='Multiply 5 and 3', id='4ee8c440-0e4a-47d7-852f-06e2a6c4f84d'), AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_KP2CVNMMUKMJAQuFmamHB21r', 'function': {'arguments': '{"a":5,"b":3}', 'name': 'multiply'}, 'type': 'function'}], 'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 17, 'prompt_tokens': 131, 'total_tokens': 148}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-bc420009-d1f6-49b8-bea7-dfc9fca7eb79-0', tool_calls=[{'name': 'multiply', 'args': {'a': 5, 'b': 3}, 'id': 'call_KP2CVNMMUKMJAQuFmamHB21r', 'type': 'tool_call'}], usage_metadata={'input_tokens': 131, 'output_tokens': 17, 'total_tokens': 148}), ToolMessage(content='15', name='multiply', id='9232e653-816d-471a-9002-9a1ecd453364', tool_call_id='call_KP2CVNMMUKMJAQuFmamHB21r'), AIMessage(content='The result of multiplying 5 and 3 is 15.', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 14, 'prompt_tokens': 156, 'total_tokens': 170}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5', 'finish_reason': 'stop', 'logprobs': None}, id='run-86c21888-d832-47c5-9e76-0aa2676116dc-0', usage_metadata={'input_tokens': 156, 'output_tokens': 14, 'total_tokens': 170})]}, next=(), config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a442-a2e2-6e98-8004-4a0b75537950'}}, metadata={'source': 'loop', 'writes': {'assistant': {'messages': [AIMessage(content='The result of multiplying 5 and 3 is 15.', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 14, 'prompt_tokens': 156, 'total_tokens': 170}, 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5', 'finish_reason': 'stop', 'logprobs': None}, id='run-86c21888-d832-47c5-9e76-0aa2676116dc-0', usage_metadata={'input_tokens': 156, 'output_tokens': 14, 'total_tokens': 170})]}}, 'step': 4, 'parents': {}}, created_at='2024-09-03T22:30:46.976463+00:00', parent_config={'configurable': {'thread_id': '1', 'checkpoint_ns': '', 'checkpoint_id': '1ef6a442-9db0-6056-8003-7304cab7bed8'}}, tasks=())</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-24">
+<h3 id="yerel-api-ortam-kontrolu">Yerel API ortam kontrolü</h3>
+<p>Studio/API örneklerinin desteklenmeyen ortamda çalıştırılması engellenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Yerel API ortam kontrolü</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">if "google.colab" in str(get_ipython()):
+    raise Exception(
+        "Unfortunately LangGraph Studio is currently not supported on Google Colab"
+    )</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-25">
+<h3 id="sdk-istemcisine-baglanma">SDK istemcisine bağlanma</h3>
+<p>LangGraph SDK istemcisi yerel API sunucusuna bağlanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK istemcisine bağlanma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langgraph_sdk import get_client
+
+client = get_client(url="http://127.0.0.1:2024")</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-26">
+<h3 id="sdk-ile-ilk-run">SDK ile ilk run</h3>
+<p>Yeni thread oluşturulur ve updates modunda assistant/tools node çıktıları izlenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK ile ilk run</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">initial_input = {"messages": HumanMessage(content="Multiply 2 and 3")}
+thread = await client.threads.create()
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=initial_input,
+    stream_mode="updates",
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">--------------------Assistant Node--------------------
+{'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_SG7XYqDENGq7mwXrnioNLosS', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-2c120fc3-3c82-4599-b8ec-24fbee207cad', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_SG7XYqDENGq7mwXrnioNLosS', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}
+--------------------Tools Node--------------------
+{'content': '6', 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'tool', 'name': 'multiply', 'id': '3b40d091-58b2-4566-a84c-60af67206307', 'tool_call_id': 'call_SG7XYqDENGq7mwXrnioNLosS', 'artifact': None, 'status': 'success'}
+--------------------Assistant Node--------------------
+{'content': 'The result of multiplying 2 and 3 is 6.', 'additional_kwargs': {}, 'response_metadata': {'finish_reason': 'stop', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_fde2829a40'}, 'type': 'ai', 'name': None, 'id': 'run-1272d9b0-a0aa-4ff7-8bad-fdffd27c5506', 'example': False, 'tool_calls': [], 'invalid_tool_calls': [], 'usage_metadata': None}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-27">
+<h3 id="sdk-historyden-replay-secimi">SDK history’den replay seçimi</h3>
+<p>API history’sinden replay edilecek checkpoint seçilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK history’den replay seçimi</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">states = await client.threads.get_history(thread["thread_id"])
+to_replay = states[-2]
+to_replay</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'values': {'messages': [{'content': 'Multiply 2 and 3',
+    'additional_kwargs': {'example': False,
+     'additional_kwargs': {},
+     'response_metadata': {}},
+    'response_metadata': {},
+    'type': 'human',
+    'name': None,
+    'id': 'df98147a-cb3d-4f1a-b7f7-1545c4b6f042',
+    'example': False}]},
+ 'next': ['assistant'],
+ 'tasks': [{'id': 'e497456f-827a-5027-87bd-b0ccd54aa89a',
+   'name': 'assistant',
+   'error': None,
+   'interrupts': [],
+   'state': None}],
+ 'metadata': {'step': 0,
+  'run_id': '1ef6a449-7fbc-6c90-8754-4e6b1b582790',
+  'source': 'loop',
+  'writes': None,
+  'parents': {},
+  'user_id': '',
+  'graph_id': 'agent',
+  'thread_id': '708e1d8f-f7c8-4093-9bb4-999c4237cb4a',
+  'created_by': 'system',
+  'assistant_id': 'fe096781-5601-53d2-b2f6-0d3403f7e9ca'},
+ 'created_at': '2024-09-03T22:33:51.380352+00:00',
+ 'checkpoint_id': '1ef6a449-817f-6b55-8000-07c18fbdf7c8',
+ 'parent_checkpoint_id': '1ef6a449-816c-6fd6-bfff-32a56dd2635f'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-28">
+<h3 id="sdk-values-replay">SDK values replay</h3>
+<p>Checkpoint ID verilerek values modunda geçmiş state akışı tekrar yayınlanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK values replay</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=None,
+    stream_mode="values",
+    checkpoint_id=to_replay["checkpoint_id"],
+):
+    print(f"Receiving new event of type: {chunk.event}...")
+    print(chunk.data)
+    print("\n\n")</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>SDK replay’de kritik parametre `checkpoint_id` değeridir; bu kimlik belirli geçmiş noktayı hedefler.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">Receiving new event of type: metadata...
+{'run_id': '1ef6a44a-5806-6bb1-b2ee-92ecfda7f67d'}
+
+
+
+Receiving new event of type: values...
+{'messages': [{'content': 'Multiply 2 and 3', 'additional_kwargs': {'example': False, 'additional_kwargs': {}, 'response_metadata': {}}, 'response_metadata': {}, 'type': 'human', 'name': None, 'id': 'df98147a-cb3d-4f1a-b7f7-1545c4b6f042', 'example': False}]}
+
+
+
+Receiving new event of type: values...
+{'messages': [{'content': 'Multiply 2 and 3', 'additional_kwargs': {'example': False, 'additional_kwargs': {}, 'response_metadata': {}}, 'response_metadata': {}, 'type': 'human', 'name': None, 'id': 'df98147a-cb3d-4f1a-b7f7-1545c4b6f042', 'example': False}, {'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-e60d82d7-7743-4f13-bebd-3616a88720a9', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}]}
+
+
+
+Receiving new event of type: values...
+{'messages': [{'content': 'Multiply 2 and 3', 'additional_kwargs': {'example': False, 'additional_kwargs': {}, 'response_metadata': {}}, 'response_metadata': {}, 'type': 'human', 'name': None, 'id': 'df98147a-cb3d-4f1a-b7f7-1545c4b6f042', 'example': False}, {'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-e60d82d7-7743-4f13-bebd-3616a88720a9', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}, {'content': '6', 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'tool', 'name': 'multiply', 'id': 'f1be0b83-4565-4aa2-9b9a-cd8874c6a2bc', 'tool_call_id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'artifact': None, 'status': 'success'}]}
+
+
+
+Receiving new event of type: values...
+{'messages': [{'content': 'Multiply 2 and 3', 'additional_kwargs': {'example': False, 'additional_kwargs': {}, 'response_metadata': {}}, 'response_metadata': {}, 'type': 'human', 'name': None, 'id': 'df98147a-cb3d-4f1a-b7f7-1545c4b6f042', 'example': False}, {'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-e60d82d7-7743-4f13-bebd-3616a88720a9', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}, {'content': '6', 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'tool', 'name': 'multiply', 'id': 'f1be0b83-4565-4aa2-9b9a-cd8874c6a2bc', 'tool_call_id': 'call_Rn9YQ6iZyYtzrELBz7EfQcs0', 'artifact': None, 'status': 'success'}, {'content': 'The result of multiplying 2 and 3 is 6.', 'additional_kwargs': {}, 'response_metadata': {'finish_reason': 'stop', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-55e5847a-d542-4977-84d7-24852e78b0a9', 'example': False, 'tool_calls': [], 'invalid_tool_calls': [], 'usage_metadata': None}]}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-29">
+<h3 id="sdk-updates-replay">SDK updates replay</h3>
+<p>Aynı replay updates modunda, node çıktıları olarak izlenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK updates replay</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=None,
+    stream_mode="updates",
+    checkpoint_id=to_replay["checkpoint_id"],
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">--------------------Assistant Node--------------------
+{'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_I2qudhMCwcw1GzcFN5q80rjj', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-550e75ad-dbbc-4e55-9f00-aa896228914c', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_I2qudhMCwcw1GzcFN5q80rjj', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}
+--------------------Tools Node--------------------
+{'content': '6', 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'tool', 'name': 'multiply', 'id': '731b7d4f-780d-4a8b-aec9-0d8b9c58c40a', 'tool_call_id': 'call_I2qudhMCwcw1GzcFN5q80rjj', 'artifact': None, 'status': 'success'}
+--------------------Assistant Node--------------------
+{'content': 'The result of multiplying 2 and 3 is 6.', 'additional_kwargs': {}, 'response_metadata': {'finish_reason': 'stop', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-2326afa5-eb43-4568-b5ed-424c0a0fa076', 'example': False, 'tool_calls': [], 'invalid_tool_calls': [], 'usage_metadata': None}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-30">
+<h3 id="sdk-fork-icin-yeni-run">SDK fork için yeni run</h3>
+<p>Fork örneği ayrı bir thread üzerinde yeniden başlatılır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK fork için yeni run</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">initial_input = {"messages": HumanMessage(content="Multiply 2 and 3")}
+thread = await client.threads.create()
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=initial_input,
+    stream_mode="updates",
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">--------------------Assistant Node--------------------
+{'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_HdWoyLELFZGEcqGxFt2fZzek', 'function': {'arguments': '{"a":2,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-cbd081b1-8cef-4ca8-9dd5-aceb134404dc', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 2, 'b': 3}, 'id': 'call_HdWoyLELFZGEcqGxFt2fZzek', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}
+--------------------Tools Node--------------------
+{'content': '6', 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'tool', 'name': 'multiply', 'id': '11dd4a7f-0b6b-44da-b9a4-65f1677c8813', 'tool_call_id': 'call_HdWoyLELFZGEcqGxFt2fZzek', 'artifact': None, 'status': 'success'}
+--------------------Assistant Node--------------------
+{'content': 'The result of multiplying 2 and 3 is 6.', 'additional_kwargs': {}, 'response_metadata': {'finish_reason': 'stop', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-936cf990-9302-45c7-9051-6ff1e2e9f316', 'example': False, 'tool_calls': [], 'invalid_tool_calls': [], 'usage_metadata': None}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-31">
+<h3 id="sdk-fork-state-degerleri">SDK fork state değerleri</h3>
+<p>Fork edilecek checkpoint’in state değerleri görüntülenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK fork state değerleri</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">states = await client.threads.get_history(thread["thread_id"])
+to_fork = states[-2]
+to_fork["values"]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'messages': [{'content': 'Multiply 2 and 3',
+   'additional_kwargs': {'example': False,
+    'additional_kwargs': {},
+    'response_metadata': {}},
+   'response_metadata': {},
+   'type': 'human',
+   'name': None,
+   'id': '93c18b95-9050-4a52-99b8-9374e98ee5db',
+   'example': False}]}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-32">
+<h3 id="mesaj-idsini-okuma">Mesaj ID’sini okuma</h3>
+<p>Overwrite davranışı için human mesajının ID alanı alınır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Mesaj ID’sini okuma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_fork["values"]["messages"][0]["id"]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Mesaj ID’si korunmazsa reducer yeni mesaj ekleyebilir ve fork semantiği değişir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">'93c18b95-9050-4a52-99b8-9374e98ee5db'</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-33">
+<h3 id="sdk-next-alani">SDK next alanı</h3>
+<p>Fork checkpoint’inden sonra assistant node’unun geleceği doğrulanır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK next alanı</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_fork["next"]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">['assistant']</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-34">
+<h3 id="sdk-checkpoint-kimligi">SDK checkpoint kimliği</h3>
+<p>Fork update’in uygulanacağı checkpoint ID okunur.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK checkpoint kimliği</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">to_fork["checkpoint_id"]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Checkpoint kimliği thread kimliğiyle birlikte kullanılmalıdır; tek başına global bir yürütme adresi değildir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">'1ef6a44b-27ec-681c-8000-ff7e345aee7e'</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-35">
+<h3 id="sdk-ile-fork-state-update">SDK ile fork state update</h3>
+<p>İnsan mesajı aynı ID ile “Multiply 3 and 3” içeriğine çevrilir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK ile fork state update</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">forked_input = {
+    "messages": HumanMessage(
+        content="Multiply 3 and 3",
+        id=to_fork["values"]["messages"][0]["id"],
+    )
+}
+
+forked_config = await client.threads.update_state(
+    thread["thread_id"],
+    forked_input,
+    checkpoint_id=to_fork["checkpoint_id"],
+)</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>API tarafındaki state update, geçmiş checkpoint’ten yeni bir checkpoint dalı üretir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+</article><article class="walk-card" id="kod-adimi-36">
+<h3 id="sdk-fork-configi">SDK fork config’i</h3>
+<p>API’nin ürettiği yeni fork checkpoint config’i görüntülenir.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK fork config’i</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">forked_config</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'configurable': {'thread_id': 'c99502e7-b0d7-473e-8295-1ad60e2b7ed2',
+  'checkpoint_ns': '',
+  'checkpoint_id': '1ef6a44b-90dc-68c8-8001-0c36898e0f34'},
+ 'checkpoint_id': '1ef6a44b-90dc-68c8-8001-0c36898e0f34'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-37">
+<h3 id="fork-edilmis-statei-dogrulama">Fork edilmiş state’i doğrulama</h3>
+<p>History başındaki current checkpoint yeni mesajı taşır.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">Fork edilmiş state’i doğrulama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">states = await client.threads.get_history(thread["thread_id"])
+states[0]</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım time travel akışının bir parçasını izole ederek state, checkpoint veya node yürütmesini okunabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'values': {'messages': [{'content': 'Multiply 3 and 3',
+    'additional_kwargs': {'additional_kwargs': {},
+     'response_metadata': {},
+     'example': False},
+    'response_metadata': {},
+    'type': 'human',
+    'name': None,
+    'id': '93c18b95-9050-4a52-99b8-9374e98ee5db',
+    'example': False}]},
+ 'next': ['assistant'],
+ 'tasks': [{'id': 'da5d6548-62ca-5e69-ba70-f6179b2743bd',
+   'name': 'assistant',
+   'error': None,
+   'interrupts': [],
+   'state': None}],
+ 'metadata': {'step': 1,
+  'source': 'update',
+  'writes': {'__start__': {'messages': {'id': '93c18b95-9050-4a52-99b8-9374e98ee5db',
+     'name': None,
+     'type': 'human',
+     'content': 'Multiply 3 and 3',
+     'example': False,
+     'additional_kwargs': {},
+     'response_metadata': {}}}},
+  'parents': {},
+  'graph_id': 'agent'},
+ 'created_at': '2024-09-03T22:34:46.678333+00:00',
+ 'checkpoint_id': '1ef6a44b-90dc-68c8-8001-0c36898e0f34',
+ 'parent_checkpoint_id': '1ef6a44b-27ec-681c-8000-ff7e345aee7e'}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article><article class="walk-card" id="kod-adimi-38">
+<h3 id="sdk-forkunu-yurutme">SDK fork’unu yürütme</h3>
+<p>Fork checkpoint ID ile downstream node’lar yeniden çalışır ve sonuç 9 olur.</p>
+<div class="code-card">
+  <div class="code-head"><span class="code-title">SDK fork’unu yürütme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=None,
+    stream_mode="updates",
+    checkpoint_id=forked_config["checkpoint_id"],
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])</code></pre>
+</div>
+<div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Fork edilen API checkpoint’i daha önce çalışmadığından sonuçlar yeniden üretilir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kodun amacı state’i gizlice değiştirmek değil, checkpoint hattında hangi adımın incelendiğini açıkça göstermektir.</p></section>
+  </div>
+<div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">--------------------Assistant Node--------------------
+{'content': '', 'additional_kwargs': {'tool_calls': [{'index': 0, 'id': 'call_aodhCt5fWv33qVbO7Nsub9Q3', 'function': {'arguments': '{"a":3,"b":3}', 'name': 'multiply'}, 'type': 'function'}]}, 'response_metadata': {'finish_reason': 'tool_calls', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-e9759422-e537-4b9b-b583-36c688e13b4b', 'example': False, 'tool_calls': [{'name': 'multiply', 'args': {'a': 3, 'b': 3}, 'id': 'call_aodhCt5fWv33qVbO7Nsub9Q3', 'type': 'tool_call'}], 'invalid_tool_calls': [], 'usage_metadata': None}
+--------------------Tools Node--------------------
+{'content': '9', 'additional_kwargs': {}, 'response_metadata': {}, 'type': 'tool', 'name': 'multiply', 'id': '89787b0b-93de-4c0a-bea8-d2c3845534e1', 'tool_call_id': 'call_aodhCt5fWv33qVbO7Nsub9Q3', 'artifact': None, 'status': 'success'}
+--------------------Assistant Node--------------------
+{'content': 'The result of multiplying 3 by 3 is 9.', 'additional_kwargs': {}, 'response_metadata': {'finish_reason': 'stop', 'model_name': 'gpt-4o-2024-05-13', 'system_fingerprint': 'fp_157b3831f5'}, 'type': 'ai', 'name': None, 'id': 'run-0e16610f-4e8d-46f3-a5df-c2f187fae593', 'example': False, 'tool_calls': [], 'invalid_tool_calls': [], 'usage_metadata': None}</code></pre>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, ilgili adımda state, mesaj akışı veya checkpoint bilgisinin beklenen biçimde üretildiğini gösterir.</p></section>
+</article>
+</section>
+
+<section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title"><h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+  <p>Mesaj akışı genellikle <code>HumanMessage</code>, tool call içeren <code>AIMessage</code>, tool sonucu ve final <code>AIMessage</code> sırasını gösterir. State snapshot çıktıları ise aynı akışı checkpoint kimliği, metadata ve sıradaki node bilgisiyle birlikte verir.</p>
+  <div class="state-list">
+    <div class="state-item"><strong><code>next=()</code></strong><span>Graph final state’e ulaşmıştır; sıradaki node yoktur.</span></div>
+    <div class="state-item"><strong><code>next=('assistant',)</code></strong><span>Seçilen checkpoint’ten sonra assistant node’u çalışacaktır.</span></div>
+    <div class="state-item"><strong><code>checkpoint_id</code></strong><span>Belirli bir zaman noktasını hedefleyen kimliktir.</span></div>
+    <div class="state-item"><strong>Tool message</strong><span>Python tool yürütmesinden dönen sonucu message state’e ekler.</span></div>
+  </div>
+</section>
+
+<section id="replay-fork-ayrimi" aria-labelledby="replay-fork-ayrimi-title"><h2 id="replay-fork-ayrimi-title">Replay ve Fork Ayrımı</h2>
+  <div class="concept-map four">
+    <div class="flow-step"><strong>Replay başlangıcı</strong><span>Var olan checkpoint seçilir.</span></div>
+    <div class="flow-step"><strong>Replay davranışı</strong><span>Önceden çalışmış adımlar tekrar yayınlanır.</span></div>
+    <div class="flow-step"><strong>Fork başlangıcı</strong><span>Eski checkpoint üzerinde state update yapılır.</span></div>
+    <div class="flow-step"><strong>Fork davranışı</strong><span>Yeni checkpoint daha önce çalışmadığı için downstream node’lar yeniden çalışır.</span></div>
+  </div>
+  <p>Replay, debugging için hızlı ve maliyetsiz bir yeniden izleme sağlar. Fork ise alternatif girdinin agent davranışını nasıl değiştireceğini test eder; bu yüzden model ve tool çağrıları yeniden yapılır.</p>
+</section>
+
+<section id="studio-notu" aria-labelledby="studio-notu-title"><h2 id="studio-notu-title">Studio Üzerinden Alternatif Dallar</h2>
+  <p>Aynı kavramlar görsel arayüz üzerinden de uygulanabilir. Bir node öncesinde durup payload düzenlendiğinde Studio yeni bir fork oluşturur ve seçilen noktadan sonraki graph yürütmesini yeni state üzerinden ilerletir. Karmaşık graph’larda bu yaklaşım alternatif trajectory araştırması için özellikle değerlidir.</p>
+  <section class="note-card"><h3 id="pedagojik-sonuc">Pedagojik sonuç</h3><p>Time travel, yalnızca hata ayıklama kolaylığı değildir. Agent davranışını kontrollü deneylere dönüştürür: aynı geçmiş bağlamı tutup tek bir state farkının downstream kararları nasıl etkilediğini gözlemlemeyi sağlar.</p></section>
+</section>
+
+<section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title"><h2 id="yaygin-hatalar-title">Yaygın Hatalar ve Kontroller</h2>
+  <ul class="checklist">
+    <li><code>checkpoint_id</code> vermeden replay beklemek: yalnızca thread verilirse current state hedeflenir.</li>
+    <li>Fork sırasında mesaj <code>id</code> alanını unutmak: <code>MessagesState</code> yeni mesaj append edebilir.</li>
+    <li>State update yaptıktan sonra run başlatmamak: fork checkpoint’i oluşur ama downstream sonuç üretilmez.</li>
+    <li>Replay ile re-execution’ı aynı sanmak: önceden execute edilmiş checkpoint replay edilir, yeni fork checkpoint’i execute edilir.</li>
+  </ul>
+</section>
+
+<section id="dersin-kod-akisi" aria-labelledby="dersin-kod-akisi-title"><h2 id="dersin-kod-akisi-title">Dersin Kod Akışı</h2>
+  <p>Aşağıdaki blok, derste kullanılan çalıştırılabilir kod parçalarını tek akış halinde toplar.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Dersin kod akışı</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langgraph langchain_openai langgraph_sdk langgraph-prebuilt
+
+import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+
+_set_env("OPENAI_API_KEY")
+
+from langchain_openai import ChatOpenAI
+
+
+def multiply(a: int, b: int) -&gt; int:
+    """
+    Multiply a and b.
+
+    Args:
+        a: first int
+        b: second int
+    """
+    return a * b
+
+
+# This will be a tool
+def add(a: int, b: int) -&gt; int:
+    """
+    Adds a and b.
+
+    Args:
+        a: first int
+        b: second int
+    """
+    return a + b
+
+
+def divide(a: int, b: int) -&gt; float:
+    """
+    Divide a by b.
+
+    Args:
+        a: first int
+        b: second int
+    """
+    return a / b
+
+
+tools = [add, multiply, divide]
+llm = ChatOpenAI(model="gpt-4o")
+llm_with_tools = llm.bind_tools(tools)
+
+from IPython.display import Image, display
+
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import MessagesState
+from langgraph.graph import START, END, StateGraph
+from langgraph.prebuilt import ToolNode, tools_condition
+
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+
+# System message
+sys_msg = SystemMessage(
+    content=(
+        "You are a helpful assistant tasked with performing arithmetic "
+        "on a set of inputs."
+    )
+)
+
+# Node
+def assistant(state: MessagesState):
+    """
+    Run the assistant graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {
+        "messages": [
+            llm_with_tools.invoke([sys_msg] + state["messages"])
+        ]
+    }
+
+# Graph
+builder = StateGraph(MessagesState)
+
+# Define nodes: these do the work
+builder.add_node("assistant", assistant)
+builder.add_node("tools", ToolNode(tools))
+
+# Define edges: these determine the control flow
+builder.add_edge(START, "assistant")
+builder.add_conditional_edges(
+    "assistant",
+    # If the latest message from assistant is a tool call,
+    # tools_condition routes to tools.
+    # If it is not a tool call, tools_condition routes to END.
+    tools_condition,
+)
+builder.add_edge("tools", "assistant")
+
+memory = MemorySaver()
+graph = builder.compile(checkpointer=MemorySaver())
+
+# Show
+display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
+
+# Input
+initial_input = {"messages": HumanMessage(content="Multiply 2 and 3")}
+
+# Thread
+thread = {"configurable": {"thread_id": "1"}}
+
+# Run the graph until the first interruption
+for event in graph.stream(initial_input, thread, stream_mode="values"):
+    event["messages"][-1].pretty_print()
+
+graph.get_state({"configurable": {"thread_id": "1"}})
+
+all_states = [s for s in graph.get_state_history(thread)]
+
+len(all_states)
+
+all_states[-2]
+
+to_replay = all_states[-2]
+
+to_replay
+
+to_replay.values
+
+to_replay.next
+
+to_replay.config
+
+for event in graph.stream(None, to_replay.config, stream_mode="values"):
+    event["messages"][-1].pretty_print()
+
+to_fork = all_states[-2]
+to_fork.values["messages"]
+
+to_fork.config
+
+fork_config = graph.update_state(
+    to_fork.config,
+    {
+        "messages": [
+            HumanMessage(
+                content="Multiply 5 and 3",
+                id=to_fork.values["messages"][0].id,
+            )
+        ]
+    },
+)
+
+fork_config
+
+all_states = [state for state in graph.get_state_history(thread)]
+all_states[0].values["messages"]
+
+graph.get_state({"configurable": {"thread_id": "1"}})
+
+for event in graph.stream(None, fork_config, stream_mode="values"):
+    event["messages"][-1].pretty_print()
+
+graph.get_state({"configurable": {"thread_id": "1"}})
+
+if "google.colab" in str(get_ipython()):
+    raise Exception(
+        "Unfortunately LangGraph Studio is currently not supported on Google Colab"
+    )
+
+from langgraph_sdk import get_client
+
+client = get_client(url="http://127.0.0.1:2024")
+
+initial_input = {"messages": HumanMessage(content="Multiply 2 and 3")}
+thread = await client.threads.create()
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=initial_input,
+    stream_mode="updates",
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])
+
+states = await client.threads.get_history(thread["thread_id"])
+to_replay = states[-2]
+to_replay
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=None,
+    stream_mode="values",
+    checkpoint_id=to_replay["checkpoint_id"],
+):
+    print(f"Receiving new event of type: {chunk.event}...")
+    print(chunk.data)
+    print("\n\n")
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=None,
+    stream_mode="updates",
+    checkpoint_id=to_replay["checkpoint_id"],
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])
+
+initial_input = {"messages": HumanMessage(content="Multiply 2 and 3")}
+thread = await client.threads.create()
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=initial_input,
+    stream_mode="updates",
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])
+
+states = await client.threads.get_history(thread["thread_id"])
+to_fork = states[-2]
+to_fork["values"]
+
+to_fork["values"]["messages"][0]["id"]
+
+to_fork["next"]
+
+to_fork["checkpoint_id"]
+
+forked_input = {
+    "messages": HumanMessage(
+        content="Multiply 3 and 3",
+        id=to_fork["values"]["messages"][0]["id"],
+    )
+}
+
+forked_config = await client.threads.update_state(
+    thread["thread_id"],
+    forked_input,
+    checkpoint_id=to_fork["checkpoint_id"],
+)
+
+forked_config
+
+states = await client.threads.get_history(thread["thread_id"])
+states[0]
+
+async for chunk in client.runs.stream(
+    thread["thread_id"],
+    assistant_id="agent",
+    input=None,
+    stream_mode="updates",
+    checkpoint_id=forked_config["checkpoint_id"],
+):
+    if chunk.data:
+        assisant_node = chunk.data.get("assistant", {}).get("messages", [])
+        tool_node = chunk.data.get("tools", {}).get("messages", [])
+        if assisant_node:
+            print("-" * 20 + "Assistant Node" + "-" * 20)
+            print(assisant_node[-1])
+        elif tool_node:
+            print("-" * 20 + "Tools Node" + "-" * 20)
+            print(tool_node[-1])</code></pre>
+</div>
+</section>
+
+<section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title"><h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+  <div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody>
+    <tr><td>Time Travel</td><td>Zamanda gezinme</td><td>Checkpoint geçmişini inceleme, replay yapma ve fork oluşturma yeteneği.</td></tr>
+    <tr><td>Replay</td><td>Yeniden oynatma</td><td>Daha önce yürütülmüş checkpoint zincirini tekrar yayınlama.</td></tr>
+    <tr><td>Fork</td><td>Dal oluşturma</td><td>Eski checkpoint’i değiştirerek yeni yürütme yolu açma.</td></tr>
+    <tr><td>Checkpoint</td><td>Durum kaydı</td><td>State’in belirli andaki saklanmış biçimi.</td></tr>
+    <tr><td>StateSnapshot</td><td>State anlık görüntüsü</td><td>Checkpoint’in state, metadata ve config içeren temsili.</td></tr>
+    <tr><td>Re-execution</td><td>Yeniden yürütme</td><td>Daha önce çalıştırılmamış fork dalındaki node’ların yeniden çağrılması.</td></tr>
+  </tbody></table></div>
+</section>
+  </article>
+</main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta Time Travel: Checkpoint, Replay ve Fork</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#kavramsal-model-title">Kavramsal Model</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#gerekli-paketleri-hazirlama">Gerekli paketleri hazırlama</a></li>
+<li class="toc-l3"><a href="#api-anahtarini-guvenli-bicimde-alma">API anahtarını güvenli biçimde alma</a></li>
+<li class="toc-l3"><a href="#aritmetik-araclari-ve-modeli-baglama">Aritmetik araçları ve modeli bağlama</a></li>
+<li class="toc-l3"><a href="#agent-graphini-kurma">Agent graph’ını kurma</a></li>
+<li class="toc-l3"><a href="#ilk-agent-calistirmasi">İlk agent çalıştırması</a></li>
+<li class="toc-l3"><a href="#mevcut-state-snapshoti">Mevcut state snapshot’ı</a></li>
+<li class="toc-l3"><a href="#checkpoint-gecmisini-listeleme">Checkpoint geçmişini listeleme</a></li>
+<li class="toc-l3"><a href="#history-uzunlugunu-kontrol-etme">History uzunluğunu kontrol etme</a></li>
+<li class="toc-l3"><a href="#erken-checkpointi-inceleme">Erken checkpoint’i inceleme</a></li>
+<li class="toc-l3"><a href="#replay-referansini-hazirlama">Replay referansını hazırlama</a></li>
+<li class="toc-l3"><a href="#replay-checkpointini-goruntuleme">Replay checkpoint’ini görüntüleme</a></li>
+<li class="toc-l3"><a href="#replay-state-degerlerini-okuma">Replay state değerlerini okuma</a></li>
+<li class="toc-l3"><a href="#replay-next-alanini-okuma">Replay next alanını okuma</a></li>
+<li class="toc-l3"><a href="#replay-config-alanini-okuma">Replay config alanını okuma</a></li>
+<li class="toc-l3"><a href="#gecmis-checkpointten-replay">Geçmiş checkpoint’ten replay</a></li>
+<li class="toc-l3"><a href="#fork-icin-checkpoint-secme">Fork için checkpoint seçme</a></li>
+<li class="toc-l3"><a href="#fork-configini-kontrol-etme">Fork config’ini kontrol etme</a></li>
+<li class="toc-l3"><a href="#gecmis-checkpoint-uzerinde-state-update">Geçmiş checkpoint üzerinde state update</a></li>
+<li class="toc-l3"><a href="#yeni-fork-configi">Yeni fork config’i</a></li>
+<li class="toc-l3"><a href="#fork-sonrasi-mesaji-dogrulama">Fork sonrası mesajı doğrulama</a></li>
+<li class="toc-l3"><a href="#fork-edilmis-current-state">Fork edilmiş current state</a></li>
+<li class="toc-l3"><a href="#fork-checkpointten-yeniden-yurutme">Fork checkpoint’ten yeniden yürütme</a></li>
+<li class="toc-l3"><a href="#fork-sonrasi-final-state">Fork sonrası final state</a></li>
+<li class="toc-l3"><a href="#yerel-api-ortam-kontrolu">Yerel API ortam kontrolü</a></li>
+<li class="toc-l3"><a href="#sdk-istemcisine-baglanma">SDK istemcisine bağlanma</a></li>
+<li class="toc-l3"><a href="#sdk-ile-ilk-run">SDK ile ilk run</a></li>
+<li class="toc-l3"><a href="#sdk-historyden-replay-secimi">SDK history’den replay seçimi</a></li>
+<li class="toc-l3"><a href="#sdk-values-replay">SDK values replay</a></li>
+<li class="toc-l3"><a href="#sdk-updates-replay">SDK updates replay</a></li>
+<li class="toc-l3"><a href="#sdk-fork-icin-yeni-run">SDK fork için yeni run</a></li>
+<li class="toc-l3"><a href="#sdk-fork-state-degerleri">SDK fork state değerleri</a></li>
+<li class="toc-l3"><a href="#mesaj-idsini-okuma">Mesaj ID’sini okuma</a></li>
+<li class="toc-l3"><a href="#sdk-next-alani">SDK next alanı</a></li>
+<li class="toc-l3"><a href="#sdk-checkpoint-kimligi">SDK checkpoint kimliği</a></li>
+<li class="toc-l3"><a href="#sdk-ile-fork-state-update">SDK ile fork state update</a></li>
+<li class="toc-l3"><a href="#sdk-fork-configi">SDK fork config’i</a></li>
+<li class="toc-l3"><a href="#fork-edilmis-statei-dogrulama">Fork edilmiş state’i doğrulama</a></li>
+<li class="toc-l3"><a href="#sdk-forkunu-yurutme">SDK fork’unu yürütme</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#replay-fork-ayrimi-title">Replay ve Fork Ayrımı</a></li>
+<li class="toc-l2"><a href="#studio-notu-title">Studio Üzerinden Alternatif Dallar</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar ve Kontroller</a></li>
+<li class="toc-l2"><a href="#dersin-kod-akisi-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+<script>(function(){
+var noteRules=[["%%capture", ["`%%capture --no-stderr`, kurulum hücresinin çıktısını bastırır; graph davranışını değiştirmez.", "Bu satır ders akışını temiz tutmak içindir."]], ["%pip install", ["`%pip install`, geçerli kernel ortamına `langgraph`, `langchain_openai`, `langgraph_sdk` ve `langgraph-prebuilt` paketlerini kurar.", "`langgraph-prebuilt`, `ToolNode` ve `tools_condition` gibi hazır agent bileşenlerini sağlar."]], ["import getpass", ["`getpass`, gizli değer okumak için kullanılan Python standart kütüphanesidir.", "API anahtarı görünür koda yazılmadan alınır."]], ["import os", ["`os`, environment değişkenlerine erişmek için kullanılır.", "Model anahtarı kod sabiti yerine process ortamından okunur."]], ["def _set_env", ["`_set_env`, eksik environment değişkenini kullanıcıdan isteyen yardımcı fonksiyondur.", "Değişken önceden ayarlıysa tekrar istemez."]], ["os.environ.get", ["`os.environ.get(var)`, anahtarın daha önce ayarlanıp ayarlanmadığını kontrol eder.", "Bu guard, aynı notebook tekrar çalıştırıldığında gereksiz giriş istemez."]], ["getpass.getpass", ["`getpass.getpass`, kullanıcı girişini ekrana yazmadan okur.", "Gizli anahtar HTML veya çıktı içine taşınmaz."]], ["OPENAI_API_KEY", ["`OPENAI_API_KEY`, OpenAI model çağrıları için beklenen environment değişkenidir.", "Değerin kendisi değil, yalnızca değişken adı kodda görünür."]], ["ChatOpenAI", ["`ChatOpenAI`, LangChain’in OpenAI chat model entegrasyonudur.", "Bu model tool-calling destekli agent node’unda kullanılır."]], ["def multiply", ["`multiply`, LangChain tool olarak kullanılacak tip açıklamalı Python fonksiyonudur.", "İmza ve docstring, tool şemasının anlaşılır kurulmasını sağlar."]], ["def add", ["`add`, ikinci aritmetik tool’dur.", "Model farklı işlemler arasında seçim yapabilsin diye tool listesine eklenir."]], ["def divide", ["`divide`, bölme işlemi için üçüncü tool’dur.", "Dönüş tipinin `float` olması, sonucun kesirli olabileceğini belirtir."]], ["tools = [add, multiply, divide]", ["`tools` listesi, model ve `ToolNode` için ortak araç kataloğudur.", "Listeye alınmayan fonksiyon agent tarafından yapılandırılmış tool olarak çağrılamaz."]], ["bind_tools", ["`bind_tools`, tool şemalarını modele bağlar.", "Bu yapılmazsa assistant yapılandırılmış tool call üretemez."]], ["IPython.display", ["`Image` ve `display`, graph görselini göstermek içindir.", "Bu import yürütme state’ini veya checkpoint geçmişini değiştirmez."]], ["MemorySaver", ["`MemorySaver`, LangGraph checkpoint kayıtlarını bellekte tutan checkpointer’dır.", "Time travel; current state, history, replay ve fork için checkpoint gerektirir."]], ["MessagesState", ["`MessagesState`, `messages` alanı için hazır reducer davranışı sağlar.", "Aynı mesaj ID’si verilirse update mevcut mesajı değiştirebilir; ID yoksa append davranışı görülebilir."]], ["START, END, StateGraph", ["`START` ve `END` sanal uçlardır; `StateGraph` graph builder’dır.", "Node ve edge topolojisi bu bileşenlerle kurulur."]], ["ToolNode, tools_condition", ["`ToolNode`, tool call’u çalıştırır; `tools_condition`, assistant çıktısına göre rota seçer.", "Bu ikili basit ReAct tarzı assistant/tools döngüsünü hazırlar."]], ["HumanMessage, SystemMessage", ["`HumanMessage`, `AIMessage` ve `SystemMessage`, LangChain mesaj tipleridir.", "Checkpoint geçmişindeki `messages` listesi bu tür nesnelerden oluşur."]], ["sys_msg = SystemMessage", ["`SystemMessage`, modelin görev bağlamını belirler.", "Assistant node’u her çağrıda system mesajını mevcut konuşmanın önüne ekler."]], ["def assistant", ["`assistant` node’u state’teki mesajları okuyup modeli çağırır.", "Dönen AI mesajı LangGraph tarafından `messages` alanına işlenir."]], ["llm_with_tools.invoke", ["`llm_with_tools.invoke`, tool şemaları bağlı modeli çağırır.", "Model final cevap veya tool call içeren AI mesajı üretebilir."]], ["StateGraph(MessagesState)", ["`StateGraph(MessagesState)`, mesaj state’i taşıyan graph builder’ını başlatır.", "Bu şema agent geçmişinin checkpoint’lerde saklanmasını sağlar."]], ["add_node(\"assistant\"", ["`assistant` node adı, model çağrısını yapan graph adımıdır.", "Stream updates çıktısında bu node ayrı görülebilir."]], ["add_node(\"tools\"", ["`tools` node adı, seçilen tool’un yürütüldüğü graph adımıdır.", "Tool sonucu ayrı mesaj olarak state’e eklenir."]], ["add_edge(START", ["`START -> assistant`, ilk gerçek node’un assistant olduğunu gösterir.", "Kullanıcı mesajı önce model tarafından değerlendirilir."]], ["add_conditional_edges", ["`add_conditional_edges`, assistant çıktısına göre dinamik rota seçer.", "Tool call varsa tools node’una, yoksa bitişe gidilir."]], ["tools_condition", ["`tools_condition`, son AI mesajında tool call olup olmadığını kontrol eden hazır route fonksiyonudur.", "Agent döngüsünün ne zaman devam edeceğini belirler."]], ["add_edge(\"tools\", \"assistant\")", ["`tools -> assistant`, tool sonucunu modele geri döndürür.", "Bu kenar final doğal dil cevabı için gereklidir."]], ["builder.compile", ["`builder.compile`, graph tanımını çalıştırılabilir nesneye dönüştürür.", "`checkpointer` verilmesi time travel işlemleri için zorunlu altyapıdır."]], ["draw_mermaid_png", ["`draw_mermaid_png`, graph topolojisini görsel çıktıya çevirir.", "Görsel yalnızca doğrulama sağlar; state’i değiştirmez."]], ["initial_input", ["`initial_input`, run başlangıcında graph’a verilen state değeridir.", "Bu derste aritmetik isteği human message olarak taşınır."]], ["thread = {\"configurable\"", ["`thread_id`, checkpoint geçmişini ayıran yürütme kimliğidir.", "Aynı thread içinde current state, history ve fork dalları izlenir."]], ["graph.stream(initial_input", ["`graph.stream`, graph’ı çalıştırır ve state değerlerini yayınlar.", "İlk run, daha sonra incelenecek checkpoint geçmişini üretir."]], ["pretty_print", ["`pretty_print`, mesajları okunabilir başlıklarla yazdırır.", "Human, AI, tool ve final mesaj sırasını izlemeyi kolaylaştırır."]], ["graph.get_state", ["`graph.get_state`, thread’in current checkpoint snapshot’ını döndürür.", "Snapshot içinde `values`, `next`, `config` ve metadata birlikte bulunur."]], ["get_state_history", ["`graph.get_state_history`, thread boyunca oluşan checkpoint listesini verir.", "Replay ve fork için eski snapshot seçimi buradan yapılır."]], ["len(all_states)", ["`len(all_states)`, checkpoint geçmişindeki kayıt sayısını gösterir.", "Bu sayı agent’ın bıraktığı state adımlarının pratik göstergesidir."]], ["all_states[-2]", ["`all_states[-2]`, geçmişteki erken bir checkpoint’i hedefler.", "Bu örnekte assistant çalışmadan hemen önceki human-message state’i seçilir."]], ["to_replay.values", ["`to_replay.values`, checkpoint’in state verisini gösterir.", "Bu alan veri içeriğidir; yürütme adresi `config` alanındadır."]], ["to_replay.next", ["`to_replay.next`, checkpoint’ten sonra çalışacak node’u gösterir.", "Replay noktasının final state olmadığını anlamayı sağlar."]], ["to_replay.config", ["`to_replay.config`, `thread_id` ve `checkpoint_id` içerir.", "Belirli geçmiş checkpoint’ten replay için bu config kullanılır."]], ["graph.stream(None, to_replay.config", ["`input=None`, yeni giriş vermeden seçilen checkpoint’ten devam etmeyi ister.", "Checkpoint daha önce execute edildiği için downstream kayıtlar replay edilir."]], ["to_fork.values", ["`to_fork.values[\"messages\"]`, fork edilecek mesajı gösterir.", "Mesaj ID’si overwrite davranışı için korunacaktır."]], ["to_fork.config", ["`to_fork.config`, update’in uygulanacağı tarihsel checkpoint’i belirtir.", "Current state yerine bu config kullanılarak eski noktadan fork açılır."]], ["graph.update_state", ["`graph.update_state`, seçilen checkpoint üzerinde yeni state checkpoint’i üretir.", "Bu işlem fork oluşturur; downstream node’lar henüz çalışmaz."]], ["HumanMessage(", ["`HumanMessage`, yeni kullanıcı mesajını temsil eder.", "Aynı `id` korunursa mevcut mesaj üzerine yazma davranışı hedeflenir."]], ["id=to_fork.values", ["`id=...`, eski human mesajının kimliğini yeni mesajda tekrar kullanır.", "Bu ayrıntı append yerine overwrite davranışı için kritiktir."]], ["fork_config", ["`fork_config`, yeni fork checkpoint’inin yürütme adresidir.", "Bu config ile stream başlatıldığında yeni dal re-execute edilir."]], ["graph.stream(None, fork_config", ["Fork config ile stream, yeni checkpoint’ten devam eder.", "Bu checkpoint daha önce execute edilmediği için model ve tool yeniden çağrılır."]], ["google.colab", ["Bu guard, yerel API/Studio örneğinin desteklenmeyen ortamda çalışmasını engeller.", "Graph semantiğinden çok çalışma ortamı kontrolüdür."]], ["get_client", ["`get_client`, LangGraph SDK istemcisi oluşturur.", "SDK, thread/run/history/state işlemlerini API üzerinden yönetir."]], ["client.threads.create", ["`client.threads.create`, API tarafında yeni thread oluşturur.", "Her thread ayrı checkpoint geçmişi taşır."]], ["client.runs.stream", ["`client.runs.stream`, API run event’lerini asenkron okur.", "`stream_mode` çıktının updates mi values mı olacağını belirler."]], ["assistant_id=\"agent\"", ["`assistant_id=\"agent\"`, API sunucusunda kayıtlı graph adını hedefler.", "Bu ad deployment konfigürasyonuyla eşleşmelidir."]], ["stream_mode=\"updates\"", ["`updates` modu yalnızca değişen node çıktılarını verir.", "Assistant/tools ayrımını kısa biçimde görmeyi sağlar."]], ["stream_mode=\"values\"", ["`values` modu state’in o andaki tam değerlerini yayınlar.", "Replay sırasında tüm mesaj state’ini görmek için kullanılır."]], ["client.threads.get_history", ["`client.threads.get_history`, API thread checkpoint geçmişini döndürür.", "Yerel `get_state_history` kavramının SDK karşılığıdır."]], ["checkpoint_id=to_replay", ["`checkpoint_id`, stream’i belirli geçmiş checkpoint’e bağlar.", "Bu parametre replay’in anahtarıdır."]], ["Receiving new event", ["Bu print satırı SDK event tipini görünür yapar.", "Metadata ile values/update payload’larını ayırmayı sağlar."]], ["to_fork[\"values\"]", ["`to_fork[\"values\"]`, SDK snapshot’ındaki state verisini okur.", "Human message ID’si bu yapıdan alınır."]], ["[\"id\"]", ["Mesaj `id` alanı reducer eşleştirmesi için kullanılır.", "Aynı ID mevcut mesajı güncelleme olasılığını sağlar."]], ["to_fork[\"next\"]", ["`to_fork[\"next\"]`, checkpoint sonrası node listesini gösterir.", "SDK çıktısında JSON liste biçimi kullanılır."]], ["to_fork[\"checkpoint_id\"]", ["`to_fork[\"checkpoint_id\"]`, fork’un açılacağı tarihsel checkpoint’i belirler.", "Update ve run çağrılarında bu kimlik kullanılır."]], ["forked_input", ["`forked_input`, API state update payload’udur.", "Yeni HumanMessage eski ID ile gönderilerek overwrite hedeflenir."]], ["client.threads.update_state", ["`client.threads.update_state`, API tarafında yeni checkpoint üretir.", "`checkpoint_id` verildiği için geçmiş bir noktadan fork açılır."]], ["states[0]", ["`states[0]`, history listesindeki current checkpoint’tir.", "Fork sonrası yeni mesajın history başına geldiğini doğrular."]], ["checkpoint_id=forked_config", ["`forked_config` checkpoint’i daha önce execute edilmemiş yeni daldır.", "Bu yüzden sonraki run replay değil re-execution davranışı gösterir."]]];
+function escapeHtml(value){return String(value).replace(/[&<>]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[ch];});}
+function markInlineCode(text){return escapeHtml(text).replace(/`([^`]+)`/g,'<code>$1</code>');}
+function noteHtml(parts){return parts.map(function(part){return '<div class="tooltip-section">'+markInlineCode(part)+'</div>';}).join('');}
+function noteForLine(line,lang){if(lang!=='python')return '';var t=line.trim();if(!t)return '';for(var i=0;i<noteRules.length;i++){if(t.indexOf(noteRules[i][0])!==-1)return noteHtml(noteRules[i][1]);}return '';}
+function spanToken(klass,value){return '<span class="'+klass+'">'+escapeHtml(value)+'</span>';}
+var pythonKeywords={class:1,def:1,return:1,if:1,else:1,elif:1,for:1,in:1,async:1,await:1,from:1,import:1,as:1,with:1,None:1,True:1,False:1,and:1,or:1,not:1,raise:1,try:1,except:1,finally:1,pass:1,while:1,break:1,continue:1,lambda:1,yield:1,is:1};
+var pythonBuiltins={print:1,input:1,len:1,str:1,int:1,float:1,bool:1,dict:1,list:1,tuple:1,set:1,range:1,enumerate:1,isinstance:1,get_ipython:1,display:1};
+function classifyPythonToken(token){if(token.charAt(0)==='#')return 'tok-comment';if(/^([rRuUbBfF]{0,2})["']/.test(token))return 'tok-string';if(/^\d/.test(token))return 'tok-number';if(pythonKeywords[token])return 'tok-keyword';if(pythonBuiltins[token])return 'tok-builtin';if(/^[A-Z][A-Za-z_][\w]*$/.test(token))return 'tok-class';return '';}
+function highlightPython(line){if(line.trim().indexOf('%')===0)return highlightShell(line);var tokenRe=/([rRuUbBfF]{0,2}"(?:\\.|[^"\\])*"|[rRuUbBfF]{0,2}'(?:\\.|[^'\\])*'|#.*|\b[A-Za-z_]\w*\b|\b\d+(?:\.\d+)?\b)/g;var out='';var last=0;var match;while((match=tokenRe.exec(line))!==null){out+=escapeHtml(line.slice(last,match.index));var token=match[0];var klass=classifyPythonToken(token);out+=klass?spanToken(klass,token):escapeHtml(token);last=match.index+token.length;if(token.charAt(0)==='#')break;}out+=escapeHtml(line.slice(last));return out;}
+function highlightShell(line){var tokenRe=/(%%?\w+|\b(?:langgraph-prebuilt|langchain_openai|langgraph_sdk|langgraph|langchain|pip|install)\b|--?[A-Za-z0-9_-]+)/g;var out='';var last=0;var match;while((match=tokenRe.exec(line))!==null){out+=escapeHtml(line.slice(last,match.index));var token=match[0];var klass=token.charAt(0)==='%'?'tok-magic':(token.charAt(0)==='-'?'tok-flag':'tok-shell-command');out+=spanToken(klass,token);last=match.index+token.length;}out+=escapeHtml(line.slice(last));return out;}
+function highlightOutput(text){return escapeHtml(text);}
+var dq=String.fromCharCode(34)+String.fromCharCode(34)+String.fromCharCode(34);var sq=String.fromCharCode(39)+String.fromCharCode(39)+String.fromCharCode(39);
+function firstTriple(line){var d=line.indexOf(dq);var s=line.indexOf(sq);if(d===-1&&s===-1)return null;if(d===-1)return {index:s,quote:sq};if(s===-1)return {index:d,quote:dq};return d<s?{index:d,quote:dq}:{index:s,quote:sq};}
+function renderDocOpen(line,info){return escapeHtml(line.slice(0,info.index))+spanToken('tok-string',line.slice(info.index));}
+function renderDocClose(line,quote){var idx=line.indexOf(quote);return spanToken('tok-string',line.slice(0,idx+3))+highlightPython(line.slice(idx+3));}
+function renderCodeLines(block,raw,lang){var lines=raw.replace(/\n$/,'').split('\n');block.innerHTML='';var tripleQuote=null;lines.forEach(function(line){var lineEl=document.createElement('span');lineEl.className='code-line';var trimmed=line.trim();var rendered;if(lang==='python'&&tripleQuote){if(line.indexOf(tripleQuote)!==-1){rendered=renderDocClose(line,tripleQuote);tripleQuote=null;}else rendered=spanToken('tok-string',line);}else if(lang==='python'){var info=firstTriple(line);if(info&&trimmed.indexOf(info.quote)===0){var second=line.indexOf(info.quote,info.index+3);if(second===-1){rendered=renderDocOpen(line,info);tripleQuote=info.quote;}else{rendered=escapeHtml(line.slice(0,info.index))+spanToken('tok-string',line.slice(info.index,second+3))+highlightPython(line.slice(second+3));}}else rendered=(trimmed.indexOf('%')===0)?highlightShell(line):highlightPython(line);}else rendered=(lang==='shell'||trimmed.indexOf('%')===0)?highlightShell(line):(lang==='output'?highlightOutput(line):escapeHtml(line));lineEl.innerHTML=rendered||'&nbsp;';var note=noteForLine(line,lang);if(note){lineEl.dataset.note=note;lineEl.tabIndex=0;}block.appendChild(lineEl);});}
+document.querySelectorAll('pre code[data-lang]').forEach(function(block){var raw=block.textContent;block.dataset.rawCode=raw;var lang=block.getAttribute('data-lang');if(block.closest('.code-body'))renderCodeLines(block,raw,lang);else block.innerHTML=highlightOutput(raw);});
+var tooltip=document.createElement('div');tooltip.className='line-tooltip';document.body.appendChild(tooltip);var activeLine=null;
+function positionTooltip(line){var rect=line.getBoundingClientRect();tooltip.style.maxWidth=window.innerWidth<=560?'calc(100vw - 32px)':'420px';var tipRect=tooltip.getBoundingClientRect();var left=rect.right+12;var top=rect.top-4;if(left+tipRect.width>window.innerWidth-16){left=Math.max(16,rect.left);top=rect.bottom+8;}if(top+tipRect.height>window.innerHeight-16)top=Math.max(16,rect.top-tipRect.height-8);if(left+tipRect.width>window.innerWidth-16)left=Math.max(16,window.innerWidth-tipRect.width-16);tooltip.style.left=left+'px';tooltip.style.top=top+'px';}
+function showTooltip(line){activeLine=line;tooltip.innerHTML=line.dataset.note||'';tooltip.classList.add('is-visible');positionTooltip(line);}
+function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+document.addEventListener('pointerover',function(event){var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;if(line)showTooltip(line);});
+document.addEventListener('pointerout',function(event){if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();});
+document.addEventListener('scroll',function(){if(activeLine)positionTooltip(activeLine);},true);window.addEventListener('resize',function(){if(activeLine)positionTooltip(activeLine);});
+document.addEventListener('focusin',function(event){var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;if(line)showTooltip(line);});document.addEventListener('focusout',function(event){if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();});
+document.querySelectorAll('.copy-btn').forEach(function(button){button.addEventListener('click',function(){var card=button.closest('.code-card');var code=card?card.querySelector('code[data-lang]'):null;var raw=code?(code.dataset.rawCode||code.textContent):'';function done(){var old=button.textContent;button.textContent='Kopyalandı!';setTimeout(function(){button.textContent=old;},1500);}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(raw).then(done).catch(function(){fallback(raw);done();});}else{fallback(raw);done();}});});
+function fallback(text){var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+function fitTitle(){var h=document.getElementById('lesson-title');if(!h)return;h.style.fontSize='';var min=24;var size=parseFloat(getComputedStyle(h).fontSize);while(h.scrollWidth>h.clientWidth&&size>min){size-=1;h.style.fontSize=size+'px';}}fitTitle();window.addEventListener('resize',fitTitle);
+})();</script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

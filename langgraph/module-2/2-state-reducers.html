@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta State Reducer’lar: Paralel Güncellemeleri Güvenli Birleştirme</title>
+  <style>
+:root {
+  --lesson-bg: #ffffff;
+  --lesson-text: #111827;
+  --lesson-muted: #4b5563;
+  --lesson-soft: #f9fafb;
+  --lesson-soft-2: #f3f4f6;
+  --lesson-border: #e5e7eb;
+  --lesson-border-strong: #d1d5db;
+  --lesson-card: #ffffff;
+  --lesson-card-muted: #f8fafc;
+  --langgraph-primary: #153f3b;
+  --langgraph-secondary: #0f766e;
+  --langgraph-soft: #dbe9e7;
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+html, body { margin: 0; padding: 0; max-width: 100%; overflow-x: hidden; background: var(--lesson-bg); }
+*, *::before, *::after { box-sizing: border-box; }
+.lesson-page { width: min(100%, 1040px); margin: 0 auto; padding: clamp(1rem, 2.5vw, 2.5rem); background: var(--lesson-bg); color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.55; }
+.lesson-page > article { margin: 0 auto; counter-reset: section; }
+.lesson-page, .lesson-page section, .title-block, .definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment, .flow-step, .state-item { min-width: 0; max-width: 100%; }
+.title-block { display: flex; flex-direction: column; align-items: stretch; margin: 0 0 2rem; text-align: center; }
+.lesson-logo { align-self: center; display: block; width: clamp(3.5rem, 8vw, 5.5rem); height: clamp(3.5rem, 8vw, 5.5rem); object-fit: contain; margin: 0 auto 1rem; }
+.lesson-logo-fallback { margin: 0 auto 1rem; padding: 0.55rem 0.8rem; border: 1px solid var(--lesson-border); border-radius: 0.4rem; color: var(--langgraph-primary); font-weight: 700; }
+.lesson-page h1, .lesson-page h2, .lesson-page h3, .lesson-page h4 { color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1.25; }
+.lesson-page h1 { width: 100%; min-width: 0; max-width: 100%; margin: 0; font-size: clamp(1.95rem, 3.6vw, 2.75rem); text-align: center; text-wrap: balance; overflow-wrap: anywhere; word-break: normal; }
+.lead-text { width: 100%; min-width: 0; max-width: 760px; margin: 0.9rem auto 0; color: var(--lesson-muted); font-size: 1.05rem; }
+.lesson-page p, .lesson-page li, .lead-text { overflow-wrap: anywhere; word-break: normal; }
+.lesson-page h2 { display: flex; align-items: center; gap: 0.55rem; margin: 2.2rem 0 0.85rem; padding-top: 1.1rem; border-top: 1px solid var(--lesson-border); font-size: clamp(1.35rem, 2.1vw, 1.75rem); counter-increment: section; counter-reset: subsection; }
+.lesson-page h2::before { content: counter(section) "."; color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h3 { display: flex; align-items: center; gap: 0.55rem; margin: 1.45rem 0 0.65rem; font-size: clamp(1.12rem, 1.65vw, 1.32rem); counter-increment: subsection; counter-reset: subsubsection; }
+.lesson-page h3::before { content: counter(section) "." counter(subsection); color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h4 { margin: 1rem 0 0.45rem; font-size: 1.02rem; counter-increment: subsubsection; }
+.lesson-page h4::before { content: counter(section) "." counter(subsection) "." counter(subsubsection) " "; font-variant-numeric: tabular-nums; }
+.definition-card h3, .example-card h3, .note-card h3, .question-card h3, .mini-panel h3, .output-comment h3 { display: block; counter-increment: none; counter-reset: none; margin: 0 0 0.45rem; font-size: 1rem; }
+.definition-card h3::before, .example-card h3::before, .note-card h3::before, .question-card h3::before, .mini-panel h3::before, .output-comment h3::before { content: none; }
+p { margin: 0.55rem 0 0.9rem; } ul, ol { margin: 0.65rem 0 1rem; padding-left: 1.35rem; } li + li { margin-top: 0.32rem; }
+code:not(.code-body code):not(.output-body code) { padding: 0.08rem 0.24rem; border-radius: 0.28rem; background: #eeeeee; color: #111111; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.9em; }
+.definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment { border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); padding: 0.95rem 1rem; }
+.definition-card { border-left: 4px solid var(--langgraph-primary); background: linear-gradient(90deg, rgba(219,233,231,0.55), #ffffff 38%); }
+.note-card { border-left: 4px solid var(--langgraph-secondary); background: var(--lesson-card-muted); }
+.question-card { border-left: 4px solid var(--lesson-border-strong); background: var(--lesson-soft); }
+.definition-card strong, .note-card strong, .question-card strong, .mini-panel strong { color: var(--lesson-text); }
+.explain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0; }
+.mini-panel p { margin-bottom: 0; color: var(--lesson-muted); }
+.output-comment { margin: 0.65rem 0 1rem 4.95rem; background: #ffffff; color: var(--lesson-muted); }
+.output-comment strong { color: var(--lesson-text); }
+.table-wrap { width: 100%; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--lesson-border); border-radius: 0.65rem; }
+table { width: 100%; border-collapse: collapse; min-width: 680px; background: #ffffff; }
+th, td { padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--lesson-border); text-align: left; vertical-align: top; }
+th { background: var(--lesson-soft); color: var(--langgraph-primary); font-size: 0.95rem; }
+tr:last-child td { border-bottom: 0; }
+.concept-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin: 1.2rem 0; align-items: stretch; }
+.flow-step { min-height: 5.5rem; padding: 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: var(--lesson-soft); position: relative; }
+.flow-step strong { display: block; margin-bottom: 0.35rem; color: var(--langgraph-primary); font-size: 0.98rem; }
+.flow-step span { color: var(--lesson-muted); font-size: 0.95rem; line-height: 1.45; }
+.flow-step:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.52rem; width: 0.5rem; height: 1px; background: var(--lesson-border-strong); }
+.state-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0; }
+.state-item { padding: 0.9rem 1rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); }
+.state-item strong { display: block; margin-bottom: 0.3rem; color: var(--langgraph-primary); }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li { position: relative; padding-left: 1.25rem; }
+.checklist li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--langgraph-secondary); }
+.walk-card { margin: 1.35rem 0 1.75rem; }
+.code-card { position: relative; display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1.15rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+.code-card::before { content: "In [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #303f9f; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+.code-head { position: absolute; top: 0.35rem; right: 0.45rem; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0; border: 0; background: transparent; }
+.code-title { display: none; }
+.copy-btn { border: 1px solid #c4c8cf; border-radius: 0.35rem; background: rgba(255,255,255,0.92); color: #374151; cursor: pointer; font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+.copy-btn:hover { background: #ffffff; }
+.code-body, .output-body { margin: 0; overflow-x: auto; color: var(--code-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.91rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; tab-size: 4; }
+.code-body { grid-column: 2; padding: 0.72rem 5.2rem 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+.code-line { display: block; width: 100%; min-width: 0; padding: 0 0.25rem; border-radius: 0.18rem; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.code-line[data-note] { cursor: help; text-decoration: none; border-bottom: 0; }
+.code-line[data-note] * { text-decoration: none; }
+.code-line[data-note]:hover, .code-line[data-note]:focus { background: #fff7d6; outline: 0; text-decoration: none; }
+.line-tooltip { position: fixed; z-index: 50; max-width: 420px; padding: 10px 12px; border: 1px solid #d0d7de; border-left: 3px solid #4c78a8; border-radius: 4px; background: #fffdf5; color: #24292f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; line-height: 1.5; font-weight: 400; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity 120ms ease, transform 120ms ease; }
+.line-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+.line-tooltip .tooltip-section + .tooltip-section { margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px solid #eaeef2; }
+.line-tooltip code { padding: 1px 4px; border: 1px solid #d8dee4; border-radius: 3px; background: #f6f8fa; color: #24292f; font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12.5px; }
+.output-card, .output-details { display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+.output-card::before, .output-details::before { content: "Out [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #9f1239; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+.output-head, .output-details summary { grid-column: 2; padding: 0.42rem 0.55rem; border: 1px solid var(--code-border); border-bottom: 0; border-radius: 0.2rem 0.2rem 0 0; background: var(--code-surface); color: var(--code-muted); font-size: 0.78rem; cursor: default; }
+.output-details summary { cursor: pointer; }
+.output-body { grid-column: 2; padding: 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+.output-details .output-body { max-height: 24rem; overflow: auto; }
+.output-visual { white-space: normal; text-align: center; }
+.output-visual img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+@media (max-width: 860px) { .concept-map, .explain-grid, .state-list { grid-template-columns: 1fr; } .flow-step:not(:last-child)::after { display: none; } table { min-width: 620px; } }
+@media (max-width: 560px) { .lesson-page { padding: 1rem; font-size: 1rem; line-height: 1.72; } .title-block { display: block; } .lesson-logo { margin-left: auto; margin-right: auto; } .lesson-page h1 { display: block; width: 100%; font-size: clamp(1.55rem, 7vw, 1.9rem); line-height: 1.22; word-break: break-word; } .lead-text { display: block; width: 100%; font-size: 1rem; } .code-card, .output-card, .output-details { grid-template-columns: minmax(0, 1fr); } .code-card::before, .output-card::before, .output-details::before { grid-column: 1; grid-row: auto; padding: 0 0 0.25rem; text-align: left; } .code-body, .output-head, .output-details summary, .output-body { grid-column: 1; } .code-head { top: 1.8rem; right: 0.45rem; } .code-body { font-size: 0.84rem; padding: 0.85rem 4.85rem 0.85rem 0.85rem; } .output-body { font-size: 0.84rem; padding: 0.85rem; } .output-comment { margin-left: 0; } .line-tooltip { max-width: calc(100vw - 32px); } }
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html" class="is-active" aria-current="page">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu">
+        <h1 id="lesson-title">LangGraph’ta State Reducer’lar: Paralel Güncellemeleri Güvenli Birleştirme</h1>
+        <p class="lead-text">Bu ders, LangGraph state alanlarının varsayılan olarak nasıl güncellendiğini, paralel node çıktılarında neden çatışma oluştuğunu ve reducer fonksiyonlarının bu çatışmayı nasıl açık, denetlenebilir bir güncelleme kuralına dönüştürdüğünü açıklar.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>Bu bölümde amaç, LangGraph state’inin yalnızca bir Python sözlüğü gibi taşınmadığını; aynı zamanda graph yürütmesi sırasında güncellenme kurallarına sahip bir veri kanalı olduğunu kavramaktır. Basit bir graph’ta tek node aynı alanı güncellediğinde sonuç sezgiseldir. Ancak graph dallanıp birden fazla node aynı state alanına aynı yürütme adımında değer yazdığında, “hangi değer kazanmalı?” sorusu açık bir tasarım kararına dönüşür.</p>
+        <div class="definition-card"><strong>Bu Dersin Ana Tezi</strong><p>Reducer, LangGraph’ta paralel veya ardışık güncellemelerin aynı state alanında nasıl birleştirileceğini tanımlayan açık ve denetlenebilir sözleşmedir. Reducer yoksa aynı key’e gelen birden fazla değer belirsizlik üretir; reducer varsa graph bu değerleri belirlenen kurala göre final state’e taşır.</p></div>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul class="checklist">
+          <li>Reducer tanımlanmamış state alanlarında varsayılan overwrite davranışını açıklayabilmek.</li>
+          <li>Paralel branch’lerde aynı state key’ine yazıldığında neden güncelleme hatası oluştuğunu yorumlayabilmek.</li>
+          <li><code>Annotated</code> ile state alanına reducer bağlayabilmek.</li>
+          <li><code>operator.add</code> ve özel reducer fonksiyonları arasındaki farkı teknik olarak ayırt edebilmek.</li>
+          <li><code>None</code> gibi sınır değerlerde reducer’ın veri normalizasyonu sorumluluğunu değerlendirebilmek.</li>
+          <li><code>MessagesState</code>, <code>AnyMessage</code>, <code>add_messages</code> ve <code>RemoveMessage</code> ilişkisini mesaj state’i bağlamında açıklayabilmek.</li>
+        </ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title">
+        <h2 id="on-kosullar-title">Ön Koşullar</h2>
+        <p>Bu dersi izlemek için Python fonksiyonları, sözlük ve liste veri yapıları, type hint kullanımı, basit exception handling ve sınıf tanımı konularına aşina olmak gerekir. LangGraph tarafında <code>StateGraph</code>, node, edge, <code>START</code>, <code>END</code> ve <code>compile</code> kavramlarını temel düzeyde bilmek yeterlidir.</p>
+      </section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody><tr><td><code>TypedDict</code></td><td>State’in hangi anahtarları taşıdığını tip ipuçlarıyla tanımlar.</td><td>LangGraph şemayı okuyarak node update’lerini bu alanlarla ilişkilendirir.</td></tr>
+<tr><td><code>Annotated[list[int], add]</code></td><td>Liste alanına hazır liste birleştirme reducer’ı bağlar.</td><td>Aynı step içinde gelen liste güncellemelerini biriktirmeyi sağlar.</td></tr>
+<tr><td><code>reduce_list</code></td><td><code>None</code> değerlerini boş listeye dönüştüren özel reducer’dır.</td><td>State merge davranışını domain’e özgü hale getirir.</td></tr>
+<tr><td><code>add_messages</code></td><td>Mesaj listeleri için append, update ve delete semantiği sağlar.</td><td>Agent state’lerinde konuşma geçmişini güvenli biçimde taşır.</td></tr>
+<tr><td><code>InvalidUpdateError</code></td><td>Belirsiz state merge durumunu açık hataya dönüştürür.</td><td>Reducer tanımlama ihtiyacını görünür kılar.</td></tr>
+<tr><td><code>StateGraph</code></td><td>Node ve edge tanımlarını state şemasıyla birleştirir.</td><td>Graph compile edilince çalıştırılabilir LangGraph nesnesi oluşur.</td></tr></tbody></table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+        <h2 id="buyuk-resim-title">Büyük Resim</h2>
+        <p>LangGraph graph’ı state’i adım adım dönüştürür. Tek node tek alanı güncellediğinde bu dönüşüm basittir. Fakat graph dallandığında iki node aynı state alanına aynı anda katkı yapabilir. Reducer bu katkıların nasıl birleştirileceğini tanımlar.</p>
+        <div class="concept-map" aria-label="Reducer graph akışı">
+          <div class="flow-step"><strong>Başlangıç state’i</strong><span>Graph’a <code>foo</code> alanı ile veri girer.</span></div>
+          <div class="flow-step"><strong>Node update’i</strong><span>Node yalnızca kısmi state döndürür.</span></div>
+          <div class="flow-step"><strong>Paralel branch</strong><span>Birden çok node aynı key’e yazabilir.</span></div>
+          <div class="flow-step"><strong>Reducer</strong><span>Mevcut değer ile yeni değer birleştirilir.</span></div>
+          <div class="flow-step"><strong>Final state</strong><span>Graph açık merge kuralıyla kapanır.</span></div>
+        </div>
+      </section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+        <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+        <p>State alanları reducer olmadan kullanıldığında LangGraph her key için tek güncelleme bekler. Bu model, lineer graph’larda genellikle yeterlidir. Paralel graph’larda ise aynı key’e birden fazla node değer döndürdüğünde LangGraph bu durumu belirsiz kabul eder ve hatayla görünür kılar. Bu davranış, rastgele bir sonucun seçilmesini engellediği için önemlidir.</p>
+        <div class="note-card"><strong>Reducer’ın zihinsel modeli</strong><p>Reducer iki değer alır: mevcut birikmiş değer ve yeni update. Çıktısı yine aynı state alanına yazılacak tek değerdir. Bu nedenle reducer, hem veri formatını hem de merge semantiğini açıkça tanımlar.</p></div>
+        <p>Mesaj state’i özel bir durumdur. Bir agent geçmişinde yeni mesaj eklemek, mevcut mesajı id ile güncellemek veya belirli mesajı silmek aynı liste alanı üzerinde gerçekleşir. <code>add_messages</code> bu üç davranışı tek reducer protokolünde toplar.</p>
+      </section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+        <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+        <article class="walk-card" id="kod-adimi-1">
+  <h3 id="ortam-bagimliliklarini-hazirlama">Ortam bağımlılıklarını hazırlama</h3>
+  <p>Bu blok, graph API örneklerinin çalışması için gerekli temel LangChain Core ve LangGraph paketlerini güncel biçimde kurar. Çıktı bastırıldığı için terminal gürültüsü ders akışına taşınmaz.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Ortam bağımlılıklarını hazırlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="shell">%%capture --no-stderr
+%pip install --quiet -U langchain_core langgraph</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Kurulum satırı, sonraki state graph ve reducer örneklerinin aynı API ailesi üzerinde çalışmasını sağlar.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Ders içinde belirli bir paket sürümü açıkça sabitlenmediği için sürüm numarası verilmez.</p></div>
+  </div>
+
+</article><article class="walk-card" id="kod-adimi-2">
+  <h3 id="varsayilan-overwrite-davranisini-kurma">Varsayılan overwrite davranışını kurma</h3>
+  <p>Bu blok, tek alanlı bir state şeması ve tek node’lu graph kurar. Amaç, reducer tanımlanmadan önce LangGraph’ın aynı key için varsayılan davranışını gözlemlemektir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Varsayılan overwrite davranışını kurma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from typing_extensions import TypedDict
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: int
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": state['foo'] + 1}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu graph, reducer yokken state alanının son yazan değerle güncellendiğini gösteren temel karşılaştırma noktasıdır.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Node fonksiyonları yalnızca değiştirmek istedikleri state alanlarını döndürür; tüm state’i döndürmek zorunda değildir.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışının görsel çıktısı"></div></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Görsel çıktı, graph içinde node ve edge ilişkilerinin çalıştırma akışına nasıl dönüştüğünü gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-3">
+  <h3 id="tek-node-graphi-calistirma">Tek node graph’ı çalıştırma</h3>
+  <p>Bu çağrı, başlangıç state’ini graph’a verir ve graph tamamlandığında dönen son state’i gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Tek node graph’ı çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">graph.invoke({"foo": 1})</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>`invoke`, graph’ın giriş state’inden final state’e kadar tek çalıştırma yaptığını gösterir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Girdi sözlüğü state şemasındaki alan adlarıyla uyumlu olmalıdır.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">---Node 1---</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, `node_1` çalıştıktan sonra `foo` alanının `1` değerinden `2` değerine overwrite edildiğini gösterir.</div>
+<div class="output-card"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">{
+    'foo': 2
+}</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, `node_1` çalıştıktan sonra `foo` alanının `1` değerinden `2` değerine overwrite edildiğini gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-4">
+  <h3 id="paralel-branch-yapisini-kurma">Paralel branch yapısını kurma</h3>
+  <p>Bu blok, bir node’dan iki ayrı node’a dallanan paralel bir graph kurar. Burada aynı state key’ine birden fazla node yazacağı için sonraki adımda çatışma görülecektir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Paralel branch yapısını kurma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: int
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": state['foo'] + 1}
+
+def node_2(state):
+    """
+    Run the node_2 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"foo": state['foo'] + 1}
+
+def node_3(state):
+    """
+    Run the node_3 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 3---")
+    return {"foo": state['foo'] + 1}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_1", "node_3")
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu yapı, paralel branch’lerde aynı state key’ine yazma problemini görünür hale getirir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Reducer yokken aynı step içinde aynı key’e birden fazla güncelleme güvenli değildir.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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bX3IIiKAiIgIiICIiAiIgIiICIiAiIgIiICIiDlyeNr5jHWaNuMS1rMbopGHpu0jY/qUNis2/FWIcPm5mMunzKtt55WXR6Niena7fKZ395G47rGufIY+rlactS7Wit1ZRyyQTsD2PHqIPQrbRXFtWrh8P771dCKsDQNev0oZbMY2PrtFDedIxv6hJzgD5hsB6l+fgTY9qs9/+aH7pZ6mHPCv3T/JaM1oRZXpTH5XM6w1tjLOqcwK2Hu14Kpjlh5i19SGV3P8X380jtu7pt+tWz8CbHp1TniP/rQ/dJ9nh9fuktGax2bUNKvJPYmjggjaXPllcGtaB3kk9AFXIQ7WWSq2zG6PBUpBNX7Rpa65MNw2TY/7Ju+7Ser3bOGzWtc/61dB4uOeOe463l54yCx2Tsvna0g7giMnkBB67hu/d16BWNNajD8zfOf0/vsN0cBERedBERAREQEREBERAREQEREBERAREQEREBERAREQEREGe8PyDxJ4o7EkjJ0t/wB31/n+xaEs94f7/CTxQ7v6TpdwG/8AR9fv2/7rQkBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQZ5w+G3Eril5wP8ApOl0A7v9HVu9aGs84e7fCVxS2PXynS36bf8Al1b/AIrQ0BERAREQEREBERAREQEREBERAREQEREBERAREQERVXLarvOyE9HB0a9ySseSzZuTuiijeQCGN5WOL3bEE9wG46k7gbMPDqxJtStrrUipHl3WH6Bg/e5vu08u6w/QMH73N92vRstecd4LLuovVWVt4LTGYyVDHOy96nTmsV8ex/I61Ixhc2IO2PKXEBu+x237iq55d1h+gYP3ub7tPLusP0DB+9zfdpstecd4LPJXg4+HHc4qcdMhgcZw6lin1PeisTyvyw2oQw1o4pHu+IHPsIiQCRuSG7jvXuxeaOE/g/TcH+JmttaYfH4Y3tSyBwgdYlaykwnnkjj2j+S+Tzvm2aPR12Dy7rD9Awfvc33abLXnHeCy7oqR5d1h+gYP3ub7tPLusP0DB+9zfdpstecd4LLuipIzurweuPwhHqFyYb/39l0U9p7UIzQsQzQGnkKrg2xWLucN335XNdsOZjgDsdh3EEAgga68CuiNabW9E3LJhERedBERAREQEREBERAREQEREBERAREQFn2lDu/PE95y9rr/APfs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" alt="Graph akışının görsel çıktısı"></div></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Görsel çıktı, graph içinde node ve edge ilişkilerinin çalıştırma akışına nasıl dönüştüğünü gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-5">
+  <h3 id="ayni-keye-paralel-yazma-hatasini-yakalama">Aynı key’e paralel yazma hatasını yakalama</h3>
+  <p>Bu blok, paralel branch’lerin aynı state alanına reducer olmadan yazması durumunda oluşan hatayı kontrollü biçimde yakalar.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Aynı key’e paralel yazma hatasını yakalama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langgraph.errors import InvalidUpdateError
+try:
+    graph.invoke({"foo": 1})
+except InvalidUpdateError as e:
+    print(f"InvalidUpdateError occurred: {e}")</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Hata, LangGraph’ın belirsiz merge işlemini sessizce kabul etmediğini gösterir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>`try/except` yalnızca örnek akışın devam etmesini sağlar; hatanın nedeni state merge kuralının eksik olmasıdır.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">---Node 1---
+---Node 2---
+---Node 3---
+InvalidUpdateError occurred: At key 'foo': Can receive only one value per step. Use an Annotated key to handle multiple values.</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, paralel branch’lerin aynı `foo` alanına reducer olmadan yazması nedeniyle güncelleme çatışması oluştuğunu gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-6">
+  <h3 id="annotated-ile-reducer-tanimlama">Annotated ile reducer tanımlama</h3>
+  <p>Bu blok, `Annotated` ile `foo` alanına liste birleştirme reducer’ı bağlar. LangGraph artık bu alanı yalnızca overwrite edilecek bir değer değil, birleştirilecek bir kanal gibi ele alır.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Annotated ile reducer tanımlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from operator import add
+from typing import Annotated
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: Annotated[list[int], add]
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": [state['foo'][0] + 1]}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>`Annotated`, state şemasına merge davranışı ekleyerek graph’ın paralel güncellemeleri yorumlamasını sağlar.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>`operator.add` liste için birleştirme yapar; fakat `None` gibi liste olmayan değerleri otomatik temizlemez.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışının görsel çıktısı"></div></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Görsel çıktı, graph içinde node ve edge ilişkilerinin çalıştırma akışına nasıl dönüştüğünü gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-7">
+  <h3 id="liste-reducerli-tek-node-calistirma">Liste reducer’lı tek node çalıştırma</h3>
+  <p>Bu çağrı, reducer tanımlandıktan sonra tek node’un döndürdüğü listenin mevcut listeye nasıl eklendiğini gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Liste reducer’lı tek node çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">graph.invoke({"foo": [1]})</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu çıktı, reducer’ın tek node güncellemesinde de mevcut değer ile yeni değeri birleştirdiğini gösterir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Node güncellemesi liste olarak dönmelidir; tek sayı dönerse `add` beklenen liste semantiğini kaybeder.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">---Node 1---</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, başlangıç listesi ile node’un döndürdüğü listenin `add` reducer’ı sayesinde birleştirildiğini gösterir.</div>
+<div class="output-card"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">{
+    'foo': [1, 2]
+}</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, başlangıç listesi ile node’un döndürdüğü listenin `add` reducer’ı sayesinde birleştirildiğini gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-8">
+  <h3 id="reducer-ile-paralel-branch-graphini-kurma">Reducer ile paralel branch graph’ını kurma</h3>
+  <p>Bu blok, reducer tanımlı state ile paralel branch graph’ını yeniden kurar. Aynı key’e paralel yazan node’lar artık hata üretmek yerine reducer üzerinden birleştirilir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Reducer ile paralel branch graph’ını kurma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": [state['foo'][-1] + 1]}
+
+def node_2(state):
+    """
+    Run the node_2 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"foo": [state['foo'][-1] + 1]}
+
+def node_3(state):
+    """
+    Run the node_3 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 3---")
+    return {"foo": [state['foo'][-1] + 1]}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_1", "node_3")
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu graph, reducer’ın asıl değerini gösterir: paralel branch sonuçları tek state alanında toplanabilir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Dallanma sırası ve reducer semantiği birlikte düşünülmelidir; node’lar aynı step içinde çalışabilir.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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bX3IIiKAiIgIiICIiAiIgIiICIiAiIgIiICIiDlyeNr5jHWaNuMS1rMbopGHpu0jY/qUNis2/FWIcPm5mMunzKtt55WXR6Niena7fKZ395G47rGufIY+rlactS7Wit1ZRyyQTsD2PHqIPQrbRXFtWrh8P771dCKsDQNev0oZbMY2PrtFDedIxv6hJzgD5hsB6l+fgTY9qs9/+aH7pZ6mHPCv3T/JaM1oRZXpTH5XM6w1tjLOqcwK2Hu14Kpjlh5i19SGV3P8X380jtu7pt+tWz8CbHp1TniP/rQ/dJ9nh9fuktGax2bUNKvJPYmjggjaXPllcGtaB3kk9AFXIQ7WWSq2zG6PBUpBNX7Rpa65MNw2TY/7Ju+7Ser3bOGzWtc/61dB4uOeOe463l54yCx2Tsvna0g7giMnkBB67hu/d16BWNNajD8zfOf0/vsN0cBERedBERAREQEREBERAREQEREBERAREQEREBERAREQEREGe8PyDxJ4o7EkjJ0t/wB31/n+xaEs94f7/CTxQ7v6TpdwG/8AR9fv2/7rQkBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQZ5w+G3Eril5wP8ApOl0A7v9HVu9aGs84e7fCVxS2PXynS36bf8Al1b/AIrQ0BERAREQEREBERAREQEREBERAREQEREBERAREQERVXLarvOyE9HB0a9ySseSzZuTuiijeQCGN5WOL3bEE9wG46k7gbMPDqxJtStrrUipHl3WH6Bg/e5vu08u6w/QMH73N92vRstecd4LLuovVWVt4LTGYyVDHOy96nTmsV8ex/I61Ixhc2IO2PKXEBu+x237iq55d1h+gYP3ub7tPLusP0DB+9zfdpstecd4LPJXg4+HHc4qcdMhgcZw6lin1PeisTyvyw2oQw1o4pHu+IHPsIiQCRuSG7jvXuxeaOE/g/TcH+JmttaYfH4Y3tSyBwgdYlaykwnnkjj2j+S+Tzvm2aPR12Dy7rD9Awfvc33abLXnHeCy7oqR5d1h+gYP3ub7tPLusP0DB+9zfdpstecd4LLuipIzurweuPwhHqFyYb/39l0U9p7UIzQsQzQGnkKrg2xWLucN335XNdsOZjgDsdh3EEAgga68CuiNabW9E3LJhERedBERAREQEREBERAREQEREBERAREQFn2lDu/PE95y9rr/APfs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" alt="Graph akışının görsel çıktısı"></div></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Görsel çıktı, graph içinde node ve edge ilişkilerinin çalıştırma akışına nasıl dönüştüğünü gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-9">
+  <h3 id="paralel-reducer-graphini-calistirma">Paralel reducer graph’ını çalıştırma</h3>
+  <p>Bu çağrı, paralel branch’lerden gelen güncellemelerin aynı listede toplanmasını gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Paralel reducer graph’ını çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">graph.invoke({"foo": [1]})</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Son state, hem başlangıç değerini hem de paralel güncellemeleri aynı listede taşır.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Liste sırası, graph çalıştırma modeli ve reducer uygulama sırasına bağlı olarak okunmalıdır; mantık “değerleri biriktirme”dir.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">---Node 1---
+---Node 2---
+---Node 3---</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, paralel branch’lerden gelen iki ayrı listenin aynı state alanında toplandığını gösterir.</div>
+<div class="output-card"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">{
+    'foo': [1, 2, 3, 3]
+}</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, paralel branch’lerden gelen iki ayrı listenin aynı state alanında toplandığını gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-10">
+  <h3 id="none-girdisiyle-reducer-sinirini-gosterme">None girdisiyle reducer sınırını gösterme</h3>
+  <p>Bu blok, `operator.add` tabanlı reducer’ın `None` girdisini kendi başına güvenli biçimde işleyemediğini gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">None girdisiyle reducer sınırını gösterme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">try:
+    graph.invoke({"foo": None})
+except TypeError as e:
+    print(f"TypeError occurred: {e}")</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu hata, reducer fonksiyonunun veri kalitesinden de sorumlu olabileceğini gösterir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>State girişlerinde `None` mümkünse reducer bunu açıkça ele almalıdır.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">TypeError occurred: can only concatenate list (not "NoneType") to list</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, `operator.add` tabanlı reducer’ın `None` ile listeyi birleştiremediğini açıkça gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-11">
+  <h3 id="ozel-reducer-fonksiyonu-tanimlama">Özel reducer fonksiyonu tanımlama</h3>
+  <p>Bu blok, `None` değerlerini boş liste kabul eden özel bir reducer tanımlar ve bu reducer’ı state alanına bağlar.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Özel reducer fonksiyonu tanımlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">def reduce_list(left: list | None, right: list | None) -&gt; list:
+    """Safely combine two lists.
+
+    Handles cases where either or both inputs might be None.
+
+    Args:
+        left (list | None): The first list to combine, or None.
+        right (list | None): The second list to combine, or None.
+
+    Returns:
+        list: A new list containing all elements from both input lists.
+               If an input is None, it's treated as an empty list.
+    """
+    if not left:
+        left = []
+    if not right:
+        right = []
+    return left + right
+
+class DefaultState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: Annotated[list[int], add]
+
+class CustomReducerState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: Annotated[list[int], reduce_list]</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Özel reducer, LangGraph state alanının domain’e özgü merge kuralı kazanmasını sağlar.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Reducer iki argümanlı ve saf davranışa yakın tasarlanmalıdır; yan etkiler state merge sürecini zorlaştırır.</p></div>
+  </div>
+
+</article><article class="walk-card" id="kod-adimi-12">
+  <h3 id="varsayilan-liste-reducer-ile-none-hatasini-tekrar-gosterme">Varsayılan liste reducer ile None hatasını tekrar gösterme</h3>
+  <p>Bu blok, varsayılan liste reducer’ının başlangıç değeri `None` olduğunda yine hata verdiğini gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Varsayılan liste reducer ile None hatasını tekrar gösterme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": [2]}
+
+# Build graph
+builder = StateGraph(DefaultState)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+try:
+    print(graph.invoke({"foo": None}))
+except TypeError as e:
+    print(f"TypeError occurred: {e}")</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu tekrar, problemin graph kurulumundan değil reducer fonksiyonunun davranışından kaynaklandığını ayırır.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Hata çıktısı öğretici amaçlıdır; üretim kodunda giriş doğrulama ve reducer tasarımı daha açık yapılmalıdır.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışının görsel çıktısı"></div></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Görsel çıktı, graph içinde node ve edge ilişkilerinin çalıştırma akışına nasıl dönüştüğünü gösterir.</div>
+<div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">TypeError occurred: can only concatenate list (not "NoneType") to list</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, varsayılan liste birleştirme reducer’ının `None` başlangıç değerini güvenli kabul etmediğini doğrular.</div>
+</article><article class="walk-card" id="kod-adimi-13">
+  <h3 id="custom-reducer-ile-none-girdisini-guvenli-isleme">Custom reducer ile None girdisini güvenli işleme</h3>
+  <p>Bu blok, özel reducer şemasıyla aynı graph’ı kurar ve `None` başlangıç değerinin güvenli biçimde listeye dönüştürüldüğünü gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Custom reducer ile None girdisini güvenli işleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Build graph
+builder = StateGraph(CustomReducerState)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+try:
+    print(graph.invoke({"foo": None}))
+except TypeError as e:
+    print(f"TypeError occurred: {e}")</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Custom reducer, eksik başlangıç değerini boş listeye dönüştürerek graph’ın ilerlemesini sağlar.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Bu yaklaşım yalnızca `None` semantiği gerçekten “boş değer” ise uygundur.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışının görsel çıktısı"></div></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Görsel çıktı, graph içinde node ve edge ilişkilerinin çalıştırma akışına nasıl dönüştüğünü gösterir.</div>
+<div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">---Node 1---
+{
+    'foo': [2]
+}</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, özel reducer’ın `None` değerini boş liste gibi ele alıp node güncellemesini güvenli biçimde final state’e taşıdığını gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-14">
+  <h3 id="messagesstate-ve-add-messages-esdegerligini-gosterme">MessagesState ve add_messages eşdeğerliğini gösterme</h3>
+  <p>Bu blok, mesaj listeleri için `add_messages` reducer’ını doğrudan ve hazır `MessagesState` üzerinden tanımlamanın eşdeğer kullanımını gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">MessagesState ve add_messages eşdeğerliğini gösterme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from typing import Annotated
+from langgraph.graph import MessagesState
+from langchain_core.messages import AnyMessage
+from langgraph.graph.message import add_messages
+
+# Define a custom TypedDict that includes messages
+# with the add_messages reducer
+class CustomMessagesState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    messages: Annotated[list[AnyMessage], add_messages]
+    added_key_1: str
+    added_key_2: str
+    # etc
+
+# Use MessagesState, which includes the messages key with add_messages reducer
+class ExtendedMessagesState(MessagesState):
+    """
+    Define the state schema used by the graph.
+    """
+    # Add any keys needed beyond messages, which is pre-built
+    added_key_1: str
+    added_key_2: str
+    # etc</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Mesaj state’i, agent graph’larında en sık reducer gerektiren alanlardan biridir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>`MessagesState` pratik kısayoldur; özel state gerekiyorsa aynı reducer `Annotated` ile genişletilebilir.</p></div>
+  </div>
+
+</article><article class="walk-card" id="kod-adimi-15">
+  <h3 id="add-messages-ile-yeni-mesaj-ekleme">add_messages ile yeni mesaj ekleme</h3>
+  <p>Bu blok, yeni bir mesajın mevcut mesaj listesine eklendiğinde nasıl liste sonuna alındığını gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">add_messages ile yeni mesaj ekleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langgraph.graph.message import add_messages
+from langchain_core.messages import AIMessage, HumanMessage
+
+# Initial state
+initial_messages = [
+    AIMessage(
+        content="Hello! How can I assist you?",
+        name="Model",
+    ),
+    HumanMessage(
+        content="I'm looking for information on marine biology.",
+        name="Lance",
+    ),
+]
+
+# New message to add
+new_message = AIMessage(
+    content=(
+        "Sure, I can help with that. What specifically are you "
+        "interested in?"
+    ),
+    name="Model",
+)
+
+# Test
+add_messages(initial_messages, new_message)</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Yeni mesaj ekleme, agent geçmişinin büyümesini temsil eder.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Mesaj nesnelerinde `content`, `name` ve varsa `id` alanlarının anlamı karıştırılmamalıdır.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">[
+    AIMessage(
+        content='Hello! How can I assist you?',
+        name='Model',
+        id='f470d868-cf1b-45b2-ae16-48154cd55c12',
+    ),
+    HumanMessage(
+        content="I'm looking for information on marine biology.",
+        name='Lance',
+        id='a07a88c5-cb2a-4cbd-9485-5edb9d658366',
+    ),
+    AIMessage(
+        content='Sure, I can help with that. What specifically are you interested in?',
+        name='Model',
+        id='7938e615-86c2-4cbb-944b-c9b2342dee68',
+    ),
+]</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, yeni insan mesajının mevcut mesaj geçmişinin sonuna eklendiğini gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-16">
+  <h3 id="ayni-id-ile-mesaji-yeniden-yazma">Aynı ID ile mesajı yeniden yazma</h3>
+  <p>Bu blok, aynı `id` değerine sahip bir mesaj geldiğinde `add_messages` reducer’ının append yerine update davranışı göstermesini inceler.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Aynı ID ile mesajı yeniden yazma</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Initial state
+initial_messages = [
+    AIMessage(
+        content="Hello! How can I assist you?",
+        name="Model",
+        id="1",
+    ),
+    HumanMessage(
+        content="I'm looking for information on marine biology.",
+        name="Lance",
+        id="2",
+    ),
+]
+
+# New message to add
+new_message = HumanMessage(
+    content="I'm looking for information on whales, specifically",
+    name="Lance",
+    id="2",
+)
+
+# Test
+add_messages(initial_messages, new_message)</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Aynı id ile update, mesaj geçmişinde düzeltme veya değiştirme semantiği sağlar.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>`id` çakışması append değil replace davranışına yol açar.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">[
+    AIMessage(
+        content='Hello! How can I assist you?',
+        name='Model',
+        id='1',
+    ),
+    HumanMessage(
+        content="I'm looking for information on whales, specifically",
+        name='Lance',
+        id='2',
+    ),
+]</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, aynı `id` değerine sahip mesajın mevcut mesajı değiştirdiğini; farklı `id` değerli mesajın korunduğunu gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-17">
+  <h3 id="removemessage-nesneleri-uretme">RemoveMessage nesneleri üretme</h3>
+  <p>Bu blok, mesaj silmeyi temsil eden `RemoveMessage` nesneleri üretir. Silme işlemi doğrudan listeden eleman çıkarmak yerine mesaj reducer protokolü üzerinden ifade edilir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">RemoveMessage nesneleri üretme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from langchain_core.messages import RemoveMessage
+
+# Message list
+messages = [AIMessage("Hi.", name="Bot", id="1")]
+messages.append(HumanMessage("Hi.", name="Lance", id="2"))
+messages.append(
+    AIMessage(
+        "So you said you were researching ocean mammals?",
+        name="Bot",
+        id="3",
+    )
+)
+messages.append(
+    HumanMessage(
+        "Yes, I know about whales. But what others should I learn about?",
+        name="Lance",
+        id="4",
+    )
+)
+
+# Isolate messages to delete
+delete_messages = [
+    RemoveMessage(id=m.id)
+    for m in messages[:-2]
+]
+print(delete_messages)</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Silme de bir mesaj güncellemesi olarak modellenir; bu, state reducer protokolünü tutarlı kılar.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>`RemoveMessage` beta uyarısı üretebilir; materyalde belirli kararlılık garantisi verilmez.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Terminal çıktısı</div><pre class="output-body"><code data-lang="output">[
+    RemoveMessage(content='', id='1'),
+    RemoveMessage(content='', id='2'),
+]</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, silme isteğinin `RemoveMessage` nesneleriyle temsil edildiğini ve bu sınıf için beta uyarısı üretilebildiğini gösterir.</div>
+<div class="output-card"><div class="output-head">Uyarı çıktısı</div><pre class="output-body"><code data-lang="output">/var/folders/***/T/ipykernel_17703/3097054180.py:10: LangChainBetaWarning: The class `RemoveMessage` is in beta. It is actively being worked on, so the API may change.
+  delete_messages = [
+      RemoveMessage(id=m.id)
+      for m in messages[:-2]
+  ]</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, silme isteğinin `RemoveMessage` nesneleriyle temsil edildiğini ve bu sınıf için beta uyarısı üretilebildiğini gösterir.</div>
+</article><article class="walk-card" id="kod-adimi-18">
+  <h3 id="removemessage-ile-mesajlari-silme">RemoveMessage ile mesajları silme</h3>
+  <p>Bu çağrı, `RemoveMessage` nesnelerini mevcut mesaj listesine uygulayarak ilgili `id` değerlerine sahip mesajları listeden çıkarır.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">RemoveMessage ile mesajları silme</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">add_messages(messages, delete_messages)</code></pre>
+</div>
+  <div class="explain-grid">
+    <div class="mini-panel"><strong>LangGraph açısından önemi</strong><p>Bu adım, `add_messages` reducer’ının append, update ve delete davranışlarını tek protokol altında topladığını gösterir.</p></div>
+    <div class="mini-panel"><strong>Dikkat edilmesi gereken nokta</strong><p>Silinecek mesaj `id` değerlerinin mevcut listede bulunması beklenir.</p></div>
+  </div>
+  <div class="output-card"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">[
+    AIMessage(
+        content='So you said you were researching ocean mammals?',
+        name='Bot',
+        id='3',
+    ),
+    HumanMessage(
+        content='Yes, I know about whales. But what others should I learn about?',
+        name='Lance',
+        id='4',
+    ),
+]</code></pre></div><div class="output-comment"><strong>Çıktı yorumu:</strong> Çıktı, silme mesajları uygulandıktan sonra yalnızca silinmeyen `id` değerlerine sahip mesajların kaldığını gösterir.</div>
+</article>
+      </section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+        <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+        <p>Çıktılar üç ana davranışı görünür kılar: reducer yokken overwrite ve çatışma, reducer varken liste biriktirme, mesaj reducer’ında append/update/delete semantiği. Hata çıktıları bu derste başarısızlık olarak değil, state merge sözleşmesinin neden gerekli olduğunu gösteren gözlem noktaları olarak ele alınmalıdır.</p>
+        <div class="table-wrap"><table><thead><tr><th>Çıktı Türü</th><th>Ne Gösterir?</th><th>Teknik Sonuç</th></tr></thead><tbody>
+          <tr><td>Graph görselleri</td><td>Node ve edge topolojisini gösterir.</td><td>State güncellemesinin hangi akış içinde üretildiği anlaşılır.</td></tr>
+          <tr><td>Terminal satırları</td><td>Hangi node’un çalıştığını gösterir.</td><td>Paralel branch’lerde birden fazla node’un aynı step’e katkı verdiği okunur.</td></tr>
+          <tr><td>Dict çıktıları</td><td>Final state değerini gösterir.</td><td>Reducer sonucunun state alanına nasıl yazıldığı doğrulanır.</td></tr>
+          <tr><td>Hata çıktıları</td><td>Eksik veya uyumsuz merge kuralını gösterir.</td><td>Reducer tasarımının veri formatı ile birlikte düşünülmesi gerektiği anlaşılır.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title">
+        <h2 id="graph-akisi-title">Graph Akışı</h2>
+        <div class="concept-map" aria-label="Paralel reducer graph akışı">
+          <div class="flow-step"><strong>START</strong><span>Başlangıç state’i graph’a girer.</span></div>
+          <div class="flow-step"><strong>node_1</strong><span>İlk güncelleme üretilir ve branch’ler açılır.</span></div>
+          <div class="flow-step"><strong>node_2 / node_3</strong><span>İki branch aynı <code>foo</code> alanına katkı yapar.</span></div>
+          <div class="flow-step"><strong>reducer</strong><span>Gelen liste güncellemeleri birleştirilir.</span></div>
+          <div class="flow-step"><strong>END</strong><span>Birleştirilmiş final state döner.</span></div>
+        </div>
+      </section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title">
+        <h2 id="state-evrimi-title">State’in Evrimi</h2>
+        <div class="state-list">
+          <div class="state-item"><strong>Overwrite örneği</strong><span><code>{"foo": 1}</code> girdisi, tek node sonrasında <code>{"foo": 2}</code> olur.</span></div>
+          <div class="state-item"><strong>Reducer’sız paralellik</strong><span><code>node_2</code> ve <code>node_3</code> aynı key’e yazınca merge kuralı olmadığı için hata oluşur.</span></div>
+          <div class="state-item"><strong>Liste reducer’ı</strong><span><code>{"foo": [1]}</code> girdisi, node update’iyle <code>{"foo": [1, 2]}</code> haline gelir.</span></div>
+          <div class="state-item"><strong>Paralel liste birikimi</strong><span>Branch’lerden gelen değerler final state’te <code>[1, 2, 3, 3]</code> biçiminde toplanır.</span></div>
+          <div class="state-item"><strong>Custom reducer</strong><span><code>None</code> başlangıç değeri boş listeye çevrilir ve <code>[2]</code> sonucu üretilir.</span></div>
+          <div class="state-item"><strong>Mesaj reducer’ı</strong><span>Mesajlar <code>id</code> değerine göre eklenir, güncellenir veya silinir.</span></div>
+        </div>
+      </section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+        <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+        <p>Bu derste doğrudan tool çalıştıran bir agent döngüsü kurulmaz. Buna rağmen <code>MessagesState</code> ve <code>add_messages</code> örnekleri agent graph’larının temel zeminini hazırlar. Çünkü tool kullanan agent’larda model mesajları, tool çağrıları, tool sonuçları ve insan mesajları çoğunlukla aynı <code>messages</code> state alanında birikir.</p>
+      </section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+        <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+        <ul>
+          <li>Reducer’ı yalnızca liste ekleme kolaylığı sanmak; aslında reducer state merge sözleşmesidir.</li>
+          <li>Paralel branch’lerde aynı key’e yazmanın otomatik olarak güvenli olduğunu varsaymak.</li>
+          <li><code>Annotated</code> içindeki ikinci argümanın tip değil, reducer metadata’sı olduğunu gözden kaçırmak.</li>
+          <li><code>operator.add</code> reducer’ının <code>None</code> değerlerini otomatik temizleyeceğini düşünmek.</li>
+          <li>Node fonksiyonunun tüm state’i döndürmesi gerektiğini sanmak; çoğu durumda kısmi update yeterlidir.</li>
+          <li><code>add_messages</code> içinde aynı <code>id</code> değerinin append değil update davranışı doğurduğunu unutmak.</li>
+          <li><code>RemoveMessage</code> nesnesini normal mesaj içeriği gibi düşünmek; bu nesne reducer için silme talimatıdır.</li>
+        </ul>
+      </section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+        <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+        <ol>
+          <li>LangGraph state alanları varsayılan olarak tek güncelleme bekler.</li>
+          <li>Paralel branch’lerde aynı key’e yazılıyorsa reducer tasarımı zorunlu hale gelir.</li>
+          <li><code>Annotated</code>, reducer’ı state şemasına bağlamanın temel yoludur.</li>
+          <li>Reducer iki argüman alır: mevcut değer ve yeni değer.</li>
+          <li>Hazır reducer’lar pratik olsa da sınır değerleri her zaman kapsamayabilir.</li>
+          <li>Özel reducer, veri normalizasyonunu ve merge politikasını açık hale getirir.</li>
+          <li>Graph topolojisi ile state merge davranışı birlikte tasarlanmalıdır.</li>
+          <li>Mesaj state’i için <code>add_messages</code> append, update ve delete davranışlarını bir arada sağlar.</li>
+          <li>Hata çıktıları, reducer ihtiyacını teşhis etmek için öğretici sinyallerdir.</li>
+          <li>Agent graph’larında güvenilir mesaj geçmişi için reducer semantiği kritik önemdedir.</li>
+        </ol>
+      </section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+        <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+        <p>Bu bölüm, derste kullanılan çalıştırılabilir kod parçalarını ders akışındaki sırayla tek yerde toplar.</p>
+        <div class="code-card">
+  <div class="code-head"><span class="code-title">Dersin Kod Akışı</span><button class="copy-btn" type="button">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langchain_core langgraph
+
+from typing_extensions import TypedDict
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: int
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": state['foo'] + 1}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"foo": 1})
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: int
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": state['foo'] + 1}
+
+def node_2(state):
+    """
+    Run the node_2 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"foo": state['foo'] + 1}
+
+def node_3(state):
+    """
+    Run the node_3 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 3---")
+    return {"foo": state['foo'] + 1}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_1", "node_3")
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+from langgraph.errors import InvalidUpdateError
+try:
+    graph.invoke({"foo": 1})
+except InvalidUpdateError as e:
+    print(f"InvalidUpdateError occurred: {e}")
+
+from operator import add
+from typing import Annotated
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: Annotated[list[int], add]
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": [state['foo'][0] + 1]}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"foo": [1]})
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": [state['foo'][-1] + 1]}
+
+def node_2(state):
+    """
+    Run the node_2 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"foo": [state['foo'][-1] + 1]}
+
+def node_3(state):
+    """
+    Run the node_3 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 3---")
+    return {"foo": [state['foo'][-1] + 1]}
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", "node_2")
+builder.add_edge("node_1", "node_3")
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"foo": [1]})
+
+try:
+    graph.invoke({"foo": None})
+except TypeError as e:
+    print(f"TypeError occurred: {e}")
+
+def reduce_list(left: list | None, right: list | None) -&gt; list:
+    """Safely combine two lists.
+
+    Handles cases where either or both inputs might be None.
+
+    Args:
+        left (list | None): The first list to combine, or None.
+        right (list | None): The second list to combine, or None.
+
+    Returns:
+        list: A new list containing all elements from both input lists.
+               If an input is None, it's treated as an empty list.
+    """
+    if not left:
+        left = []
+    if not right:
+        right = []
+    return left + right
+
+class DefaultState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: Annotated[list[int], add]
+
+class CustomReducerState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    foo: Annotated[list[int], reduce_list]
+
+def node_1(state):
+    """
+    Run the node_1 helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"foo": [2]}
+
+# Build graph
+builder = StateGraph(DefaultState)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+try:
+    print(graph.invoke({"foo": None}))
+except TypeError as e:
+    print(f"TypeError occurred: {e}")
+
+# Build graph
+builder = StateGraph(CustomReducerState)
+builder.add_node("node_1", node_1)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_edge("node_1", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+try:
+    print(graph.invoke({"foo": None}))
+except TypeError as e:
+    print(f"TypeError occurred: {e}")
+
+from typing import Annotated
+from langgraph.graph import MessagesState
+from langchain_core.messages import AnyMessage
+from langgraph.graph.message import add_messages
+
+# Define a custom TypedDict that includes messages
+# with the add_messages reducer
+class CustomMessagesState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    messages: Annotated[list[AnyMessage], add_messages]
+    added_key_1: str
+    added_key_2: str
+    # etc
+
+# Use MessagesState, which includes the messages key with add_messages reducer
+class ExtendedMessagesState(MessagesState):
+    """
+    Define the state schema used by the graph.
+    """
+    # Add any keys needed beyond messages, which is pre-built
+    added_key_1: str
+    added_key_2: str
+    # etc
+
+from langgraph.graph.message import add_messages
+from langchain_core.messages import AIMessage, HumanMessage
+
+# Initial state
+initial_messages = [
+    AIMessage(
+        content="Hello! How can I assist you?",
+        name="Model",
+    ),
+    HumanMessage(
+        content="I'm looking for information on marine biology.",
+        name="Lance",
+    ),
+]
+
+# New message to add
+new_message = AIMessage(
+    content=(
+        "Sure, I can help with that. What specifically are you "
+        "interested in?"
+    ),
+    name="Model",
+)
+
+# Test
+add_messages(initial_messages, new_message)
+
+# Initial state
+initial_messages = [
+    AIMessage(
+        content="Hello! How can I assist you?",
+        name="Model",
+        id="1",
+    ),
+    HumanMessage(
+        content="I'm looking for information on marine biology.",
+        name="Lance",
+        id="2",
+    ),
+]
+
+# New message to add
+new_message = HumanMessage(
+    content="I'm looking for information on whales, specifically",
+    name="Lance",
+    id="2",
+)
+
+# Test
+add_messages(initial_messages, new_message)
+
+from langchain_core.messages import RemoveMessage
+
+# Message list
+messages = [AIMessage("Hi.", name="Bot", id="1")]
+messages.append(HumanMessage("Hi.", name="Lance", id="2"))
+messages.append(
+    AIMessage(
+        "So you said you were researching ocean mammals?",
+        name="Bot",
+        id="3",
+    )
+)
+messages.append(
+    HumanMessage(
+        "Yes, I know about whales. But what others should I learn about?",
+        name="Lance",
+        id="4",
+    )
+)
+
+# Isolate messages to delete
+delete_messages = [
+    RemoveMessage(id=m.id)
+    for m in messages[:-2]
+]
+print(delete_messages)
+
+add_messages(messages, delete_messages)</code></pre>
+</div>
+      </section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+        <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+        <div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody><tr><td>State</td><td>Durum</td><td>Graph boyunca taşınan ve node’ların okuyup güncellediği veri sözlüğü.</td></tr>
+<tr><td>StateGraph</td><td>Durum grafı</td><td>State şemasıyla çalışan graph builder sınıfı.</td></tr>
+<tr><td>Node</td><td>Düğüm</td><td>State alanlarını okuyup kısmi update döndüren çalıştırılabilir adım.</td></tr>
+<tr><td>Edge</td><td>Kenar</td><td>Bir node tamamlandıktan sonra hangi node’a gidileceğini belirleyen bağlantı.</td></tr>
+<tr><td>START</td><td>Başlangıç düğümü</td><td>Graph yürütmesinin sanal başlangıç noktası.</td></tr>
+<tr><td>END</td><td>Bitiş düğümü</td><td>Graph yürütmesinin sanal bitiş noktası.</td></tr>
+<tr><td>Reducer</td><td>Birleştirici</td><td>Aynı state alanına gelen mevcut ve yeni değerleri tek değere çeviren fonksiyon.</td></tr>
+<tr><td>Annotated</td><td>Açıklamalı tip</td><td>Tip bilgisinin yanına reducer gibi metadata eklemek için kullanılan Python tipi.</td></tr>
+<tr><td>operator.add</td><td>Toplama/birleştirme fonksiyonu</td><td>Listelerde concatenation yapan iki argümanlı hazır reducer.</td></tr>
+<tr><td>InvalidUpdateError</td><td>Geçersiz güncelleme hatası</td><td>Reducer olmadan aynı key’e birden çok değer geldiğinde görülebilen LangGraph hatası.</td></tr>
+<tr><td>MessagesState</td><td>Mesaj durumu</td><td>Mesaj listesi için hazır reducer semantiği taşıyan LangGraph state şeması.</td></tr>
+<tr><td>add_messages</td><td>Mesaj birleştirici</td><td>Mesaj ekleme, id ile güncelleme ve RemoveMessage ile silme davranışlarını yöneten reducer.</td></tr>
+<tr><td>RemoveMessage</td><td>Mesaj silme nesnesi</td><td>Belirli id değerine sahip mesajı silme isteği olarak temsil eden mesaj güncellemesi.</td></tr>
+<tr><td>invoke</td><td>Çalıştırma çağrısı</td><td>Graph’ı verilen giriş state’iyle çalıştırıp final state’i döndüren metot.</td></tr></tbody></table></div>
+      </section>
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta State Reducer’lar: Paralel Güncellemeleri Güvenli Birleştirme</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#ortam-bagimliliklarini-hazirlama">Ortam bağımlılıklarını hazırlama</a></li>
+<li class="toc-l3"><a href="#varsayilan-overwrite-davranisini-kurma">Varsayılan overwrite davranışını kurma</a></li>
+<li class="toc-l3"><a href="#tek-node-graphi-calistirma">Tek node graph’ı çalıştırma</a></li>
+<li class="toc-l3"><a href="#paralel-branch-yapisini-kurma">Paralel branch yapısını kurma</a></li>
+<li class="toc-l3"><a href="#ayni-keye-paralel-yazma-hatasini-yakalama">Aynı key’e paralel yazma hatasını yakalama</a></li>
+<li class="toc-l3"><a href="#annotated-ile-reducer-tanimlama">Annotated ile reducer tanımlama</a></li>
+<li class="toc-l3"><a href="#liste-reducerli-tek-node-calistirma">Liste reducer’lı tek node çalıştırma</a></li>
+<li class="toc-l3"><a href="#reducer-ile-paralel-branch-graphini-kurma">Reducer ile paralel branch graph’ını kurma</a></li>
+<li class="toc-l3"><a href="#paralel-reducer-graphini-calistirma">Paralel reducer graph’ını çalıştırma</a></li>
+<li class="toc-l3"><a href="#none-girdisiyle-reducer-sinirini-gosterme">None girdisiyle reducer sınırını gösterme</a></li>
+<li class="toc-l3"><a href="#ozel-reducer-fonksiyonu-tanimlama">Özel reducer fonksiyonu tanımlama</a></li>
+<li class="toc-l3"><a href="#varsayilan-liste-reducer-ile-none-hatasini-tekrar-gosterme">Varsayılan liste reducer ile None hatasını tekrar gösterme</a></li>
+<li class="toc-l3"><a href="#custom-reducer-ile-none-girdisini-guvenli-isleme">Custom reducer ile None girdisini güvenli işleme</a></li>
+<li class="toc-l3"><a href="#messagesstate-ve-add-messages-esdegerligini-gosterme">MessagesState ve add_messages eşdeğerliğini gösterme</a></li>
+<li class="toc-l3"><a href="#add-messages-ile-yeni-mesaj-ekleme">add_messages ile yeni mesaj ekleme</a></li>
+<li class="toc-l3"><a href="#ayni-id-ile-mesaji-yeniden-yazma">Aynı ID ile mesajı yeniden yazma</a></li>
+<li class="toc-l3"><a href="#removemessage-nesneleri-uretme">RemoveMessage nesneleri üretme</a></li>
+<li class="toc-l3"><a href="#removemessage-ile-mesajlari-silme">RemoveMessage ile mesajları silme</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+  <script>
+(function () {
+  const keywords = new Set(['from','import','class','def','return','if','else','elif','for','in','try','except','as','with','None','True','False','or','and','not']);
+  const builtins = new Set(['print','str','int','list','dict','set','len','range','super']);
+  function escapeHtml(value) { return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function span(cls, value) { return '<span class="' + cls + '">' + escapeHtml(value) + '</span>'; }
+  function highlightShell(line) {
+    const tokenPattern = /(#[^\n]*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+|\b[A-Za-z_][A-Za-z0-9_\-]*\b)/g;
+    let result = '', last = 0, match;
+    while ((match = tokenPattern.exec(line)) !== null) {
+      const value = match[0];
+      result += escapeHtml(line.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('%%') || value.startsWith('%')) result += span('tok-keyword', value);
+      else if (/^-[A-Z]$/.test(value)) result += span('tok-operator', value);
+      else if (value.startsWith('-')) result += span('tok-builtin', value);
+      else if (['pip','install','capture'].includes(value)) result += span('tok-function', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(line.slice(last));
+  }
+  function findTripleQuote(line) {
+    const tripleDouble = String.fromCharCode(34, 34, 34);
+    const tripleSingle = String.fromCharCode(39, 39, 39);
+    const doubleIndex = line.indexOf(tripleDouble);
+    const singleIndex = line.indexOf(tripleSingle);
+    if (doubleIndex === -1) return singleIndex === -1 ? null : { index: singleIndex, quote: tripleSingle };
+    if (singleIndex === -1) return { index: doubleIndex, quote: tripleDouble };
+    return doubleIndex < singleIndex ? { index: doubleIndex, quote: tripleDouble } : { index: singleIndex, quote: tripleSingle };
+  }
+  function highlightPythonBase(line) {
+    const tokenPattern = /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_]*\b|->|==|!=|<=|>=|[=+\-*\/|:\[\]{}(),.])/g;
+    let result = '', last = 0, match, expectFunction = false, expectClass = false;
+    while ((match = tokenPattern.exec(line)) !== null) {
+      const value = match[0];
+      result += escapeHtml(line.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+      else if (/^\d/.test(value)) result += span('tok-number', value);
+      else if (expectFunction && /^[A-Za-z_]/.test(value)) { result += span('tok-function', value); expectFunction = false; }
+      else if (expectClass && /^[A-Za-z_]/.test(value)) { result += span('tok-class', value); expectClass = false; }
+      else if (keywords.has(value)) { result += span('tok-keyword', value); expectFunction = value === 'def'; expectClass = value === 'class'; }
+      else if (builtins.has(value)) result += span('tok-builtin', value);
+      else if (/^(->|==|!=|<=|>=|=|\+|-|\*|\/|\||:)$/.test(value)) result += span('tok-operator', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(line.slice(last));
+  }
+  function highlightPythonWithTripleState(line, state) {
+    if (state.inTriple) {
+      const end = line.indexOf(state.quote);
+      if (end === -1) return span('tok-string', line);
+      const before = line.slice(0, end + state.quote.length);
+      const after = line.slice(end + state.quote.length);
+      state.inTriple = false;
+      state.quote = '';
+      return span('tok-string', before) + highlightPythonWithTripleState(after, state);
+    }
+    const found = findTripleQuote(line);
+    if (!found) return highlightPythonBase(line);
+    const before = line.slice(0, found.index);
+    const rest = line.slice(found.index);
+    const close = rest.indexOf(found.quote, found.quote.length);
+    if (close === -1) {
+      state.inTriple = true;
+      state.quote = found.quote;
+      return highlightPythonBase(before) + span('tok-string', rest);
+    }
+    const literal = rest.slice(0, close + found.quote.length);
+    const after = rest.slice(close + found.quote.length);
+    return highlightPythonBase(before) + span('tok-string', literal) + highlightPythonWithTripleState(after, state);
+  }
+  function highlightOutput(text) {
+    const tokenPattern = /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_]*\b|[{}\[\]():,=])/g;
+    let result = '', last = 0, match;
+    while ((match = tokenPattern.exec(text)) !== null) {
+      const value = match[0];
+      result += escapeHtml(text.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+      else if (/^\d/.test(value)) result += span('tok-number', value);
+      else if (['Error','TypeError','InvalidUpdateError','Validation','LangChainBetaWarning'].includes(value)) result += span('tok-keyword', value);
+      else if (/^[{}\[\]():,=]$/.test(value)) result += span('tok-operator', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(text.slice(last));
+  }
+  function noteHtml(parts) {
+    return parts.map(function (part) { return '<div class="tooltip-section">' + part + '</div>'; }).join('');
+  }
+  function noteForLine(line) {
+    const t = line.trim();
+    if (!t) return '';
+    if (t.startsWith('%%capture')) return noteHtml(['<code>%%capture --no-stderr</code>, bu kurulum komutunun standart çıktısını yakalar ve hata dışı gürültüyü gizler. Hücrede paket kurulumu yapılır; ders çıktısında uzun kurulum logları gösterilmez.']);
+    if (t.startsWith('%pip install')) return noteHtml(['<code>%pip install</code> Jupyter ortamında paket kurar. <code>--quiet</code> çıktıyı azaltır, <code>-U</code> paketleri günceller. Bu satırda hedef paketler <code>langchain_core</code> ve <code>langgraph</code> olarak verilir.']);
+    if (t.startsWith('from typing_extensions import TypedDict')) return noteHtml(['<code>TypedDict</code>, state sözlüğünün beklenen alanlarını tip ipuçlarıyla tanımlar. Runtime’da tek başına doğrulama yapmaz; LangGraph bu şemayı state alanlarını ve reducer metadata’sını okumak için kullanır.']);
+    if (t.startsWith('from IPython.display import Image, display')) return noteHtml(['<code>Image</code> ve <code>display</code>, graph çizimini Jupyter hücresinde görsel çıktı olarak göstermek için kullanılır. Bu satır state’i değiştirmez; yalnızca <code>draw_mermaid_png()</code> sonucunu okunabilir hale getirir.']);
+    if (t.startsWith('from langgraph.graph import StateGraph')) return noteHtml(['Bu import, graph kurmak için gerekli temel LangGraph sembollerini alır: <code>StateGraph</code> builder sınıfıdır, <code>START</code> sanal başlangıç düğümüdür, <code>END</code> sanal bitiş düğümüdür.']);
+    if (t.startsWith('from typing import Annotated')) return noteHtml(['<code>Annotated[T, reducer]</code>, tipin yanına LangGraph’ın okuyacağı ek metadata koyar. Bu derste metadata kısmına iki argümanlı reducer fonksiyonu verilir.']);
+    if (t.startsWith('from operator import add')) return noteHtml(['<code>operator.add</code>, iki değeri <code>left + right</code> mantığıyla birleştiren hazır fonksiyondur. Liste için concatenation yapar; <code>None</code> ile listeyi otomatik uyumlu hale getirmez.']);
+    if (t.startsWith('from langgraph.graph.message import add_messages')) return noteHtml(['<code>add_messages</code>, mesaj listeleri için özel reducer’dır. Yeni <code>id</code> değerlerini append eder, aynı <code>id</code> geldiğinde mesajı günceller, <code>RemoveMessage</code> ile silme isteğini uygular.']);
+    if (t.startsWith('from langgraph.graph import MessagesState')) return noteHtml(['<code>MessagesState</code>, içinde <code>messages</code> alanı bulunan hazır state şemasıdır. Bu alan pratikte <code>Annotated[list[AnyMessage], add_messages]</code> benzeri reducer semantiğiyle kullanılır.']);
+    if (t.startsWith('from langchain_core.messages import RemoveMessage')) return noteHtml(['<code>RemoveMessage</code>, listeden doğrudan eleman çıkarmak yerine “şu <code>id</code> değerli mesaj silinsin” anlamına gelen reducer güncellemesi üretir. Bu sınıf beta uyarısı verebilir.']);
+    if (t.startsWith('from langchain_core.messages import')) return noteHtml(['Mesaj sınıfları, state içindeki konuşma geçmişini yapılandırılmış nesneler olarak taşır. <code>AIMessage</code> model cevabını, <code>HumanMessage</code> kullanıcı girdisini, <code>AnyMessage</code> ise kabul edilebilir mesaj üst tipini temsil eder.']);
+    if (t.startsWith('class State(TypedDict):')) return noteHtml(['<code>State</code>, graph boyunca taşınacak state sözlüğünün şemasıdır. İçindeki alanlar node fonksiyonlarının okuyabileceği ve kısmi olarak güncelleyebileceği key’leri belirler.']);
+    if (t.startsWith('class DefaultState(TypedDict):')) return noteHtml(['<code>DefaultState</code>, <code>foo</code> alanına hazır <code>add</code> reducer’ını bağlar. Bu şema liste değerleri için uygundur; <code>None</code> girdisini özel olarak dönüştürmez.']);
+    if (t.startsWith('class CustomReducerState(TypedDict):')) return noteHtml(['<code>CustomReducerState</code>, <code>foo</code> alanını özel <code>reduce_list</code> fonksiyonuyla birleştirir. Böylece reducer’ın <code>left</code> ve <code>right</code> değerlerini nasıl normalize edeceği açıkça kontrol edilir.']);
+    if (t.startsWith('class CustomMessagesState(TypedDict):')) return noteHtml(['Bu sınıf, mesaj state’ini elle tanımlar. <code>messages</code> alanı <code>list[AnyMessage]</code> formatındadır ve <code>add_messages</code> reducer’ı ile birleştirilir.']);
+    if (t.startsWith('class ExtendedMessagesState(MessagesState):')) return noteHtml(['<code>MessagesState</code> kalıtımı, hazır <code>messages</code> kanalını korurken ek state alanları tanımlamayı sağlar. Bu örnekte <code>added_key_1</code> ve <code>added_key_2</code> graph state’ine eklenir.']);
+    if (/^foo:\s*int$/.test(t)) return noteHtml(['<code>foo: int</code>, bu aşamada <code>foo</code> alanının tek tamsayı değer olarak beklendiğini belirtir. Reducer olmadığı için aynı step içinde birden fazla update geldiğinde hangi değerin kazanacağı belirsizdir.']);
+    if (t.includes('foo: Annotated[list[int], add]')) return noteHtml(['Bu satır, <code>foo</code> alanını <code>list[int]</code> olarak tanımlar ve merge kuralı olarak <code>add</code> fonksiyonunu bağlar. LangGraph aynı key’e gelen güncellemeleri overwrite etmek yerine <code>add(left, right)</code> ile birleştirir.']);
+    if (t.includes('foo: Annotated[list[int], reduce_list]')) return noteHtml(['Bu satırda <code>foo</code> için özel reducer kullanılır. Beklenen format <code>list[int] | None</code> değerlerinin reducer’a gelmesi ve reducer’ın her durumda <code>list</code> döndürmesidir.']);
+    if (t.includes('messages: Annotated[list[AnyMessage], add_messages]')) return noteHtml(['<code>messages</code> alanı mesaj nesneleri listesi alır. <code>add_messages(left, right)</code>, <code>left</code> mevcut geçmişi ve <code>right</code> yeni mesaj/güncelleme listesini temsil edecek şekilde birleştirme yapar.']);
+    if (t.startsWith('def node_1')) return noteHtml(['Node fonksiyonu, graph çalışırken mevcut state’i parametre olarak alır. Döndürdüğü sözlük kısmi state güncellemesidir; burada yalnızca <code>foo</code> alanı yazılır.']);
+    if (t.startsWith('def node_2') || t.startsWith('def node_3')) return noteHtml(['Bu node, branch üzerinde çalışan ayrı bir işlem adımıdır. Aynı state key’ine yazdığı için reducer yoksa çatışma üretir; reducer varsa değer merge sürecine girer.']);
+    if (t.startsWith('def reduce_list')) return noteHtml(['<code>reduce_list(left, right)</code>, LangGraph’ın aynı state alanı için çağıracağı özel reducer’dır. <code>left</code> mevcut birikmiş değer, <code>right</code> node’dan gelen yeni güncellemedir; dönüş tipi yine <code>list</code> olmalıdır.']);
+    if (t === 'left = left or []') return noteHtml(['<code>left</code> mevcut state değeridir. <code>None</code> veya boş değer geldiğinde boş listeye çevrilir; böylece <code>left + right</code> satırı tip hatası üretmez.']);
+    if (t === 'right = right or []') return noteHtml(['<code>right</code> node’un döndürdüğü yeni değerdir. <code>None</code> gelirse boş liste kabul edilir; bu karar domain açısından “eksik güncelleme yok sayılır” anlamına gelir.']);
+    if (t === 'return left + right') return noteHtml(['Reducer’ın nihai merge kuralı burada tanımlanır. Her iki taraf listeye normalize edildikten sonra sonuç concatenation ile üretilir ve LangGraph bu sonucu state alanına yazar.']);
+    if (t.startsWith('builder = StateGraph(')) return noteHtml(['<code>StateGraph(state_schema)</code>, graph builder oluşturur. Parametre olarak <code>TypedDict</code>, hazır state sınıfı veya benzeri state şeması alır; node’lar bu şemanın alanlarını okuyup kısmi güncelleme döndürür.']);
+    if (t.startsWith('builder.add_node(')) return noteHtml(['<code>add_node(name, action)</code>, graph’a çalıştırılabilir bir node ekler. <code>name</code> string node adıdır; <code>action</code> genellikle <code>state -> partial_state</code> formatında bir Python fonksiyonudur.']);
+    if (t.startsWith('builder.add_edge(START,')) return noteHtml(['<code>add_edge(START, hedef)</code>, graph’ın sanal başlangıç noktasından ilk gerçek node’a sabit yönlü geçiş kurar. Burada akış <code>START</code> noktasından belirtilen node adına gider.']);
+    if (t.startsWith('builder.add_edge("node_1",')) return noteHtml(['Bu edge, <code>node_1</code> çalıştıktan sonra hangi node veya node’ların sıraya alınacağını belirtir. Birden çok edge varsa LangGraph sonraki step’te branch’leri paralel çalıştırabilir.']);
+    if (t.startsWith('builder.add_edge("node_2", END)') || t.startsWith('builder.add_edge("node_3", END)')) return noteHtml(['Bu satır, ilgili branch node’u tamamlandıktan sonra akışı sanal bitiş düğümü <code>END</code> noktasına bağlar. <code>END</code> graph yürütmesinin final state ile kapanacağını gösterir.']);
+    if (t.startsWith('graph = builder.compile()')) return noteHtml(['<code>compile()</code>, builder üzerinde tanımlanan node, edge ve reducer kurallarını çalıştırılabilir graph nesnesine dönüştürür. Bu adımdan önce <code>invoke</code> çağrısı yapılamaz.']);
+    if (t.startsWith('display(Image(graph.get_graph().draw_mermaid_png()))')) return noteHtml(['Bu satır graph topolojisini görselleştirir. <code>get_graph()</code> çizilebilir graph temsilini alır, <code>draw_mermaid_png()</code> Mermaid tabanlı görsel üretir, <code>display(Image(...))</code> sonucu Jupyter-stil çıktı alanına taşır.']);
+    if (t.startsWith('graph.invoke(')) return noteHtml(['<code>invoke(input_state)</code>, graph’ı tek sefer çalıştırır. Parametre state şemasına uygun bir <code>dict</code> olmalıdır; dönüş değeri graph tamamlandığında oluşan final state sözlüğüdür.']);
+    if (t.includes('state[\'foo\'][0]')) return noteHtml(['<code>state[\'foo\'][0]</code>, mevcut listenin ilk elemanını okur. Bu örnek, reducer öncesi ve sonrası state değerinin node tarafından normal Python veri yapısı gibi okunabildiğini gösterir.']);
+    if (t.includes('state[\'foo\'][-1]')) return noteHtml(['<code>state[\'foo\'][-1]</code>, listenin son elemanını alır. Branch node’ları mevcut son değerden yeni liste güncellemesi üretir; reducer bu güncellemeleri ana listeyle birleştirir.']);
+    if (t.startsWith('return {"foo":')) return noteHtml(['Node dönüşü kısmi state update formatındadır. Anahtar gerçek state alanı olmalı; değer ise o alanın reducer’ının beklediği formatta verilmelidir.']);
+    if (t.startsWith('from langgraph.errors import InvalidUpdateError')) return noteHtml(['<code>InvalidUpdateError</code>, graph state güncellemesi LangGraph kurallarına uymadığında yükseltilen hatadır. Bu derste aynı key’e reducer olmadan paralel yazma durumunu yakalamak için kullanılır.']);
+    if (t === 'try:') return noteHtml(['Bu blok, öğretici amaçla beklenen hatayı yakalar ve akışın sonraki örneklere devam etmesini sağlar. Hata saklanmaz; mesajı terminal çıktısında gösterilir.']);
+    if (t.startsWith('except InvalidUpdateError')) return noteHtml(['Bu <code>except</code> dalı yalnızca LangGraph güncelleme hatasını yakalar. Yakalanan <code>e</code> nesnesi, hangi state key’inde merge kuralı gerektiğini açıklayan hata metnini taşır.']);
+    if (t.startsWith('except TypeError')) return noteHtml(['Bu <code>except</code> dalı Python seviyesindeki tip hatasını yakalar. Buradaki hata LangGraph edge yapısından değil, reducer fonksiyonunun <code>None</code> ile listeyi birleştirmeye çalışmasından kaynaklanır.']);
+    if (t.startsWith('initial_messages = [')) return noteHtml(['Başlangıç mesaj geçmişi Python listesi olarak kurulur. Elemanlar <code>AIMessage</code> ve <code>HumanMessage</code> nesneleridir; reducer bu listeyi sol taraf, yeni mesajları sağ taraf olarak işler.']);
+    if (t.includes('AIMessage(')) return noteHtml(['<code>AIMessage</code>, model tarafından üretilmiş mesajı temsil eder. Sık kullanılan alanlar: <code>content</code> metin içeriği, <code>name</code> isteğe bağlı kaynak adı, <code>id</code> update/delete eşleştirmesinde kullanılan kimliktir.']);
+    if (t.includes('HumanMessage(')) return noteHtml(['<code>HumanMessage</code>, kullanıcı mesajını temsil eder. <code>content</code> zorunlu metin içeriğidir; <code>name</code> ve <code>id</code> alanları geçmişi takip etmeyi ve reducer güncellemesini kolaylaştırır.']);
+    if (t.startsWith('content=')) return noteHtml(['<code>content</code>, mesajın metin gövdesidir. Format string olmalıdır; uzun metinlerde PEP 8 uyumu için parantez içinde bitişik string parçaları kullanılabilir.']);
+    if (t.startsWith('name=')) return noteHtml(['<code>name</code>, mesajı üreten tarafı okunabilir biçimde etiketler. Reducer için zorunlu kimlik değildir; ders çıktılarında model ve kullanıcı rolünü izlemeyi kolaylaştırır.']);
+    if (t.startsWith('id=')) return noteHtml(['<code>id</code>, mesaj reducer’ının eşleştirme anahtarıdır. Aynı <code>id</code> yeniden gelirse mesaj güncellenir; <code>RemoveMessage</code> aynı <code>id</code> ile silme işlemi yapar.']);
+    if (t.startsWith('new_message =')) return noteHtml(['<code>new_message</code>, mevcut mesaj geçmişine eklenecek sağ taraf güncellemesidir. Tek mesaj veya mesaj listesi olarak verilebilir; bu örnekte tek <code>HumanMessage</code> nesnesi kullanılır.']);
+    if (t.startsWith('add_messages(')) return noteHtml(['<code>add_messages(left, right)</code> iki mesaj koleksiyonunu birleştirir. <code>right</code> içindeki mesajın <code>id</code> değeri <code>left</code> içinde yoksa append, varsa replace, <code>RemoveMessage</code> ise delete davranışı uygulanır.']);
+    if (t.startsWith('delete_messages =')) return noteHtml(['<code>delete_messages</code>, silme güncellemeleri listesidir. Her eleman <code>RemoveMessage(id=...)</code> formatındadır ve reducer bu <code>id</code> değerlerine sahip mevcut mesajları kaldırır.']);
+    if (t.includes('RemoveMessage(id=m.id)')) return noteHtml(['Bu ifade, mevcut her mesajın <code>id</code> değerinden bir silme isteği üretir. Format <code>RemoveMessage(id=&lt;message_id&gt;)</code> şeklindedir; içerik alanı boş olabilir çünkü amaç mesaj metni değil silme komutudur.']);
+    if (t.startsWith('print(')) return noteHtml(['<code>print</code> çağrısı, hangi node’un çalıştığını terminal çıktısında görünür hale getirir. State’i değiştirmez; yalnızca yürütme sırasını okumayı kolaylaştırır.']);
+    return '';
+  }
+  function renderCodeLines(block, raw, lang) {
+    const lines = raw.split('\n');
+    const tripleState = { inTriple: false, quote: '' };
+    block.innerHTML = '';
+    lines.forEach(function (line) {
+      const lineEl = document.createElement('span');
+      lineEl.className = 'code-line';
+      const trimmed = line.trim();
+      let htmlLine;
+      if (lang === 'shell' || (trimmed.startsWith('%') && !tripleState.inTriple)) htmlLine = highlightShell(line);
+      else if (lang === 'python') htmlLine = highlightPythonWithTripleState(line, tripleState);
+      else htmlLine = highlightOutput(line);
+      lineEl.innerHTML = htmlLine || '&nbsp;';
+      const note = noteForLine(line);
+      if (note) { lineEl.dataset.note = note; lineEl.tabIndex = 0; }
+      block.appendChild(lineEl);
+    });
+  }
+  document.querySelectorAll('pre code[data-lang]').forEach(function (block) {
+    try {
+      const lang = block.getAttribute('data-lang');
+      const raw = block.textContent;
+      block.dataset.rawCode = raw;
+      if (block.closest('.code-body')) renderCodeLines(block, raw, lang);
+      else block.innerHTML = highlightOutput(raw);
+    } catch (err) {
+      block.dataset.renderError = err && err.message ? err.message : 'true';
+    }
+  });
+  const tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  let activeLine = null;
+  function positionTooltip(line) {
+    const rect = line.getBoundingClientRect();
+    tooltip.style.maxWidth = window.innerWidth <= 560 ? 'calc(100vw - 32px)' : '420px';
+    const tipRect = tooltip.getBoundingClientRect();
+    let left = rect.right + 12;
+    let top = rect.top - 4;
+    if (left + tipRect.width > window.innerWidth - 16) {
+      left = Math.max(16, rect.left);
+      top = rect.bottom + 8;
+    }
+    if (top + tipRect.height > window.innerHeight - 16) top = Math.max(16, rect.top - tipRect.height - 8);
+    if (left + tipRect.width > window.innerWidth - 16) left = Math.max(16, window.innerWidth - tipRect.width - 16);
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(line) {
+    activeLine = line;
+    tooltip.innerHTML = line.dataset.note || '';
+    tooltip.classList.add('is-visible');
+    positionTooltip(line);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line); });
+  document.addEventListener('pointerout', function (event) { if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip(); });
+  document.addEventListener('scroll', function () { if (activeLine) positionTooltip(activeLine); }, true);
+  window.addEventListener('resize', function () { if (activeLine) positionTooltip(activeLine); });
+  document.addEventListener('focusin', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line); });
+  document.addEventListener('focusout', function (event) { if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip(); });
+  document.querySelectorAll('.copy-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const card = button.closest('.code-card');
+      const code = card ? card.querySelector('code[data-lang]') : null;
+      const text = code ? (code.dataset.rawCode || code.textContent) : '';
+      function done() { const old = button.textContent; button.textContent = 'Kopyalandı!'; setTimeout(function () { button.textContent = old; }, 1500); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+      else fallback();
+      function fallback() {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.left = '-9999px';
+        document.body.appendChild(area);
+        area.select();
+        try { document.execCommand('copy'); done(); } catch (err) { button.textContent = 'Kopyalanamadı'; }
+        document.body.removeChild(area);
+      }
+    });
+  });
+  function fitTitle() {
+    const title = document.getElementById('lesson-title');
+    if (!title) return;
+    title.style.fontSize = '';
+    const min = 28;
+    let size = parseFloat(window.getComputedStyle(title).fontSize);
+    while (title.scrollWidth > title.clientWidth && size > min) {
+      size -= 1;
+      title.style.fontSize = size + 'px';
+    }
+  }
+  fitTitle();
+  window.addEventListener('resize', fitTitle);
+})();
+</script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

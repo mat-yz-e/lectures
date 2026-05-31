@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harici Veritabanı Belleği ile Kalıcı Chatbot State’i</title>
+  <style>
+:root { --lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb; --lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db; --lesson-card:#ffffff; --lesson-card-muted:#f8fafc; --langgraph-primary:#153f3b; --langgraph-secondary:#0f766e; --langgraph-soft:#dbe9e7; --code-bg:#f7f7f7; --code-surface:#f7f7f7; --code-text:#000000; --code-muted:#4b5563; --code-border:#cccccc; --code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff; --code-number:#666666; --code-class:#000000; --code-builtin:#008000; --code-operator:#aa22ff; }
+html,body{margin:0;padding:0;max-width:100%;overflow-x:hidden;background:var(--lesson-bg)}*,*::before,*::after{box-sizing:border-box}.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.55}.lesson-page>article{margin:0 auto;counter-reset:section}.lesson-page,.lesson-page section,.title-block,.definition-card,.example-card,.note-card,.question-card,.mini-panel,.output-comment,.flow-step,.state-item{min-width:0;max-width:100%}.title-block{display:flex;flex-direction:column;align-items:stretch;margin:0 0 2rem;text-align:center}.lesson-logo{align-self:center;display:block;width:clamp(3.5rem,8vw,5.5rem);height:clamp(3.5rem,8vw,5.5rem);object-fit:contain;margin:0 auto 1rem}.lesson-logo-fallback{margin:0 auto 1rem;padding:.55rem .8rem;border:1px solid var(--lesson-border);border-radius:.4rem;color:var(--langgraph-primary);font-weight:700}.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-weight:700;line-height:1.25}.lesson-page h1{width:100%;min-width:0;max-width:100%;margin:0;font-size:clamp(1.95rem,3.6vw,2.75rem);text-align:center;text-wrap:balance;overflow-wrap:anywhere;word-break:normal}.lead-text{width:100%;min-width:0;max-width:760px;margin:.9rem auto 0;color:var(--lesson-muted);font-size:1.05rem}.lesson-page p,.lesson-page li,.lead-text{overflow-wrap:anywhere;word-break:normal}.lesson-page h2{display:flex;align-items:center;gap:.55rem;margin:2.2rem 0 .85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.75rem);counter-increment:section;counter-reset:subsection}.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums}.lesson-page h3{display:flex;align-items:center;gap:.55rem;margin:1.45rem 0 .65rem;font-size:clamp(1.12rem,1.65vw,1.32rem);counter-increment:subsection;counter-reset:subsubsection}.lesson-page h3::before{content:counter(section) "." counter(subsection);color:currentColor;font-variant-numeric:tabular-nums}.lesson-page h4{margin:1rem 0 .45rem;font-size:1.02rem;counter-increment:subsubsection}.lesson-page h4::before{content:counter(section) "." counter(subsection) "." counter(subsubsection) " ";font-variant-numeric:tabular-nums}.definition-card h3,.example-card h3,.note-card h3,.question-card h3,.mini-panel h3,.output-comment h3,.mini-panel h4,.output-comment h4{display:block;counter-increment:none;counter-reset:none;margin:0 0 .45rem;font-size:1rem}.definition-card h3::before,.example-card h3::before,.note-card h3::before,.question-card h3::before,.mini-panel h3::before,.output-comment h3::before,.mini-panel h4::before,.output-comment h4::before{content:none}p{margin:.55rem 0 .9rem}ul,ol{margin:.65rem 0 1rem;padding-left:1.35rem}li+li{margin-top:.32rem}code:not(.code-body code):not(.output-body code){padding:.08rem .24rem;border-radius:.28rem;background:#eeeeee;color:#111111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.9em}.definition-card,.example-card,.note-card,.question-card,.mini-panel,.output-comment{border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-card);padding:.95rem 1rem}.definition-card{border-left:4px solid var(--langgraph-primary);background:linear-gradient(90deg,rgba(219,233,231,.55),#fff 38%)}.note-card{border-left:4px solid var(--langgraph-secondary);background:var(--lesson-card-muted)}.question-card{border-left:4px solid var(--lesson-border-strong);background:var(--lesson-soft)}.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0 1rem 4.95rem}.mini-panel p{margin-bottom:0;color:var(--lesson-muted)}.output-comment{margin:.65rem 0 1rem 4.95rem;background:#fff;color:var(--lesson-muted)}.output-comment strong{color:var(--lesson-text)}.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:.65rem}table{width:100%;border-collapse:collapse;min-width:680px;background:#fff}th,td{padding:.8rem .85rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top}th{background:var(--lesson-soft);color:var(--langgraph-primary);font-size:.95rem}tr:last-child td{border-bottom:0}.concept-map{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.65rem;margin:1.2rem 0;align-items:stretch}.flow-step{min-height:5.5rem;padding:.85rem;border:1px solid var(--lesson-border);border-radius:.6rem;background:var(--lesson-soft);position:relative}.flow-step strong{display:block;margin-bottom:.35rem;color:var(--langgraph-primary);font-size:.98rem}.flow-step span{color:var(--lesson-muted);font-size:.95rem;line-height:1.45}.flow-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-.52rem;width:.5rem;height:1px;background:var(--lesson-border-strong)}.state-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;margin:1rem 0}.state-item{padding:.9rem 1rem;border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-card)}.state-item strong{display:block;margin-bottom:.3rem;color:var(--langgraph-primary)}.checklist{list-style:none;padding-left:0}.checklist li{position:relative;padding-left:1.25rem}.checklist li::before{content:"";position:absolute;left:0;top:.72em;width:.45rem;height:.45rem;border-radius:50%;background:var(--langgraph-secondary)}.chat-flow{display:grid;gap:.65rem;margin:1rem 0}.chat-bubble{max-width:78%;padding:.75rem .85rem;border:1px solid var(--lesson-border);border-radius:.65rem;background:var(--lesson-soft)}.chat-bubble.user{justify-self:end;background:#fff;border-color:var(--lesson-border-strong)}.chat-bubble.assistant{justify-self:start;border-left:3px solid var(--langgraph-secondary)}.chat-bubble strong{display:block;margin-bottom:.25rem;color:var(--langgraph-primary);font-size:.9rem}.walk-card{margin:1.35rem 0 1.75rem}.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 .65rem;margin:1.15rem 0;border:0;border-radius:0;overflow:visible;background:transparent}.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1 / span 2;padding-top:.62rem;color:#303f9f;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.88rem;line-height:1.4;text-align:right;white-space:nowrap}.code-head{position:absolute;top:.35rem;right:.45rem;z-index:2;display:flex;align-items:center;justify-content:flex-end;padding:0;border:0;background:transparent}.code-title{display:none}.copy-btn{border:1px solid #c4c8cf;border-radius:.35rem;background:rgba(255,255,255,.92);color:#374151;cursor:pointer;font-size:.78rem;padding:.22rem .5rem}.copy-btn:hover{background:#fff}.code-body,.output-body{margin:0;overflow-x:auto;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.91rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;tab-size:4}.code-body{grid-column:2;padding:.72rem 5.2rem .72rem .8rem;border:1px solid var(--code-border);border-radius:0 0 .2rem .2rem;background:var(--code-bg)}.code-line{display:block;width:100%;min-width:0;padding:0 .25rem;border-radius:.18rem;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.code-line[data-note]{cursor:help;text-decoration:none;border-bottom:0}.code-line[data-note] *{text-decoration:none}.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:0;text-decoration:none}.line-tooltip{position:fixed;z-index:50;max-width:420px;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid #4c78a8;border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease}.line-tooltip.is-visible{opacity:1;transform:translateY(0)}.line-tooltip .tooltip-section+.tooltip-section{margin-top:.55rem;padding-top:.55rem;border-top:1px solid #eaeef2}.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12.5px}.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 .65rem;margin:1rem 0;border:0;border-radius:0;overflow:visible;background:transparent}.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1 / span 2;padding-top:.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:.88rem;line-height:1.4;text-align:right;white-space:nowrap}.output-head{grid-column:2;padding:.42rem .55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:.2rem .2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-size:.78rem;cursor:default}.output-body{grid-column:2;padding:.72rem .8rem;border:1px solid var(--code-border);border-radius:0 0 .2rem .2rem;background:var(--code-bg)}.output-card.output-scroll .output-body{max-height:28rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;scrollbar-width:auto}.output-card.output-scroll .output-body::-webkit-scrollbar{width:11px;height:11px}.output-card.output-scroll .output-body::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d9d9d9}.output-card.output-scroll .output-body::-webkit-scrollbar-thumb{background:#b8b8b8;border:2px solid #f2f2f2;border-radius:6px}.output-card.output-scroll .output-body::-webkit-scrollbar-thumb:hover{background:#9ca3af}.output-visual{white-space:normal;text-align:center;overflow:auto}.output-visual img{display:block;max-width:100%;height:auto;margin:0 auto}.tok-keyword{color:var(--code-keyword);font-weight:700}.tok-string{color:var(--code-string)}.tok-comment{color:var(--code-comment);font-style:italic}.tok-function{color:var(--code-function)}.tok-number{color:var(--code-number)}.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }.tok-builtin{color:var(--code-builtin)}.tok-operator{color:var(--code-operator)}.tok-magic{color:#008000;font-weight:700}.tok-flag{color:#aa22ff}.tok-shell-command{color:#0000ff;font-weight:700}@media(max-width:860px){.concept-map,.explain-grid,.state-list{grid-template-columns:1fr}.flow-step:not(:last-child)::after{display:none}table{min-width:620px}}@media(max-width:560px){.lesson-page{padding:1rem;font-size:1rem;line-height:1.72}.title-block{display:block}.lesson-logo{margin-left:auto;margin-right:auto}.lesson-page h1{display:block;width:100%;font-size:clamp(1.55rem,7vw,1.9rem);line-height:1.22;word-break:break-word}.lead-text{display:block;width:100%;font-size:1rem}.code-card,.output-card{grid-template-columns:minmax(0,1fr)}.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 .25rem;text-align:left}.code-body,.output-head,.output-body{grid-column:1}.code-head{top:1.8rem;right:.45rem}.code-body{font-size:.84rem;padding:.85rem 4.85rem .85rem .85rem}.output-body{font-size:.84rem;padding:.85rem}.explain-grid,.output-comment{margin-left:0}.line-tooltip{max-width:calc(100vw - 32px)}.chat-bubble{max-width:100%}}
+
+
+/* External-memory lesson refinements */
+.output-card.output-scroll .output-body,
+pre.output-body:not(.output-visual) {
+  max-height: 28rem;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  scrollbar-color: #b8b8b8 #f2f2f2;
+  scrollbar-width: auto;
+}
+.output-card.output-scroll .output-body::-webkit-scrollbar,
+pre.output-body:not(.output-visual)::-webkit-scrollbar {
+  width: 13px;
+  height: 13px;
+}
+.output-card.output-scroll .output-body::-webkit-scrollbar-track,
+pre.output-body:not(.output-visual)::-webkit-scrollbar-track {
+  background: #f2f2f2;
+  border-left: 1px solid #d6d6d6;
+}
+.output-card.output-scroll .output-body::-webkit-scrollbar-thumb,
+pre.output-body:not(.output-visual)::-webkit-scrollbar-thumb {
+  background: #b8b8b8;
+  border: 3px solid #f2f2f2;
+  border-radius: 999px;
+}
+.walk-card > p,
+.walk-card > .note-card,
+.walk-card > .question-card {
+  margin-left: 0;
+}
+.explain-grid {
+  margin-left: 4.95rem;
+}
+.output-comment {
+  margin-left: 4.95rem;
+}
+.output-comment h4,
+.mini-panel h4 {
+  line-height: 1.3;
+}
+.code-body {
+  line-height: 1.52;
+}
+.code-line {
+  min-height: 1.52em;
+  padding-top: 0.01rem;
+  padding-bottom: 0.01rem;
+}
+.code-line:empty::before {
+  content: "\00a0";
+}
+.output-visual svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.flow-step {
+  overflow: hidden;
+}
+.flow-step strong {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.25;
+}
+.flow-step strong code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.flow-step code,
+.state-item code,
+.mini-panel code,
+.output-comment code,
+.definition-card code,
+.note-card code,
+.question-card code,
+.table-wrap code {
+  padding: 0.08rem 0.28rem;
+  border: 1px solid #d8dee4;
+  border-radius: 0.25rem;
+  background: #f6f8fa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
+}
+@media (max-width: 860px) {
+  .concept-map,
+  .state-list,
+  .explain-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .explain-grid,
+  .output-comment {
+    margin-left: 0;
+  }
+}
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html" class="is-active" aria-current="page">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+      <header class="title-block">
+  <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu">
+  <h1 id="lesson-title">Harici Veritabanı Belleği ile Kalıcı Chatbot State’i</h1>
+  <p class="lead-text">Bu ders, özetlemeli chatbot state’inin yalnızca geçici oturum belleğinde değil, SQLite tabanlı harici bir checkpointer üzerinden kalıcı biçimde nasıl sürdürülebileceğini açıklar.</p>
+</header><section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+  <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+  <p>Bu bölümde amaç, özetlemeli bir chatbot’un belleğini yalnızca çalışma sürecinin belleğine bağlı bırakmadan, harici bir veritabanı üzerinden sürdürebilmektir. Önceki yaklaşımda konuşma state’i bir checkpointer ile korunur; ancak bu koruma süreç sonlandığında veya geliştirme oturumu yeniden başlatıldığında kaybolabilir. Buradaki ana fikir, aynı LangGraph state sözleşmesini korurken checkpointer katmanını SQLite tabanlı hale getirmektir.</p>
+  <div class="definition-card">
+    <h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3>
+    <p>LangGraph’ta uzun süreli chatbot belleği, yalnızca mesaj özetleme tekniğiyle değil, state’i thread bazlı olarak harici bir checkpointer’a yazmakla güvenilir hale gelir. SQLite, bu fikri yerel ve anlaşılır bir veritabanı üzerinden göstermek için uygun bir başlangıç noktasıdır.</p>
+  </div>
+</section><section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+  <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+  <ul class="checklist">
+    <li>In-memory checkpointer ile dosya tabanlı SQLite checkpointer arasındaki farkı açıklayabilecek.</li>
+    <li><code>SqliteSaver</code> nesnesinin graph compile aşamasında nasıl kullanıldığını gösterebilecek.</li>
+    <li><code>thread_id</code> değerinin aynı konuşma state’ine erişimde neden kritik olduğunu yorumlayabilecek.</li>
+    <li>Özetleme node’u, mesaj silme işlemi ve kalıcı checkpoint ilişkisini kod üzerinden takip edebilecek.</li>
+    <li><code>graph.get_state(config)</code> ile kalıcı state’in nasıl incelendiğini açıklayabilecek.</li>
+    <li>Studio/API ortamındaki yerleşik kalıcılık fikrini etkileşimli çalışma ortamındaki SQLite örneğiyle ilişkilendirebilecek.</li>
+  </ul>
+</section><section id="on-kosullar" aria-labelledby="on-kosullar-title">
+  <h2 id="on-kosullar-title">Ön Koşullar</h2>
+  <ul>
+    <li>Python fonksiyonları, dictionary ve list yapıları.</li>
+    <li>Type hint kullanımı ve <code>Literal</code> tür ipucu.</li>
+    <li>LLM mesaj nesneleri: <code>HumanMessage</code>, <code>SystemMessage</code>, <code>RemoveMessage</code>.</li>
+    <li>LangGraph’ta <code>StateGraph</code>, node, edge ve compile mantığı.</li>
+    <li>Ortam değişkeni ile API anahtarı okuma yaklaşımı.</li>
+    <li>SQLite bağlantısının dosya tabanlı veya bellek içi çalışabileceğine dair temel sezgi.</li>
+  </ul>
+</section><section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+  <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+  <div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody><tr><td><code>SqliteSaver</code></td><td>SQLite bağlantısını LangGraph checkpointer arayüzüne bağlayan sınıf.</td><td>Graph state’inin thread bazlı olarak veritabanına yazılıp okunmasını sağlar.</td></tr><tr><td><code>sqlite3.connect</code></td><td>Python standart kütüphanesiyle SQLite bağlantısı açar.</td><td><code>SqliteSaver</code> bu bağlantıyı kalıcı state deposu olarak kullanır.</td></tr><tr><td><code>:memory:</code></td><td>SQLite veritabanını süreç belleğinde oluşturur.</td><td>Kalıcı dosya yazmadan checkpointer davranışını denemek için kullanılır.</td></tr><tr><td><code>db_path</code></td><td>Dosya tabanlı SQLite veritabanının konumunu tutar.</td><td>Aynı dosya tekrar açıldığında önceki thread state’i okunabilir.</td></tr><tr><td><code>checkpointer</code></td><td>Graph yürütme durumunu kaydeden kalıcılık katmanı.</td><td><code>workflow.compile(checkpointer=memory)</code> ile graph’a bağlanır.</td></tr><tr><td><code>thread_id</code></td><td>Aynı konuşma geçmişini ayırt eden yapılandırma anahtarı.</td><td><code>graph.invoke</code> ve <code>graph.get_state</code> aynı thread state’ine erişir.</td></tr><tr><td><code>MessagesState</code></td><td>State içinde mesaj listesini taşıyan hazır şema.</td><td>Chatbot node’ları mesaj geçmişini bu alan üzerinden okur ve günceller.</td></tr><tr><td><code>summary</code></td><td>Uzayan konuşmanın sıkıştırılmış metin özeti.</td><td>Yeni model çağrılarında geçmiş bağlamı daha kısa temsil eder.</td></tr><tr><td><code>RemoveMessage</code></td><td>State’ten belirli mesajları silmeyi ifade eden özel message nesnesi.</td><td>Özetleme sonrası eski mesajları azaltırken reducer davranışıyla uyumlu çalışır.</td></tr><tr><td><code>StateSnapshot</code></td><td>Bir thread için graph state’inin okunmuş anlık temsilidir.</td><td><code>graph.get_state(config)</code> ile kalıcı kayıttan incelenir.</td></tr></tbody></table></div>
+</section><section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+  <h2 id="buyuk-resim-title">Büyük Resim</h2>
+  <p>Bu derste iki ayrı problem aynı graph içinde birleşir. Birinci problem, konuşma geçmişinin token maliyetini kontrol altında tutmaktır; bu amaçla eski mesajlar özetlenir ve state içinde <code>summary</code> alanı tutulur. İkinci problem, bu state’in geliştirme oturumu bittikten sonra da geri yüklenebilmesidir; bu amaçla SQLite tabanlı checkpointer kullanılır.</p>
+  <div class="concept-map">
+    <div class="flow-step"><strong>Kullanıcı mesajı</strong><span><code>HumanMessage</code> olarak state’e eklenir.</span></div>
+    <div class="flow-step"><strong>Model node’u</strong><span>Varsa özetle birlikte mesajları LLM’e gönderir.</span></div>
+    <div class="flow-step"><strong>Routing</strong><span>Mesaj sayısına göre bitiş veya özetleme kararı verir.</span></div>
+    <div class="flow-step"><strong>Özetleme</strong><span>Eski mesajları sıkıştırır ve gereksiz mesajları kaldırır.</span></div>
+    <div class="flow-step"><strong>SQLite checkpoint</strong><span>Thread state’ini dosya tabanlı veritabanında saklar.</span></div>
+  </div>
+</section><section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+  <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+  <h3 id="gecici-bellekten-kalici-bellege-gecis">Geçici Bellekten Kalıcı Belleğe Geçiş</h3>
+  <p>In-memory checkpointer, graph state’ini çalışma süreci boyunca tutar. Bu, öğrenme ve hızlı deneme için yeterlidir; fakat süreç yeniden başlatıldığında geçmiş state silinir. Harici veritabanı checkpointer’ı ise state’i belleğin dışına taşır. Bu nedenle aynı graph yeniden derlense bile aynı <code>thread_id</code> üzerinden önceki state’e erişilebilir.</p>
+  <div class="note-card">
+    <h3 id="kalici-bellegin-siniri">Kalıcı Belleğin Sınırı</h3>
+    <p>SQLite checkpointer state’i diskte saklar; ancak modelin nasıl cevap vereceğini sabitlemez. Kalıcılık, konuşma state’inin saklanmasıyla ilgilidir. LLM çağrısının içeriği, gönderilen mesajlar ve model davranışı tarafından belirlenir.</p>
+  </div>
+  <h3 id="ozetleme-ve-checkpoint-birlikte-nasil-calisir">Özetleme ve Checkpoint Birlikte Nasıl Çalışır?</h3>
+  <p>Özetleme node’u, mesaj sayısı belirli bir eşiği aştığında eski mesajları sıkıştırır. <code>RemoveMessage</code> nesneleri eski mesajların state’ten çıkarılmasını ifade ederken, <code>summary</code> alanı uzun konuşmanın kısa temsilini korur. Checkpointer bu güncellenmiş state’i thread kimliğiyle saklar.</p>
+  <h3 id="studio-baglami">Studio Bağlamı</h3>
+  <p>Yerel Studio geliştirme akışında graph bir API süreci tarafından paketlenir ve kalıcılık katmanı uygulama dışından sağlanır. Bu dersin SQLite örneği, aynı fikri daha küçük ve gözlemlenebilir bir ortamda gösterir: graph state’i runtime belleğinden ayrılır ve kalıcı bir depoya bağlanır.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Studio geliştirme sunucusu</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="shell">langgraph dev</code></pre>
+</div>
+  <div class="output-card output-scroll">
+    <div class="output-head">Terminal çıktısı</div>
+    <pre class="output-body"><code data-lang="output">- API: http://127.0.0.1:2024
+- Studio UI: https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+- API Docs: http://127.0.0.1:2024/docs</code></pre>
+  </div>
+  <div class="output-comment">
+    <h4>Çıktı Yorumu</h4>
+    <p>Bu komut yerel geliştirme sunucusunu başlatır. Terminalde API adresi, Studio arayüz adresi ve API dokümantasyon adresi görünür; bu dersin ana konusu ise bu arayüzden bağımsız olarak state kalıcılığıdır.</p>
+  </div>
+</section><section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+  <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+  <p>Bu bölümde kodlar doğal çalışma sırasına göre ele alınır. Çıktı üreten bloklarda, Jupyter görünümüne uygun ve çalıştırıldığında beklenen nesne/formatı temsil eden output hücreleri gösterilir.</p>
+<article class="walk-card" id="kod-adimi-1">
+  <h3 id="gerekli-paketleri-kurma">Gerekli paketleri kurma</h3>
+  <p>Bu blok SQLite checkpointer desteği ve LangGraph graph çalıştırması için gerekli paketleri kurar. Kurulum çıktısı bastırıldığı için sayfa gürültüsüz kalır.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Gerekli paketleri kurma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langgraph-checkpoint-sqlite langchain_core langgraph langchain_openai</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>Harici veritabanı checkpointer’ı ayrı bir paket üzerinden gelir; bu nedenle yalnızca temel LangGraph kurulumu yeterli değildir.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Kurulum satırı çalışma ortamına etki eder. Ders kodunu üretim uygulamasına taşırken bağımlılıklar proje bağımlılık dosyasında yönetilmelidir.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-2">
+  <h3 id="api-anahtarini-ortam-degiskeninden-alma">API anahtarını ortam değişkeninden alma</h3>
+  <p>Model çağrısı için gerekli anahtar kod içine yazılmaz; eksikse kullanıcıdan gizli giriş olarak alınır.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">API anahtarını ortam değişkeninden alma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+
+_set_env("OPENAI_API_KEY")</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>LangGraph node’u içinde yapılan LLM çağrıları çalışma zamanı ortam değişkenlerine dayanır. Graph kodunun state mantığı ile gizli anahtar yönetimi ayrılmalıdır.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>API anahtarını doğrudan kod içine koymak güvenlik riski oluşturur. Bu blok yalnızca süreç ortamını ayarlar; kalıcı veritabanına anahtar yazmaz.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-3">
+  <h3 id="sqlite-baglantisini-bellek-icinde-acma">SQLite bağlantısını bellek içinde açma</h3>
+  <p>Bu blok SQLite’ın <code>:memory:</code> kipini gösterir. Bu kip veritabanını dosyaya yazmaz; bağlantı yaşadığı sürece var olur.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">SQLite bağlantısını bellek içinde açma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">import sqlite3
+
+# In memory
+conn = sqlite3.connect(":memory:", check_same_thread=False)</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p><code>SqliteSaver</code> aynı bağlantı nesnesiyle çalışabilir. Bu, checkpointer arayüzünü test etmek için hızlı bir yoldur.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Bellek içi SQLite, harici dosya kalıcılığı sağlamaz. Bu nedenle uzun süreli chatbot belleği için asıl kritik örnek dosya tabanlı bağlantıdır.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-4">
+  <h3 id="dosya-tabanli-sqlite-veritabanina-baglanma">Dosya tabanlı SQLite veritabanına bağlanma</h3>
+  <p>Bu blok yerel veritabanı dosyasının bulunmasını sağlar ve ardından SQLite bağlantısını dosya yolu üzerinden açar.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Dosya tabanlı SQLite veritabanına bağlanma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python"># pull file if it doesn't exist and connect to local db
+!mkdir -p state_db &amp;&amp; [ ! -f state_db/example.db ] &amp;&amp; wget -P state_db https://github.com/langchain-ai/langchain-academy/raw/main/module-2/state_db/example.db
+
+db_path = "state_db/example.db"
+conn = sqlite3.connect(db_path, check_same_thread=False)</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>Dosya tabanlı bağlantı, graph state’inin süreç yeniden başlasa bile tekrar okunabilmesini sağlar.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Komut satırı indirme adımı ağ erişimi gerektirebilir. Veritabanı dosyası mevcutsa komut yeni dosya indirmeden mevcut dosyayı kullanır.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-5">
+  <h3 id="sqlite-baglantisindan-checkpointer-olusturma">SQLite bağlantısından checkpointer oluşturma</h3>
+  <p>Bu blok SQLite bağlantısını LangGraph checkpointer nesnesine dönüştürür.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">SQLite bağlantısından checkpointer oluşturma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python"># Here is our checkpointer
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+memory = SqliteSaver(conn)</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p><code>SqliteSaver(conn)</code>, graph compile aşamasında kullanılacak kalıcılık katmanıdır.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p><code>memory</code> adı burada checkpointer nesnesini temsil eder; bu, LLM belleğiyle karıştırılmamalıdır. Nesne graph state’ini saklar.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-6">
+  <h3 id="model-ve-state-semasini-tanimlama">Model ve state şemasını tanımlama</h3>
+  <p>Bu blok chatbot’un kullanacağı modeli ve <code>summary</code> alanı eklenmiş state şemasını tanımlar.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Model ve state şemasını tanımlama</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">from typing_extensions import Literal
+
+from langchain_core.messages import HumanMessage, RemoveMessage, SystemMessage
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, MessagesState
+
+
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+
+
+class State(MessagesState):
+    """
+    Define the state schema used by the graph.
+    """
+    summary: str</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p><code>MessagesState</code> mesaj listesini taşır; <code>State</code> sınıfı buna özet alanı ekleyerek graph state sözleşmesini genişletir.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p><code>summary</code> alanı local değişken değildir. Node’lar arasında taşınan ve checkpointer tarafından saklanan state alanıdır.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-7">
+  <h3 id="model-cagrisi-nodeunu-yazma">Model çağrısı node’unu yazma</h3>
+  <p>Bu node varsa önceki konuşma özetini system mesajı olarak yeni mesajların önüne ekler ve modeli çağırır.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Model çağrısı node’unu yazma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python"># Define the logic to call the model
+def call_model(state: State):
+    """
+    Run the call_model graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # Get summary if it exists
+    summary = state.get("summary", "")
+
+    # If there is summary, then we add it
+    if summary:
+        # Add summary to system message
+        system_message = f"Summary of conversation earlier: {summary}"
+
+        # Append summary to any newer messages
+        messages = [SystemMessage(content=system_message)] + state["messages"]
+    else:
+        messages = state["messages"]
+
+    response = model.invoke(messages)
+    return {"messages": response}</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>Model node’u state’i doğrudan değiştirmek yerine <code>{"messages": response}</code> güncellemesi döndürür. LangGraph bu güncellemeyi state sözleşmesine göre işler.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Özetin system mesajı olarak eklenmesi kalıcı state’teki mesaj listesini değiştirmek zorunda değildir; burada amaç modele gönderilen bağlamı zenginleştirmektir.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-8">
+  <h3 id="konusmayi-ozetleyen-nodeu-yazma">Konuşmayı özetleyen node’u yazma</h3>
+  <p>Bu node mevcut özet varsa onu genişletir, yoksa konuşma için yeni bir özet üretir. Ardından yalnızca son iki mesajı koruyacak şekilde eski mesajların kaldırılmasını ister.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Konuşmayı özetleyen node’u yazma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">def summarize_conversation(state: State):
+    """
+    Run the summarize_conversation graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # First, we get any existing summary
+    summary = state.get("summary", "")
+
+    # Create our summarization prompt
+    if summary:
+        # A summary already exists
+        summary_message = (
+            f"This is summary of the conversation to date: {summary}\n\n"
+            "Extend the summary by taking into account the new messages above:"
+        )
+    else:
+        summary_message = "Create a summary of the conversation above:"
+
+    # Add prompt to our history
+    messages = state["messages"] + [HumanMessage(content=summary_message)]
+    response = model.invoke(messages)
+
+    # Delete all but the 2 most recent messages
+    delete_messages = [RemoveMessage(id=m.id) for m in state["messages"][:-2]]
+    return {"summary": response.content, "messages": delete_messages}</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p><code>RemoveMessage</code> kullanımı, message reducer semantiğiyle uyumlu şekilde eski mesajları state’ten temizlerken <code>summary</code> alanını günceller.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Mesajları Python listesi üzerinde doğrudan silmekle <code>RemoveMessage</code> döndürmek aynı şey değildir. LangGraph state güncellemesinde bu özel nesnenin anlamı vardır.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-9">
+  <h3 id="ozetleme-kararini-veren-routing-fonksiyonu">Özetleme kararını veren routing fonksiyonu</h3>
+  <p>Bu fonksiyon konuşma mesajlarının sayısına bakar. Eşik aşılırsa özetleme node’una, aksi durumda graph bitişine yönlendirir.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Özetleme kararını veren routing fonksiyonu</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python"># Determine whether to end or summarize the conversation
+def should_continue(state: State) -&gt; Literal["summarize_conversation", END]:
+    """Return the next node to execute."""
+
+    messages = state["messages"]
+
+    # If there are more than six messages, then we summarize the conversation
+    if len(messages) &gt; 6:
+        return "summarize_conversation"
+
+    # Otherwise we can just end
+    return END</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>Conditional edge için routing kararını üretir. Böylece graph, sabit tek akış yerine state’e bağlı bir karar noktası kazanır.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Eşik değeri uygulama tercihidir. Burada altı mesajdan sonra özetleme yapılır; bu değer token bütçesi ve kullanıcı deneyimine göre değiştirilebilir.</p>
+  </section>
+</div>
+</article>
+<article class="walk-card" id="kod-adimi-10">
+  <h3 id="graphi-sqlite-checkpointer-ile-derleme">Graph’ı SQLite checkpointer ile derleme</h3>
+  <p>Bu blok node’ları ve edge’leri graph içinde birleştirir, ardından SQLite checkpointer ile compile eder.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Graph’ı SQLite checkpointer ile derleme</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">from IPython.display import Image, display
+from langgraph.graph import START, StateGraph
+
+# Define a new graph
+workflow = StateGraph(State)
+workflow.add_node("conversation", call_model)
+workflow.add_node(summarize_conversation)
+
+# Set the entrypoint as conversation
+workflow.add_edge(START, "conversation")
+workflow.add_conditional_edges("conversation", should_continue)
+workflow.add_edge("summarize_conversation", END)
+
+# Compile
+graph = workflow.compile(checkpointer=memory)
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p><code>workflow.compile(checkpointer=memory)</code> satırı, graph yürütmelerinin SQLite checkpointer üzerinden saklanmasını sağlar.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Graph yapısını derlemek state’i tek başına üretmez. State, <code>invoke</code> çağrıları ve aynı <code>thread_id</code> ile checkpoint kayıtlarına yazılır.</p>
+  </section>
+</div>
+<div class="output-card">
+  <div class="output-head">Graph görseli</div>
+  <div class="output-body output-visual">
+    <svg viewBox="0 0 720 260" role="img" aria-label="Graph akışı: START düğümünden conversation node’una, oradan koşullu olarak summarize_conversation veya END düğümüne geçiş">
+      <defs>
+        <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#374151"></path>
+        </marker>
+      </defs>
+      <rect x="282" y="18" width="156" height="38" rx="17" fill="#f8fafc" stroke="#9ca3af"></rect>
+      <text x="360" y="42" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#111827">__start__</text>
+      <line x1="360" y1="56" x2="360" y2="88" stroke="#374151" stroke-width="2" marker-end="url(#arrow-head)"></line>
+      <rect x="264" y="90" width="192" height="44" rx="7" fill="#ede9fe" stroke="#8b5cf6"></rect>
+      <text x="360" y="117" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#111827">conversation</text>
+      <line x1="360" y1="134" x2="360" y2="165" stroke="#374151" stroke-width="2" marker-end="url(#arrow-head)"></line>
+      <polygon points="360,166 462,198 360,230 258,198" fill="#fefce8" stroke="#ca8a04"></polygon>
+      <text x="360" y="194" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" fill="#111827">messages &gt; 6?</text>
+      <text x="360" y="211" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" fill="#4b5563">should_continue</text>
+      <line x1="462" y1="198" x2="552" y2="198" stroke="#374151" stroke-width="2" marker-end="url(#arrow-head)"></line>
+      <text x="508" y="188" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" fill="#4b5563">Hayır</text>
+      <rect x="554" y="178" width="124" height="40" rx="17" fill="#f8fafc" stroke="#9ca3af"></rect>
+      <text x="616" y="203" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#111827">__end__</text>
+      <line x1="258" y1="198" x2="120" y2="198" stroke="#374151" stroke-width="2" marker-end="url(#arrow-head)"></line>
+      <text x="188" y="188" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="12" fill="#4b5563">Evet</text>
+      <rect x="34" y="174" width="170" height="48" rx="7" fill="#dbe9e7" stroke="#0f766e"></rect>
+      <text x="119" y="203" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" fill="#111827">summarize_conversation</text>
+      <path d="M119 174 C119 120, 616 126, 616 178" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arrow-head)"></path>
+    </svg>
+  </div>
+</div>
+<section class="output-comment">
+  <h4>Çıktı Yorumu</h4>
+  <p>Bu ifade çalıştırıldığında graph görseli üretilir. Graph’ın kavramsal akışı bu sayfada ayrıca metin tabanlı olarak gösterilmiştir.</p>
+</section>
+</article>
+<article class="walk-card" id="kod-adimi-11">
+  <h3 id="ayni-thread-uzerinde-konusmayi-surdurme">Aynı thread üzerinde konuşmayı sürdürme</h3>
+  <p>Bu blok aynı <code>thread_id</code> ile graph’ı birkaç kez çağırır. Her çağrı önceki checkpoint state’iyle ilişkilendirilir.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Aynı thread üzerinde konuşmayı sürdürme</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python"># Create a thread
+config = {"configurable": {"thread_id": "1"}}
+
+# Start conversation
+input_message = HumanMessage(content="hi! I'm Lance")
+output = graph.invoke({"messages": [input_message]}, config)
+for m in output["messages"][-1:]:
+    m.pretty_print()
+
+input_message = HumanMessage(content="what's my name?")
+output = graph.invoke({"messages": [input_message]}, config)
+for m in output["messages"][-1:]:
+    m.pretty_print()
+
+input_message = HumanMessage(content="i like the 49ers!")
+output = graph.invoke({"messages": [input_message]}, config)
+for m in output["messages"][-1:]:
+    m.pretty_print()</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>Aynı config içinde kullanılan <code>thread_id</code>, konuşma belleğinin hangi kayıt üzerinden sürdürüleceğini belirler.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Model cevapları çalışma anındaki LLM çıktısına bağlı olarak küçük farklılıklar gösterebilir. Çıktı hücresi, <code>pretty_print()</code> formatını ve thread belleğinin beklenen etkisini gösterir.</p>
+  </section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Mesaj çıktısı</div>
+  <pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+
+Hi Lance! How can I help you today?
+
+================================== Ai Message ==================================
+
+Your name is Lance.
+
+================================== Ai Message ==================================
+
+Nice, I’ll remember that you like the 49ers.</code></pre>
+</div>
+<section class="output-comment">
+  <h4>Çıktı Yorumu</h4>
+  <p><code>pretty_print()</code> son assistant mesajını okunabilir biçimde yazdırır. Burada asıl gözlem, ardışık çağrıların aynı kalıcı state üzerinden ilerlemesidir.</p>
+</section>
+</article>
+<article class="walk-card" id="kod-adimi-12">
+  <h3 id="kaydedilmis-statei-okuma">Kaydedilmiş state’i okuma</h3>
+  <p>Bu blok aynı thread kimliğiyle graph state’ini okur ve anlık state temsilini elde eder.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Kaydedilmiş state’i okuma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">config = {"configurable": {"thread_id": "1"}}
+graph_state = graph.get_state(config)
+graph_state</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p><code>graph.get_state(config)</code>, checkpointer tarafından saklanan thread state’ini incelemeyi sağlar.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Config içindeki <code>thread_id</code> farklı olursa farklı bir konuşma state’i okunur. Kalıcı bellek kimliklendirme olmadan anlamlı değildir.</p>
+  </section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">StateSnapshot çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(
+    values={
+        "messages": [
+            HumanMessage(content="hi! I'm Lance", ...),
+            AIMessage(content="Hi Lance! How can I help you today?", ...),
+            HumanMessage(content="what's my name?", ...),
+            AIMessage(content="Your name is Lance.", ...),
+            HumanMessage(content="i like the 49ers!", ...),
+            AIMessage(content="Nice, I’ll remember that you like the 49ers.", ...)
+        ],
+        "summary": ""
+    },
+    next=(),
+    tasks=()
+)</code></pre>
+</div>
+<section class="output-comment">
+  <h4>Çıktı Yorumu</h4>
+  <p><code>graph_state</code> bir state snapshot temsilidir. İçinde mesaj geçmişi, varsa özet alanı ve yürütmeyle ilişkili metadata bulunur.</p>
+</section>
+</article>
+<article class="walk-card" id="kod-adimi-13">
+  <h3 id="yeniden-baslatma-sonrasi-ayni-statei-okuma">Yeniden başlatma sonrası aynı state’i okuma</h3>
+  <p>Bu blok graph yeniden tanımlandıktan sonra aynı thread kimliğiyle state’in tekrar okunabileceğini gösterir.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Yeniden başlatma sonrası aynı state’i okuma</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python"># Create a thread
+config = {"configurable": {"thread_id": "1"}}
+graph_state = graph.get_state(config)
+graph_state</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel">
+    <h4>LangGraph açısından önemi</h4>
+    <p>SQLite dosyası korunuyorsa checkpointer önceki thread state’ini yeniden sağlayabilir. Bu, in-memory yaklaşımdan temel farktır.</p>
+  </section>
+  <section class="mini-panel">
+    <h4>Dikkat edilmesi gereken nokta</h4>
+    <p>Graph nesnesi yeniden oluşturulsa bile aynı checkpointer dosyası ve aynı thread kimliği kullanılmalıdır. Aksi halde beklenen geçmiş state bulunamaz.</p>
+  </section>
+</div>
+<div class="output-card output-scroll">
+  <div class="output-head">Kalıcı state çıktısı</div>
+  <pre class="output-body"><code data-lang="output">StateSnapshot(
+    values={
+        "messages": [
+            HumanMessage(content="hi! I'm Lance", ...),
+            AIMessage(content="Hi Lance! How can I help you today?", ...),
+            HumanMessage(content="what's my name?", ...),
+            AIMessage(content="Your name is Lance.", ...),
+            HumanMessage(content="i like the 49ers!", ...),
+            AIMessage(content="Nice, I’ll remember that you like the 49ers.", ...)
+        ],
+        "summary": ""
+    },
+    next=(),
+    tasks=()
+)</code></pre>
+</div>
+<section class="output-comment">
+  <h4>Çıktı Yorumu</h4>
+  <p>Bu okuma, konuşma state’inin yalnızca geçici süreç belleğinde kalmadığını; dosya tabanlı SQLite kaydı üzerinden geri alınabildiğini gösterir.</p>
+</section>
+</article>
+</section><section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+  <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+  <p>Bu derste çıktı üretme potansiyeli taşıyan üç ana ifade vardır: graph görselini üreten <code>draw_mermaid_png()</code>, son assistant mesajını yazdıran <code>pretty_print()</code> ve checkpoint state’ini döndüren <code>graph.get_state(config)</code>. Output hücreleri, Jupyter görünümünde beklenen formatı ve state etkisini anlaşılır biçimde temsil eder.</p>
+  <div class="note-card">
+    <h3 id="output-hucreleri-nasil-okunmali">Output Hücreleri Nasıl Okunmalı?</h3>
+    <p>Model cümleleri çalışma anında küçük farklılıklar gösterebilir; buna karşın <code>pretty_print()</code> biçimi, <code>StateSnapshot</code> yapısı ve aynı <code>thread_id</code> ile state’in geri okunması dersin teknik sonucunu gösterir.</p>
+  </div>
+</section><section id="graph-akisi" aria-labelledby="graph-akisi-title">
+  <h2 id="graph-akisi-title">Graph Akışı</h2>
+  <p>Graph akışı, tek bir konuşma node’u ve koşullu özetleme kararından oluşur. State içindeki mesaj sayısı belirli eşiği aşmadığında graph doğrudan biter; eşik aşıldığında özetleme node’u çalışır ve ardından graph sonlanır.</p>
+  <div class="concept-map">
+    <div class="flow-step"><strong>START</strong><span>Sanal başlangıç noktasıdır.</span></div>
+    <div class="flow-step"><strong>conversation</strong><span><code>call_model</code> node’u LLM cevabı üretir.</span></div>
+    <div class="flow-step"><strong>should_continue</strong><span>Mesaj sayısına göre rota üretir.</span></div>
+    <div class="flow-step"><strong>summarize_<br>conversation</strong><span>Gerekirse summary üretir ve eski mesajları kaldırır.</span></div>
+    <div class="flow-step"><strong>END</strong><span>Graph yürütmesi tamamlanır.</span></div>
+  </div>
+  <div class="question-card">
+    <h3 id="kosullu-akisin-kritik-noktasi">Koşullu Akışın Kritik Noktası</h3>
+    <p><code>workflow.add_conditional_edges("conversation", should_continue)</code> satırı, <code>conversation</code> node’undan sonra kararın state’e bağlı verilmesini sağlar. Bu nedenle graph akışı yalnızca çizgisel değildir; konuşma uzunluğuna bağlı olarak özetleme node’u devreye girebilir.</p>
+  </div>
+</section><section id="state-evrimi" aria-labelledby="state-evrimi-title">
+  <h2 id="state-evrimi-title">State’in Evrimi</h2>
+  <p>Bu dersin state’i iki temel alan üzerinden okunabilir: <code>messages</code> ve <code>summary</code>. Checkpointer bu alanların thread bazlı son durumunu saklar.</p>
+  <div class="state-list">
+    <div class="state-item"><strong>Başlangıç</strong><span><code>{"messages": [HumanMessage(...)]}</code> input olarak graph’a verilir. <code>summary</code> henüz boş olabilir.</span></div>
+    <div class="state-item"><strong>Model cevabı</strong><span><code>call_model</code>, mevcut mesajları ve varsa özeti modele gönderir; state’e yeni assistant mesajı eklenir.</span></div>
+    <div class="state-item"><strong>Routing</strong><span><code>should_continue</code>, mesaj sayısı altıdan büyükse özetleme node’unu seçer.</span></div>
+    <div class="state-item"><strong>Özetleme</strong><span><code>summary</code> güncellenir; eski mesajlar <code>RemoveMessage</code> ile kaldırılır ve son iki mesaj korunur.</span></div>
+    <div class="state-item"><strong>Checkpoint</strong><span>Güncel state, <code>thread_id</code> altında SQLite checkpointer tarafından saklanır.</span></div>
+    <div class="state-item"><strong>Yeniden okuma</strong><span>Aynı <code>thread_id</code> ile <code>graph.get_state(config)</code> çağrıldığında saklanan state snapshot alınır.</span></div>
+  </div>
+</section><section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+  <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+  <p>Bu derste tam bir agent-tool döngüsü kurulmaz. Odak, chatbot state’inin özetleme ve harici checkpointer ile nasıl yönetildiğidir. Buna rağmen aynı kalıcılık yaklaşımı tool kullanan agent graph’larında da önemlidir; çünkü tool çağrıları arttıkça konuşma geçmişini, ara state’i ve thread kimliğini güvenilir biçimde saklamak gerekir.</p>
+  <div class="chat-flow">
+    <div class="chat-bubble user"><strong>Kullanıcı</strong><span>Yeni mesaj aynı thread kimliğiyle graph’a verilir.</span></div>
+    <div class="chat-bubble assistant"><strong>Graph</strong><span>Checkpoint’ten önceki state’i okur, modeli çağırır ve gerekirse özetleme yapar.</span></div>
+    <div class="chat-bubble assistant"><strong>Checkpointer</strong><span>Güncellenmiş state’i SQLite deposunda saklar.</span></div>
+  </div>
+</section><section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+  <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+  <ul>
+    <li><code>memory</code> değişkenini LLM’in semantik belleği sanmak; bu derste <code>memory</code> bir checkpointer nesnesidir.</li>
+    <li><code>:memory:</code> ile açılan SQLite bağlantısını dosya tabanlı kalıcılık sanmak.</li>
+    <li>Aynı konuşmayı sürdürmek için <code>thread_id</code> değerinin aynı kalması gerektiğini unutmak.</li>
+    <li>Graph yeniden tanımlanınca eski state’in otomatik olarak graph nesnesinin içinde kalacağını düşünmek.</li>
+    <li><code>RemoveMessage</code> yerine Python listesinden doğrudan eleman silmeyi LangGraph state güncellemesiyle eşdeğer görmek.</li>
+    <li>Özetleme node’unun token maliyetini azalttığını, fakat kalıcılığı tek başına çözmediğini gözden kaçırmak.</li>
+    <li>Dosya tabanlı SQLite bağlantısının doğru dosyaya bağlandığını kontrol etmemek.</li>
+    <li>API anahtarını kod içine yazmak veya veritabanı dosyasına gizli bilgi koymak.</li>
+    <li>Studio’daki yerleşik kalıcılık katmanını bu dersteki SQLite örneğiyle aynı dağıtım modeli sanmak.</li>
+  </ul>
+</section><section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+  <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+  <ol>
+    <li>Uzun süreli chatbot belleği için özetleme ve checkpointing birbirini tamamlar.</li>
+    <li><code>SqliteSaver</code>, SQLite bağlantısını LangGraph checkpointer arayüzüne bağlar.</li>
+    <li><code>:memory:</code> hızlı deneme sağlar; dosya yolu ise yeniden başlatma sonrası kalıcılık sağlar.</li>
+    <li><code>thread_id</code>, checkpoint kayıtlarını doğru konuşmayla eşleştiren temel anahtardır.</li>
+    <li><code>summary</code> state alanı, eski konuşmayı kısa bağlam olarak korur.</li>
+    <li><code>RemoveMessage</code>, mesaj temizleme işlemini LangGraph reducer semantiğiyle uyumlu hale getirir.</li>
+    <li>Graph’ın checkpointer ile compile edilmesi, state’in kalıcılık katmanına yazılabilmesi için gereklidir.</li>
+    <li><code>graph.get_state(config)</code>, saklanan thread state’ini incelemek için kullanılır.</li>
+    <li>Graph nesnesi yeniden oluşturulabilir; önemli olan aynı checkpointer deposu ve aynı thread kimliğidir.</li>
+    <li>Studio/API bağlamındaki kalıcılık, burada gösterilen checkpointer fikrinin daha uygulama odaklı bir karşılığıdır.</li>
+  </ol>
+</section><section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+  <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+  <p>Aşağıdaki blok, derste kullanılan çalıştırılabilir kodları ders sırasına uygun tek akış halinde toplar. Kod, pedagojik bütünlüğü koruyacak biçimde PEP 8 okunabilirliğiyle gösterilmiştir.</p>
+  <div class="code-card">
+  <div class="code-head">
+    <span class="code-title">Dersin kod akışı</span>
+    <button class="copy-btn" type="button">Kopyala</button>
+  </div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langgraph-checkpoint-sqlite langchain_core langgraph langchain_openai
+
+import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+
+_set_env("OPENAI_API_KEY")
+
+import sqlite3
+
+# In memory
+conn = sqlite3.connect(":memory:", check_same_thread=False)
+
+# pull file if it doesn't exist and connect to local db
+!mkdir -p state_db &amp;&amp; [ ! -f state_db/example.db ] &amp;&amp; wget -P state_db https://github.com/langchain-ai/langchain-academy/raw/main/module-2/state_db/example.db
+
+db_path = "state_db/example.db"
+conn = sqlite3.connect(db_path, check_same_thread=False)
+
+# Here is our checkpointer
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+memory = SqliteSaver(conn)
+
+from typing_extensions import Literal
+
+from langchain_core.messages import HumanMessage, RemoveMessage, SystemMessage
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, MessagesState
+
+
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+
+
+class State(MessagesState):
+    """
+    Define the state schema used by the graph.
+    """
+    summary: str
+
+# Define the logic to call the model
+def call_model(state: State):
+    """
+    Run the call_model graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # Get summary if it exists
+    summary = state.get("summary", "")
+
+    # If there is summary, then we add it
+    if summary:
+        # Add summary to system message
+        system_message = f"Summary of conversation earlier: {summary}"
+
+        # Append summary to any newer messages
+        messages = [SystemMessage(content=system_message)] + state["messages"]
+    else:
+        messages = state["messages"]
+
+    response = model.invoke(messages)
+    return {"messages": response}
+
+def summarize_conversation(state: State):
+    """
+    Run the summarize_conversation graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # First, we get any existing summary
+    summary = state.get("summary", "")
+
+    # Create our summarization prompt
+    if summary:
+        # A summary already exists
+        summary_message = (
+            f"This is summary of the conversation to date: {summary}\n\n"
+            "Extend the summary by taking into account the new messages above:"
+        )
+    else:
+        summary_message = "Create a summary of the conversation above:"
+
+    # Add prompt to our history
+    messages = state["messages"] + [HumanMessage(content=summary_message)]
+    response = model.invoke(messages)
+
+    # Delete all but the 2 most recent messages
+    delete_messages = [RemoveMessage(id=m.id) for m in state["messages"][:-2]]
+    return {"summary": response.content, "messages": delete_messages}
+
+# Determine whether to end or summarize the conversation
+def should_continue(state: State) -&gt; Literal["summarize_conversation", END]:
+    """Return the next node to execute."""
+
+    messages = state["messages"]
+
+    # If there are more than six messages, then we summarize the conversation
+    if len(messages) &gt; 6:
+        return "summarize_conversation"
+
+    # Otherwise we can just end
+    return END
+
+from IPython.display import Image, display
+from langgraph.graph import START, StateGraph
+
+# Define a new graph
+workflow = StateGraph(State)
+workflow.add_node("conversation", call_model)
+workflow.add_node(summarize_conversation)
+
+# Set the entrypoint as conversation
+workflow.add_edge(START, "conversation")
+workflow.add_conditional_edges("conversation", should_continue)
+workflow.add_edge("summarize_conversation", END)
+
+# Compile
+graph = workflow.compile(checkpointer=memory)
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+# Create a thread
+config = {"configurable": {"thread_id": "1"}}
+
+# Start conversation
+input_message = HumanMessage(content="hi! I'm Lance")
+output = graph.invoke({"messages": [input_message]}, config)
+for m in output["messages"][-1:]:
+    m.pretty_print()
+
+input_message = HumanMessage(content="what's my name?")
+output = graph.invoke({"messages": [input_message]}, config)
+for m in output["messages"][-1:]:
+    m.pretty_print()
+
+input_message = HumanMessage(content="i like the 49ers!")
+output = graph.invoke({"messages": [input_message]}, config)
+for m in output["messages"][-1:]:
+    m.pretty_print()
+
+config = {"configurable": {"thread_id": "1"}}
+graph_state = graph.get_state(config)
+graph_state
+
+# Create a thread
+config = {"configurable": {"thread_id": "1"}}
+graph_state = graph.get_state(config)
+graph_state</code></pre>
+</div>
+</section><section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+  <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+  <div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody><tr><td>External memory</td><td>Harici bellek</td><td>State’in yalnızca süreç belleğinde değil, ayrı bir kalıcılık katmanında saklanması.</td></tr><tr><td>Checkpointer</td><td>Durum kaydedici</td><td>Graph yürütme state’ini thread bazlı olarak yazan ve geri yükleyen bileşen.</td></tr><tr><td>SQLite</td><td>SQLite veritabanı</td><td>Dosya tabanlı veya bellek içi çalışabilen küçük SQL veritabanı.</td></tr><tr><td>Persistent state</td><td>Kalıcı state</td><td>Oturum veya kernel yeniden başlasa bile yeniden okunabilen yürütme durumu.</td></tr><tr><td>Thread ID</td><td>Konuşma kimliği</td><td>Aynı konuşma geçmişini ve checkpoint kayıtlarını ayırt eden kimlik.</td></tr><tr><td>State schema</td><td>State şeması</td><td>Graph boyunca hangi alanların taşındığını tanımlayan sözleşme.</td></tr><tr><td>Message history</td><td>Mesaj geçmişi</td><td>Human, AI ve system mesajlarından oluşan konuşma listesi.</td></tr><tr><td>Summarization</td><td>Özetleme</td><td>Uzun konuşma geçmişinin kısa bağlam metnine dönüştürülmesi.</td></tr><tr><td>Reducer</td><td>İndirgeme/güncelleme işlevi</td><td>Aynı state alanına gelen güncellemelerin nasıl birleşeceğini belirleyen mantık.</td></tr><tr><td>Node</td><td>Düğüm</td><td>Graph içinde belirli bir state dönüşümü yapan çalıştırılabilir adım.</td></tr><tr><td>Edge</td><td>Kenar</td><td>Bir node’dan diğerine geçiş yönünü belirleyen bağlantı.</td></tr><tr><td>Conditional edge</td><td>Koşullu kenar</td><td>Bir routing fonksiyonunun sonucuna göre farklı hedeflere geçiş yapan bağlantı.</td></tr><tr><td>StateSnapshot</td><td>State anlık görüntüsü</td><td>Checkpoint’ten okunan mevcut graph state temsili.</td></tr><tr><td>LangSmith Studio</td><td>LangSmith Studio</td><td>Graph’ı yerel tarayıcı arayüzünden çalıştırma ve gözlemleme ortamı.</td></tr></tbody></table></div>
+</section>
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">Harici Veritabanı Belleği ile Kalıcı Chatbot State’i</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l3"><a href="#gecici-bellekten-kalici-bellege-gecis">Geçici Bellekten Kalıcı Belleğe Geçiş</a></li>
+<li class="toc-l3"><a href="#ozetleme-ve-checkpoint-birlikte-nasil-calisir">Özetleme ve Checkpoint Birlikte Nasıl Çalışır?</a></li>
+<li class="toc-l3"><a href="#studio-baglami">Studio Bağlamı</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#gerekli-paketleri-kurma">Gerekli paketleri kurma</a></li>
+<li class="toc-l3"><a href="#api-anahtarini-ortam-degiskeninden-alma">API anahtarını ortam değişkeninden alma</a></li>
+<li class="toc-l3"><a href="#sqlite-baglantisini-bellek-icinde-acma">SQLite bağlantısını bellek içinde açma</a></li>
+<li class="toc-l3"><a href="#dosya-tabanli-sqlite-veritabanina-baglanma">Dosya tabanlı SQLite veritabanına bağlanma</a></li>
+<li class="toc-l3"><a href="#sqlite-baglantisindan-checkpointer-olusturma">SQLite bağlantısından checkpointer oluşturma</a></li>
+<li class="toc-l3"><a href="#model-ve-state-semasini-tanimlama">Model ve state şemasını tanımlama</a></li>
+<li class="toc-l3"><a href="#model-cagrisi-nodeunu-yazma">Model çağrısı node’unu yazma</a></li>
+<li class="toc-l3"><a href="#konusmayi-ozetleyen-nodeu-yazma">Konuşmayı özetleyen node’u yazma</a></li>
+<li class="toc-l3"><a href="#ozetleme-kararini-veren-routing-fonksiyonu">Özetleme kararını veren routing fonksiyonu</a></li>
+<li class="toc-l3"><a href="#graphi-sqlite-checkpointer-ile-derleme">Graph’ı SQLite checkpointer ile derleme</a></li>
+<li class="toc-l3"><a href="#ayni-thread-uzerinde-konusmayi-surdurme">Aynı thread üzerinde konuşmayı sürdürme</a></li>
+<li class="toc-l3"><a href="#kaydedilmis-statei-okuma">Kaydedilmiş state’i okuma</a></li>
+<li class="toc-l3"><a href="#yeniden-baslatma-sonrasi-ayni-statei-okuma">Yeniden başlatma sonrası aynı state’i okuma</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+  <script>
+(function () {
+  function escapeHtml(value) {
+    return value.replace(/[&<>]/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch];
+    });
+  }
+
+  function highlightShell(line) {
+    var out = escapeHtml(line);
+    out = out.replace(/(%%?\w+)/g, '<span class="tok-magic">$1</span>');
+    out = out.replace(/(\s)(--?[\w-]+)/g, '$1<span class="tok-flag">$2</span>');
+    out = out.replace(/\b(mkdir|wget|pip|install|langgraph|dev)\b/g, '<span class="tok-shell-command">$1</span>');
+    return out;
+  }
+
+  function classifyPythonToken(token) {
+    if (/^#/.test(token)) return 'tok-comment';
+    if (/^["']/.test(token)) return 'tok-string';
+    if (/^(class|def|return|if|else|elif|for|in|from|import|as|not|and|or|True|False|None)$/.test(token)) return 'tok-keyword';
+    if (/^(str|int|list|dict|set|tuple|len|print)$/.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^(\+|\-|=|->|:)$/.test(token)) return 'tok-operator';
+    return 'tok-function';
+  }
+
+  function highlightPython(line) {
+    var tokenRe = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|#.*|\b(?:class|def|return|if|else|elif|for|in|from|import|as|not|and|or|True|False|None)\b|\b(?:str|int|list|dict|set|tuple|len|print)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\()|->|\+|\-|=|:)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      out += '<span class="' + classifyPythonToken(token) + '">' + escapeHtml(token) + '</span>';
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out;
+  }
+
+  function highlightOutput(raw) {
+    var tokenRe = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b(?:True|False|None)\b|\b\d+(?:\.\d+)?\b)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(raw)) !== null) {
+      out += escapeHtml(raw.slice(last, match.index));
+      var token = match[0];
+      var cls = /^["']/.test(token) ? 'tok-string' : (/^\d/.test(token) ? 'tok-number' : 'tok-keyword');
+      out += '<span class="' + cls + '">' + escapeHtml(token) + '</span>';
+      last = match.index + token.length;
+    }
+    out += escapeHtml(raw.slice(last));
+    return out;
+  }
+
+  function noteHtml(parts) {
+    return parts.map(function (part) {
+      return '<div class="tooltip-section">' + part + '</div>';
+    }).join('');
+  }
+
+  function noteForLine(line, lang) {
+    var t = line.trim();
+    if (!t) return '';
+    if (lang === 'output') return '';
+    if (t.indexOf('%%capture') === 0) return noteHtml(['<code>%%capture --no-stderr</code>, IPython/Jupyter hücre sihridir. Hücrenin normal stdout çıktısını yakalar; <code>--no-stderr</code> stderr akışını bastırmamak için kullanılır. Kurulum hücresinde gereksiz log kalabalığını azaltır.']);
+    if (t.indexOf('%pip install') === 0) return noteHtml(['<code>%pip</code>, Jupyter ortamında paket kurmak için IPython sihridir. <code>langgraph-checkpoint-sqlite</code> paketi <code>SqliteSaver</code> sınıfını; <code>langchain_core</code> mesaj tiplerini; <code>langgraph</code> graph runtime’ını; <code>langchain_openai</code> ise OpenAI chat model entegrasyonunu sağlar.']);
+    if (t === 'import getpass' || t === 'import os') return noteHtml(['Python standart kütüphanesinden import yapılır. <code>os</code>, ortam değişkenlerine erişmek için; <code>getpass</code>, API anahtarını terminalde görünmeden almak için kullanılır. Bu satır LangGraph’a özel değildir, güvenli çalışma ortamı hazırlığıdır.']);
+    if (t === 'import sqlite3') return noteHtml(['<code>sqlite3</code>, Python standart kütüphanesindeki SQLite sürücüsüdür. Harici bir servis kurmadan dosya tabanlı SQL veritabanına bağlanmayı sağlar; bu derste LangGraph checkpoint kayıtlarının saklanacağı bağlantıyı üretir.']);
+    if (t.indexOf('from typing_extensions import Literal') === 0) return noteHtml(['<code>typing_extensions</code> paketi, Python sürümünden bağımsız tip yardımcıları sağlar. <code>Literal</code>, routing fonksiyonunun yalnızca belirli node adlarını veya <code>END</code> değerini döndürebileceğini ifade etmek için kullanılır.']);
+    if (t.indexOf('from langchain_core.messages import') === 0) return noteHtml(['<code>langchain_core.messages</code>, LangChain mesaj protokolünün temel sınıflarını sağlar. <code>HumanMessage</code> kullanıcı mesajını, <code>SystemMessage</code> sistem talimatını, <code>RemoveMessage</code> ise LangGraph state’inden mesaj silme güncellemesini temsil eder.']);
+    if (t.indexOf('from langchain_openai import ChatOpenAI') === 0) return noteHtml(['<code>langchain_openai</code>, OpenAI chat modellerini LangChain <code>Runnable</code> arayüzüne bağlar. Bu sayede model, node içinde <code>model.invoke(messages)</code> biçiminde çağrılabilir.']);
+    if (t.indexOf('from langgraph.graph import END, MessagesState') === 0) return noteHtml(['<code>langgraph.graph</code>, graph oluşturma ve yürütme sabitlerini sağlar. <code>END</code> graph bitişini; <code>MessagesState</code> ise mesaj listesi için hazır state şemasını temsil eder.']);
+    if (t.indexOf('from IPython.display import Image, display') === 0) return noteHtml(['<code>IPython.display</code>, Jupyter ortamında zengin çıktı göstermek için kullanılır. Burada derlenen graph’ın Mermaid PNG görselini hücre çıktısı olarak göstermek amacıyla içe aktarılır.']);
+    if (t.indexOf('from langgraph.graph import START, StateGraph') === 0) return noteHtml(['<code>StateGraph</code>, LangGraph’ta state taşıyan graph builder sınıfıdır. <code>START</code> ise graph’ın sanal başlangıç düğümüdür; ilk gerçek node’a edge bağlamak için kullanılır.']);
+    if (t.indexOf('def _set_env') === 0) return noteHtml(['<code>_set_env(var: str)</code>, ortam değişkenini güvenli biçimde hazırlayan yardımcı fonksiyondur. Parametre olarak değişken adını alır; değer yoksa kullanıcıdan gizli giriş ister.']);
+    if (t.indexOf('if not os.environ.get') === 0) return noteHtml(['<code>os.environ.get(var)</code>, ortam değişkeni mevcutsa değerini, yoksa <code>None</code> döndürür. Bu guard aynı API anahtarını tekrar tekrar sormamak için kullanılır.']);
+    if (t.indexOf('getpass.getpass') !== -1) return noteHtml(['<code>getpass.getpass()</code>, terminalde girilen metni ekrana yazdırmadan alır. Dönen string süreç ortamına atanır; böylece API anahtarı kaynak koda veya HTML sayfasına gömülmez.']);
+    if (t.indexOf('_set_env(') === 0) return noteHtml(['Bu çağrı, OpenAI model entegrasyonunun ihtiyaç duyduğu ortam değişkenini hazırlar. LangGraph state veya checkpoint verisi üretmez; yalnızca model çağrısının çalışabilmesi için runtime ortamını tamamlar.']);
+    if (t.indexOf('sqlite3.connect(":memory:"') !== -1) return noteHtml(['<code>sqlite3.connect</code>, SQLite bağlantısı açar. <code>":memory:"</code> kullanıldığında veritabanı RAM içinde yaşar; bağlantı veya süreç sonlandığında checkpoint kayıtları kalıcı olmaz.']);
+    if (t.indexOf('check_same_thread=False') !== -1) return noteHtml(['<code>check_same_thread=False</code>, SQLite bağlantısının oluşturulduğu thread dışından da kullanılmasına izin verir. LangGraph/Jupyter örneklerinde bağlantı paylaşımını kolaylaştırır; ancak uygulama seviyesinde eşzamanlılık tasarımı hâlâ dikkat ister.']);
+    if (t.indexOf('!mkdir -p state_db') === 0) return noteHtml(['Başındaki <code>!</code>, Jupyter’de shell komutu çalıştırır. Komut klasörü oluşturur, veritabanı dosyası yoksa indirir ve mevcut dosyayı tekrar indirmez. Bu dosya tabanlı SQLite örneğinin yerel checkpoint deposunu hazırlar.']);
+    if (t.indexOf('db_path =') === 0) return noteHtml(['<code>db_path</code>, SQLite dosyasının konumunu saklayan düz Python string değişkenidir. Aynı dosya yolu yeniden kullanıldığında <code>SqliteSaver</code> önceki checkpoint kayıtlarını okuyabilir.']);
+    if (t.indexOf('conn = sqlite3.connect(db_path') === 0) return noteHtml(['Bu satır dosya tabanlı SQLite bağlantısı açar. Bellek içi bağlantıdan farklı olarak kayıtlar dosyada tutulur; bu yüzden aynı graph yeniden oluşturulsa bile aynı dosya üzerinden state geri yüklenebilir.']);
+    if (t.indexOf('SqliteSaver') !== -1 && t.indexOf('import') !== -1) return noteHtml(['<code>langgraph.checkpoint.sqlite</code>, LangGraph’ın SQLite tabanlı checkpoint implementasyonunu sağlar. <code>SqliteSaver</code>, graph state güncellemelerini SQLite tablolarına yazan checkpointer sınıfıdır.']);
+    if (t.indexOf('memory = SqliteSaver') === 0) return noteHtml(['SQLite bağlantısından LangGraph checkpointer nesnesi oluşturulur. Değişken adı <code>memory</code> olsa da burada semantik LLM belleği değil, thread state’ini kaydeden altyapı bileşeni vardır.']);
+    if (t.indexOf('model = ChatOpenAI') === 0) return noteHtml(['<code>ChatOpenAI</code>, <code>langchain_openai</code> paketinden gelen chat model wrapper’ıdır. <code>model="gpt-4o"</code> kullanılacak modeli seçer; <code>temperature=0</code> cevap çeşitliliğini azaltır.']);
+    if (t.indexOf('class State(MessagesState)') === 0) return noteHtml(['<code>State</code>, LangGraph state şemasını genişleten Python sınıfıdır. <code>MessagesState</code> hazır <code>messages</code> alanını sağlar; sınıf içine eklenen alanlar graph boyunca taşınır ve checkpoint’e yazılır.']);
+    if (t.indexOf('summary: str') === 0) return noteHtml(['<code>summary</code>, state içinde saklanan metin özetidir. Özetleme node’u bu alanı yazar; model çağrısı node’u varsa bu alanı okuyup system mesajı olarak modele bağlam sağlar.']);
+    if (t.indexOf('def call_model') === 0) return noteHtml(['Bu fonksiyon LangGraph node’u olarak kullanılacaktır. Girdi olarak <code>State</code> alır, state’ten mesajları ve özeti okur, model cevabını <code>{"messages": ...}</code> güncellemesi olarak döndürür.']);
+    if (t.indexOf('summary = state.get') === 0) return noteHtml(['<code>state.get("summary", "")</code>, dict benzeri state erişimidir. Özet yoksa boş string döndürür; böylece ilk konuşma turunda ve sonraki turlarda aynı node güvenli çalışır.']);
+    if (t === 'if summary:') return noteHtml(['Özet alanı boş değilse modele ek bağlam verileceğini belirler. Bu koşul, uzun konuşmalarda eski mesajların tamamını taşımak yerine özet metnini kullanma kararını verir.']);
+    if (t.indexOf('system_message =') === 0) return noteHtml(['Özet metni, modelin göreceği system mesajı içeriğine dönüştürülür. Bu değer state’e yeni alan olarak yazılmaz; yalnızca bir sonraki LLM çağrısının input bağlamını şekillendirir.']);
+    if (t.indexOf('SystemMessage(content=system_message)') !== -1) return noteHtml(['<code>SystemMessage</code>, <code>langchain_core.messages</code> içindeki sistem rolü mesaj sınıfıdır. Burada önceki konuşma özeti assistant/user mesajlarının önüne koyularak modele üst düzey bağlam verilir.']);
+    if (t.indexOf('messages = [SystemMessage') === 0) return noteHtml(['Modele gönderilecek geçici mesaj listesi hazırlanır. Sol taraftaki <code>messages</code> yerel değişkendir; state’teki <code>messages</code> alanının birebir aynısı olmak zorunda değildir.']);
+    if (t === 'messages = state["messages"]') return noteHtml(['Özet yoksa model yalnızca state’teki mevcut mesaj geçmişini görür. <code>MessagesState</code> sayesinde bu alan LangGraph tarafından message listesi olarak yönetilir.']);
+    if (t.indexOf('response = model.invoke') === 0) return noteHtml(['<code>model.invoke(messages)</code>, LangChain Runnable arayüzünün senkron çağrısıdır. Input bir mesaj listesi, çıktı genellikle <code>AIMessage</code> nesnesidir.']);
+    if (t.indexOf('return {"messages": response}') === 0) return noteHtml(['Node doğrudan state’i mutate etmez; bunun yerine state güncellemesi döndürür. <code>MessagesState</code> reducer davranışı bu yeni AI mesajını mevcut mesaj listesine ekler.']);
+    if (t.indexOf('def summarize_conversation') === 0) return noteHtml(['Bu fonksiyon ikinci LangGraph node’udur. Mesaj geçmişini modele özetletir, <code>summary</code> alanını günceller ve eski mesajların kaldırılması için <code>RemoveMessage</code> döndürür.']);
+    if (t.indexOf('summary_message = (') === 0) return noteHtml(['Çok satırlı Python string ifadesi başlar. Var olan özet varsa yeni mesajları dikkate alarak bu özeti genişletmeye yönelik prompt hazırlanır.']);
+    if (t.indexOf('f"This is summary') === 0) return noteHtml(['Bu f-string mevcut <code>summary</code> değerini prompt içine yerleştirir. <code>\\n\\n</code> iki satır sonu ekleyerek eski özet ile yeni talimatı okunabilir biçimde ayırır.']);
+    if (t.indexOf('"Extend the summary') === 0) return noteHtml(['Bu string, modele var olan özeti yeni mesajlarla genişletmesini söyler. Böylece özet sıfırdan yazılmak yerine konuşmanın birikimli temsilini korur.']);
+    if (t.indexOf('summary_message = "Create') === 0) return noteHtml(['Önceden özet yoksa ilk özetleme prompt’u oluşturulur. Bu dal genellikle konuşma belirli mesaj eşiğini ilk kez aştığında çalışır.']);
+    if (t.indexOf('messages = state["messages"] + [HumanMessage') === 0) return noteHtml(['<code>HumanMessage</code>, özetleme talimatını modele kullanıcı mesajı gibi sunar. Bu liste model çağrısı için geçicidir; amaç state geçmişini prompt ile birlikte değerlendirmektir.']);
+    if (t.indexOf('RemoveMessage') !== -1) return noteHtml(['<code>RemoveMessage</code>, <code>langchain_core.messages</code> üzerinden gelen özel silme mesajıdır. LangGraph message reducer’ı bu nesneleri görünce ilgili mesaj id’lerini state’ten kaldırır.']);
+    if (t.indexOf('return {"summary": response.content') === 0) return noteHtml(['Özet metni <code>response.content</code> üzerinden <code>summary</code> alanına yazılır; <code>messages</code> alanına ise eski mesajları kaldıracak <code>RemoveMessage</code> listesi döndürülür.']);
+    if (t.indexOf('def should_continue') === 0) return noteHtml(['Bu routing fonksiyonu conditional edge tarafından çağrılır. Dönüş tipi <code>Literal</code>, beklenen hedeflerin <code>"summarize_conversation"</code> veya <code>END</code> olduğunu belgelemek için kullanılır.']);
+    if (t.indexOf('messages = state["messages"]') === 0) return noteHtml(['Routing kararı için state’teki güncel mesaj listesi okunur. Bu fonksiyon model çağırmaz; yalnızca graph’ın bir sonraki adımını seçer.']);
+    if (t.indexOf('if len(messages) > 6') === 0) return noteHtml(['Mesaj sayısı altıdan büyükse graph özetleme node’una yönlendirilir. Bu eşik token maliyetini kontrol etmek için seçilmiş basit bir kuraldır.']);
+    if (t === 'return "summarize_conversation"') return noteHtml(['Conditional edge bu string’i hedef node adı olarak yorumlar. Bu dönüş, graph’ın <code>summarize_conversation</code> node’unu çalıştırmasını sağlar.']);
+    if (t === 'return END') return noteHtml(['<code>END</code>, LangGraph’ın sanal bitiş sabitidir. Mesaj sayısı eşik altında kaldığında graph başka node çalıştırmadan tamamlanır.']);
+    if (t.indexOf('workflow = StateGraph(State)') === 0) return noteHtml(['<code>StateGraph</code>, <code>State</code> şemasına bağlı graph builder oluşturur. Bundan sonra eklenecek node’lar aynı state sözleşmesiyle çalışır.']);
+    if (t.indexOf('workflow.add_node("conversation"') === 0) return noteHtml(['<code>add_node</code>, bir Python fonksiyonunu graph node’u olarak kaydeder. Burada <code>call_model</code> fonksiyonu açıkça <code>"conversation"</code> adıyla eklenir.']);
+    if (t.indexOf('workflow.add_node(summarize_conversation') === 0) return noteHtml(['Fonksiyon doğrudan verildiğinde LangGraph node adı olarak fonksiyon adını kullanır. Bu node yalnızca routing fonksiyonu bu hedefi seçtiğinde çalışacaktır.']);
+    if (t.indexOf('workflow.add_edge(START') === 0) return noteHtml(['<code>START</code> sanal başlangıç düğümünden <code>conversation</code> node’una sabit edge ekler. Graph invoke edildiğinde ilk gerçek çalışma adımı budur.']);
+    if (t.indexOf('workflow.add_conditional_edges') === 0) return noteHtml(['<code>add_conditional_edges</code>, sabit geçiş yerine routing fonksiyonu kullanır. <code>conversation</code> sonrası <code>should_continue</code> sonucu graph’ın özetlemeye mi biteceğine mi karar verir.']);
+    if (t.indexOf('workflow.add_edge("summarize_conversation"') === 0) return noteHtml(['Özetleme node’u çalıştıktan sonra graph’ın <code>END</code> ile bitmesini sağlar. Bu sabit edge, özetleme sonrası başka node çalıştırılmayacağını belirtir.']);
+    if (t.indexOf('workflow.compile(checkpointer=memory)') !== -1) return noteHtml(['<code>compile</code>, builder’ı çalıştırılabilir graph nesnesine dönüştürür. <code>checkpointer=memory</code>, SQLite tabanlı <code>SqliteSaver</code> nesnesini state kalıcılığı için graph’a bağlar.']);
+    if (t.indexOf('draw_mermaid_png') !== -1) return noteHtml(['<code>get_graph().draw_mermaid_png()</code>, derlenen graph yapısını Mermaid tabanlı PNG olarak üretir. <code>Image</code> ve <code>display</code>, bu görseli Jupyter çıktısı olarak gösterir.']);
+    if (t.indexOf('config = {"configurable"') === 0) return noteHtml(['LangGraph checkpointer, konuşmaları <code>configurable.thread_id</code> üzerinden ayırır. Aynı <code>thread_id</code> aynı checkpoint geçmişine erişir; farklı değer yeni konuşma hattı demektir.']);
+    if (t.indexOf('input_message = HumanMessage') === 0) return noteHtml(['<code>HumanMessage</code>, <code>langchain_core.messages</code> içindeki kullanıcı mesajı sınıfıdır. <code>content</code> parametresi modele gidecek ham kullanıcı metnini taşır; bu satır graph input’unun mesaj nesnesini oluşturur.']);
+    if (t.indexOf('output = graph.invoke') === 0) return noteHtml(['<code>graph.invoke(input, config)</code>, derlenmiş LangGraph graph’ını senkron çalıştırır. İlk argüman state güncellemesidir; ikinci argüman checkpoint’in hangi thread’i kullanacağını belirler.']);
+    if (t.indexOf('for m in output["messages"][-1:]') === 0) return noteHtml(['Bu döngü yalnızca son mesajı seçer. <code>output["messages"]</code> graph sonrası güncel mesaj listesidir; <code>[-1:]</code> son assistant cevabını liste olarak döndürür.']);
+    if (t.indexOf('m.pretty_print') !== -1) return noteHtml(['<code>pretty_print()</code>, LangChain mesaj nesnesinin Jupyter/terminalde okunabilir gösterimini üretir. State’i değiştirmez; yalnızca çıktı formatıdır.']);
+    if (t.indexOf('graph_state = graph.get_state') === 0) return noteHtml(['<code>graph.get_state(config)</code>, checkpointer’dan ilgili thread’in <code>StateSnapshot</code> temsilini okur. Bu snapshot, <code>values</code>, sonraki adım bilgisi ve task metadata’sı içerebilir.']);
+    if (t === 'graph_state') return noteHtml(['Etkileşimli ortamda değişken tek başına yazıldığında nesnenin repr çıktısı gösterilir. Burada amaç SQLite checkpointer’ın sakladığı thread state’inin okunabildiğini doğrulamaktır.']);
+    if (t === 'langgraph dev') return noteHtml(['<code>langgraph dev</code>, yerel LangGraph geliştirme sunucusunu başlatır. Studio UI, API endpoint’i ve dokümantasyon adresleri üzerinden graph’ı tarayıcıdan çalıştırmaya ve gözlemlemeye yarar.']);
+    if (t.indexOf('#') === 0) return noteHtml(['Yorum satırı, hemen altındaki kod bloğunun amacını açıklar. Çalıştırılmaz; fakat graph state’i, checkpointer veya model çağrısı bağlamında hangi adımın başladığını belirtir.']);
+    if (lang === 'python') return noteHtml(['Bu satır çalıştırılabilir Python kodunun parçasıdır. Önceki importlar ve state şemasıyla birlikte değerlendirilmelidir; LangGraph davranışı çoğunlukla satırın döndürdüğü state güncellemesi veya graph bağlantısı üzerinden ortaya çıkar.']);
+    return '';
+  }
+
+  function enhanceCodeBlock(code) {
+    var lang = code.getAttribute('data-lang') || '';
+    var raw = code.textContent.replace(/\n$/, '');
+    code.dataset.rawCode = raw;
+    var lines = raw.split('\n');
+    var html = lines.map(function (line) {
+      var note = noteForLine(line, lang);
+      var highlighted;
+      if (lang === 'shell' || /^\s*[!%]/.test(line)) highlighted = highlightShell(line);
+      else if (lang === 'output') highlighted = highlightOutput(line);
+      else highlighted = highlightPython(line);
+      var attrs = 'class="code-line"';
+      if (note) attrs += ' data-note="' + escapeHtml(note).replace(/"/g, '&quot;') + '"';
+      return '<span ' + attrs + '>' + highlighted + '</span>';
+    }).join('');
+    code.innerHTML = html;
+  }
+
+  document.querySelectorAll('pre code[data-lang]').forEach(enhanceCodeBlock);
+
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+
+  var activeLine = null;
+
+  function positionTooltip(line) {
+    var rect = line.getBoundingClientRect();
+    tooltip.style.maxWidth = window.innerWidth <= 560 ? 'calc(100vw - 32px)' : '420px';
+    var tipRect = tooltip.getBoundingClientRect();
+    var left = rect.right + 12;
+    var top = rect.top - 4;
+    if (left + tipRect.width > window.innerWidth - 16) {
+      left = Math.max(16, rect.left);
+      top = rect.bottom + 8;
+    }
+    if (top + tipRect.height > window.innerHeight - 16) {
+      top = Math.max(16, rect.top - tipRect.height - 8);
+    }
+    if (left + tipRect.width > window.innerWidth - 16) {
+      left = Math.max(16, window.innerWidth - tipRect.width - 16);
+    }
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+
+  function showTooltip(line) {
+    activeLine = line;
+    tooltip.innerHTML = line.getAttribute('data-note') || '';
+    tooltip.classList.add('is-visible');
+    positionTooltip(line);
+  }
+
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+
+  document.addEventListener('pointerover', function (event) {
+    var line = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (line) showTooltip(line);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('scroll', function () {
+    if (activeLine) hideTooltip();
+  }, true);
+  window.addEventListener('resize', function () {
+    if (activeLine) positionTooltip(activeLine);
+  });
+
+  document.querySelectorAll('.copy-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var card = button.closest('.code-card');
+      var code = card ? card.querySelector('code[data-lang]') : null;
+      var text = code ? (code.dataset.rawCode || code.textContent) : '';
+      function done() {
+        var old = button.textContent;
+        button.textContent = 'Kopyalandı!';
+        setTimeout(function () { button.textContent = old; }, 1500);
+      }
+      function fallback() {
+        var area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.left = '-9999px';
+        document.body.appendChild(area);
+        area.select();
+        try {
+          document.execCommand('copy');
+          done();
+        } catch (err) {
+          button.textContent = 'Kopyalanamadı';
+        }
+        document.body.removeChild(area);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+      } else {
+        fallback();
+      }
+    });
+  });
+
+  function fitTitle() {
+    var title = document.getElementById('lesson-title');
+    if (!title) return;
+    title.style.fontSize = '';
+    var min = 28;
+    var size = parseFloat(window.getComputedStyle(title).fontSize);
+    while (title.scrollWidth > title.clientWidth && size > min) {
+      size -= 1;
+      title.style.fontSize = size + 'px';
+    }
+  }
+  fitTitle();
+  window.addEventListener('resize', fitTitle);
+}());
+</script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

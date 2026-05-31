@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta Alt Graph Mimarisi: State Paylaşımı ve Kapsüllenmiş Akışlar</title>
+  <style>
+:root {
+  --lesson-bg: #ffffff;
+  --lesson-text: #111827;
+  --lesson-muted: #4b5563;
+  --lesson-soft: #f9fafb;
+  --lesson-soft-2: #f3f4f6;
+  --lesson-border: #e5e7eb;
+  --lesson-border-strong: #d1d5db;
+  --lesson-card: #ffffff;
+  --lesson-card-muted: #f8fafc;
+  --langgraph-primary: #153f3b;
+  --langgraph-secondary: #0f766e;
+  --langgraph-soft: #dbe9e7;
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: var(--lesson-bg);
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+.lesson-page {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: clamp(1rem, 2.5vw, 2.5rem);
+  background: var(--lesson-bg);
+  color: var(--lesson-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.lesson-page > article {
+  margin: 0 auto;
+  counter-reset: section;
+}
+.lesson-page,
+.lesson-page section,
+.title-block,
+.definition-card,
+.example-card,
+.note-card,
+.question-card,
+.mini-panel,
+.output-comment,
+.flow-step,
+.state-item,
+.chat-bubble {
+  min-width: 0;
+  max-width: 100%;
+}
+.title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0 0 2rem;
+  text-align: center;
+}
+.lesson-logo {
+  align-self: center;
+  display: block;
+  width: clamp(3.5rem, 8vw, 5.5rem);
+  height: clamp(3.5rem, 8vw, 5.5rem);
+  object-fit: contain;
+  margin: 0 auto 1rem;
+}
+.lesson-logo-fallback {
+  margin: 0 auto 1rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.4rem;
+  color: var(--langgraph-primary);
+  font-weight: 700;
+}
+.lesson-page h1,
+.lesson-page h2,
+.lesson-page h3,
+.lesson-page h4 {
+  color: var(--lesson-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.lesson-page h1 {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(1.95rem, 3.6vw, 2.75rem);
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.lead-text {
+  width: 100%;
+  min-width: 0;
+  max-width: 760px;
+  margin: 0.9rem auto 0;
+  color: var(--lesson-muted);
+  font-size: 1.05rem;
+}
+.lesson-page p,
+.lesson-page li,
+.lead-text {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.lesson-page h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 2.2rem 0 0.85rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--lesson-border);
+  font-size: clamp(1.35rem, 2.1vw, 1.75rem);
+  counter-increment: section;
+  counter-reset: subsection;
+}
+.lesson-page h2::before {
+  content: counter(section) ".";
+  color: currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.lesson-page h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 1.45rem 0 0.65rem;
+  font-size: clamp(1.12rem, 1.65vw, 1.32rem);
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+.lesson-page h3::before {
+  content: counter(section) "." counter(subsection);
+  color: currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.lesson-page h4 {
+  margin: 1rem 0 0.45rem;
+  font-size: 1.02rem;
+  counter-increment: subsubsection;
+}
+.lesson-page h4::before {
+  content: counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+  font-variant-numeric: tabular-nums;
+}
+.definition-card h3,
+.example-card h3,
+.note-card h3,
+.question-card h3,
+.mini-panel h3,
+.output-comment h3,
+.mini-panel h4,
+.output-comment h4 {
+  display: block;
+  counter-increment: none;
+  counter-reset: none;
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+}
+.definition-card h3::before,
+.example-card h3::before,
+.note-card h3::before,
+.question-card h3::before,
+.mini-panel h3::before,
+.output-comment h3::before,
+.mini-panel h4::before,
+.output-comment h4::before {
+  content: none;
+}
+p {
+  margin: 0.55rem 0 0.9rem;
+}
+ul,
+ol {
+  margin: 0.65rem 0 1rem;
+  padding-left: 1.35rem;
+}
+li + li {
+  margin-top: 0.32rem;
+}
+code:not(.code-body code):not(.output-body code):not(.line-tooltip code) {
+  padding: 0.08rem 0.24rem;
+  border-radius: 0.28rem;
+  background: #eeeeee;
+  color: #111111;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+.definition-card,
+.example-card,
+.note-card,
+.question-card,
+.mini-panel,
+.output-comment {
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.65rem;
+  background: var(--lesson-card);
+  padding: 0.95rem 1rem;
+}
+.definition-card {
+  border-left: 4px solid var(--langgraph-primary);
+  background: linear-gradient(90deg, rgba(219, 233, 231, 0.55), #fff 38%);
+}
+.note-card {
+  border-left: 4px solid var(--langgraph-secondary);
+  background: var(--lesson-card-muted);
+}
+.question-card {
+  border-left: 4px solid var(--lesson-border-strong);
+  background: var(--lesson-soft);
+}
+.explain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0 1rem 4.95rem;
+}
+.mini-panel p {
+  margin-bottom: 0;
+  color: var(--lesson-muted);
+}
+.output-comment {
+  margin: 0.65rem 0 1rem 4.95rem;
+  background: #ffffff;
+  color: var(--lesson-muted);
+}
+.output-comment strong {
+  color: var(--lesson-text);
+}
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.65rem;
+}
+.table-wrap table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+.table-wrap th {
+  background: var(--lesson-soft);
+  color: var(--langgraph-primary);
+  font-weight: 700;
+}
+.table-wrap th,
+.table-wrap td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--lesson-border);
+  text-align: left;
+  vertical-align: top;
+}
+.table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+.concept-map {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 1.2rem 0;
+  align-items: stretch;
+}
+.concept-map.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.concept-map.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.flow-step {
+  min-height: 5.5rem;
+  padding: 0.85rem;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.6rem;
+  background: var(--lesson-soft);
+  position: relative;
+}
+.flow-step strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--langgraph-primary);
+  font-size: 0.98rem;
+}
+.flow-step span {
+  color: var(--lesson-muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.flow-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -0.52rem;
+  width: 0.5rem;
+  height: 1px;
+  background: var(--lesson-border-strong);
+}
+.state-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+.state-item {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.65rem;
+  background: var(--lesson-card);
+}
+.state-item strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--langgraph-primary);
+}
+.state-item span {
+  color: var(--lesson-muted);
+}
+.checklist {
+  list-style: none;
+  padding-left: 0;
+}
+.checklist li {
+  position: relative;
+  padding-left: 1.25rem;
+}
+.checklist li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--langgraph-secondary);
+}
+.chat-flow {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+.chat-bubble {
+  max-width: 78%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--lesson-border);
+  border-radius: 0.65rem;
+  background: var(--lesson-soft);
+}
+.chat-bubble.user {
+  justify-self: end;
+  background: #ffffff;
+  border-color: var(--lesson-border-strong);
+}
+.chat-bubble.assistant {
+  justify-self: start;
+  border-left: 3px solid var(--langgraph-secondary);
+}
+.chat-bubble.tool {
+  justify-self: start;
+  border-left: 3px solid #9f1239;
+  background: #ffffff;
+}
+.chat-bubble strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--langgraph-primary);
+  font-size: 0.9rem;
+}
+.walk-card {
+  margin: 1.35rem 0 1.75rem;
+}
+.code-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  margin: 1.15rem 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  padding-top: 0.62rem;
+  color: #303f9f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-head {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.45rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.code-title {
+  display: none;
+}
+.copy-btn {
+  border: 1px solid #c4c8cf;
+  border-radius: 0.35rem;
+  background: rgba(255, 255, 255, 0.92);
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0.22rem 0.5rem;
+}
+.copy-btn:hover {
+  background: #ffffff;
+}
+.code-body {
+  grid-column: 2;
+  margin: 0;
+  padding: 0.72rem 5.2rem 0.72rem 0.8rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  color: var(--code-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.91rem;
+  line-height: 1.48;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  tab-size: 4;
+  border: 1px solid var(--code-border);
+  border-radius: 0 0 0.2rem 0.2rem;
+  background: var(--code-bg);
+  scrollbar-gutter: stable;
+}
+.code-body code {
+  display: block;
+  min-width: max-content;
+  font-family: inherit;
+}
+.code-line {
+  display: block;
+  width: auto;
+  min-width: max-content;
+  min-height: 1.48em;
+  padding: 0 0.28rem;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  border-radius: 0.14rem;
+}
+.code-line:empty::before {
+  content: " ";
+}
+.code-line[data-note] {
+  position: relative;
+  cursor: help;
+  text-decoration: none;
+  border-bottom: 0;
+}
+.code-line[data-note] *,
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  border-bottom: 0;
+}
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  background: #fff7d6;
+  outline: none;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  margin: 1rem 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  padding-top: 0.62rem;
+  color: #9f1239;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-head {
+  grid-column: 2;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid var(--code-border);
+  border-bottom: 0;
+  border-radius: 0.2rem 0.2rem 0 0;
+  background: var(--code-surface);
+  color: var(--code-muted);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.78rem;
+  cursor: default;
+}
+.output-body {
+  grid-column: 2;
+  margin: 0;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid var(--code-border);
+  border-radius: 0 0 0.2rem 0.2rem;
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.91rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.output-card.output-scroll .output-body,
+pre.output-body:not(.output-visual) {
+  max-height: 28rem;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  scrollbar-color: #b8b8b8 #f2f2f2;
+  scrollbar-width: auto;
+}
+.output-card.output-scroll .output-body::-webkit-scrollbar,
+pre.output-body:not(.output-visual)::-webkit-scrollbar {
+  width: 13px;
+  height: 13px;
+}
+.output-card.output-scroll .output-body::-webkit-scrollbar-track,
+pre.output-body:not(.output-visual)::-webkit-scrollbar-track {
+  background: #f2f2f2;
+  border-left: 1px solid #d6d6d6;
+}
+.output-card.output-scroll .output-body::-webkit-scrollbar-thumb,
+pre.output-body:not(.output-visual)::-webkit-scrollbar-thumb {
+  background: #b8b8b8;
+  border: 3px solid #f2f2f2;
+  border-radius: 999px;
+}
+.output-visual {
+  white-space: normal;
+  text-align: center;
+  overflow: auto;
+  background: #ffffff;
+}
+.output-visual img,
+.output-visual svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  background: #ffffff;
+}
+.output-body,
+.output-body code,
+.output-body .tok-keyword,
+.output-body .tok-string,
+.output-body .tok-comment,
+.output-body .tok-function,
+.output-body .tok-number,
+.output-body .tok-class,
+.output-body .tok-name,
+.output-body .tok-builtin,
+.output-body .tok-operator,
+.output-body .tok-magic,
+.output-body .tok-flag,
+.output-body .tok-shell-command {
+  color: var(--code-text) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.tok-magic { color: #008000; font-weight: 700; }
+.tok-flag { color: #aa22ff; }
+.tok-shell-command { color: #0000ff; font-weight: 700; }
+@media (max-width: 860px) {
+  .concept-map,
+  .concept-map.three,
+  .concept-map.four,
+  .state-list,
+  .explain-grid {
+    grid-template-columns: 1fr;
+  }
+  .flow-step:not(:last-child)::after {
+    display: none;
+  }
+  table {
+    min-width: 620px;
+  }
+}
+@media (max-width: 560px) {
+  .lesson-page {
+    padding: 1rem;
+    font-size: 1rem;
+    line-height: 1.72;
+  }
+  .title-block {
+    display: block;
+  }
+  .lesson-logo {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .lesson-page h1 {
+    display: block;
+    width: 100%;
+    font-size: clamp(1.55rem, 7vw, 1.9rem);
+    line-height: 1.22;
+    word-break: break-word;
+  }
+  .lead-text {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+  }
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-head {
+    top: 1.8rem;
+    right: 0.45rem;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+    overflow-x: auto;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .explain-grid,
+  .output-comment {
+    margin-left: 0;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+  .chat-bubble {
+    max-width: 100%;
+  }
+}
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html" class="is-active" aria-current="page">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu">
+        <h1 id="lesson-title">LangGraph’ta Alt Graph Mimarisi: State Paylaşımı ve Kapsüllenmiş Akışlar</h1>
+        <p class="lead-text">Bu ders, parent graph ile alt graph’ların ortak state anahtarları üzerinden nasıl iletişim kurduğunu, output schema kullanımının neden kritik olduğunu ve paralel sub-graph akışlarında reducer tasarımının ne zaman gerekli hale geldiğini açıklar.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>Bu bölümde amaç, LangGraph içinde büyük bir iş akışını tek parça graph olarak büyütmek yerine, anlamlı alt graph’lara ayırarak yönetmektir. Örnek senaryoda sistem logları alır; bir alt graph başarısızlık örüntülerini çıkarır, diğer alt graph soru içeriklerini özetler. Parent graph ise bu iki çalışmayı aynı yürütme içinde birleştirir.</p>
+        <section class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Alt graph iletişimi sihirli bir global paylaşım üzerinden değil, parent graph ve sub-graph state şemalarında ortak bulunan anahtarlar üzerinden gerçekleşir. Hangi alanların dışarı yayımlanacağını <code>output_schema</code> ile sınırlandırmak, paralel graph tasarımını daha güvenli ve okunabilir hale getirir.</p></section>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul class="checklist">
+          <li><code>StateGraph</code> ile parent graph ve alt graph state şemalarını ayırabilecek.</li>
+          <li>Overlapping key ilkesinin parent-subgraph iletişimindeki rolünü açıklayabilecek.</li>
+          <li><code>output_schema</code> kullanarak alt graph’ın dışarı yayımladığı alanları sınırlandırabilecek.</li>
+          <li>Paralel alt graph’lar aynı state alanına yazdığında neden reducer gerektiğini yorumlayabilecek.</li>
+          <li><code>xray</code> graph görselinin nested graph yapısını okumadaki değerini açıklayabilecek.</li>
+        </ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title">
+        <h2 id="on-kosullar-title">Ön Koşullar</h2>
+        <p>Bu dersi izleyebilmek için Python fonksiyonları, dictionary/list yapıları, class tanımı ve type hint kullanımına aşinalık gerekir. <code>TypedDict</code>, <code>Optional</code>, <code>List</code> ve <code>Annotated</code> gibi tip araçları state sözleşmesini açık hale getirir. LangGraph tarafında ise node, edge, <code>START</code>, <code>END</code>, <code>compile</code> ve <code>invoke</code> kavramlarının temel anlamı bilinmelidir.</p>
+        <p>API anahtarı ve ortam değişkeni mantığı da önemlidir; çünkü izleme ayarları kod içine gizli değer yazmadan yapılır. Bu derste tam bir LLM agent-tool döngüsü kurulmaz; odak state paylaşımı, sub-graph kapsülleme ve trace okunabilirliğidir.</p>
+      </section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody>
+          <tr><td><code>EntryGraphState</code></td><td>Parent graph’ın taşıdığı ana state sözleşmesi.</td><td>Alt graph çıktılarının birleştiği üst seviye state alanları.</td></tr>
+          <tr><td><code>FailureAnalysisState</code></td><td>Başarısızlık analizi alt graph’ının iç state’i.</td><td>Parent graph’ın bilmek zorunda olmadığı ara alanları taşıyabilir.</td></tr>
+          <tr><td><code>QuestionSummarizationState</code></td><td>Soru özetleme alt graph’ının iç state’i.</td><td>Aynı girdiyi farklı bir alt görev için işler.</td></tr>
+          <tr><td>Overlapping key</td><td>Parent ve alt graph şemalarında ortak bulunan state anahtarı.</td><td>Graph’lar arası veri geçişinin temel mekanizması.</td></tr>
+          <tr><td><code>output_schema</code></td><td>Alt graph’ın dışarı yayımladığı anahtarları sınırlayan şema.</td><td>Gereksiz state geri dönüşlerini ve paralel çakışmaları azaltır.</td></tr>
+          <tr><td>Reducer</td><td>Aynı state alanına gelen çoklu güncellemeleri birleştiren fonksiyon.</td><td><code>Annotated[..., add]</code> ile <code>processed_logs</code> alanında kullanılır.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+        <h2 id="buyuk-resim-title">Büyük Resim</h2>
+        <p>Alt graph, parent graph içinde tek node gibi kullanılabilen ama kendi iç state’i, node’ları ve edge’leri olan kapsüllenmiş bir graph parçasıdır. Bu yapı özellikle çok ajanlı sistemlerde değerlidir: her ekip ya da alt görev kendi state ayrıntılarını yönetirken parent graph yalnızca ortak giriş ve sonuç alanlarını taşır.</p>
+        <div class="concept-map">
+          <div class="flow-step"><strong>Ham log</strong><span>Parent graph dış girdiyi <code>raw_logs</code> alanında alır.</span></div>
+          <div class="flow-step"><strong>Temizleme</strong><span><code>clean_logs</code>, alt graph’ların okuyacağı <code>cleaned_logs</code> alanını üretir.</span></div>
+          <div class="flow-step"><strong>Paralel alt görev</strong><span>İki sub-graph aynı temizlenmiş log listesini okur.</span></div>
+          <div class="flow-step"><strong>Output schema</strong><span>Her alt graph yalnızca dışarı vermesi gereken alanları yayımlar.</span></div>
+          <div class="flow-step"><strong>Final state</strong><span>Parent graph summary, report ve işlenmiş log kayıtlarını birleştirir.</span></div>
+        </div>
+        <section class="note-card"><h3 id="state-yalnizca-local-degisken-degildir">State yalnızca local değişken değildir</h3><p>State, graph yürütmesi boyunca node’lar arasında taşınan sözleşmedir. Parent graph ve sub-graph aynı anahtar adını paylaştığında veri aktarımı bu sözleşme üzerinden gerçekleşir.</p></section>
+      </section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+        <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+        <p>Bir parent graph’ın alt graph’la iletişim kurması için iki tarafın state şemalarında ortak anahtarların bulunması gerekir. Örnekte <code>cleaned_logs</code>, parent graph tarafından üretilir ve her iki alt graph tarafından okunur. Bu alan alt graph’lar için girdidir; parent graph’a geri döndürülmesi gerekmez.</p>
+        <p>Alt graph’ın parent graph’a döndürmesi gereken alanlar ise işin sonucunu temsil eder. Failure analysis akışı <code>fa_summary</code> ve <code>processed_logs</code> üretir. Question summarization akışı <code>report</code> ve <code>processed_logs</code> üretir. Bu nedenle <code>processed_logs</code> iki paralel alt graph’tan geldiği için reducer ile birleştirilir.</p>
+        <div class="concept-map four">
+          <div class="flow-step"><strong>İç state</strong><span>Alt graph’ın kendi ara hesaplarını tutar.</span></div>
+          <div class="flow-step"><strong>Ortak giriş</strong><span>Parent ile alt graph arasında aynı adla bulunur.</span></div>
+          <div class="flow-step"><strong>Yayımlanan çıktı</strong><span><code>output_schema</code> içinde seçilen alanlardır.</span></div>
+          <div class="flow-step"><strong>Birleşim</strong><span>Parent graph paralel çıktı kanallarını final state’te toplar.</span></div>
+        </div>
+      </section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+        <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+        <article class="walk-card" id="kod-adimi-1">
+  <h3 id="ortami-hazirlama">Ortamı hazırlama</h3>
+  <p>İlk çalıştırılabilir blok, gerekli paketi notebook ortamına yükler ve kurulum çıktısını ders akışını bozmayacak biçimde bastırır.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Ortamı hazırlama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install -U  langgraph</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım graph tanımlarından önce çalışma ortamının LangGraph API’lerini içermesini sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kurulum satırı graph davranışını açıklamaz; yalnızca daha sonraki builder, edge ve compile çağrılarının çalışabilmesi için ön koşul sağlar.</p></section>
+</div>
+</article><article class="walk-card" id="kod-adimi-2">
+  <h3 id="izleme-ayarlarini-tanimlama">İzleme ayarlarını tanımlama</h3>
+  <p>Bu blok, trace üretimi için gerekli ortam değişkenlerini hazırlar. Anahtar değeri kod içine yazılmaz; eksikse güvenli girişle alınır.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">İzleme ayarlarını tanımlama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">import os, getpass
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+_set_env("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "langchain-academy"</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Sub-graph kullanımı özellikle büyük graph’larda trace okunabilirliğiyle ilişkilidir; bu yüzden izleme ayarı pedagojik olarak önemlidir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu ayarlar graph state’ini değiştirmez. Üretim kodunda gizli değerleri kaynak koda yazmak yerine environment değişkeni kullanmak gerekir.</p></section>
+</div>
+</article><article class="walk-card" id="kod-adimi-3">
+  <h3 id="log-sozlesmesini-kurma">Log sözleşmesini kurma</h3>
+  <p>Parent graph ve alt graph’lar aynı kayıt nesnesini okuyacağı için log yapısı açık bir <code>TypedDict</code> sözleşmesiyle ifade edilir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Log sözleşmesini kurma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from operator import add
+from typing_extensions import TypedDict
+from typing import List, Optional, Annotated
+
+# The structure of the logs
+class Log(TypedDict):
+    """
+    Define the Log data model.
+    """
+    id: str
+    question: str
+    docs: Optional[List]
+    answer: str
+    grade: Optional[int]
+    grader: Optional[str]
+    feedback: Optional[str]</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>Log</code>, parent graph’tan alt graph’lara taşınan verinin biçimini netleştirir; overlapping key mantığı bu tür ortak sözleşmelere dayanır.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bazı alanlar örnek loglarda bulunmayabilir. Node fonksiyonları bu nedenle alanın varlığını kontrol ederek davranmalıdır.</p></section>
+</div>
+</article><article class="walk-card" id="kod-adimi-4">
+  <h3 id="failure-analysis-alt-graphi">Failure analysis alt graph’ı</h3>
+  <p>İlk alt graph, temizlenmiş logları alır, başarısızlık sinyali taşıyan kayıtları ayıklar ve yalnızca parent graph’ın ihtiyaç duyduğu alanları dışarı verir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Failure analysis alt graph’ı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+# Failure Analysis Sub-graph
+class FailureAnalysisState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    cleaned_logs: List[Log]
+    failures: List[Log]
+    fa_summary: str
+    processed_logs: List[str]
+
+class FailureAnalysisOutputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    fa_summary: str
+    processed_logs: List[str]
+
+def get_failures(state):
+    """ Get logs that contain a failure """
+    cleaned_logs = state["cleaned_logs"]
+    failures = [log for log in cleaned_logs if "grade" in log]
+    return {"failures": failures}
+
+def generate_summary(state):
+    """ Generate summary of failures """
+    failures = state["failures"]
+    # Add fxn: fa_summary = summarize(failures)
+    fa_summary = "Poor quality retrieval of Chroma documentation."
+    return {
+        "fa_summary": fa_summary,
+        "processed_logs": [
+            f"failure-analysis-on-log-{failure['id']}"
+            for failure in failures
+        ],
+    }
+
+fa_builder = StateGraph(
+    state_schema=FailureAnalysisState,
+    output_schema=FailureAnalysisOutputState,
+)
+fa_builder.add_node("get_failures", get_failures)
+fa_builder.add_node("generate_summary", generate_summary)
+fa_builder.add_edge(START, "get_failures")
+fa_builder.add_edge("get_failures", "generate_summary")
+fa_builder.add_edge("generate_summary", END)
+
+graph = fa_builder.compile()
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu blok, bir alt graph’ın kendi iç state alanlarına sahip olabileceğini gösterir: <code>failures</code> iç akışta kullanılır, <code>fa_summary</code> dışarı taşınır.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>output_schema</code>, <code>cleaned_logs</code> gibi giriş alanlarının parent graph’a gereksiz biçimde geri dönmesini engellediği için paralel state çakışmalarını azaltır.</p></section>
+</div>
+  <div class="output-card">
+  <div class="output-head">Graph görseli</div>
+  <div class="output-body output-visual"><img src="data:image/png;base64,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" alt="Failure analysis alt graph akışı"></div>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel, akışın <code>START -> get_failures -> generate_summary -> END</code> düzeninde ilerlediğini gösterir. Bu alt graph parent graph’tan bağımsız olarak derlenebilir ve incelenebilir.</p></section>
+</article><article class="walk-card" id="kod-adimi-5">
+  <h3 id="question-summarization-alt-graphi">Question summarization alt graph’ı</h3>
+  <p>İkinci alt graph aynı <code>cleaned_logs</code> girdisini kullanır, soru odaklı bir özet üretir ve temsilî bir rapor alanı döndürür.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Question summarization alt graph’ı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Summarization subgraph
+class QuestionSummarizationState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    cleaned_logs: List[Log]
+    qs_summary: str
+    report: str
+    processed_logs: List[str]
+
+class QuestionSummarizationOutputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    report: str
+    processed_logs: List[str]
+
+def generate_summary(state):
+    """
+    Run the generate_summary helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    cleaned_logs = state["cleaned_logs"]
+    # Add fxn: summary = summarize(generate_summary)
+    summary = "Questions focused on usage of ChatOllama and Chroma vector store."
+    return {
+        "qs_summary": summary,
+        "processed_logs": [
+            f"summary-on-log-{log['id']}"
+            for log in cleaned_logs
+        ],
+    }
+
+def send_to_slack(state):
+    """
+    Run the send_to_slack helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    qs_summary = state["qs_summary"]
+    # Add fxn: report = report_generation(qs_summary)
+    report = "foo bar baz"
+    return {"report": report}
+
+qs_builder = StateGraph(
+    QuestionSummarizationState,
+    output_schema=QuestionSummarizationOutputState,
+)
+qs_builder.add_node("generate_summary", generate_summary)
+qs_builder.add_node("send_to_slack", send_to_slack)
+qs_builder.add_edge(START, "generate_summary")
+qs_builder.add_edge("generate_summary", "send_to_slack")
+qs_builder.add_edge("send_to_slack", END)
+
+graph = qs_builder.compile()
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu blok, iki farklı alt graph’ın aynı parent girdisini okuyup farklı çıktı alanları üretebileceğini gösterir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>generate_summary</code> adı bu blokta yeniden tanımlanır; builder önceki fonksiyon nesnesini node olarak sakladığı için failure analysis graph’ındaki node geriye dönük değişmez.</p></section>
+</div>
+  <div class="output-card">
+  <div class="output-head">Graph görseli</div>
+  <div class="output-body output-visual"><img src="data:image/png;base64,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" alt="Question summarization alt graph akışı"></div>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel, soru özetleme alt graph’ının <code>START -> generate_summary -> send_to_slack -> END</code> çizgisini izlediğini gösterir. İç ara değer <code>qs_summary</code>, dışarıdaki parent graph için zorunlu değildir.</p></section>
+</article><article class="walk-card" id="kod-adimi-6">
+  <h3 id="parent-state-icin-reducer-ihtimalini-tartisma">Parent state için reducer ihtimalini tartışma</h3>
+  <p>Bu ara tanım, paralel alt graph’ların aynı anahtarı geri döndürmesi halinde reducer ihtiyacının nasıl ortaya çıkacağını görünür kılar.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Parent state için reducer ihtimalini tartışma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Entry Graph
+class EntryGraphState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    raw_logs: List[Log]
+    cleaned_logs: Annotated[List[Log], add] # This will be USED BY in BOTH sub-graphs
+    fa_summary: str # This will only be generated in the FA sub-graph
+    report: str # This will only be generated in the QS sub-graph
+    processed_logs:  Annotated[List[int], add] # This will be generated in BOTH sub-graphs</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Parent graph, alt graph’lardan dönen alanları aynı state sözleşmesinde toplar; birden fazla dal aynı anahtara yazarsa reducer gerekir.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>cleaned_logs</code> yalnızca girdi olarak kullanılsa bile alt graph tüm state’i dışarı verirse çakışabilir. Bu dersin çözümü, bu alanı reducer ile taşımak değil output schema ile dışarı vermemektir.</p></section>
+</div>
+</article><article class="walk-card" id="kod-adimi-7">
+  <h3 id="parent-grapha-alt-graphlari-baglama">Parent graph’a alt graph’ları bağlama</h3>
+  <p>Son parent graph, ham logları temizlenmiş loglara dönüştürür ve ardından iki alt graph’ı paralel dallar olarak çalıştırır.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Parent graph’a alt graph’ları bağlama</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Entry Graph
+class EntryGraphState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    raw_logs: List[Log]
+    cleaned_logs: List[Log]
+    fa_summary: str # This will only be generated in the FA sub-graph
+    report: str # This will only be generated in the QS sub-graph
+    processed_logs:  Annotated[List[int], add] # This will be generated in BOTH sub-graphs
+
+def clean_logs(state):
+    """
+    Run the clean_logs helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # Get logs
+    raw_logs = state["raw_logs"]
+    # Data cleaning raw_logs -&gt; docs
+    cleaned_logs = raw_logs
+    return {"cleaned_logs": cleaned_logs}
+
+entry_builder = StateGraph(EntryGraphState)
+entry_builder.add_node("clean_logs", clean_logs)
+entry_builder.add_node("question_summarization", qs_builder.compile())
+entry_builder.add_node("failure_analysis", fa_builder.compile())
+
+entry_builder.add_edge(START, "clean_logs")
+entry_builder.add_edge("clean_logs", "failure_analysis")
+entry_builder.add_edge("clean_logs", "question_summarization")
+entry_builder.add_edge("failure_analysis", END)
+entry_builder.add_edge("question_summarization", END)
+
+graph = entry_builder.compile()
+
+from IPython.display import Image, display
+
+# Setting xray to 1 will show the internal structure of the nested graph
+display(Image(graph.get_graph(xray=1).draw_mermaid_png()))</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Derlenmiş alt graph’ların node olarak eklenmesi, büyük graph’ların alt bileşenler halinde kapsüllenmesini sağlar.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>processed_logs</code> iki alt graph tarafından üretildiği için reducer taşır. Buna karşılık <code>cleaned_logs</code>, output schema sayesinde geri yayınlanmadığından reducer gerektirmez.</p></section>
+</div>
+  <div class="output-card">
+  <div class="output-head">Graph görseli</div>
+  <div class="output-body output-visual"><img src="data:image/png;base64,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" alt="Parent graph içinde alt graph akışı"></div>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel, parent graph’ın <code>clean_logs</code> sonrasında iki alt graph’a ayrıldığını gösterir. <code>xray</code> görünümü nested graph içindeki node’ları açarak trace okuma mantığını güçlendirir.</p></section>
+</article><article class="walk-card" id="kod-adimi-8">
+  <h3 id="ornek-loglarla-graphi-calistirma">Örnek loglarla graph’ı çalıştırma</h3>
+  <p>Son blok, iki temsilî log üretir ve parent graph’ı bu girişle çalıştırır. Final state, parent girdilerini ve iki alt graph’tan gelen çıktıları birlikte gösterir.</p>
+  <div class="code-card">
+  <div class="code-head"><span class="code-title">Örnek loglarla graph’ı çalıştırma</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python"># Dummy logs
+question_answer = Log(
+    id="1",
+    question="How can I import ChatOllama?",
+    answer="To import ChatOllama, use: 'from langchain_community.chat_models import ChatOllama.'",
+)
+
+question_answer_feedback = Log(
+    id="2",
+    question="How can I use Chroma vector store?",
+    answer="To use Chroma, define: rag_chain = create_retrieval_chain(retriever, question_answer_chain).",
+    grade=0,
+    grader="Document Relevance Recall",
+    feedback="The retrieved documents discuss vector stores in general, but not Chroma specifically",
+)
+
+raw_logs = [
+    question_answer,
+    question_answer_feedback,
+]
+graph.invoke({"raw_logs": raw_logs})</code></pre>
+</div>
+  <div class="explain-grid">
+  <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu çağrı, overlapping key ve reducer davranışını somut final state üzerinde doğrular.</p></section>
+  <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Örnek loglar gerçek servis çağrısı yapmaz; amaç sub-graph iletişimini ve state birleşimini izole biçimde göstermektir.</p></section>
+</div>
+  <div class="output-card output-scroll">
+  <div class="output-head">Python çıktısı</div>
+  <pre class="output-body"><code data-lang="output">{'raw_logs': [{'id': '1',
+   'question': 'How can I import ChatOllama?',
+   'answer': "To import ChatOllama, use: 'from langchain_community.chat_models import ChatOllama.'"},
+  {'id': '2',
+   'question': 'How can I use Chroma vector store?',
+   'answer': 'To use Chroma, define: rag_chain = create_retrieval_chain(retriever, question_answer_chain).',
+   'grade': 0,
+   'grader': 'Document Relevance Recall',
+   'feedback': 'The retrieved documents discuss vector stores in general, but not Chroma specifically'}],
+ 'cleaned_logs': [{'id': '1',
+   'question': 'How can I import ChatOllama?',
+   'answer': "To import ChatOllama, use: 'from langchain_community.chat_models import ChatOllama.'"},
+  {'id': '2',
+   'question': 'How can I use Chroma vector store?',
+   'answer': 'To use Chroma, define: rag_chain = create_retrieval_chain(retriever, question_answer_chain).',
+   'grade': 0,
+   'grader': 'Document Relevance Recall',
+   'feedback': 'The retrieved documents discuss vector stores in general, but not Chroma specifically'}],
+ 'fa_summary': 'Poor quality retrieval of Chroma documentation.',
+ 'report': 'foo bar baz',
+ 'processed_logs': ['failure-analysis-on-log-2',
+  'summary-on-log-1',
+  'summary-on-log-2']}</code></pre>
+</div>
+  <section class="output-comment"><h4>Çıktı Yorumu</h4><p>Final state içinde <code>raw_logs</code> ve <code>cleaned_logs</code> parent akışından gelir; <code>fa_summary</code> failure analysis alt graph’ından, <code>report</code> question summarization alt graph’ından, <code>processed_logs</code> ise iki alt graph’ın reducer ile birleşen çıktılarından oluşur.</p></section>
+</article>
+      </section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+        <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+        <p>Bu dersteki görsel çıktılar graph topolojisini, metin çıktısı ise final state’i gösterir. Görsellerde dikkat edilmesi gereken nokta, alt graph’ların kendi iç node dizilerini koruması ve parent graph içinde kapsüllenmiş biçimde kullanılabilmesidir.</p>
+        <section class="note-card"><h3 id="okuma-rehberi">Okuma rehberi</h3><p>Final state çıktısında <code>fa_summary</code> alanı failure analysis akışından, <code>report</code> alanı soru özetleme akışından gelir. <code>processed_logs</code> alanı iki alt graph’ın aynı parent alanına yazdığı değerlerin reducer ile birleştirilmiş halidir. <code>cleaned_logs</code> ise output schema sayesinde alt graph’lardan geri dönen bir çakışma alanı olmaktan çıkar.</p></section>
+      </section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title">
+        <h2 id="graph-akisi-title">Graph Akışı</h2>
+        <h3 id="parent-graph-akisi">Parent graph akışı</h3>
+        <div class="concept-map three">
+          <div class="flow-step"><strong>START -> clean_logs</strong><span>Ham log listesi temizlenmiş log alanına aktarılır.</span></div>
+          <div class="flow-step"><strong>clean_logs -> iki alt graph</strong><span>Failure analysis ve question summarization paralel çalışır.</span></div>
+          <div class="flow-step"><strong>alt graph -> END</strong><span>Her alt graph kendi output schema alanlarını parent state’e döndürür.</span></div>
+        </div>
+        <h3 id="alt-graph-akislari">Alt graph akışları</h3>
+        <div class="concept-map three">
+          <div class="flow-step"><strong>Failure analysis</strong><span><code>get_failures</code> logları filtreler, <code>generate_summary</code> failure özetini üretir.</span></div>
+          <div class="flow-step"><strong>Question summarization</strong><span><code>generate_summary</code> soru özetini üretir, <code>send_to_slack</code> rapor alanını yazar.</span></div>
+          <div class="flow-step"><strong>Nested görünüm</strong><span><code>xray=1</code>, parent graph içindeki alt graph node’larını açarak yapıyı görünür kılar.</span></div>
+        </div>
+      </section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title">
+        <h2 id="state-evrimi-title">State’in Evrimi</h2>
+        <div class="state-list">
+          <div class="state-item"><strong>1. Giriş</strong><span><code>raw_logs</code>, iki log nesnesinden oluşan parent graph girdisidir.</span></div>
+          <div class="state-item"><strong>2. Temizleme</strong><span><code>clean_logs</code>, <code>raw_logs</code> değerini <code>cleaned_logs</code> olarak yazar.</span></div>
+          <div class="state-item"><strong>3. Failure branch</strong><span><code>cleaned_logs</code> okunur, <code>failures</code> iç state’i üretilir, <code>fa_summary</code> ve failure işlem kayıtları yayımlanır.</span></div>
+          <div class="state-item"><strong>4. Summary branch</strong><span>Aynı <code>cleaned_logs</code> okunur, <code>qs_summary</code> iç state’i üretilir, <code>report</code> ve summary işlem kayıtları yayımlanır.</span></div>
+          <div class="state-item"><strong>5. Reducer birleşimi</strong><span><code>processed_logs</code>, iki alt graph’tan gelen liste parçalarını <code>add</code> ile birleştirir.</span></div>
+          <div class="state-item"><strong>6. Final state</strong><span>Parent graph, ortak girişleri ve alt graph sonuçlarını tek dictionary içinde döndürür.</span></div>
+        </div>
+      </section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+        <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+        <p>Bu derste henüz tam agent-tool döngüsü kurulmaz. <code>send_to_slack</code> adı bir entegrasyon fikrini temsil eder, fakat gerçek bir tool binding, <code>ToolNode</code> veya model tarafından üretilen tool call akışı yoktur. Odak, farklı alt görevlerin ayrı graph state’leriyle yönetilmesi ve parent graph’a kontrollü çıktı vermesidir.</p>
+        <div class="chat-flow">
+          <div class="chat-bubble user"><strong>Parent graph</strong><span><code>cleaned_logs</code> alanını alt graph’lara ortak girdi olarak sağlar.</span></div>
+          <div class="chat-bubble assistant"><strong>Failure analysis</strong><span><code>fa_summary</code> ve kendi işlem kayıtlarını döndürür.</span></div>
+          <div class="chat-bubble assistant"><strong>Question summarization</strong><span><code>report</code> ve kendi işlem kayıtlarını döndürür.</span></div>
+        </div>
+      </section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+        <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+        <ul>
+          <li>Alt graph state’ini parent graph state’iyle tamamen aynı sanmak.</li>
+          <li>Overlapping key yoksa verinin otomatik taşınacağını varsaymak.</li>
+          <li><code>output_schema</code> kullanmadan tüm alt graph state’inin parent graph’a döneceğini hesaba katmamak.</li>
+          <li>Paralel alt graph’ların aynı state anahtarına reducer olmadan yazabileceğini düşünmek.</li>
+          <li><code>cleaned_logs</code> gibi yalnızca giriş olan alanları gereksiz yere çıktı olarak yayımlamak.</li>
+          <li>Derlenmiş alt graph’ın parent graph içinde node gibi kullanılabileceğini gözden kaçırmak.</li>
+          <li>Graph görselini runtime çıktısı sanmak; görsel topolojiyi, final output ise state sonucunu gösterir.</li>
+          <li>İzleme ayarlarını graph davranışının parçası sanmak; trace ayarları gözlemlenebilirliği etkiler.</li>
+        </ul>
+      </section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+        <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+        <ol>
+          <li>Alt graph, parent graph içinde node gibi kullanılabilir ama kendi state sözleşmesini korur.</li>
+          <li>Parent-subgraph iletişimi ortak state anahtarlarıyla gerçekleşir.</li>
+          <li><code>cleaned_logs</code>, iki alt graph’ın ortak girdisidir.</li>
+          <li><code>fa_summary</code>, failure analysis alt graph’ının dışarı verdiği sonuçtur.</li>
+          <li><code>report</code>, question summarization alt graph’ının dışarı verdiği sonuçtur.</li>
+          <li><code>output_schema</code>, alt graph’ın parent graph’a hangi anahtarları yayımladığını sınırlar.</li>
+          <li><code>processed_logs</code> iki paralel alt graph’tan geldiği için reducer ile birleştirilir.</li>
+          <li><code>xray</code> görünümü nested graph yapısını debug ve öğretim için açar.</li>
+          <li>Sub-graph kapsülleme, büyük agentic sistemlerde trace okunabilirliğini artırır.</li>
+          <li>Bu dersteki yapı, daha karmaşık çok ajanlı graph mimarileri için temel oluşturur.</li>
+        </ol>
+      </section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+        <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+        <p>Aşağıdaki blok, derste kullanılan çalıştırılabilir kod parçalarını tek akış halinde toplar. Yeni davranış eklenmemiştir; kodlar ders boyunca kullanılan sırayı korur.</p>
+        <div class="code-card">
+  <div class="code-head"><span class="code-title">Dersin Kod Akışı</span><button class="copy-btn" type="button" aria-label="Bu kod bloğunu kopyala">Kopyala</button></div>
+  <pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install -U  langgraph
+
+import os, getpass
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+_set_env("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "langchain-academy"
+
+from operator import add
+from typing_extensions import TypedDict
+from typing import List, Optional, Annotated
+
+# The structure of the logs
+class Log(TypedDict):
+    """
+    Define the Log data model.
+    """
+    id: str
+    question: str
+    docs: Optional[List]
+    answer: str
+    grade: Optional[int]
+    grader: Optional[str]
+    feedback: Optional[str]
+
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+# Failure Analysis Sub-graph
+class FailureAnalysisState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    cleaned_logs: List[Log]
+    failures: List[Log]
+    fa_summary: str
+    processed_logs: List[str]
+
+class FailureAnalysisOutputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    fa_summary: str
+    processed_logs: List[str]
+
+def get_failures(state):
+    """ Get logs that contain a failure """
+    cleaned_logs = state["cleaned_logs"]
+    failures = [log for log in cleaned_logs if "grade" in log]
+    return {"failures": failures}
+
+def generate_summary(state):
+    """ Generate summary of failures """
+    failures = state["failures"]
+    # Add fxn: fa_summary = summarize(failures)
+    fa_summary = "Poor quality retrieval of Chroma documentation."
+    return {
+        "fa_summary": fa_summary,
+        "processed_logs": [
+            f"failure-analysis-on-log-{failure['id']}"
+            for failure in failures
+        ],
+    }
+
+fa_builder = StateGraph(
+    state_schema=FailureAnalysisState,
+    output_schema=FailureAnalysisOutputState,
+)
+fa_builder.add_node("get_failures", get_failures)
+fa_builder.add_node("generate_summary", generate_summary)
+fa_builder.add_edge(START, "get_failures")
+fa_builder.add_edge("get_failures", "generate_summary")
+fa_builder.add_edge("generate_summary", END)
+
+graph = fa_builder.compile()
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+# Summarization subgraph
+class QuestionSummarizationState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    cleaned_logs: List[Log]
+    qs_summary: str
+    report: str
+    processed_logs: List[str]
+
+class QuestionSummarizationOutputState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    report: str
+    processed_logs: List[str]
+
+def generate_summary(state):
+    """
+    Run the generate_summary helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    cleaned_logs = state["cleaned_logs"]
+    # Add fxn: summary = summarize(generate_summary)
+    summary = "Questions focused on usage of ChatOllama and Chroma vector store."
+    return {
+        "qs_summary": summary,
+        "processed_logs": [
+            f"summary-on-log-{log['id']}"
+            for log in cleaned_logs
+        ],
+    }
+
+def send_to_slack(state):
+    """
+    Run the send_to_slack helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    qs_summary = state["qs_summary"]
+    # Add fxn: report = report_generation(qs_summary)
+    report = "foo bar baz"
+    return {"report": report}
+
+qs_builder = StateGraph(
+    QuestionSummarizationState,
+    output_schema=QuestionSummarizationOutputState,
+)
+qs_builder.add_node("generate_summary", generate_summary)
+qs_builder.add_node("send_to_slack", send_to_slack)
+qs_builder.add_edge(START, "generate_summary")
+qs_builder.add_edge("generate_summary", "send_to_slack")
+qs_builder.add_edge("send_to_slack", END)
+
+graph = qs_builder.compile()
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+# Entry Graph
+class EntryGraphState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    raw_logs: List[Log]
+    cleaned_logs: Annotated[List[Log], add] # This will be USED BY in BOTH sub-graphs
+    fa_summary: str # This will only be generated in the FA sub-graph
+    report: str # This will only be generated in the QS sub-graph
+    processed_logs:  Annotated[List[int], add] # This will be generated in BOTH sub-graphs
+
+# Entry Graph
+class EntryGraphState(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    raw_logs: List[Log]
+    cleaned_logs: List[Log]
+    fa_summary: str # This will only be generated in the FA sub-graph
+    report: str # This will only be generated in the QS sub-graph
+    processed_logs:  Annotated[List[int], add] # This will be generated in BOTH sub-graphs
+
+def clean_logs(state):
+    """
+    Run the clean_logs helper.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # Get logs
+    raw_logs = state["raw_logs"]
+    # Data cleaning raw_logs -&gt; docs
+    cleaned_logs = raw_logs
+    return {"cleaned_logs": cleaned_logs}
+
+entry_builder = StateGraph(EntryGraphState)
+entry_builder.add_node("clean_logs", clean_logs)
+entry_builder.add_node("question_summarization", qs_builder.compile())
+entry_builder.add_node("failure_analysis", fa_builder.compile())
+
+entry_builder.add_edge(START, "clean_logs")
+entry_builder.add_edge("clean_logs", "failure_analysis")
+entry_builder.add_edge("clean_logs", "question_summarization")
+entry_builder.add_edge("failure_analysis", END)
+entry_builder.add_edge("question_summarization", END)
+
+graph = entry_builder.compile()
+
+from IPython.display import Image, display
+
+# Setting xray to 1 will show the internal structure of the nested graph
+display(Image(graph.get_graph(xray=1).draw_mermaid_png()))
+
+# Dummy logs
+question_answer = Log(
+    id="1",
+    question="How can I import ChatOllama?",
+    answer="To import ChatOllama, use: 'from langchain_community.chat_models import ChatOllama.'",
+)
+
+question_answer_feedback = Log(
+    id="2",
+    question="How can I use Chroma vector store?",
+    answer="To use Chroma, define: rag_chain = create_retrieval_chain(retriever, question_answer_chain).",
+    grade=0,
+    grader="Document Relevance Recall",
+    feedback="The retrieved documents discuss vector stores in general, but not Chroma specifically",
+)
+
+raw_logs = [
+    question_answer,
+    question_answer_feedback,
+]
+graph.invoke({"raw_logs": raw_logs})</code></pre>
+</div>
+      </section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+        <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+        <div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody>
+          <tr><td>Sub-graph</td><td>Alt graph</td><td>Parent graph içinde node gibi kullanılan, kendi state ve edge yapısı olan graph parçası.</td></tr>
+          <tr><td>Parent graph</td><td>Üst graph</td><td>Alt graph’ları koordine eden ana yürütme akışı.</td></tr>
+          <tr><td>Entry graph</td><td>Giriş graph’ı</td><td>Bu derste parent graph için kullanılan ana graph yapısı.</td></tr>
+          <tr><td>State schema</td><td>State şeması</td><td>Graph boyunca taşınan dictionary alanlarının sözleşmesi.</td></tr>
+          <tr><td>Output schema</td><td>Çıktı şeması</td><td>Graph’ın dışarı yayımlayacağı state alanlarını sınırlayan şema.</td></tr>
+          <tr><td>Overlapping key</td><td>Örtüşen anahtar</td><td>Parent ve alt graph state’lerinde ortak bulunan iletişim anahtarı.</td></tr>
+          <tr><td>Reducer</td><td>Birleştirici</td><td>Paralel update değerlerini tek state alanında birleştiren fonksiyon.</td></tr>
+          <tr><td>Fan-out</td><td>Dallanma</td><td>Tek node’dan birden fazla paralel akışa ayrılma.</td></tr>
+          <tr><td>Fan-in</td><td>Birleşim</td><td>Paralel akışlardan gelen sonuçların tek parent state’te toplanması.</td></tr>
+          <tr><td>Trace</td><td>İz kaydı</td><td>Graph yürütmesinin adım adım gözlemlenebilir kaydı.</td></tr>
+          <tr><td>Nested graph</td><td>İç içe graph</td><td>Parent graph içinde alt graph node’larıyla kurulan hiyerarşik yapı.</td></tr>
+          <tr><td>X-ray view</td><td>İç yapı görünümü</td><td>Alt graph düğümlerini görselde ayrıntılı açan inceleme görünümü.</td></tr>
+        </tbody></table></div>
+      </section>
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta Alt Graph Mimarisi: State Paylaşımı ve Kapsüllenmiş Akışlar</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#ortami-hazirlama">Ortamı hazırlama</a></li>
+<li class="toc-l3"><a href="#izleme-ayarlarini-tanimlama">İzleme ayarlarını tanımlama</a></li>
+<li class="toc-l3"><a href="#log-sozlesmesini-kurma">Log sözleşmesini kurma</a></li>
+<li class="toc-l3"><a href="#failure-analysis-alt-graphi">Failure analysis alt graph’ı</a></li>
+<li class="toc-l3"><a href="#question-summarization-alt-graphi">Question summarization alt graph’ı</a></li>
+<li class="toc-l3"><a href="#parent-state-icin-reducer-ihtimalini-tartisma">Parent state için reducer ihtimalini tartışma</a></li>
+<li class="toc-l3"><a href="#parent-grapha-alt-graphlari-baglama">Parent graph’a alt graph’ları bağlama</a></li>
+<li class="toc-l3"><a href="#ornek-loglarla-graphi-calistirma">Örnek loglarla graph’ı çalıştırma</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l3"><a href="#parent-graph-akisi">Parent graph akışı</a></li>
+<li class="toc-l3"><a href="#alt-graph-akislari">Alt graph akışları</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+  <script>
+(function () {
+  var noteRules = [
+    ["%%capture", ["`%%capture --no-stderr`, kurulum çıktısını ders akışında görünmez tutar; çalışma mantığını değiştirmez.", "Bu ifade IPython/Jupyter hücre sihridir; Python çalışma zamanı yerine notebook kernel’i tarafından yorumlanır."]],
+    ["%pip install", ["`%pip install -U langgraph`, geçerli notebook kernel ortamına LangGraph paketini kurar veya günceller.", "`%pip`, shell komutu gibi görünse de kernel ortamına bağlıdır; paket eksikse `StateGraph`, `START` ve `END` importları çalışmaz."]],
+    ["import os, getpass", ["`os`, Python standart kütüphanesinde environment değişkenlerini okumak/yazmak için kullanılır; `getpass`, gizli girdiyi terminale basmadan alır.", "Bu ikili API anahtarını kaynak koda gömmemek için kullanılır. Graph state’ini değiştirmez, yalnızca çalışma ortamını hazırlar."]],
+    ["def _set_env", ["`_set_env(var: str)`, eksik environment değişkenini güvenli girişle tamamlayan yardımcı fonksiyondur.", "Fonksiyon bir değer döndürmez; yan etki olarak `os.environ[var]` alanını doldurur. Notebook tekrar çalıştırıldığında değişken varsa kullanıcıdan tekrar istemez."]],
+    ["LANGSMITH_API_KEY", ["`LANGSMITH_API_KEY`, LangSmith izleme servisinin kimlik doğrulama anahtarı için beklenen environment değişkenidir.", "Kod yalnızca değişken adını gösterir; değerin kendisi HTML içine taşınmaz. Bu ayrım güvenlik ve paylaşılabilir ders notu açısından kritiktir."]],
+    ["LANGSMITH_TRACING", ["`LANGSMITH_TRACING=true`, LangSmith trace kaydını etkinleştirir.", "Bu ayar node çıktısını veya final state’i değiştirmez; graph yürütmesinin dış gözlemlenebilirliğini artırır."]],
+    ["LANGSMITH_PROJECT", ["`LANGSMITH_PROJECT`, trace kayıtlarının hangi proje altında gruplanacağını belirler.", "Büyük nested graph’larda sub-graph izlerini ayrı ayrı incelemek için proje adlandırması pratik bir organizasyon katmanı sağlar."]],
+    ["from operator import add", ["`operator.add`, Python standart kütüphanesindeki fonksiyonel toplama operatörüdür; listelerde `left + right` birleştirmesi yapar.", "LangGraph reducer olarak kullanıldığında paralel alt graph’lardan aynı state anahtarına gelen liste parçalarını kaybetmeden birleştirir."]],
+    ["from typing_extensions import TypedDict", ["`typing_extensions.TypedDict`, dictionary tabanlı ama alanları tiplenmiş veri sözleşmesi kurar.", "Bazı Python sürümlerinde güncel typing özellikleri önce `typing_extensions` içinde bulunduğu için ders materyallerinde bu import tercih edilebilir."]],
+    ["from typing import List, Optional, Annotated", ["`List` koleksiyon tipini, `Optional` alanın `None` olabileceğini, `Annotated` ise tipe ek metadata bağlanabileceğini belirtir.", "LangGraph, `Annotated[..., add]` metadata’sını okuyarak state alanı için reducer davranışını tanır."]],
+    ["class Log(TypedDict)", ["`Log`, graph’a giren tek bir kayıt nesnesinin tip sözleşmesidir; alan adları sonraki node’ların güvenilir biçimde okuyacağı kanalları belirler.", "Bu satır bir LangGraph node’u değildir; ancak parent graph ve alt graph state şemalarının ortak veri şeklini sabitlediği için graph tasarımının temelidir."]],
+    ["docs: Optional[List]", ["`docs`, retrieval dokümanları için ayrılmış opsiyonel listedir; `Optional[List]` değerin liste veya `None` olabileceğini gösterir.", "Bu örnekte alan doldurulmaz, fakat daha gelişmiş RAG akışlarında log ile ilişkili dokümanları aynı kayıt sözleşmesine eklemek için hazır tutulur."]],
+    ["from IPython.display import Image, display", ["`IPython.display.Image`, binary PNG çıktısını notebook hücresinde görsele dönüştürür; `display`, bu görseli hücre çıktısı olarak yayınlar.", "Bu import yalnızca görselleştirme katmanıdır. Graph state’i, node sırası veya reducer davranışı üzerinde etkisi yoktur."]],
+    ["from langgraph.graph import StateGraph, START, END", ["`StateGraph`, LangGraph’ın state taşıyan graph builder sınıfıdır; `START` ve `END` özel sanal uç düğümlerdir.", "Bu import LangGraph kütüphanesinin çekirdek graph API’sini getirir. Node ekleme, edge kurma, compile etme ve invoke etme adımlarının tamamı bu API üzerine kurulur."]],
+    ["class FailureAnalysisState", ["`FailureAnalysisState`, failure analysis alt graph’ının iç state sözleşmesidir.", "`cleaned_logs` parent graph’tan gelen ortak girdi, `failures` ise yalnızca bu alt graph içinde kullanılan ara listedir. Böylece alt görev kendi çalışma alanını parent state’ten ayırır."]],
+    ["class FailureAnalysisOutputState", ["`FailureAnalysisOutputState`, failure analysis alt graph’ının parent graph’a yayımlayacağı alanları sınırlar.", "`fa_summary` ve `processed_logs` dışındaki iç alanlar dışarı verilmez; bu tasarım paralel dönüşlerde gereksiz key çakışmasını önler."]],
+    ["def get_failures", ["`get_failures(state)`, temizlenmiş log listesinden başarısız kabul edilen kayıtları ayıran LangGraph node fonksiyonudur.", "Node `state[\"cleaned_logs\"]` okur ve yalnızca `failures` alanını döndürür. Bu partial update modeli LangGraph node tasarımının temel kalıbıdır."]],
+    ["failures = [log for log in cleaned_logs if \"grade\" in log]", ["Bu list comprehension, `grade` anahtarı bulunan logları failure adayı olarak seçer.", "Koşul doğrudan örnek verinin yapısına dayanır: geri bildirim ve puan taşıyan log failure analysis dalına girer, yalnızca soru-cevap taşıyan log girmez."]],
+    ["class QuestionSummarizationState", ["`QuestionSummarizationState`, soru özetleme alt graph’ının iç state sözleşmesidir.", "`cleaned_logs` ortak girdi olarak okunur; `qs_summary` ve `report` bu alt görevin kendi üretim hattını temsil eder."]],
+    ["class QuestionSummarizationOutputState", ["`QuestionSummarizationOutputState`, soru özetleme graph’ının parent graph’a döndüreceği alanları sınırlar.", "`report` dışarıdaki kullanıcıya dönük sonuçtur; `processed_logs` ise parent state’te diğer alt graph çıktısıyla reducer üzerinden birleşir."]],
+    ["def send_to_slack", ["`send_to_slack(state)`, özet bilgisinden rapor üreten temsilî node’dur.", "Gerçek Slack entegrasyonu kurulmaz; fonksiyon adı multi-agent sistemlerde raporun harici bir kanala gönderilebileceği mimari noktayı temsil eder."]],
+    ["class EntryGraphState", ["`EntryGraphState`, parent graph’ın ortak state sözleşmesidir.", "Alt graph’larla iletişim burada tanımlanan alanların alt graph state/output şemalarıyla örtüşmesine dayanır; bu yüzden key adları mimari kontrat gibi ele alınmalıdır."]],
+    ["raw_logs: List[Log]", ["`raw_logs`, parent graph’a verilen ham log listesidir.", "İlk node bu alanı okuyup alt graph’ların kullanacağı `cleaned_logs` alanını üretir."]],
+    ["cleaned_logs: Annotated[List[Log], add]", ["Bu ilk taslak, paralel sub-graph dönüşlerinde `cleaned_logs` çakışmasını reducer ile çözmeyi gösterir.", "Son tasarımda output schema kullanıldığı için `cleaned_logs` reducer’a ihtiyaç duymaz."]],
+    ["cleaned_logs: List[Log]", ["Son parent state tasarımında `cleaned_logs` yalnızca alt graph’lara giriş olarak taşınır.", "Alt graph output schema’ları bu alanı geri yayımlamadığı için paralel dönüş çakışması oluşmaz."]],
+    ["processed_logs:  Annotated[List[int], add]", ["`processed_logs`, iki alt graph’ın da yazdığı ortak çıktı kanalıdır; bu yüzden reducer gerekir.", "Örnek çıktı string etiketleri içerir; materyalde tip ipucu `List[int]` olarak kalmıştır. Öğretim açısından kritik nokta, paralel branch çıktılarının `add` reducer ile tek listede birleşmesidir."]],
+    ["def clean_logs", ["`clean_logs(state)`, parent graph’ın giriş node’udur.", "Bu örnekte gerçek temizleme yapmaz; `raw_logs` değerini `cleaned_logs` olarak geçirerek sub-graph iletişimini görünür kılar. Üretim sisteminde bu node normalleştirme, maskeleme veya alan seçimi yapabilir."]],
+    ["entry_builder.add_node(\"question_summarization\", qs_builder.compile())", ["`qs_builder.compile()` ile derlenmiş alt graph, parent graph içinde `question_summarization` adlı tek node gibi eklenir.", "İç graph kendi state geçişlerini yönetir; parent graph yalnızca ortak input/output anahtarları üzerinden iletişim kurar."]],
+    ["entry_builder.add_node(\"failure_analysis\", fa_builder.compile())", ["`fa_builder.compile()` ile derlenmiş failure analysis alt graph’ı parent graph içinde node olarak çalışır.", "Bu kapsülleme büyük graph’larda hem trace okunabilirliğini hem de sorumluluk ayrımını güçlendirir."]],
+    ["get_graph(xray=1)", ["`xray=1`, nested graph yapısının iç düğümlerini görselleştirmede açar.", "Normal görünümde alt graph tek node gibi düşünülebilir; xray görünümü iç topolojiyi öğretim için açar."]],
+    ["question_answer = Log", ["İlk örnek log yalnızca soru ve cevap taşır; failure alanları yoktur.", "Bu kayıt failure analysis içinde `grade` koşulunu sağlamaz."]],
+    ["question_answer_feedback = Log", ["İkinci örnek log `grade`, `grader` ve `feedback` alanlarını içerir.", "Failure analysis alt graph’ı bu kaydı failure listesine dahil eder."]],
+    ["raw_logs = [", ["`raw_logs`, iki örnek logu parent graph girişinde tek liste olarak taşır.", "Bu liste `clean_logs` üzerinden iki alt graph’a paralel biçimde aktarılır."]],
+    ["graph.invoke({\"raw_logs\": raw_logs})", ["`graph.invoke(input)`, parent graph’ı senkron çalıştırır ve final state döndürür.", "Final state içinde parent girişleri, alt graph çıktıları ve reducer ile birleşen `processed_logs` birlikte görünür."]]
+  ];
+  var fieldNotes = {
+    id: "`id`, tekil log kaydını ayırt eden string kimlik alanıdır. Bu derste `processed_logs` etiketleri bu kimlikten üretilir.",
+    question: "`question`, kullanıcı sorusunu taşıyan metin alanıdır. Soru özetleme alt graph’ı logların hangi konuya odaklandığını buradan çıkarır.",
+    docs: "`docs`, retrieval belgeleri için ayrılmış opsiyonel liste alanıdır. Bu örnekte boş kalabilir; daha gelişmiş RAG akışlarında log ile ilişkili dokümanları taşır.",
+    answer: "`answer`, log kaydındaki mevcut cevabı tutar. Bu alan failure analysis için bağlam sağlar ancak bu örnekte yeni cevap üretimi yapılmaz.",
+    grade: "`grade`, cevabın değerlendirme sonucunu temsil eden opsiyonel sayısal alandır. Bu alanın varlığı failure seçimi için sinyal olarak kullanılır.",
+    grader: "`grader`, değerlendirmeyi hangi ölçütün yaptığını belirten opsiyonel metin alanıdır. Örnek failure kaydında hatanın türünü yorumlamayı kolaylaştırır.",
+    feedback: "`feedback`, değerlendirme açıklamasını taşıyan opsiyonel metin alanıdır. Failure summary üretiminde kullanılabilecek insan-okunur gerekçe kanalını temsil eder.",
+    cleaned_logs: "`cleaned_logs`, parent graph’ın alt graph’lara aktardığı ortak girdi alanıdır. Aynı ad alt graph state’lerinde de bulunduğu için iletişim overlapping key üzerinden kurulur.",
+    failures: "`failures`, yalnızca failure analysis alt graph’ının iç ara alanıdır. Parent graph’a dönmesi gerekmediği için output schema dışında tutulur.",
+    fa_summary: "`fa_summary`, failure analysis alt graph’ının parent graph’a yayımladığı özet alanıdır. Bu alan failure branch sonucunun dış sözleşmesidir.",
+    processed_logs: "`processed_logs`, iki alt graph’ın da ürettiği işlem kayıtlarını taşır. Paralel yazma nedeniyle parent state’te reducer ile birleştirilir.",
+    qs_summary: "`qs_summary`, soru özetleme alt graph’ının iç ara özetidir. Parent graph’ın doğrudan kullanması gerekmediği için final output schema içinde yer almaz.",
+    report: "`report`, question summarization alt graph’ının parent graph’a verdiği kullanıcıya dönük rapor alanıdır.",
+    raw_logs: "`raw_logs`, parent graph’a dışarıdan verilen ham log listesidir. İlk node bu alanı okuyup `cleaned_logs` üretir."
+  };
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>]/g, function (ch) {
+      return {"&": "&amp;", "<": "&lt;", ">": "&gt;"}[ch];
+    });
+  }
+  function markInlineCode(text) {
+    return escapeHtml(text).replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+  function noteHtmlFromText(note) {
+    return String(note || "").split(/\n{2,}/).map(function (part) {
+      return '<div class="tooltip-section">' + markInlineCode(part).replace(/\n/g, "<br>") + "</div>";
+    }).join("");
+  }
+  function noteJoin(parts) {
+    var seen = {};
+    var out = [];
+    parts.forEach(function (part) {
+      var normalized = String(part || "").trim();
+      if (!normalized || seen[normalized]) return;
+      seen[normalized] = 1;
+      out.push(normalized);
+    });
+    return out.join("\n\n");
+  }
+  function noteForLineExact(trimmed) {
+    var matches = [];
+    for (var i = 0; i < noteRules.length; i += 1) {
+      if (trimmed.indexOf(noteRules[i][0]) !== -1) matches.push(noteJoin(noteRules[i][1]));
+    }
+    return noteJoin(matches);
+  }
+  function compactToken(token) {
+    return String(token || "").trim().replace(/,$/, "").replace(/^[\"']|[\"']$/g, "");
+  }
+  function splitTopLevelArgs(text) {
+    var args = [];
+    var current = "";
+    var depth = 0;
+    var quote = "";
+    var escaped = false;
+    for (var i = 0; i < text.length; i += 1) {
+      var ch = text[i];
+      if (quote) {
+        current += ch;
+        if (escaped) escaped = false;
+        else if (ch === "\\") escaped = true;
+        else if (ch === quote) quote = "";
+        continue;
+      }
+      if (ch === "\"" || ch === "'") {
+        quote = ch;
+        current += ch;
+        continue;
+      }
+      if (ch === "(" || ch === "[" || ch === "{") depth += 1;
+      if (ch === ")" || ch === "]" || ch === "}") depth -= 1;
+      if (ch === "," && depth === 0) {
+        args.push(current.trim());
+        current = "";
+        continue;
+      }
+      current += ch;
+    }
+    if (current.trim()) args.push(current.trim());
+    return args;
+  }
+  function collectCallText(lines, index) {
+    var text = "";
+    var depth = 0;
+    var started = false;
+    for (var i = index; i < Math.min(lines.length, index + 14); i += 1) {
+      var part = lines[i].trim();
+      text += (text ? " " : "") + part;
+      for (var j = 0; j < part.length; j += 1) {
+        var ch = part[j];
+        if (ch === "(") { depth += 1; started = true; }
+        if (ch === ")") depth -= 1;
+      }
+      if (started && depth <= 0) break;
+    }
+    return text;
+  }
+  function argsForCall(callText) {
+    var start = callText.indexOf("(");
+    var end = callText.lastIndexOf(")");
+    if (start === -1 || end === -1 || end <= start) return [];
+    return splitTopLevelArgs(callText.slice(start + 1, end));
+  }
+  function generatedGraphNote(trimmed, lines, index) {
+    if (/StateGraph\(/.test(trimmed)) {
+      var call = collectCallText(lines, index);
+      var args = argsForCall(call);
+      var schema = compactToken(args[0] || "state_schema");
+      return "`StateGraph(state_schema, output_schema=...)`, LangGraph’ın state-aware graph builder API’sidir. Bu satırda ana state sözleşmesi `" + schema + "` üzerinden kurulur; `output_schema` varsa dışarı yayımlanacak anahtarlar ayrıca sınırlandırılır.";
+    }
+    if (/\.add_node\(/.test(trimmed)) {
+      var callNode = collectCallText(lines, index);
+      var nodeArgs = argsForCall(callNode);
+      var name = compactToken(nodeArgs[0] || "node");
+      var action = compactToken(nodeArgs[1] || "callable");
+      return "`add_node(node, action)`, graph içine çalıştırılabilir adım ekler. Burada node adı `" + name + "`, çalışacak bileşen `" + action + "` değeridir. `action` normal Python fonksiyonu veya derlenmiş alt graph olabilir.";
+    }
+    if (/\.add_edge\(/.test(trimmed)) {
+      var callEdge = collectCallText(lines, index);
+      var edgeArgs = argsForCall(callEdge);
+      var source = compactToken(edgeArgs[0] || "start_key");
+      var target = compactToken(edgeArgs[1] || "end_key");
+      return "`add_edge(start_key, end_key)`, sabit yönlü geçiş tanımlar. Bu satırda akış `" + source + "` -> `" + target + "` yönündedir. Aynı kaynak node’dan iki edge çıkması fan-out davranışı oluşturur.";
+    }
+    if (/\.compile\(/.test(trimmed)) return "`compile()`, builder üzerinde tanımlanan node/edge topolojisini çalıştırılabilir LangGraph nesnesine dönüştürür. Derlemeden önce graph yalnızca tanımdır; derlemeden sonra `invoke`, `stream` ve graph görselleştirme çağrıları yapılabilir.";
+    if (/draw_mermaid_png/.test(trimmed)) return "`draw_mermaid_png()`, LangGraph’ın Mermaid gösterimini PNG çıktısına dönüştürür. Bu görsel yürütme sonucu değil, statik graph topolojisidir; state değerleri bu görselde yer almaz.";
+    return "";
+  }
+  function generatedPythonNote(trimmed) {
+    if (/^from operator import add$/.test(trimmed)) return "`operator` Python standart kütüphanesidir; `add` fonksiyonu iki değeri `+` operatörüyle birleştirir. LangGraph reducer olarak okuduğunda aynı state anahtarına gelen çoklu liste update’lerini bir araya getirir.";
+    if (/^from typing_extensions import TypedDict$/.test(trimmed)) return "`typing_extensions`, typing özelliklerinin geriye dönük uyum paketidir. `TypedDict`, sözlük biçimli state alanlarını tip düzeyinde belgelendirir ve IDE/statik analiz desteği sağlar.";
+    if (/^from typing import List, Optional, Annotated$/.test(trimmed)) return "`typing` standart kütüphanesi tip ipuçlarını sağlar. `List` listeyi, `Optional` değerin olmayabileceğini, `Annotated` ise tipe LangGraph reducer metadata’sı eklemeyi sağlar.";
+    if (/^from IPython\.display import Image, display$/.test(trimmed)) return "`IPython.display`, notebook çıktısı üretmek için kullanılan IPython kütüphanesidir. `Image` PNG verisini temsil eder, `display` ise bunu hücre çıktısı olarak gösterir.";
+    if (/^from langgraph\.graph import StateGraph, START, END$/.test(trimmed)) return "`langgraph.graph`, LangGraph’ın çekirdek graph kurma modülüdür. `StateGraph` builder sınıfını, `START` ve `END` ise graph giriş/çıkış sentinel değerlerini sağlar.";
+    if (/^from .* import /.test(trimmed)) return "Import satırı, gerekli sınıf veya fonksiyonları doğrudan çalışma alanına alır; sonraki graph tanımları bu isimlere dayanır.";
+    if (/^import /.test(trimmed)) return "Import satırı, Python modülünü çalışma alanına alır; burada ortam yönetimi veya graph yardımcıları için kullanılır.";
+    if (/^class .*\(TypedDict\)/.test(trimmed)) return "`TypedDict` sınıfı, state alanlarını açık bir sözleşmeye bağlar; node’lar bu anahtarları okuyup partial update döndürür. Bu satır runtime’da veri doğrulaması yapmaz, ama graph tasarımını okunabilir ve denetlenebilir kılar.";
+    var fieldMatch = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.+)$/);
+    if (fieldMatch && fieldNotes[fieldMatch[1]]) return fieldNotes[fieldMatch[1]] + " Tip ifadesi `" + fieldMatch[2] + "` olarak yazıldığı için öğrencinin beklenen veri şeklini satır üstünde görmesini sağlar.";
+    if (/^def \w+\(.*state.*\)/.test(trimmed)) return "Node fonksiyonu mevcut `state` değerini okur ve yalnızca değiştirdiği alanları içeren bir dictionary döndürür.";
+    if (/^return \{/.test(trimmed)) return "Node dönüşü partial state update formatındadır; LangGraph bu dictionary içindeki anahtarları state’e yazar veya reducer ile birleştirir.";
+    if (/Annotated\[.*add/.test(trimmed)) return "`Annotated[..., add]`, aynı state alanına paralel gelen değerleri `operator.add` ile birleştirir; özellikle sub-graph fan-out/fan-in akışında önemlidir.";
+    if (/output_schema=/.test(trimmed)) return "`output_schema`, alt graph’ın dışarı yayımlayacağı state anahtarlarını sınırlar; iç state ayrıntılarının parent graph’a sızmasını engeller.";
+    if (/state\["cleaned_logs"\]/.test(trimmed)) return "Bu okuma, parent graph’tan alt graph’a taşınan ortak anahtar üzerinden yapılır; iletişim overlapping key mantığına dayanır.";
+    if (/state\["failures"\]/.test(trimmed)) return "Bu okuma yalnızca failure analysis alt graph’ının iç state alanını kullanır; parent graph’ın doğrudan bilmesi gerekmez.";
+    if (/state\["qs_summary"\]/.test(trimmed)) return "Bu okuma soru özetleme alt graph’ının ara çıktısını rapora dönüştürür; parent graph yalnızca final `report` alanını alır.";
+    if (/^graph\.invoke/.test(trimmed)) return "`graph.invoke(...)`, parent graph’ı tek çağrıda çalıştırır ve final state dictionary’sini döndürür.";
+    if (/^display\(/.test(trimmed)) return "`display(...)`, oluşturulan graph görselini notebook görünümüne basar; state akışını değiştirmez.";
+    if (/^if /.test(trimmed)) return "Koşul satırı, state içindeki veriye göre alt bloğun çalışıp çalışmayacağını belirler.";
+    if (/^for /.test(trimmed) || / for .* in /.test(trimmed)) return "Döngü veya list comprehension, log listesindeki her öğeye aynı dönüşümü uygulayarak state çıktısını üretir.";
+    if (/^[A-Za-z_][A-Za-z0-9_]*\s*=/.test(trimmed)) return "Atama satırı, sonraki state update veya graph tanımı için ara değeri hazırlar.";
+    if (!trimmed || /^#/.test(trimmed)) return "";
+    if (/^[ruRbBfF]{0,2}[\"']{3}/.test(trimmed) || /[\"']{3}/.test(trimmed)) return "Docstring, node’un amacını insan okuyucuya açıklar; graph çalışmasında state’i doğrudan değiştirmez.";
+    if (/^\}/.test(trimmed) || /^\]/.test(trimmed) || /^\)/.test(trimmed)) return "Bu satır çok satırlı Python ifadesinin kapanış parçasıdır; uzun ifadeyi okunabilir tutar.";
+    return "";
+  }
+  function noteForLine(line, lang, index, lines) {
+    if (lang !== "python") return "";
+    var trimmed = line.trim();
+    if (!trimmed) return "";
+    var exact = noteForLineExact(trimmed);
+    var note = noteJoin([exact, generatedGraphNote(trimmed, lines, index), generatedPythonNote(trimmed)]);
+    return note ? noteHtmlFromText(note) : "";
+  }
+  function spanToken(klass, value) {
+    return "<span class=\"" + klass + "\">" + escapeHtml(value) + "</span>";
+  }
+  var pythonKeywords = {
+    class: 1, def: 1, return: 1, if: 1, else: 1, elif: 1, for: 1, in: 1,
+    async: 1, await: 1, from: 1, import: 1, as: 1, with: 1, None: 1,
+    True: 1, False: 1, and: 1, or: 1, not: 1, raise: 1, try: 1, except: 1,
+    finally: 1, pass: 1, while: 1, break: 1, continue: 1, lambda: 1, yield: 1, is: 1
+  };
+  var builtins = {
+    print: 1, len: 1, list: 1, str: 1, int: 1, dict: 1, set: 1, tuple: 1,
+    range: 1, isinstance: 1, super: 1
+  };
+
+  function highlightPython(line) {
+    if (/^\s*%%?\w+/.test(line)) {
+      var magicMatch = line.match(/^(\s*)(%%?\w+)(.*)$/);
+      if (!magicMatch) return escapeHtml(line);
+      return escapeHtml(magicMatch[1])
+        + spanToken("tok-magic", magicMatch[2])
+        + escapeHtml(magicMatch[3]).replace(/(--?[\w-]+)/g, function (flag) {
+          return spanToken("tok-flag", flag);
+        });
+    }
+    var result = "";
+    var i = 0;
+    while (i < line.length) {
+      var ch = line[i];
+      if (ch === "#") {
+        result += spanToken("tok-comment", line.slice(i));
+        break;
+      }
+      if (ch === "\"" || ch === "'") {
+        var quote = ch;
+        var triple = line.slice(i, i + 3) === quote + quote + quote;
+        var end = i + (triple ? 3 : 1);
+        while (end < line.length) {
+          if (line[end] === "\\") {
+            end += 2;
+            continue;
+          }
+          if (triple && line.slice(end, end + 3) === quote + quote + quote) {
+            end += 3;
+            break;
+          }
+          if (!triple && line[end] === quote) {
+            end += 1;
+            break;
+          }
+          end += 1;
+        }
+        result += spanToken("tok-string", line.slice(i, end));
+        i = end;
+        continue;
+      }
+      if (/\d/.test(ch)) {
+        var num = line.slice(i).match(/^\d+(?:\.\d+)?/)[0];
+        result += spanToken("tok-number", num);
+        i += num.length;
+        continue;
+      }
+      if (/[A-Za-z_]/.test(ch)) {
+        var word = line.slice(i).match(/^[A-Za-z_][A-Za-z0-9_]*/)[0];
+        var next = line.slice(i + word.length).trimStart()[0];
+        if (pythonKeywords[word]) {
+          result += spanToken("tok-keyword", word);
+        } else if (builtins[word]) {
+          result += spanToken("tok-builtin", word);
+        } else if (next === "(") {
+          result += spanToken("tok-function", word);
+        } else if (/^[A-Z]/.test(word)) {
+          result += spanToken("tok-class", word);
+        } else {
+          result += spanToken("tok-name", word);
+        }
+        i += word.length;
+        continue;
+      }
+      if (/[=+\-*/<>!|&:.,()[\]{}]/.test(ch)) {
+        result += spanToken("tok-operator", ch);
+      } else {
+        result += escapeHtml(ch);
+      }
+      i += 1;
+    }
+    return result;
+  }
+  function highlightOutput(code) { return escapeHtml(code); }
+  function renderCodeLines(block, raw, lang) {
+    var lines = raw.split("\n");
+    block.innerHTML = "";
+    lines.forEach(function (line, index) {
+      var lineEl = document.createElement("span");
+      lineEl.className = "code-line";
+      var highlighted = lang === "python" ? highlightPython(line) : (lang === "output" ? highlightOutput(line) : escapeHtml(line));
+      lineEl.innerHTML = highlighted;
+      var note = noteForLine(line, lang, index, lines);
+      if (note) {
+        lineEl.dataset.note = note;
+        lineEl.tabIndex = 0;
+      }
+      block.appendChild(lineEl);
+    });
+  }
+  document.querySelectorAll("pre code[data-lang]").forEach(function (block) {
+    try {
+      var raw = block.textContent;
+      block.dataset.rawCode = raw;
+      var lang = block.getAttribute("data-lang");
+      if (block.closest(".code-body")) renderCodeLines(block, raw, lang);
+      else block.innerHTML = highlightOutput(raw);
+    } catch (err) {
+      block.dataset.renderError = err && err.message ? err.message : "true";
+    }
+  });
+  var tooltip = document.createElement("div");
+  tooltip.className = "line-tooltip";
+  document.body.appendChild(tooltip);
+
+  function placeTooltip(target) {
+    var rect = target.getBoundingClientRect();
+    var tipRect = tooltip.getBoundingClientRect();
+    var left = rect.right + 12;
+    var top = rect.top;
+    if (left + tipRect.width > window.innerWidth - 16) {
+      left = rect.left;
+      top = rect.bottom + 8;
+    }
+    if (top + tipRect.height > window.innerHeight - 16) {
+      top = Math.max(16, rect.top - tipRect.height - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tipRect.width - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tipRect.height - 16));
+    tooltip.style.left = left + "px";
+    tooltip.style.top = top + "px";
+  }
+
+  function showTooltip(target) {
+    var note = target.dataset.note;
+    if (!note) return;
+    tooltip.innerHTML = note;
+    tooltip.classList.add("is-visible");
+    placeTooltip(target);
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove("is-visible");
+  }
+
+  document.addEventListener("mouseover", function (event) {
+    var target = event.target.closest ? event.target.closest(".code-line[data-note]") : null;
+    if (target) showTooltip(target);
+  });
+  document.addEventListener("focusin", function (event) {
+    var target = event.target.closest ? event.target.closest(".code-line[data-note]") : null;
+    if (target) showTooltip(target);
+  });
+  document.addEventListener("mouseout", function (event) {
+    if (event.target.closest && event.target.closest(".code-line[data-note]")) hideTooltip();
+  });
+  document.addEventListener("focusout", function (event) { if (event.target.closest && event.target.closest(".code-line[data-note]")) hideTooltip(); });
+  window.addEventListener("resize", hideTooltip);
+  window.addEventListener("scroll", hideTooltip, true);
+  document.querySelectorAll(".copy-btn").forEach(function (button) {
+    button.setAttribute("aria-label", button.getAttribute("aria-label") || "Bu kod bloğunu kopyala");
+    button.addEventListener("click", function () {
+      var card = button.closest(".code-card");
+      var code = card ? card.querySelector("code[data-lang]") : null;
+      var raw = code ? (code.dataset.rawCode || code.textContent) : "";
+      function done() {
+        var old = button.textContent;
+        button.textContent = "Kopyalandı!";
+        setTimeout(function () { button.textContent = old; }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(raw).then(done).catch(function () { fallback(raw); done(); });
+      else { fallback(raw); done(); }
+    });
+  });
+  function fallback(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  function fitTitle() {
+    var h = document.getElementById("lesson-title");
+    if (!h) return;
+    h.style.fontSize = "";
+    var min = 24;
+    var size = parseFloat(getComputedStyle(h).fontSize);
+    while (h.scrollWidth > h.clientWidth && size > min) {
+      size -= 1;
+      h.style.fontSize = size + "px";
+    }
+  }
+  fitTitle();
+  window.addEventListener("resize", fitTitle);
+}());
+  </script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

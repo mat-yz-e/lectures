@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta En Basit Graph: State, Node ve Koşullu Edge</title>
+  <style>
+    :root {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --langgraph-primary: #153f3b;
+      --langgraph-secondary: #0f766e;
+      --langgraph-soft: #dbe9e7;
+      --code-bg: #f7f7f7;
+      --code-surface: #f7f7f7;
+      --code-text: #000000;
+      --code-muted: #4b5563;
+      --code-border: #cccccc;
+      --code-keyword: #008000;
+      --code-string: #ba2121;
+      --code-comment: #408080;
+      --code-function: #0000ff;
+      --code-number: #666666;
+      --code-class: #000000;
+      --code-builtin: #008000;
+      --code-operator: #aa22ff;
+    }
+    html, body { margin: 0; padding: 0; background: var(--lesson-bg); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { color: var(--lesson-text); }
+    .lesson-page { width: min(100%, 1040px); margin: 0 auto; padding: clamp(1rem, 2.5vw, 2.5rem); background: var(--lesson-bg); color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.55; }
+    .lesson-page article { margin: 0 auto; counter-reset: section; }
+    .title-block { display: flex; flex-direction: column; align-items: center; margin: 0 0 2rem; text-align: center; }
+    .lesson-logo { display: block; width: clamp(3.5rem, 8vw, 5.5rem); height: clamp(3.5rem, 8vw, 5.5rem); object-fit: contain; margin: 0 auto 1rem; }
+    .lesson-logo-fallback { display: inline-grid; place-items: center; width: 4.5rem; height: 4.5rem; margin-bottom: 1rem; border: 1px solid var(--langgraph-soft); border-radius: 0.75rem; color: var(--langgraph-primary); font-weight: 700; }
+    .lesson-page h1, .lesson-page h2, .lesson-page h3, .lesson-page h4 { color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1.25; }
+    .lesson-page h1 { margin: 0; font-size: clamp(1.95rem, 3.6vw, 2.75rem); text-align: center; text-wrap: balance; }
+    .lead-text { width: min(100%, 760px); margin: 1rem auto 0; color: var(--lesson-muted); font-size: 1.08rem; text-align: center; text-wrap: balance; }
+    .lesson-page h2 { display: flex; align-items: center; gap: 0.55rem; margin: 2.2rem 0 0.85rem; padding-top: 1.1rem; border-top: 1px solid var(--lesson-border); font-size: clamp(1.35rem, 2.1vw, 1.75rem); counter-increment: section; counter-reset: subsection; }
+    .lesson-page h2::before { content: counter(section) "."; color: currentColor; font-variant-numeric: tabular-nums; }
+    .lesson-page h2::after { content: none; }
+    .lesson-page h3 { display: flex; align-items: center; gap: 0.55rem; margin: 1.45rem 0 0.65rem; font-size: clamp(1.12rem, 1.65vw, 1.32rem); counter-increment: subsection; counter-reset: subsubsection; }
+    .lesson-page h3::before { content: counter(section) "." counter(subsection); color: currentColor; font-variant-numeric: tabular-nums; }
+    .lesson-page h3::after { content: none; }
+    .walk-card h3::before { content: attr(data-section) "." counter(subsection); }
+    .lesson-page h4 { display: flex; align-items: center; gap: 0.45rem; margin: 0 0 0.45rem; font-size: 1rem; counter-increment: subsubsection; }
+    .lesson-page h4::before { content: counter(section) "." counter(subsection) "." counter(subsubsection); color: currentColor; font-variant-numeric: tabular-nums; }
+    .lesson-page h4::after { content: none; }
+    .lesson-page p { margin: 0.85rem 0; }
+    .lesson-page ul, .lesson-page ol { padding-left: 1.35rem; }
+    .lesson-page li { margin: 0.35rem 0; }
+    code:not(.code-body code):not(.output-body code) { padding: 0.08rem 0.24rem; border-radius: 0.28rem; background: #eeeeee; color: #111111; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.9em; }
+    .definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment { border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); }
+    .definition-card, .example-card, .note-card, .question-card { margin: 1.1rem 0; padding: 1rem 1.1rem; }
+    .definition-card { border-left: 4px solid var(--langgraph-primary); background: linear-gradient(90deg, rgba(219, 233, 231, 0.7), #ffffff 46%); }
+    .note-card { border-left: 4px solid var(--langgraph-secondary); background: var(--lesson-card-muted); }
+    .question-card { border-left: 4px solid var(--lesson-border-strong); background: var(--lesson-soft); }
+    .definition-card h3, .definition-card h4, .example-card h3, .example-card h4, .note-card h3, .note-card h4, .question-card h3, .question-card h4, .mini-panel h3, .mini-panel h4, .output-comment h3, .output-comment h4 { display: block; margin: 0 0 0.55rem; counter-increment: none; counter-reset: none; }
+    .definition-card h3::before, .definition-card h4::before, .example-card h3::before, .example-card h4::before, .note-card h3::before, .note-card h4::before, .question-card h3::before, .question-card h4::before, .mini-panel h3::before, .mini-panel h4::before, .output-comment h3::before, .output-comment h4::before, .definition-card h3::after, .definition-card h4::after, .example-card h3::after, .example-card h4::after, .note-card h3::after, .note-card h4::after, .question-card h3::after, .question-card h4::after, .mini-panel h3::after, .mini-panel h4::after, .output-comment h3::after, .output-comment h4::after { content: none; }
+    .table-wrap { width: 100%; margin: 1rem 0; overflow-x: auto; border: 1px solid var(--lesson-border); border-radius: 0.65rem; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; background: #ffffff; }
+    th, td { padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--lesson-border); text-align: left; vertical-align: top; }
+    th { background: var(--lesson-soft); color: var(--langgraph-primary); font-size: 0.95rem; }
+    tr:last-child td { border-bottom: 0; }
+    .concept-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin: 1.2rem 0; align-items: stretch; }
+    .flow-step { min-height: 5.5rem; padding: 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: var(--lesson-soft); position: relative; }
+    .flow-step strong { display: block; margin-bottom: 0.35rem; color: var(--langgraph-primary); font-size: 0.98rem; }
+    .flow-step span { color: var(--lesson-muted); font-size: 0.95rem; line-height: 1.45; }
+    .flow-step:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.52rem; width: 0.5rem; height: 1px; background: var(--lesson-border-strong); }
+    .walk-card { margin: 2.05rem 0 2.35rem; padding: 0; border: 0; border-radius: 0; background: transparent; }
+    .code-card { position: relative; display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1.15rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+    .code-card::before { content: "In [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #303f9f; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+    .code-head { position: absolute; top: 0.35rem; right: 0.45rem; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0; border: 0; background: transparent; color: var(--code-muted); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.78rem; }
+    .code-title { display: none; }
+    .copy-btn { flex: 0 0 auto; border: 1px solid #c4c8cf; border-radius: 0.35rem; background: rgba(255,255,255,0.92); color: #374151; cursor: pointer; font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+    .copy-btn:focus-visible { outline: 2px solid var(--code-builtin); outline-offset: 2px; }
+    .code-body, .output-body { margin: 0; overflow-x: auto; color: var(--code-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.91rem; line-height: 1.5; white-space: pre; tab-size: 4; }
+    .code-body { grid-column: 2; padding: 0.72rem 5.2rem 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+    .code-line { display: block; width: max-content; min-width: 100%; padding: 0 0.25rem; border-radius: 0.18rem; }
+    .code-line[data-note] { cursor: help; }
+    .code-line[data-note]:hover, .code-line[data-note]:focus { background: #fff7d6; outline: 0; }
+    .line-tooltip { position: fixed; z-index: 50; max-width: 420px; padding: 10px 12px; border: 1px solid #d0d7de; border-left: 3px solid #4c78a8; border-radius: 4px; background: #fffdf5; color: #24292f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; line-height: 1.5; font-weight: 400; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity 120ms ease, transform 120ms ease; }
+    .line-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+    .output-card, .output-details { display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+    .output-card::before, .output-details::before { content: "Out [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #9f1239; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+    .output-head, .output-details summary { grid-column: 2; padding: 0.42rem 0.55rem; border: 1px solid var(--code-border); border-bottom: 0; border-radius: 0.2rem 0.2rem 0 0; background: var(--code-surface); color: var(--code-muted); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.78rem; }
+    .output-details summary { cursor: pointer; }
+    .output-details:not([open]) summary { border-bottom: 1px solid var(--code-border); border-radius: 0.2rem; }
+    .output-body { grid-column: 2; padding: 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+    .output-details .output-body { max-height: 28rem; overflow: auto; scrollbar-gutter: stable; scrollbar-color: #b8b8b8 #f2f2f2; scrollbar-width: auto; } .output-body:not(.output-visual) { max-height: 28rem; overflow: auto; scrollbar-gutter: stable; scrollbar-color: #b8b8b8 #f2f2f2; scrollbar-width: auto; } .output-body:not(.output-visual)::-webkit-scrollbar { width: 11px; height: 11px; } .output-body:not(.output-visual)::-webkit-scrollbar-track { background: #f2f2f2; border-left: 1px solid #d9d9d9; } .output-body:not(.output-visual)::-webkit-scrollbar-thumb { background: #b8b8b8; border: 2px solid #f2f2f2; border-radius: 6px; } .output-body:not(.output-visual)::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    .output-visual { white-space: normal; text-align: center; }
+    .output-visual img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+    .output-comment { margin: 0.65rem 0 1rem 4.95rem; padding: 0.9rem 1rem; background: #ffffff; }
+    .output-comment p { margin: 0; color: var(--lesson-muted); font-size: 0.98rem; line-height: 1.6; }
+    .explain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0 1rem 4.95rem; }
+    .mini-panel { padding: 0.9rem; background: var(--lesson-soft); }
+    .mini-panel p { margin: 0; color: var(--lesson-muted); font-size: 0.98rem; line-height: 1.6; }
+    .state-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin: 1.1rem 0; }
+    .state-item { padding: 0.9rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: #ffffff; }
+    .state-item strong { display: block; color: var(--langgraph-primary); }
+    .chat-flow { display: grid; gap: 0.85rem; margin: 1rem 0; }
+    .chat-bubble { padding: 0.9rem 1rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-soft); }
+    .chat-bubble strong { color: var(--langgraph-primary); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { position: relative; padding-left: 1.65rem; }
+    .checklist li::before { content: ""; position: absolute; left: 0; top: 0.62rem; width: 0.85rem; height: 0.85rem; border: 1px solid var(--langgraph-secondary); border-radius: 0.2rem; background: #ffffff; }
+    .tok-keyword { color: var(--code-keyword); font-weight: 700; }
+    .tok-string { color: var(--code-string); }
+    .tok-comment { color: var(--code-comment); font-style: italic; }
+    .tok-function { color: var(--code-function); }
+    .tok-number { color: var(--code-number); }
+    .tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+    .tok-builtin { color: var(--code-builtin); }
+    .tok-operator { color: var(--code-operator); }
+    @media (max-width: 860px) { .concept-map, .explain-grid, .state-list { grid-template-columns: 1fr; } .flow-step:not(:last-child)::after { display: none; } table { min-width: 620px; } }
+    @media (max-width: 560px) { .lesson-page { padding: 1rem; font-size: 1rem; line-height: 1.72; } .code-card, .output-card, .output-details { grid-template-columns: minmax(0, 1fr); } .code-card::before, .output-card::before, .output-details::before { grid-column: 1; grid-row: auto; padding: 0 0 0.25rem; text-align: left; } .code-body, .output-head, .output-details summary, .output-body { grid-column: 1; } .code-head { top: 1.8rem; right: 0.45rem; } .code-body { font-size: 0.84rem; padding: 0.85rem 4.85rem 0.85rem 0.85rem; } .output-body { font-size: 0.84rem; padding: 0.85rem; } .explain-grid, .output-comment { margin-left: 0; } }
+
+
+.code-line[data-note] { text-decoration: none; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus { text-decoration: none; }
+.line-tooltip {
+  max-width: 420px;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  white-space: normal;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.line-tooltip .tooltip-section {
+  display: block;
+  font-weight: 400;
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip .tooltip-section:first-child {
+  color: #24292f;
+  font-weight: 400;
+}
+.line-tooltip code {
+  display: inline;
+  padding: 1px 4px !important;
+  border: 1px solid #d8dee4 !important;
+  border-radius: 3px !important;
+  background: #f6f8fa !important;
+  color: #24292f !important;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html" class="is-active" aria-current="page">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAKACAMAAAA7EzkRAAAAJFBMVEVMaXEcPDwbOzsbOzsbOzsbOzsbOzsbOzsbOzsbOzsbOzscPDxK0an6AAAAC3RSTlMAFTC+14TrTWei95KdkU4AAAAJcEhZcwAACxMAAAsTAQCanBgAABL+SURBVHja7d3rWuM4DIDh+HzI/d/vtgwzS4FC0ya2pHzv7312KKg+yLK1LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfMf5UmtqLcSLnHNf8bR++QVef4+htVRr8Y74+iHwLmEXIvF2bEReYjFVAvHWJfRCJjhGyoEwfI+9FgmHWWKr/sRzbmHckzAph1ROOBSWxMAnaShMZxoJXW2MfAJHwnqKgdAz9DEQEn04YQwSfcTgzHVf4C+rKAaNrQd944BD256kFTuDH1Mvw+C88EukXBQPg1793MtfUbegeSYubDwIwYnhx9LPzGKQ8AMhSPgRgoQf5oWglrWgZ+thdTviVeT9+EPZ1cSnpitpZ9NyYvEHloJ3Zl+OPZiHZw5/zL5nmYclpmQce1/2wzM3HxT8nUqvDH+YOwg6Vn9gJcjml+0wwx9OnBPk5O3UErsPnHgv4jl6Yxr2JP9wzpQgu1/82Q2z/MPpFoIs/zBzIejJ/uGDXNh+4DxbEbLPWCfmpNn+YuZmmPjDzAgk/nAvHUP6D8YTgsQfZkagI/2MH0XH+AezYyDxh5kRODz+aJi+3us7HUOQ2t076I+/3NK/9vLO+ZJoKvyxkVHxH1veniYCR33S8G0TZUeD1ztttAQ2oQp688/9pz5lp+/3de8Wmrg3QZvS+oOe3K8dDzM3wRU8jLd7ZUIVs386beevX66BJ1k7kp2rs0qX9DOf8RnW3+vtZNWo96Kt/nlLTa1LZ8vOZK/tmCDvWKXvsrif92RP8T9250JYBDpNCZjuqcp+/dspKwKDpgRM5V7eHt9OWcUiTc8GuFEasc+303dzW+ERH+nZ5UKgznhKvuy4hdWcDcjz35QzRODGb6e1jciIzxMpENvv2+ltnQon4UsF+yXaWfelsRfP5IZ8nboTvkTVtZCXNQSuXv4VkCb/lHriOt4pX5a8dElkzGheuCew67ezminNGvRJnIJ9+jRPfDtdX20UxgxaXsVXN0rFcgA6/XPC09nAsGqYgW0fC0cLv48geQLe5WXDyJtnoqeEpybhMSuJfS6RFpIwghMxTybagqbLK4E9yEergWtyVdXVFbPp6OfW713/SD4kt5F4NPiYAMzaKyrGpKD3vLpnNRloJQC3LraKusvLiQAUHYAbP0lU93yD0SHQyCZka0azKnzIsJKG+fdl1P5RRowm+/d2yiSiRadFN+xDGq/XqD7Fqsq/TF54DeqZVoF5MZSW93J+/kQDsQOXKln3cK50ADQ6BCZLJ+NeygDY6KF44BzcdK9oi4oSwPMMgUV7QfTWDzMgB92XhSHwsH1w0v1hiuZ3/F1nCJT9OygiiosrnbTXw6rym+4PU8TfVWYjrLo4vEjIYR7YTSyd+nlABU+VBAG3CfJyoHzuDpRBeWY9qLgIfLqimGBoAmjzr1Md29g9nviBjqT9cLEZCMBy3h6oSfuXaVAK6dgAFJ6HOG4d6Jr6977SaiEAnc0rmr89IaGnaUCavXyKxwag2RcDf2oW55qBzPqo1VM/OADNvpNwt5mo09U9r8z+u/3dB9XgOA/ZFoLNf9c5L5vY07vR34Cy09tY53oxMKbibhooRyuPHqbR34C3723wLAO3B2Fo6SpES6fbeXCV798gCeXThNLIxRgXZ09b5XbJmVv1f0ZlX1vfp1wr8GdWtg1po1ehn9J1Pee+550l/RHY46ne/s+DzwP9walq/b006wvL8lC0XbUqo8s76tG3lrR38QrPH2/0Kv1guMxetdefA3CXwxLdEfj+lEp64mDxT2YhqJqDRx+gdp+OvzaiOgL//gZ8eGL4E/9scZ+eus1hwHmx4gj8sAyuffvwJz4ZWqTnzeq5I/DmLbMNg2BPShIBTfq76juVzPhsIlH2aLFB9FrOxLP4w9Ny5ghsz5VXZEVn4kV6MfdeZasaI/BL+XN78pBV8IlkEn+Tx583AsvTtRVezRo4in/Ver82StoiMD1f3/h57PSripqsauZ1WgsRGF851m5qbspV8fv1ctII9C8VNxYtRRlBdHO7nd9R9VHvBLzxRONzNwSxByJd/EJhzzdk9GSk46t1ZUFLdbgX/yOWE0bgl6ew0suHSFIn4So+W7TrW+ZKIrC+3gn5cwxLPRBp4p802/cdNxURGPZ4LCDoOBDJ8nNF/mwR+KWfWtplH9Nk/3mrrVZ9miOw7jR26TgQqTYam+iOwByu8p0ahLjTVrq833IKb9eJW8iiFoFRT92sqQj8/zbqnwupObvdps6vByIh+ZvXZFoWk3Hq1hqGa7gr990rL27HzUP55f99/d8HGeOLt9avWUEE5uQOfmPpofbQvknYhVRr/ZrlR2Bzx1+tfyyJWuL8XUiy1q9ZegTGMuSBpSr/YfMk/w2LQ97OCvLfG9/houyj/W1KnzzBZU2JMf1jYBr2LQnii9Wy2Grog1tbT4zAOvCFwyQ+OeWEb4IPe9B8WgSmkU/9P/zK2LQx0It/TPSoB80nRWAb+sbr40msWVWrVX57naNau06ZduLQN16D/DeNk/zHbA9rbj0hArf0XX29im/bM5/zZgTh7zi2xU4EpqFP/VcF/aWC/Aa7B7ZVGl0pHIemK6OGVt/XH3JdT7kLmbD527qa8EPrOOYU7kvPwhy4Cxm++ctDT2y2zxxpTiLQaysS3tXIY6g0tOHT9n/NzRleipFm4fKbej0xlPe9u2GJ2wgX+U2tgpHernFov6eopL9Zld/m/ejmrklwba0vD6q7/GsE4PBdyMA7WeXIz+B2+dfyjKOQtp56FzJu7eOGBqBTUifZFLRUS0cH4JAjkbyMDMAsejWiLADD0QE4JCEdhwZg1NJlOSwKnqs4PABHpAPD0AAMWgIwKgjAY1dPo371GgKwEIDj94+jlj8E4J0AzCu7kBE7QKZgvQEYRgTg0cUgGjYhacYCX0EA9hEBeHRlTB8agF1ySv42APvKInDIBDQ2Ee2VJKL7sq4sAocMABzFfWtZVxaBy4iHEp8pKyvpUXv8a1NKQ1VMwXlQAB66DIxD58SoYw9ymYKzxuZVKrOBfmiNshc2AWjeBQ8oiBmxDG9Dt0VJxwysJABHLQIPzQZ2N3JIyk5BEkbJUdyoTODRp1Fp6M+y9V+bczNdSQAOygQePA5sHZTi0H+trQTg9EzgwZNwG7ojSvJXgNcADCoCMA8LwEMPRMrQKdFL3wK/re6Dzi7iOnfCW6bF13+M6KRPwNdJoa3MweNW42FoRATpzwNeAzCtzMED/xpt6FK0LdIfyk9aAnDgPvjY9VAbmg9Koh/oXa9HDFVJALaBAegFtAnZaW3UZDcKuQRgURKA3Q2MwEMXxtGPzAf9Hu9p7sTmlQTgyG3IwfX5PY08lMlFcuMyrycAR25Djl6YPDYItgGtEVOffuVWSwCOK4kZkZcNZeCTIf1ec9g6/RxMdL/0offKhl+RjenzMOj9YZuh3r4GvE8yeqYHNUPgyEzMkF9LbLX8GZtcqS1+7SOy5/4gt+rd/w8Ptiilzq6tDIFzD+d7vvsJ946SHEMIMYpKriU1ATh0Izzni5nkpIiHfd6q58ftfrFxJPx40UWyHYBlWfTkYUaW5s9rHeREdXcf8X1zmn7gaiYb/ejZme1J2C3ym8W9eNVG2xD4Za9fDcdf1jfIN/NDYD7RJBwUrnOL+SGwifgeDNz06xrjo7M+BJ5oEq4z70NpmISrjIVuWw1vgpdl6SuTsKghMJxkEu5zb+Rp2AlXGdmmYjMAo9IRPpgfAvs5JuGmdZGbrG+ETzIJ17mvMqg4EJn1l7/9jrlmeQ+i6yzkzxRVrA+BN3UXJRs+B9G5whi3EXF9dvGjs3oU0jRnOqPtusAPk3DNttPQOheBA/PRfuoKyRk+Cf6wyuhqD7IND4HXQ8dquBiray+4CM74ENi86WrUoP64O3o7F+S+HyMsx99NLs3p/AiDsjFlxXpw87xo4Fuk95mEU4o2Ll81wyUJ9+SQavHOeV9Si7qLUfXPMkO2IoJScV9e9PA1qr2RuehOxLyPB97sedyjbxr51hWfw6mv9xmwFXEy/sDh7ndNX7VCM7TT6/UUQ+DPL036qLuu3anOORWzyegNi92k9RjEQM3t8Y/GBAVFuJrO7ZqxbGu0PgfXRfhz96/PWdnMuY7BOfjBj6fmIZksqOhDSUI6qrgEUxT/uYqZ0gpzc3BTe2izadcYCUCZc/Cm+wdB75I9EYAyj+OKhmt8OywpHAEocg5uqisn1l8rsWw8RBeM3w0xVTzWDBZeBrNVgU158diWNUUkAOX9Yb3m4rGNpwaJABQ3BEbFxWObs5qKKxKC1cLoqrJyYn2y83MjAKXl2Ly5OyxN73dn92oEL/6prKzpKv0OX6mg/6WlTUNF3FZJOP6wvxm4RLXlE+kdAp/dVmwLweEFT0lp+ezTawq1Q6B/el8bq5MbgU/VejvFi/Vyqqr89zVdTo+H7+DHIp8r9e6K/07RxD3nzSnb8HAA+yw/ALPizWI5U0Xqxz9UTk5gBFoLwGKkoGynbfCnqao9Ngy6SAAemK4tJ9qFfJ0hHtqQDIxAY2vAYqamdp9F4Df/m968pAi0tQsOFo4Sd3w43219AWP8OrCaygN6Q9cK9vhb+e2PsIw+EzF1EhJsVFPsNwSWFyb0KviMu2l/v6KdJBOTXll8hanXJzTmcpOtm1U7rNjbK53ZC/WAx81Q9Rw1WfmV8dSLLXRMBtbo0cDD669mPIuMfKkzMgNHS1Xd+6Rtw2tv/yah+c1i4qCg2Q9A/0ivrPnv8XVnYgBsSho1jxvlHzjN+G39NeZZXBMvI2zPkVXrqeiww99+zNvg3sDIURU+SnvohvHBNqhNwrO40alfOwW9rQm+roly36FlTdhr/htxKtzONwEL/Sy9letHcaV+bVGVjqmY+zWsR0Rgkntt78gHlIO48PsYDK6k8O9vn5s/aqv4pT2Hb2542qNIvC5w+KsBgr5OoXr/3VDkfLnw/tDz+r+1MbXVS4vAEj81KnZixhCh8fd8E41q9wlyvzX+b0fND8X7LkmZxaR2aXihg0Gz2wVkc9jk2+Glh5ZSamHYoNO0dkp6ZfRw0W4fpKTtKbCos1dcdMp7pL2vwP3ufYFdCsqOe+7vtFyy2kUtidhDuWtD3J+H8ktq5qJsDFPnro3Hr0pN8kuA7tyYktwvOC3au/Rd1rB/jht+2Mz7/9OCMT3/lfMKTn9i/fT5XA2m322cf7YY2y9fps8960PRvuv6ZTvUavFvY3dJTfawHXdYOAnKBsb6a/iFdP3bfElQ1NYee3lDd8tGm210q6wB3aVyN/zidx+4XFdI33RVd85auyirPUybpJTSJdvfy53JN9wdIL9UN/uW3+YydxOpITICStqAiDsUTu+nTW/Tqfu89rvmqy8HxOHDVvH9P/k8Ffj2zYKRwU/sw/FiihzTv8x4CPG77XK8iap/EVo/Jc36bW7jcsTrayRi5G1ApJ1y5x+jJH4YqWP6sEG8PcqrTLND/la7nl+Vrvl34ZXl+kxsgMuyGGiUtvtpeOrExir2XTnNDcgeqgf3LPS0bYANRKD/Zu8LbQWc6l9OdYXFn+740xqBlxTM5cw0sPZb9XeOVBmBmayLnc6lzGJ4/SLrK0ciRCAmxp+USyJYT3EAxxgIWeMfEYjZ8af3DX2o3v8SgVgn5Z+pW4es+CMCsQ6pP7BaH4j99boM5TngwvrDK4rHRyApaaw/3oclIQhL6T/SMZi//Z3RKghsP1gIQtLyb3SrILD8YxrGOjv7fCcnzTTM9LswDWPC7tctMhSORU4o10UMktLsPtiL4CTJPwZBCBv+WAmy+hMxCFKnyuaXnCDOkPu7vxlhHrY9+6ZFOMcbpIb3voJn3297IMDW3tcvOrAUNLn4K4sehCDhRwji2DaRhCAIv59DkOM5C1uPsujFjpid7/S8IKlpvXm/5Bb9HI0otS79LITf+0zM8Yi6Q4+ymMKGhMFv9jCYmIp1RF/yi1HEINFHDOK80fd3W9xIzcjbdQSL674fBkI2JZLSzecY+j4NhJcgZCQUMPKl4pbT8rWxJpy35mvVL3hrKE0YDpVDIvY+z8gltRA5Mjl2wo2hpeId8fZTIJaarrF4kXMmIl+Jt8sv8Pp7vERdqoXAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADc8x/qP7eo8FAiJwAAAABJRU5ErkJggg==" alt="LangGraph logosu" loading="eager">
+        <h1 id="lesson-title">LangGraph’ta En Basit Graph: State, Node ve Koşullu Edge</h1>
+        <p class="lead-text">Bu bölüm, LangGraph’ın temel yapı taşlarını küçük ve denetlenebilir bir graph üzerinden açıklar: state, node, edge, koşullu yönlendirme, derleme ve invoke akışı.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>Bu ders, LangGraph’ın temel çalışma modelini en küçük anlamlı örnek üzerinden kurar. Amaç, agent veya tool kullanmadan önce graph fikrinin hangi parçalardan oluştuğunu teknik olarak görünür hale getirmektir: state, node, edge, koşullu yönlendirme, derleme ve çalıştırma.</p>
+        <p>Örnekte graph tek bir metin alanını taşır. İlk node bu metne ortak bir ifade ekler; ardından koşullu edge rastgele olarak iki yoldan birini seçer. Böylece öğrenci, graph’ın sıradan Python fonksiyonlarını nasıl düzenli bir yürütme akışına dönüştürdüğünü açık biçimde izler.</p>
+        <div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>LangGraph’ta graph, yalnızca fonksiyonları yan yana koymak değildir. State’in hangi biçimde taşınacağı, node’ların state’i nasıl güncelleyeceği ve edge’lerin hangi sırayı veya koşulu uygulayacağı birlikte tanımlanır.</p></div>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul>
+          <li><code>TypedDict</code> ile basit bir LangGraph state şeması tanımlayabilmek.</li>
+          <li>Node fonksiyonlarının state’i nasıl okuyup yeni state değeri döndürdüğünü açıklayabilmek.</li>
+          <li>Normal edge ile conditional edge arasındaki farkı teknik olarak ayırt edebilmek.</li>
+          <li><code>START</code> ve <code>END</code> özel düğümlerinin graph sınırlarını nasıl belirlediğini açıklayabilmek.</li>
+          <li><code>StateGraph</code>, <code>add_node</code>, <code>add_edge</code>, <code>add_conditional_edges</code> ve <code>compile</code> akışını sırayla uygulayabilmek.</li>
+          <li><code>invoke</code> çağrısının başlangıç state’i alıp nihai state döndürme davranışını yorumlayabilmek.</li>
+          <li>Rastgele yönlendirme içeren örnekte çıktının neden farklı çalıştırmalarda değişebileceğini açıklayabilmek.</li>
+        </ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title">
+        <h2 id="on-kosullar-title">Ön Koşullar</h2>
+        <p>Bu dersi takip etmek için Python fonksiyonları, sözlük erişimi, string birleştirme, type hint mantığı ve basit paket kurulumu bilinmelidir. <code>TypedDict</code> kavramını daha önce kullanmamış olmak sorun değildir; bu derste yalnızca state anahtarlarının beklenen biçimini göstermek için kullanılır.</p>
+        <p>LangGraph açısından temel sezgi şudur: graph içindeki her işlem adımı Python fonksiyonu olabilir; ancak bu fonksiyonlar rastgele sırayla değil, açıkça tanımlanmış edge ilişkileriyle çalıştırılır.</p>
+      </section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody>
+          <tr><td><code>State</code></td><td>Graph boyunca taşınan sözlük biçimli veri.</td><td>Tüm node ve edge fonksiyonlarının ortak veri sözleşmesi.</td></tr>
+          <tr><td><code>TypedDict</code></td><td>State anahtarları için tip ipucu veren Python yapısı.</td><td>State şemasını okunabilir ve denetlenebilir kılar.</td></tr>
+          <tr><td><code>graph_state</code></td><td>Örnekte taşınan tek string alanı.</td><td>Node’lar bu alanı okuyup güncellenmiş değer döndürür.</td></tr>
+          <tr><td><code>Node</code></td><td>State alan ve state güncellemesi döndüren Python fonksiyonu.</td><td>Graph’ın işlem adımıdır.</td></tr>
+          <tr><td><code>Edge</code></td><td>Bir node’dan diğerine geçiş ilişkisi.</td><td>Graph’ın yürütme sırasını belirler.</td></tr>
+          <tr><td><code>Conditional Edge</code></td><td>Bir karar fonksiyonuna göre sonraki node’u seçen geçiş.</td><td>Branching ve routing davranışının temelidir.</td></tr>
+          <tr><td><code>StateGraph</code></td><td>State şemasıyla graph kurmaya yarayan sınıf.</td><td>Node ve edge tanımlarını bir araya getirir.</td></tr>
+          <tr><td><code>START</code></td><td>Graph’ın özel başlangıç düğümü.</td><td>Başlangıç state’inin ilk gerçek node’a gönderildiği noktadır.</td></tr>
+          <tr><td><code>END</code></td><td>Graph’ın terminal düğümü.</td><td>Yürütmenin tamamlandığını temsil eder.</td></tr>
+          <tr><td><code>compile</code></td><td>Graph tanımını çalıştırılabilir nesneye dönüştürme adımı.</td><td>Temel graph yapısı kontrollerini uygular.</td></tr>
+          <tr><td><code>invoke</code></td><td>Graph’ı tek girişle senkron çalıştıran yöntem.</td><td>Başlangıç state’inden nihai state’e kadar tüm akışı yürütür.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+        <h2 id="buyuk-resim-title">Büyük Resim</h2>
+        <p>LangGraph’ın temel fikri, uygulama mantığını düğümler ve geçişler halinde düzenlemektir. Bu derste model çağrısı veya tool kullanımı yoktur; bilinçli olarak daha küçük bir örnek seçilir. Böylece graph’ın yapısal parçaları, LLM ayrıntılarıyla karışmadan görülebilir.</p>
+        <p>State, graph’ın belleği gibi düşünülebilir; ancak bu örnekte kalıcı bellek değil, adımlar arasında taşınan geçici çalışma verisidir. Node’lar bu state’i okur ve yeni değer döndürür. Edge’ler ise hangi node’un ne zaman çalışacağını belirler.</p>
+        <div class="concept-map" aria-label="Temel LangGraph akışı"><div class="flow-step"><strong>State</strong><span>Graph boyunca taşınacak veri sözleşmesi kurulur.</span></div><div class="flow-step"><strong>Node</strong><span>State’i okuyup güncelleyen Python fonksiyonları yazılır.</span></div><div class="flow-step"><strong>Edge</strong><span>Node’lar arasındaki geçiş sırası tanımlanır.</span></div><div class="flow-step"><strong>Compile</strong><span>Graph çalıştırılabilir hale getirilir.</span></div><div class="flow-step"><strong>Invoke</strong><span>Başlangıç state’iyle graph yürütülür.</span></div></div>
+      </section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+        <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+        <h3 id="state-paylasilan-veri-sozlesmesi">State: Paylaşılan Veri Sözleşmesi</h3>
+        <p>State, graph içindeki adımların ortak dilidir. Bu derste state yalnızca <code>graph_state</code> adlı bir string alanı taşır. Bu sadelik pedagojiktir: karmaşık veri şemaları olmadan, node’ların state’i nasıl alıp güncellediği izlenebilir.</p>
+        <div class="note-card"><h3 id="kritik-ayrim">Kritik Ayrım</h3><p>State bir local değişken değildir. Node fonksiyonuna giren ve node çıktısıyla güncellenen graph verisidir. LangGraph, node’lar arasında bu verinin nasıl taşınacağını graph tanımıyla ilişkilendirir.</p></div>
+        <h3 id="node-statei-guncelleyen-fonksiyon">Node: State’i Güncelleyen Fonksiyon</h3>
+        <p>Node’lar sıradan Python fonksiyonlarıdır; fakat LangGraph içinde belirli bir sözleşmeye göre çalışırlar. State’i argüman olarak alırlar ve state alanlarını güncelleyen bir sözlük döndürürler. Varsayılan davranışta aynı anahtar için dönen yeni değer önceki değerin üzerine yazılır.</p>
+        <h3 id="edge-sira-ve-kosul-mantigi">Edge: Sıra ve Koşul Mantığı</h3>
+        <p>Normal edge, her çalıştırmada aynı geçişi uygular. Örnekte <code>START</code> her zaman <code>node_1</code> düğümüne gider. Conditional edge ise bir karar fonksiyonuna dayanır. <code>decide_mood</code>, <code>node_2</code> veya <code>node_3</code> adını döndürerek graph’ın hangi yola gideceğini belirler.</p>
+        <div class="question-card"><h3 id="ogrencinin-sormasi-gereken-soru">Öğrencinin Sorması Gereken Soru</h3><p>Bir karar fonksiyonu state’i güncellemeli mi, yoksa yalnızca sonraki node adını mı döndürmeli? Bu derste cevap nettir: koşullu edge fonksiyonu yönlendirme yapar; state güncellemesini node fonksiyonları yapar.</p></div>
+        <h3 id="compile-ve-runnable-arayuzu">Compile ve Runnable Arayüzü</h3>
+        <p><code>compile</code> çağrısı graph tanımını çalıştırılabilir hale getirir. Derlenmiş graph, LangChain ekosistemindeki runnable arayüzünü uygular. Bu nedenle <code>invoke</code> ile başlangıç state’i verilip tüm graph senkron olarak çalıştırılabilir.</p>
+      </section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+        <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+        <p>Kod yürüyüşü, graph’ın parçalarını doğal sırayla kurar: önce state şeması, sonra node’lar, ardından koşullu karar fonksiyonu, graph inşası ve son olarak çalıştırma.</p>
+        <article class="walk-card" id="kod-adimi-1">
+<h3 data-section="7" id="langgraph-paketini-hazirlama">LangGraph paketini hazırlama</h3>
+<p>Bu blok, notebook ortamında LangGraph paketini kurar veya günceller. Kurulum çıktısı yakalandığı için başarılı çalışmada görünür terminal metni beklenmez.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">LangGraph paketini hazırlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="shell">%%capture --no-stderr
+%pip install --quiet -U langgraph</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım, sonraki graph API importlarının çalışabilmesi için ortam hazırlığı sağlar.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu blok görünür çıktı üretmez; asıl etkisi sonraki graph çalıştırmalarının davranışını belirlemesidir.</p></section>
+</div>
+
+</article>
+<article class="walk-card" id="kod-adimi-2">
+<h3 data-section="7" id="state-semasini-tanimlama">State şemasını tanımlama</h3>
+<p>Bu blok, graph boyunca düğümler arasında taşınacak veri sözleşmesini tanımlar. Örnek yalnızca bir metin alanı kullanarak state kavramını sade biçimde görünür hale getirir.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">State şemasını tanımlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">from typing_extensions import TypedDict
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    graph_state: str</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>`TypedDict`, state içindeki anahtarların beklenen tiplerini açıklayarak node fonksiyonlarının hangi alanlarla çalışacağını belirginleştirir.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu blok görünür çıktı üretmez; asıl etkisi sonraki graph çalıştırmalarının davranışını belirlemesidir.</p></section>
+</div>
+
+</article>
+<article class="walk-card" id="kod-adimi-3">
+<h3 data-section="7" id="node-fonksiyonlarini-yazma">Node fonksiyonlarını yazma</h3>
+<p>Bu blok üç Python fonksiyonu tanımlar. Her fonksiyon mevcut state’i alır, `graph_state` değerine yeni bir parça ekler ve güncellenmiş state sözlüğünü döndürür.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Node fonksiyonlarını yazma</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">def node_1(state):
+    """
+    Run the node_1 graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"graph_state": state['graph_state'] +" I am"}
+
+def node_2(state):
+    """
+    Run the node_2 graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"graph_state": state['graph_state'] +" happy!"}
+
+def node_3(state):
+    """
+    Run the node_3 graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 3---")
+    return {"graph_state": state['graph_state'] +" sad!"}</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph açısından node, graph içindeki işlem adımıdır. Bu örnekte her node state’i tamamen değiştirmek yerine aynı anahtara yeni bir metin değeri yazar.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu blok görünür çıktı üretmez; asıl etkisi sonraki graph çalıştırmalarının davranışını belirlemesidir.</p></section>
+</div>
+
+</article>
+<article class="walk-card" id="kod-adimi-4">
+<h3 data-section="7" id="kosullu-edge-karar-fonksiyonunu-tanimlama">Koşullu edge karar fonksiyonunu tanımlama</h3>
+<p>Bu blok, graph’ın `node_1` sonrasında hangi düğüme gideceğini belirleyen yönlendirme fonksiyonunu tanımlar. Örnek karar rastgele verilir; gerçek uygulamalarda bu karar çoğunlukla state içeriğine dayanır.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Koşullu edge karar fonksiyonunu tanımlama</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">import random
+from typing import Literal
+
+def decide_mood(state) -&gt; Literal["node_2", "node_3"]:
+    """
+    Run the decide_mood graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+
+    # Often, we will use state to decide on the next node to visit
+    user_input = state['graph_state']
+
+    # Here, let's just do a 50 / 50 split between nodes 2, 3
+    if random.random() &lt; 0.5:
+
+        # 50% of the time, we return Node 2
+        return "node_2"
+
+    # 50% of the time, we return Node 3
+    return "node_3"</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>`decide_mood`, state’i güncellemez; yalnızca bir sonraki node adını döndürür. Bu ayrım, node fonksiyonu ile conditional edge fonksiyonunun görevlerini ayırmak için kritiktir.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu blok görünür çıktı üretmez; asıl etkisi sonraki graph çalıştırmalarının davranışını belirlemesidir.</p></section>
+</div>
+
+</article>
+<article class="walk-card" id="kod-adimi-5">
+<h3 data-section="7" id="graph-yapisini-kurma-ve-derleme">Graph yapısını kurma ve derleme</h3>
+<p>Bu blok, tanımlanan state şemasını, node fonksiyonlarını ve edge ilişkilerini `StateGraph` içinde bir araya getirir. Ardından graph derlenir ve görsel olarak gösterilir.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Graph yapısını kurma ve derleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_conditional_edges("node_1", decide_mood)
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>`START` graph’ın giriş noktasını, `END` ise terminal noktasını temsil eder. `compile`, graph yapısını çalıştırılabilir bir nesneye dönüştürmeden önce temel yapı kontrollerini yapar.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Çıktının değeri, notebook çalıştırıldığı andaki koşula ve özellikle koşullu edge kararına bağlı olarak okunmalıdır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Görsel çıktı, normal edge ile koşullu edge ayrımını görünür hale getirir: başlangıçtan ilk node’a kesin geçiş vardır; ilk node’dan sonra karar fonksiyonu iki farklı yola yönlendirebilir.</p></section><div class="output-card"><div class="output-head">Çıktı</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Derlenmiş graph akışının görsel çıktısı"></div></div>
+</article>
+<article class="walk-card" id="kod-adimi-6">
+<h3 data-section="7" id="graphi-invoke-ile-calistirma">Graph’ı invoke ile çalıştırma</h3>
+<p>Bu blok, derlenmiş graph’a başlangıç state değerini verir ve tüm graph’ı senkron biçimde çalıştırır. Çıktı, çalışılan node izlerini ve son state değerini gösterir.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Graph’ı invoke ile çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">graph.invoke({"graph_state" : "Hi, this is Lance."})</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>`invoke`, graph’ın `START` noktasından başlayıp `END` noktasına kadar ilerlemesini sağlar. Koşullu edge rastgele karar verdiği için farklı çalıştırmalarda mutlu veya üzgün yol seçilebilir.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Çıktının değeri, notebook çalıştırıldığı andaki koşula ve özellikle koşullu edge kararına bağlı olarak okunmalıdır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Stream çıktısı, çalışma sırasında hangi node fonksiyonlarının yürütüldüğünü gösterir.</p></section><div class="output-card"><div class="output-head">Çıktı</div><pre class="output-body"><code data-lang="output">---Node 1---
+---Node 3---</code></pre></div><section class="output-comment"><h4>Çıktı Yorumu</h4><p>Son çıktı, graph tamamlandıktan sonra dönen nihai state sözlüğüdür.</p></section><div class="output-card"><div class="output-head">Çıktı</div><pre class="output-body"><code data-lang="output">{'graph_state': 'Hi, this is Lance. I am sad!'}</code></pre></div>
+</article>
+      </section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+        <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+        <p>Graph görseli, başlangıçtan ilk node’a normal edge ile gidildiğini ve ilk node’dan sonra conditional edge ile iki olası yola ayrıldığını gösterir. Dotted veya dallanan geçişin anlamı, karar fonksiyonunun tek bir sabit hedef yerine olası hedeflerden birini seçmesidir.</p>
+        <p>Çalıştırma çıktısında önce node izleri yazdırılır. Bu izler graph’ın hangi düğümleri gerçekten çalıştırdığını gösterir. Ardından dönen sözlük, nihai state değeridir. Karar fonksiyonu rastgelelik kullandığı için örneğin başka bir çalıştırmada <code>happy!</code> son eki de görülebilir.</p>
+      </section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title">
+        <h2 id="graph-akisi-title">Graph Akışı</h2>
+        <p>Bu derste kurulan graph akışı, küçük olmasına rağmen LangGraph’ın ana kontrol modelini içerir: zorunlu başlangıç geçişi, state güncelleyen node, koşullu karar ve terminal bitiş.</p>
+        <div class="concept-map" aria-label="Basit graph akışı"><div class="flow-step"><strong>START</strong><span>Başlangıç state’i graph’a girer.</span></div><div class="flow-step"><strong>node_1</strong><span>Metne ortak <code>I am</code> parçası eklenir.</span></div><div class="flow-step"><strong>decide_mood</strong><span>Sonraki node için koşullu karar verilir.</span></div><div class="flow-step"><strong>node_2 / node_3</strong><span>Mutlu veya üzgün son ek state’e yazılır.</span></div><div class="flow-step"><strong>END</strong><span>Graph yürütmesi tamamlanır.</span></div></div>
+      </section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title">
+        <h2 id="state-evrimi-title">State’in Evrimi</h2>
+        <p>Bu örnekte gerçek state alanı <code>graph_state</code> adını taşır. Aşağıdaki akış, örnekte görülen çalıştırma sonucuna göre state’in nasıl değiştiğini gösterir.</p>
+        <div class="state-list"><div class="state-item"><strong>Başlangıç</strong><span><code>Hi, this is Lance.</code></span></div><div class="state-item"><strong>node_1 sonrası</strong><span><code>Hi, this is Lance. I am</code></span></div><div class="state-item"><strong>node_3 sonrası</strong><span><code>Hi, this is Lance. I am sad!</code></span></div><div class="state-item"><strong>Alternatif yol</strong><span>Karar <code>node_2</code> olsaydı son ek <code>happy!</code> olurdu.</span></div></div>
+      </section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+        <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+        <p>Bu derste agent döngüsü veya tool çağrısı kurulmaz. Bunun nedeni, önce graph kontrol akışını yalın biçimde görmektir. İlerleyen agent tasarımlarında benzer node ve edge yapıları, model çağrıları ve tool sonuçlarıyla birlikte kullanılabilir.</p>
+        <div class="chat-flow"><div class="chat-bubble"><strong>Bu dersteki yapı:</strong> State, node ve edge ilişkileriyle deterministik veya koşullu akış kurulur.</div><div class="chat-bubble"><strong>Agent sistemlerine bağlantı:</strong> Daha sonra bir node model çağırabilir, başka bir node tool sonucunu state’e yazabilir ve conditional edge hangi adımın sırada olduğunu seçebilir.</div></div>
+      </section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+        <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+        <ul>
+          <li>State’i yalnızca node içindeki local değişken sanmak.</li>
+          <li>Node fonksiyonunun bir sonraki node’u seçmesi gerektiğini düşünmek; bu örnekte seçim conditional edge fonksiyonuna aittir.</li>
+          <li><code>add_edge</code> ile <code>add_conditional_edges</code> farkını karıştırmak.</li>
+          <li><code>START</code> ve <code>END</code> düğümlerini normal kullanıcı tanımlı node gibi ele almak.</li>
+          <li><code>compile</code> çağrısından önce graph’ı <code>invoke</code> etmeye çalışmak.</li>
+          <li>Varsayılan state güncellemesinin aynı anahtarda eski değerin üzerine yazdığını gözden kaçırmak.</li>
+          <li>Rastgele karar fonksiyonu nedeniyle farklı çalıştırmalarda farklı çıktı alınabileceğini unutmak.</li>
+          <li>Graph görselini çalışma garantisi sanmak; asıl çalışma davranışı derlenmiş graph ve state geçişleriyle doğrulanır.</li>
+        </ul>
+      </section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+        <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+        <ol>
+          <li>LangGraph graph’ı, state şeması, node fonksiyonları ve edge ilişkilerinden oluşur.</li>
+          <li>State, node ve edge fonksiyonlarının ortak veri sözleşmesidir.</li>
+          <li>Node’lar Python fonksiyonlarıdır; state alır ve state güncellemesi döndürür.</li>
+          <li>Varsayılan davranışta aynı state anahtarına dönen yeni değer eski değerin üzerine yazılır.</li>
+          <li>Normal edge, her çalıştırmada aynı hedefe geçiş sağlar.</li>
+          <li>Conditional edge, karar fonksiyonunun döndürdüğü node adına göre yönlendirme yapar.</li>
+          <li><code>START</code> graph’ın girişini, <code>END</code> terminal noktasını temsil eder.</li>
+          <li><code>compile</code>, graph tanımını çalıştırılabilir nesneye dönüştürür.</li>
+          <li>Derlenmiş graph, <code>invoke</code> ile başlangıç state’inden nihai state’e kadar çalıştırılabilir.</li>
+          <li>Bu basit örnek, daha karmaşık agent, router ve tool akışlarının temel kontrol modelini hazırlar.</li>
+        </ol>
+      </section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+        <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+        <p>Bu bölüm, derste kullanılan çalıştırılabilir kod parçalarını notebook sırasına göre tek akışta toplar.</p>
+        <div class="code-card"><div class="code-head"><span class="code-title">Dersin kod akışı</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="mixed">%%capture --no-stderr
+%pip install --quiet -U langgraph
+
+from typing_extensions import TypedDict
+
+class State(TypedDict):
+    """
+    Define the state schema used by the graph.
+    """
+    graph_state: str
+
+def node_1(state):
+    """
+    Run the node_1 graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 1---")
+    return {"graph_state": state['graph_state'] +" I am"}
+
+def node_2(state):
+    """
+    Run the node_2 graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 2---")
+    return {"graph_state": state['graph_state'] +" happy!"}
+
+def node_3(state):
+    """
+    Run the node_3 graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    print("---Node 3---")
+    return {"graph_state": state['graph_state'] +" sad!"}
+
+import random
+from typing import Literal
+
+def decide_mood(state) -&gt; Literal["node_2", "node_3"]:
+    """
+    Run the decide_mood graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+
+    # Often, we will use state to decide on the next node to visit
+    user_input = state['graph_state']
+
+    # Here, let's just do a 50 / 50 split between nodes 2, 3
+    if random.random() &lt; 0.5:
+
+        # 50% of the time, we return Node 2
+        return "node_2"
+
+    # 50% of the time, we return Node 3
+    return "node_3"
+
+from IPython.display import Image, display
+from langgraph.graph import StateGraph, START, END
+
+# Build graph
+builder = StateGraph(State)
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+
+# Logic
+builder.add_edge(START, "node_1")
+builder.add_conditional_edges("node_1", decide_mood)
+builder.add_edge("node_2", END)
+builder.add_edge("node_3", END)
+
+# Add
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+graph.invoke({"graph_state" : "Hi, this is Lance."})</code></pre></div>
+      </section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+        <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+        <div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody>
+          <tr><td>Graph</td><td>Graph / çizge</td><td>Düğümler ve geçişlerden oluşan yürütme yapısı.</td></tr>
+          <tr><td>State</td><td>Durum</td><td>Graph adımları arasında taşınan veri.</td></tr>
+          <tr><td>TypedDict</td><td>Tipli sözlük</td><td>Sözlük anahtarları için tip ipucu sağlayan Python yapısı.</td></tr>
+          <tr><td>Node</td><td>Düğüm</td><td>Graph içinde belirli bir işi yapan fonksiyonel adım.</td></tr>
+          <tr><td>Edge</td><td>Kenar / geçiş</td><td>Bir düğümden diğerine çalışma sırasını belirleyen bağlantı.</td></tr>
+          <tr><td>Conditional Edge</td><td>Koşullu geçiş</td><td>Karar fonksiyonuna göre hedef düğümü seçen geçiş.</td></tr>
+          <tr><td>StateGraph</td><td>State tabanlı graph kurucu</td><td>State şemasıyla graph oluşturmak için kullanılan sınıf.</td></tr>
+          <tr><td>START</td><td>Başlangıç düğümü</td><td>Graph girişini temsil eden özel düğüm.</td></tr>
+          <tr><td>END</td><td>Bitiş düğümü</td><td>Graph yürütmesinin tamamlandığı özel düğüm.</td></tr>
+          <tr><td>Compile</td><td>Derleme</td><td>Graph tanımını çalıştırılabilir hale getirme adımı.</td></tr>
+          <tr><td>Invoke</td><td>Çağırma / çalıştırma</td><td>Runnable bileşeni tek girişle senkron çalıştırma yöntemi.</td></tr>
+          <tr><td>Runnable</td><td>Çalıştırılabilir arayüz</td><td>LangChain bileşenlerinin ortak yürütme protokolü.</td></tr>
+          <tr><td>Reducer</td><td>İndirgeme/güncelleme kuralı</td><td>State güncellemelerinin nasıl birleştirileceğini belirleyen mantık.</td></tr>
+          <tr><td>Routing</td><td>Yönlendirme</td><td>Graph’ın bir sonraki adımını seçme davranışı.</td></tr>
+          <tr><td>Mermaid</td><td>Mermaid diyagramı</td><td>Graph yapısını görsel olarak ifade etmek için kullanılan diyagram formatı.</td></tr>
+        </tbody></table></div>
+      </section>
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta En Basit Graph: State, Node ve Koşullu Edge</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l3"><a href="#state-paylasilan-veri-sozlesmesi">State: Paylaşılan Veri Sözleşmesi</a></li>
+<li class="toc-l3"><a href="#node-statei-guncelleyen-fonksiyon">Node: State’i Güncelleyen Fonksiyon</a></li>
+<li class="toc-l3"><a href="#edge-sira-ve-kosul-mantigi">Edge: Sıra ve Koşul Mantığı</a></li>
+<li class="toc-l3"><a href="#compile-ve-runnable-arayuzu">Compile ve Runnable Arayüzü</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#langgraph-paketini-hazirlama">LangGraph paketini hazırlama</a></li>
+<li class="toc-l3"><a href="#state-semasini-tanimlama">State şemasını tanımlama</a></li>
+<li class="toc-l3"><a href="#node-fonksiyonlarini-yazma">Node fonksiyonlarını yazma</a></li>
+<li class="toc-l3"><a href="#kosullu-edge-karar-fonksiyonunu-tanimlama">Koşullu edge karar fonksiyonunu tanımlama</a></li>
+<li class="toc-l3"><a href="#graph-yapisini-kurma-ve-derleme">Graph yapısını kurma ve derleme</a></li>
+<li class="toc-l3"><a href="#graphi-invoke-ile-calistirma">Graph’ı invoke ile çalıştırma</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+
+  <script>
+    (function () {
+      function escapeHtml(value) { return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+      function span(cls, value) { return '<span class="' + cls + '">' + escapeHtml(value) + '</span>'; }
+      function escapeAttr(value) { return escapeHtml(value).replace(/"/g, "&quot;"); }
+      const lineNotesByText = {
+        "%%capture --no-stderr": "Kurulum çıktısını yakalar; ders akışı paket loglarıyla bölünmez.",
+        "%pip install --quiet -U langgraph": "LangGraph paketini kurar veya günceller. Graph API kullanımı için temel bağımlılık budur.",
+        "from typing_extensions import TypedDict": "State sözleşmesini tip ipuçlarıyla tanımlamak için TypedDict içe aktarılır.",
+        "class State(TypedDict):": "Graph boyunca taşınacak state şeması burada tanımlanır.",
+        "graph_state: str": "Bu örnekte state tek bir string alanından oluşur.",
+        "def node_1(state):": "Node fonksiyonları ilk argüman olarak mevcut state'i alır.",
+        "return {\"graph_state\": state['graph_state'] +\" I am\"}": "Node, aynı state anahtarı için yeni değer döndürür; varsayılan davranış eski değeri override eder.",
+        "return {\"graph_state\": state['graph_state'] +\" happy!\"}": "Bu yol seçilirse nihai state mutlu son ekle tamamlanır.",
+        "return {\"graph_state\": state['graph_state'] +\" sad!\"}": "Bu yol seçilirse nihai state üzgün son ekle tamamlanır.",
+        "from typing import Literal": "Karar fonksiyonunun döndürebileceği node adlarını tip seviyesinde ifade eder.",
+        "def decide_mood(state) -> Literal[\"node_2\", \"node_3\"]:": "Conditional edge fonksiyonu bir sonraki node adını döndürür.",
+        "user_input = state['graph_state']": "Gerçek uygulamalarda yönlendirme kararı çoğunlukla state içeriğine dayanır.",
+        "if random.random() < 0.5:": "Örnek, iki olası yol arasında yaklaşık yüzde 50 olasılıkla seçim yapar.",
+        "return \"node_2\"": "Koşullu edge bu string ile graph'ı node_2 düğümüne yönlendirir.",
+        "return \"node_3\"": "Koşullu edge bu string ile graph'ı node_3 düğümüne yönlendirir.",
+        "from langgraph.graph import StateGraph, START, END": "StateGraph graph kurucusunu; START ve END özel graph sınır düğümlerini sağlar.",
+        "builder = StateGraph(State)": "Graph kurucu, daha önce tanımlanan state şemasıyla başlatılır.",
+        "builder.add_node(\"node_1\", node_1)": "Python fonksiyonu, graph içinde adı olan bir node'a bağlanır.",
+        "builder.add_edge(START, \"node_1\")": "Normal edge, graph'ın her çalıştırmada ilk node'a gitmesini sağlar.",
+        "builder.add_conditional_edges(\"node_1\", decide_mood)": "Koşullu edge, node_1 sonrası yolu karar fonksiyonuna bırakır.",
+        "builder.add_edge(\"node_2\", END)": "node_2 çalıştıktan sonra graph terminal noktaya gider.",
+        "builder.add_edge(\"node_3\", END)": "node_3 çalıştıktan sonra graph terminal noktaya gider.",
+        "graph = builder.compile()": "Graph tanımı çalıştırılabilir nesneye dönüştürülür.",
+        "display(Image(graph.get_graph().draw_mermaid_png()))": "Derlenmiş graph, Mermaid tabanlı görsel çıktıya dönüştürülür.",
+        "graph.invoke({\"graph_state\" : \"Hi, this is Lance.\"})": "Başlangıç state'i verilir ve graph START'tan END'e kadar senkron çalıştırılır."
+      };
+      function highlightPython(code) {
+        const keywords = new Set(['False','None','True','and','as','assert','async','await','break','class','continue','def','del','elif','else','except','finally','for','from','global','if','import','in','is','lambda','nonlocal','not','or','pass','raise','return','try','while','with','yield']);
+        const builtins = new Set(['print','len','range','str','int','float','list','dict','set','tuple']);
+        const tokenPattern = /(#.*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b[A-Za-z_][A-Za-z0-9_]*\b|\b\d+(?:\.\d+)?\b|==|!=|<=|>=|->|[=+\-*\/<>:])/g;
+        let result = ''; let last = 0; let match; let expectDefinitionName = false;
+        while ((match = tokenPattern.exec(code)) !== null) {
+          const value = match[0]; result += escapeHtml(code.slice(last, match.index));
+          if (value.startsWith('#')) result += span('tok-comment', value);
+          else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+          else if (/^\d/.test(value)) result += span('tok-number', value);
+          else if (keywords.has(value)) { result += span('tok-keyword', value); expectDefinitionName = value === 'def' || value === 'class'; }
+          else if (builtins.has(value)) { result += span('tok-builtin', value); expectDefinitionName = false; }
+          else if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) { result += expectDefinitionName ? span('tok-function', value) : span('tok-name', value); expectDefinitionName = false; }
+          else if (/^(==|!=|<=|>=|->|[=+\-*\/< >:])$/.test(value)) result += span('tok-operator', value);
+          else result += escapeHtml(value);
+          last = tokenPattern.lastIndex;
+        }
+        result += escapeHtml(code.slice(last)); return result;
+      }
+      function highlightShell(code) {
+        const tokenPattern = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+|\b[A-Za-z_][A-Za-z0-9_\-]*\b)/g;
+        let result = ''; let last = 0; let match;
+        while ((match = tokenPattern.exec(code)) !== null) {
+          const value = match[0]; result += escapeHtml(code.slice(last, match.index));
+          if (value.startsWith('#')) result += span('tok-comment', value);
+          else if (value.startsWith('%%') || value.startsWith('%')) result += span('tok-keyword', value);
+          else if (value.startsWith('-')) result += span('tok-builtin', value);
+          else if (['pip','install','quiet','capture'].includes(value)) result += span('tok-function', value);
+          else result += escapeHtml(value);
+          last = tokenPattern.lastIndex;
+        }
+        result += escapeHtml(code.slice(last)); return result;
+      }
+      function highlightOutput(code) {
+        const tokenPattern = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\bNone\b|\bTrue\b|\bFalse\b|\bAIMessage\b|\bHumanMessage\b|\b\d+(?:\.\d+)?\b)/g;
+        let result = ''; let last = 0; let match;
+        while ((match = tokenPattern.exec(code)) !== null) {
+          const value = match[0]; result += escapeHtml(code.slice(last, match.index));
+          if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+          else if (value === 'None' || value === 'True' || value === 'False') result += span('tok-keyword', value);
+          else if (value === 'AIMessage' || value === 'HumanMessage') result += span('tok-class', value);
+          else result += span('tok-number', value);
+          last = tokenPattern.lastIndex;
+        }
+        result += escapeHtml(code.slice(last)); return result;
+      }
+      function highlightLine(lang, line) {
+        if (lang === 'shell') return highlightShell(line);
+        if (lang === 'mixed') return line.trim().startsWith('%') ? highlightShell(line) : highlightPython(line);
+        if (lang === 'python') return highlightPython(line);
+        return highlightOutput(line);
+      }
+
+      function noteJoin(parts) {
+        const seen = new Set();
+        return parts.filter(Boolean).map(function (part) { return String(part).trim(); }).filter(function (part) {
+          if (!part || seen.has(part)) return false;
+          seen.add(part);
+          return true;
+        }).join('\n\n');
+      }
+      function compactToken(token) {
+        return String(token || '').trim().replace(/,$/, '').replace(/^['"]|['"]$/g, '');
+      }
+      function splitTopLevelArgs(text) {
+        const args = [];
+        let current = '';
+        let depth = 0;
+        let quote = '';
+        let escaped = false;
+        for (let i = 0; i < text.length; i += 1) {
+          const ch = text[i];
+          if (quote) {
+            current += ch;
+            if (escaped) escaped = false;
+            else if (ch === '\\') escaped = true;
+            else if (ch === quote) quote = '';
+            continue;
+          }
+          if (ch === '"' || ch === "'") { quote = ch; current += ch; continue; }
+          if (ch === '(' || ch === '[' || ch === '{') depth += 1;
+          if (ch === ')' || ch === ']' || ch === '}') depth -= 1;
+          if (ch === ',' && depth === 0) { args.push(current.trim()); current = ''; continue; }
+          current += ch;
+        }
+        if (current.trim()) args.push(current.trim());
+        return args;
+      }
+      function collectCallText(lines, index) {
+        let text = '';
+        let depth = 0;
+        let started = false;
+        for (let i = index; i < Math.min(lines.length, index + 12); i += 1) {
+          const part = lines[i].trim();
+          text += (text ? ' ' : '') + part;
+          for (let j = 0; j < part.length; j += 1) {
+            const ch = part[j];
+            if (ch === '(') { depth += 1; started = true; }
+            if (ch === ')') depth -= 1;
+          }
+          if (started && depth <= 0) break;
+        }
+        return text;
+      }
+      function argsForCall(callText) {
+        const start = callText.indexOf('(');
+        const end = callText.lastIndexOf(')');
+        if (start === -1 || end === -1 || end <= start) return [];
+        return splitTopLevelArgs(callText.slice(start + 1, end));
+      }
+      function tokenRole(token) {
+        const value = compactToken(token);
+        if (value === 'START') return 'START sabiti, graph çalıştırıldığında ilk izlenecek sanal başlangıç düğümünü temsil eder.';
+        if (value === 'END') return 'END sabiti, graph yürütmesinin biteceği sanal son düğümü temsil eder.';
+        return '`' + value + '` adlı gerçek graph node kimliğini temsil eder.';
+      }
+      function findNearby(lines, index, pattern, span) {
+        const start = Math.max(0, index - span);
+        const end = Math.min(lines.length - 1, index + span);
+        for (let i = start; i <= end; i += 1) {
+          if (pattern.test(lines[i].trim())) return lines[i].trim();
+        }
+        return '';
+      }
+      function messageContext(lines, index) {
+        for (let i = index; i >= Math.max(0, index - 8); i -= 1) {
+          const t = lines[i].trim();
+          if (/\bHumanMessage\(/.test(t)) return 'HumanMessage';
+          if (/\bAIMessage\(/.test(t)) return 'AIMessage';
+          if (/\bSystemMessage\(/.test(t)) return 'SystemMessage';
+          if (/\bToolMessage\(/.test(t)) return 'ToolMessage';
+        }
+        return '';
+      }
+      function describeMessageClass(kind) {
+        if (kind === 'HumanMessage') return 'HumanMessage(content, **kwargs): kullanıcı girdisini temsil eden mesaj sınıfıdır. `content` str veya multimodal blok listesi olabilir; `name` opsiyonel str olarak konuşmacı/aktör etiketi verir. Graph state içinde genellikle `messages` listesine eklenir ve modelin kullanıcı talimatı olarak okunur.';
+        if (kind === 'AIMessage') return 'AIMessage(content, **kwargs): model cevabını temsil eder. `content` str/list olabilir; tool calling senaryosunda `tool_calls`, `additional_kwargs` ve `response_metadata` alanları da taşıyabilir. Bu derste geçmiş konuşma veya model çıktısı olarak `messages` state alanında tutulur.';
+        if (kind === 'SystemMessage') return 'SystemMessage(content, **kwargs): modele davranış/politika talimatı veren sistem mesajıdır. `content` str/list formatındadır; genellikle `[sys_msg] + state["messages"]` ile kullanıcı mesajlarından önce modele verilir.';
+        if (kind === 'ToolMessage') return 'ToolMessage(content, tool_call_id=..., name=...): çalışan tool sonucunu modele geri taşır. ToolNode bu mesajları çoğunlukla otomatik üretir.';
+        return '';
+      }
+      function generatedGraphNote(trimmed, lines, index) {
+        if (/StateGraph\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const schema = compactToken(args[0] || 'State');
+          return 'StateGraph(state_schema, ...): graph builder nesnesi oluşturur. `state_schema` TypedDict, MessagesState veya Pydantic benzeri bir şema olabilir; node fonksiyonları bu state’i input olarak alır ve sadece güncellediği alanları dict olarak döndürür. Bu satırda şema `' + schema + '`; yani sonraki node ve edge tanımları bu state şekline göre derlenir.';
+        }
+        if (/\.add_node\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const name = compactToken(args[0] || 'node');
+          const action = compactToken(args[1] || '(aynı adlı callable veya Runnable)');
+          return 'add_node(node, action=None, *, metadata=None, input_schema=None, retry_policy=None, cache_policy=None, ...): StateGraph içine çalıştırılabilir node ekler. `node` str kimliktir; `action` state -> partial state döndüren fonksiyon, Runnable veya ToolNode olabilir. Bu satırda `' + name + '` node adı, `' + action + '` ise çalışacak işlevdir. Edge’ler daha sonra bu ada bağlanır.';
+        }
+        if (/\.add_edge\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const source = args[0] || 'start_key';
+          const target = args[1] || 'end_key';
+          const sourceName = compactToken(source); const targetName = compactToken(target); return 'add_edge(start_key, end_key): sabit yönlü edge ekler. `start_key` str veya list[str] olabilir; list verilirse hedef node çalışmadan önce listedeki tüm kaynakların bitmesi beklenir. `end_key` str node adı veya END olabilir. Akış yönü: `' + sourceName + '` -> `' + targetName + '`. Kaynak: ' + tokenRole(source) + ' Hedef: ' + tokenRole(target);
+        }
+        if (/\.add_conditional_edges\(/.test(trimmed) || trimmed === 'builder.add_conditional_edges(') {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const source = compactToken(args[0] || findNearby(lines, index, /['"][A-Za-z0-9_\-]+['"],?$/, 4) || 'source');
+          const path = compactToken(args[1] || findNearby(lines, index, /(tools_condition|decide_mood|route|router)/, 8) || 'path');
+          let route = 'Bu callable mevcut state’i okur ve bir sonraki node adını, END değerini veya node adları dizisini döndürür.';
+          if (/tools_condition/.test(path) || /tools_condition/.test(call)) route = '`tools_condition` son AIMessage içinde tool_calls varsa `tools` node’una; tool çağrısı yoksa `END` yönüne karar verir. Böylece model cevap mı verecek, tool mu çalıştıracak ayrımı yapılır.';
+          if (/decide_mood/.test(path) || /decide_mood/.test(call)) route = '`decide_mood` state’e veya rastgeleliğe bakarak örnekte `node_2` ya da `node_3` döndürür; dönen değer gidilecek node adıdır.';
+          return 'add_conditional_edges(source, path, path_map=None): koşullu yönlendirme edge’i ekler. `source` str başlangıç node’udur; `path` Callable/Runnable olup Hashable veya Sequence[Hashable] döndürebilir; `path_map` opsiyonel dict/list ile dönüş değerlerini gerçek node adlarına eşler. Akış: `' + source + '` node’u bittikten sonra routing fonksiyonu çalışır. ' + route;
+        }
+        if (/\.compile\(/.test(trimmed)) {
+          const hasCheckpointer = /checkpointer\s*=/.test(trimmed) || /checkpointer\s*=/.test(collectCallText(lines, index));
+          return 'compile(checkpointer=None, *, cache=None, store=None, interrupt_before=None, interrupt_after=None, debug=False, name=None, ...): builder tanımını çalıştırılabilir CompiledStateGraph nesnesine dönüştürür. Bundan sonra `invoke`, `stream`, `ainvoke`, `astream` kullanılabilir. ' + (hasCheckpointer ? 'Bu kullanımda `checkpointer=memory` verildiği için state snapshot’ları thread_id üzerinden hatırlanır.' : 'Bu kullanımda checkpointer verilmediği için kalıcılık graph’ın dışındaki çalıştırma bağlamına bağlı değildir.');
+        }
+        if (/tools_condition\s*,?$/.test(trimmed)) {
+          return 'tools_condition(state, messages_key="messages") -> Literal["tools", "__end__"]: prebuilt routing fonksiyonudur. State dict, mesaj listesi veya BaseModel alabilir; `messages_key` ile mesaj listesinin hangi alanda durduğu seçilir. Son AIMessage içinde tool_calls varsa `tools`, yoksa `__end__` döndürür; add_conditional_edges içinde bu dönüş graph yönünü belirler.';
+        }
+        if (/ToolNode\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const tools = compactToken(args[0] || 'tools');
+          return 'ToolNode(tools, options=None): tool çağrılarını yürüten hazır LangGraph node’udur. `tools` StructuredTool/BaseTool/callable listesi formatındadır. Input state içinde son AIMessage.tool_calls okunur; her çağrı ilgili tool’a argüman dict’i ile uygulanır ve sonuçlar `messages` alanına ToolMessage olarak döner. Bu satırda tool koleksiyonu: `' + tools + '`.';
+        }
+        return '';
+      }
+      function generatedLangChainNote(trimmed, lines, index) {
+        if (/ChatOpenAI\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const modelArg = args.find(function (arg) { return /^model\s*=/.test(arg); }) || 'model=<model adı>';
+          const tempArg = args.find(function (arg) { return /^temperature\s*=/.test(arg); }) || 'temperature varsayılan değerde';
+          return 'ChatOpenAI(model=..., temperature=..., **kwargs): OpenAI uyumlu chat model wrapper’ıdır. `model` str olarak kullanılacak model adını, `temperature` float olarak çıktı rastgeleliğini belirler; ek provider parametreleri kwargs ile geçilebilir. Bu satırda ' + modelArg + '; ' + tempArg + '. Çıktı genellikle AIMessage nesnesidir.';
+        }
+        if (/\.bind_tools\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const tools = compactToken(args[0] || 'tools');
+          const parallel = /parallel_tool_calls\s*=\s*False/.test(call) ? ' `parallel_tool_calls=False` ile modelin aynı adımda paralel tool çağırması kapatılmıştır.' : '';
+          return 'bind_tools(tools, *, tool_choice=None, strict=None, parallel_tool_calls=None, response_format=None, **kwargs): chat modeline tool şemalarını bağlar ve Runnable[LanguageModelInput, AIMessage] döndürür. `tools` dict, Pydantic class, callable veya BaseTool listesi olabilir; callable fonksiyonlarda type hint ve docstring tool şemasına dönüşür. Bu satırda bağlanan araç seti: `' + tools + '`.' + parallel;
+        }
+        if (/\.invoke\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          if (/graph\.invoke|react_graph/.test(trimmed) || /graph\.invoke|react_graph/.test(call)) return 'invoke(input, config=None, **kwargs): derlenmiş graph’ı tek sefer çalıştırır. `input` state şemasına uygun dict olmalıdır; örneğin `{"messages": [HumanMessage(...)]}` veya `{"graph_state": "..."}`. Sonuç, reducer’lar uygulandıktan sonra final state dict’idir.';
+          if (/tavily_search/.test(trimmed)) return 'TavilySearch.invoke(input): arama tool’unu senkron çalıştırır. `input` genellikle `{"query": <sorgu str>}` dict formatındadır; çıktı provider’a göre results/list/dict alanları içerebilir.';
+          if (/llm_with_tools/.test(trimmed)) return 'llm_with_tools.invoke(messages): tool şemaları bağlanmış modeli çağırır. `messages` str, BaseMessage listesi veya LangChain mesaj temsili olabilir. Model doğrudan cevap verebilir ya da AIMessage.tool_calls alanında çalıştırılması gereken tool istekleri üretebilir.';
+          return 'invoke(input, config=None, **kwargs): LangChain Runnable arayüzünün senkron çağrısıdır. Girdi tipi çağrılan nesneye bağlıdır; chat model için str veya mesaj listesi, graph için state dict, tool için argüman dict’i beklenir.';
+        }
+        const messageKind = /\b(HumanMessage|AIMessage|SystemMessage|ToolMessage)\(/.exec(trimmed);
+        if (messageKind) return describeMessageClass(messageKind[1]);
+        if (/^content\s*=/.test(trimmed)) {
+          const kind = messageContext(lines, index);
+          return '`content` parametresi mesajın ana içeriğidir. ' + (kind ? kind + ' içinde ' : '') + 'str, multimodal blok listesi veya provider destekliyorsa dict blokları alabilir. Bu değer model tarafından okunan gerçek metin/girdi alanıdır; metadata yerine semantik içerik burada tutulur.';
+        }
+        if (/^name\s*=/.test(trimmed)) return '`name` parametresi opsiyonel str etikettir. Aynı role sahip farklı konuşmacıları veya tool/model kaynaklarını ayırt etmeye yarar; model sağlayıcısına göre API’ye aktarılabilir veya izleme/pretty_print çıktısında görünür.';
+        if (/^tool_call\.tool_calls$/.test(trimmed) || /\.tool_calls$/.test(trimmed)) return '`tool_calls` AIMessage üzerindeki yapılandırılmış tool istekleri listesidir. Her öğe genellikle `name` (tool adı), `args` (dict), `id` ve `type` alanlarını taşır; ToolNode bu listeyi okuyarak gerçek fonksiyonları çalıştırır.';
+        if (/\.pretty_print\(\)/.test(trimmed)) return 'pretty_print(): BaseMessage nesnesini terminalde okunabilir role/ içerik formatında yazdırır. State’i değiştirmez; yalnızca Human/AI/Tool mesajlarını pedagojik olarak izlemek için kullanılır.';
+        return '';
+      }
+      function generatedPythonNote(trimmed, lines, index) {
+        if (/^from .* import /.test(trimmed)) return 'Import satırı: soldaki modülden sağdaki sınıf/fonksiyonları mevcut namespace’e alır. Bu satır kodun hangi kütüphane bileşenine dayandığını gösterir; sonraki satırlarda bu isimler doğrudan çağrılır.';
+        if (/^import /.test(trimmed)) return 'Import satırı: Python modülünü namespace’e alır. Örneğin `os` ortam değişkenleri, `getpass` gizli giriş, `random` rastgele seçim, `pprint` okunabilir dict/list çıktısı için kullanılır.';
+        if (/^class .*\(TypedDict\)/.test(trimmed)) return 'TypedDict state şeması tanımıdır. Sınıf gövdesindeki alan adları graph state dict’inde bulunabilecek key’leri, type hint’ler de beklenen değer tiplerini belirtir. LangGraph node’ları bu şemaya uygun partial dict döndürmelidir.';
+        if (/^class .*\(MessagesState\)/.test(trimmed)) return 'MessagesState genişletmesi: LangGraph’ın hazır `messages` alanını koruyup ek state alanları tanımlamak için kullanılır. Hazır yapı mesaj listesini add_messages reducer mantığıyla biriktirir.';
+        if (/^messages:\s*Annotated\[/.test(trimmed)) return 'Bu state alanı Annotated ile reducer’a bağlanır. Format: `Annotated[list[AnyMessage], add_messages]`; ilk argüman gerçek tip, ikinci argüman LangGraph’ın node çıktısını mevcut state ile nasıl birleştireceğini söyleyen reducer fonksiyonudur.';
+        if (/^messages:\s*list\[AnyMessage\]/.test(trimmed)) return '`messages` alanı LangChain BaseMessage türevlerinden oluşan liste bekler. Reducer yoksa node dönüşü bu alanı değiştirdiğinde normal state güncelleme kuralları uygulanır; add_messages kullanıldığında yeni mesajlar geçmişe eklenir.';
+        if (/^graph_state:\s*str/.test(trimmed)) return '`graph_state` state alanının tipini str olarak belirler. Node fonksiyonları bu string’i okuyup yeni string değeriyle partial state döndürür.';
+        if (/^def _set_env\(var: str\)/.test(trimmed)) return '_set_env(var: str) -> None: `var` adlı ortam değişkeni yoksa kullanıcıdan gizli girişle değer ister. `var` str formatında environment variable adıdır; fonksiyon pedagojik olarak API anahtarını koda yazmamak için kullanılır.';
+        if (/^if not os\.environ\.get\(var\)/.test(trimmed)) return 'os.environ.get(var): ortam değişkenini str key ile okur; yoksa None döner. Bu koşul, daha önce ayarlanmış anahtarı yeniden istememek için guard görevi görür.';
+        if (/^os\.environ\[var\]\s*=\s*getpass\.getpass/.test(trimmed)) return 'os.environ[var] = getpass.getpass(...): terminalden gizli girilen değeri process ortam değişkenine yazar. Sol taraf key str, sağ taraf kullanıcıdan gelen str değerdir; anahtar kod dosyasında görünmez.';
+        if (/^os\.environ\["LANGSMITH_TRACING"\]/.test(trimmed)) return 'LANGSMITH_TRACING ortam değişkeni tracing davranışını açmak için str değer alır. Bu derste "true" verilerek LangSmith izlerinin kaydedilmesi hedeflenir.';
+        if (/^os\.environ\["LANGSMITH_PROJECT"\]/.test(trimmed)) return 'LANGSMITH_PROJECT ortam değişkeni trace kayıtlarının hangi proje adı altında gruplanacağını belirleyen str değerdir.';
+        if (/^def \w+\(.*state.*\)/.test(trimmed)) return 'Node fonksiyonu tanımıdır. LangGraph bu fonksiyona mevcut state dict’ini verir; fonksiyon yalnızca değiştirmek istediği alanları içeren partial state dict’i döndürmelidir. Edge’ler bu node tamamlandıktan sonra bir sonraki adımı belirler.';
+        if (/^def (add|multiply|divide)\(/.test(trimmed)) return 'Tool fonksiyonu tanımıdır. Parametre type hint’leri (`a: int`, `b: int`) ve docstring, bind_tools tarafından tool şemasına dönüştürülebilir. Fonksiyon normal Python değeri döndürür; ToolNode çalıştırırsa sonuç ToolMessage içeriğine çevrilir.';
+        if (/^def decide_mood/.test(trimmed)) return 'Routing fonksiyonu tanımıdır. `state` mevcut graph state’idir; dönüş tipi Literal ile sınırlandığında LangGraph görselleştirmesi hangi node’lara gidilebileceğini daha doğru gösterir. Dönen string node adı olarak kullanılır.';
+        if (/^return \{/.test(trimmed)) return 'Node dönüşü partial state dict formatındadır. Key, state alan adıdır; value yeni güncellemedir. Reducer tanımlıysa eski ve yeni değer reducer ile birleştirilir, yoksa alan normal şekilde güncellenir.';
+        if (/^"messages"\s*:/.test(trimmed)) return '`messages` state alanına yazılıyor. Format genellikle BaseMessage listesi veya tek BaseMessage güncellemesidir; add_messages reducer varsa yeni mesajlar mevcut listeye eklenir veya aynı id varsa güncellenir.';
+        if (/state\["messages"\]|state\['messages'\]/.test(trimmed)) return '`state["messages"]` mevcut konuşma geçmişini okur. Tipik format list[BaseMessage]’dır; model invoke çağrısına verildiğinde model tüm geçmişi bağlam olarak görür.';
+        if (/\[sys_msg\]\s*\+\s*state\["messages"\]/.test(trimmed)) return 'Sistem mesajı kullanıcı/model geçmişinin önüne eklenir. Format list birleşimidir: önce SystemMessage, sonra mevcut `messages` listesi. Bu, model davranış talimatının her çağrıda bağlama dahil edilmesini sağlar.';
+        if (/^return a \* b/.test(trimmed)) return 'Tool gövdesi: iki sayısal parametreyi çarpar ve sonucu döndürür. Type hint int olsa da Python runtime bunu otomatik zorlamaz; tool şeması modelin doğru argüman üretmesine yardımcı olur.';
+        if (/^return a \+ b/.test(trimmed)) return 'Tool gövdesi: iki sayısal parametreyi toplar. Model bu tool’u çağırdığında args dict’i örneğin `{ "a": 3, "b": 4 }` biçimindedir.';
+        if (/^return a \/ b/.test(trimmed)) return 'Tool gövdesi: bölme işlemi yapar ve float sonuç döndürür. Sıfıra bölme gibi Python hataları gerçek tool çalışmasında ele alınmalıdır; bu örnek pedagojik düzeydedir.';
+        if (/^tools\s*=\s*\[/.test(trimmed)) return '`tools` listesi, modele bağlanacak ve ToolNode tarafından çalıştırılacak Python callable araçlarını tutar. Format list[Callable/BaseTool] şeklindedir.';
+        if (/^config\s*=\s*\{"configurable"/.test(trimmed)) return 'Checkpointer config formatıdır: `{"configurable": {"thread_id": <str>}}`. `thread_id` aynı konuşma/çalışma geçmişini sürdürmek için primary key gibi kullanılır.';
+        if (/MemorySaver\(\)/.test(trimmed)) return 'MemorySaver()/InMemorySaver(): checkpoint’leri process belleğinde saklayan checkpointer oluşturur. Resmî kullanımda test/debug için uygundur; üretimde kalıcı saver tercih edilir. Graph compile edilirken `checkpointer=memory` olarak verilir.';
+        if (/random\.random\(\)/.test(trimmed)) return 'random.random() 0.0 ile 1.0 arasında float üretir. Bu örnekte koşullu edge’in farklı node’lara gidebildiğini göstermek için routing kararı rastgeleleştirilir.';
+        if (/^display\(Image\(.*draw_mermaid_png/.test(trimmed)) return 'Graph görselleştirme satırıdır. `graph.get_graph()` derlenmiş graph yapısını alır; `draw_mermaid_png()` Mermaid diyagramını PNG’ye çevirir; `Image/display` Jupyter içinde gösterir. State’i veya graph davranışını değiştirmez.';
+        if (/^for m in messages/.test(trimmed)) return 'Mesaj listesini dolaşan döngüdür. `messages` list[BaseMessage] veya graph çıktısındaki `messages` alanıdır; her öğe HumanMessage/AIMessage/ToolMessage olabilir.';
+        if (/^type\(result\)/.test(trimmed)) return 'type(result): model çağrısından dönen nesnenin Python sınıfını gösterir. Chat model çağrısında beklenen çıktı genellikle AIMessage’tır.';
+        if (/^result\.response_metadata/.test(trimmed)) return 'response_metadata: model sağlayıcısından gelen ek bilgileri taşır; örneğin model adı, token kullanımı, bitiş nedeni veya sistem fingerprint alanları bulunabilir. Cevap içeriği değildir, gözlem/izleme verisidir.';
+        return '';
+      }
+      function generatedSdkNote(trimmed, lines, index) {
+        if (/get_client\(/.test(trimmed)) return 'get_client(url=..., api_key=None, ...): LangGraph SDK istemcisi oluşturur. `url` str olarak yerel veya bulut Graph API adresidir; bulut ortamında api_key parametresi veya ilgili ortam değişkeni gerekir. Dönen client üzerinden assistants, threads ve runs API’leri çağrılır.';
+        if (/assistants\s*=\s*await client\.assistants\.search\(\)/.test(trimmed)) return 'client.assistants.search(): API’de kayıtlı assistant/graph tanımlarını async olarak listeler. Dönen değer dict listesi formatındadır; her kayıt assistant_id, graph_id, config ve metadata gibi alanlar taşıyabilir.';
+        if (/assistants\[/.test(trimmed)) return 'Assistant listesinden bir kayıt seçiliyor. Seçilen dict içindeki `graph_id`, sonraki run çağrısında hangi graph’ın çalışacağını belirler. Liste sırası ortama göre değişebileceği için gerçek uygulamada graph_id/name ile doğrulamak daha güvenlidir.';
+        if (/thread\s*=\s*await client\.threads\.create\(\)/.test(trimmed)) return 'client.threads.create(): state geçmişini tutacak yeni thread oluşturur. Dönen dict içinde `thread_id` bulunur; bu id run çağrısına verilirse state/checkpoint geçmişi aynı thread altında izlenir.';
+        if (/client\.runs\.stream\(/.test(trimmed)) return 'client.runs.stream(thread_id, assistant_id, *, input=None, stream_mode=...): graph run’ını başlatır ve async chunk akışı döndürür. İlk argüman thread_id str/None, ikinci argüman assistant_id veya graph_id str, `input` state dict, `stream_mode` ise dönecek olay/veri tipidir.';
+        if (/thread\["thread_id"\]|thread\['thread_id'\]/.test(trimmed)) return '`thread["thread_id"]` create() sonucundaki benzersiz thread id değerini okur. Format str/UUID benzeri değerdir; run stream çağrısında state geçmişinin hangi thread’e yazılacağını belirtir.';
+        if (/stream_mode\s*=\s*"values"/.test(trimmed)) return '`stream_mode="values"`: her graph adımından sonra state’in tam değerini chunk.data içinde stream eder. Debug/öğrenme için yararlıdır; büyük state yapılarında çıktı hacmini artırabilir.';
+        if (/if chunk\.data && chunk\.event != "metadata"/.test(trimmed) || /if chunk\.data and chunk\.event != "metadata"/.test(trimmed)) return 'Chunk filtresi: metadata olaylarını atlayıp yalnızca gerçek state/veri içeren chunk’ları işler. `chunk.data` boş değilse son mesaj okunabilir.';
+        if (/print\(chunk\.data\["messages"\]\[-1\]\)/.test(trimmed)) return 'chunk.data["messages"][-1]: values stream içindeki güncel state’in son mesajını alır. Bu sayede insan mesajı, AI tool call, ToolMessage ve nihai AI cevabı sırayla görülebilir.';
+        return '';
+      }
+      function getGeneratedLineNote(trimmed, rawLine, index, lines) {
+        if (!trimmed) return '';
+        if (/^#/.test(trimmed)) return '';
+        return noteJoin([
+          generatedGraphNote(trimmed, lines, index),
+          generatedLangChainNote(trimmed, lines, index),
+          generatedPythonNote(trimmed, lines, index),
+          generatedSdkNote(trimmed, lines, index)
+        ]);
+      }
+
+      const safeHighlightPythonWithTripleState = typeof highlightPythonWithTripleState === 'function' ? highlightPythonWithTripleState : function (line, state) { return highlightPython(line); };
+      function renderCodeLines(block, raw, lang) {
+        const tripleState = { inTriple: false, quote: '' };
+        const lines = raw.split('\n');
+        block.innerHTML = lines.map(function (line, index) {
+          const trimmed = line.trim();
+          const exactNote = lineNotesByText[trimmed] || '';
+          let generatedNote = '';
+          try { generatedNote = getGeneratedLineNote(trimmed, line, index, lines) || ''; } catch (err) { generatedNote = ''; }
+          const note = noteJoin([exactNote, generatedNote]);
+          const usePython = lang === 'python' || lang === 'mixed';
+          const highlighted = usePython && trimmed.startsWith('%') && !tripleState.inTriple ? highlightShell(line) : (usePython ? safeHighlightPythonWithTripleState(line, tripleState) : (highlightLine(lang, line) || '&nbsp;'));
+          const attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeAttr(note) + '"' : ' class="code-line"';
+          return '<span' + attrs + '>' + highlighted + '</span>';
+        }).join('');
+      }
+      document.querySelectorAll('pre code[data-lang]').forEach(function (block) {
+        try {
+          const lang = block.getAttribute('data-lang');
+          const raw = block.textContent;
+          block.dataset.rawCode = raw;
+          if (block.closest('.code-body')) renderCodeLines(block, raw, lang);
+          else block.innerHTML = highlightOutput(raw);
+        } catch (err) {
+          block.dataset.renderError = err && err.message ? err.message : 'true';
+        }
+      });
+      const tooltip = document.createElement('div');
+      tooltip.className = 'line-tooltip';
+      document.body.appendChild(tooltip);
+      let activeLine = null;
+      function positionTooltip(event) {
+        const gap = 8;
+        const pad = 16;
+        const lineRect = activeLine ? activeLine.getBoundingClientRect() : null;
+        tooltip.style.left = '0px';
+        tooltip.style.top = '0px';
+        const tipRect = tooltip.getBoundingClientRect();
+        let left;
+        let top;
+        if (lineRect) {
+          left = lineRect.right + gap;
+          top = lineRect.top + Math.min(4, Math.max(0, lineRect.height / 4));
+          if (left + tipRect.width > window.innerWidth - pad) {
+            left = lineRect.left;
+            top = lineRect.bottom + gap;
+          }
+          if (top + tipRect.height > window.innerHeight - pad) {
+            top = lineRect.top - tipRect.height - gap;
+          }
+        } else {
+          left = (event && typeof event.clientX === 'number' ? event.clientX : pad) + gap;
+          top = (event && typeof event.clientY === 'number' ? event.clientY : pad) + gap;
+        }
+        left = Math.min(Math.max(pad, left), Math.max(pad, window.innerWidth - tipRect.width - pad));
+        top = Math.min(Math.max(pad, top), Math.max(pad, window.innerHeight - tipRect.height - pad));
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      }
+
+      function formatTooltipText(note) {
+        return String(note || '').split(/\n{2,}/).map(function (part) {
+          const safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+          return '<span class="tooltip-section">' + safe + '</span>';
+        }).join('');
+      }
+      function showTooltip(line, event) {
+        activeLine = line;
+        tooltip.innerHTML = formatTooltipText(line.dataset.note || '');
+        tooltip.classList.add('is-visible');
+        positionTooltip(event);
+      }
+      function hideTooltip() { activeLine = null; tooltip.classList.remove('is-visible'); }
+      document.addEventListener('pointerover', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line, event); });
+      document.addEventListener('pointermove', function (event) { if (activeLine) positionTooltip(event); });
+      document.addEventListener('pointerout', function (event) { if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip(); });
+      document.addEventListener('mouseover', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line, event); });
+      document.addEventListener('mousemove', function (event) { if (activeLine) positionTooltip(event); });
+      document.addEventListener('mouseout', function (event) { if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip(); });
+      document.addEventListener('click', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line, event); }); document.addEventListener('focusin', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (!line) return; const rect = line.getBoundingClientRect(); showTooltip(line, { clientX: rect.left, clientY: rect.bottom }); });
+      document.addEventListener('focusout', function (event) { if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip(); });
+      function copyText(text) { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text); return new Promise(function (resolve, reject) { const area = document.createElement('textarea'); area.value = text; area.setAttribute('readonly', ''); area.style.position = 'fixed'; area.style.left = '-9999px'; document.body.appendChild(area); area.select(); try { document.execCommand('copy'); resolve(); } catch (err) { reject(err); } finally { document.body.removeChild(area); } }); }
+      document.querySelectorAll('.copy-btn').forEach(function (button) { button.addEventListener('click', function () { const card = button.closest('.code-card'); const code = card ? card.querySelector('code[data-lang]') : null; const text = code ? (code.dataset.rawCode || code.textContent) : ''; copyText(text).then(function () { const original = button.textContent; button.textContent = 'Kopyalandı!'; setTimeout(function () { button.textContent = original; }, 1500); }); }); });
+      function fitTitle() { const title = document.getElementById('lesson-title'); if (!title) return; let size = parseFloat(window.getComputedStyle(title).fontSize); while (title.scrollWidth > title.clientWidth && size > 28) { size -= 1; title.style.fontSize = size + 'px'; } }
+      window.addEventListener('load', fitTitle); window.addEventListener('resize', fitTitle);
+    })();
+
+  </script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

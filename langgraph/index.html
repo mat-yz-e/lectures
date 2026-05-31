@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matematik ve Yapay Zeka Enstitüsü — LangGraph Kursu</title>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+<style data-nav="1">
+body{margin:0;background:#ffffff;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.landing-main{padding:clamp(1.25rem,3vw,3rem);}
+.landing-inner{max-width:780px;margin:0 auto;}
+.landing-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1rem 0 1.5rem;border-bottom:1px solid var(--nav-border);margin-bottom:1.75rem;}
+.landing-hero img.brand{width:120px;height:auto;object-fit:contain;margin-bottom:1rem;}
+.landing-hero h1{margin:.25rem 0;font-size:clamp(1.7rem,3.4vw,2.4rem);color:#111827;line-height:1.2;}
+.landing-kicker{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--nav-accent);font-weight:700;}
+.landing-lead{max-width:640px;margin:.75rem auto 0;color:var(--nav-muted);font-size:1.08rem;line-height:1.6;}
+.landing-cta{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;margin:1.5rem 0 .5rem;}
+.btn-primary{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.3rem;border-radius:.55rem;background:var(--nav-accent);color:#fff;font-weight:700;text-decoration:none;border:1px solid var(--nav-accent);}
+.btn-primary:hover{background:#0b5c55;}
+.btn-ghost{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.2rem;border-radius:.55rem;background:#fff;color:var(--nav-accent-dark);font-weight:600;text-decoration:none;border:1px solid var(--nav-border);}
+.btn-ghost:hover{background:var(--nav-soft);}
+.landing-section{margin:1.75rem 0;}
+.landing-section h2{font-size:1.2rem;color:#111827;margin:0 0 .6rem;}
+.landing-points{margin:.4rem 0 0;padding-left:1.2rem;color:#1f2937;line-height:1.6;}
+.landing-points li{margin:.3rem 0;}
+.landing-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem 1rem;margin-top:2rem;padding-top:1.1rem;border-top:1px solid var(--nav-border);color:var(--nav-muted);font-size:.95rem;}
+.foot-left,.foot-right{display:inline-flex;align-items:center;gap:.4rem;}
+.landing-foot a{color:var(--nav-accent);font-weight:600;text-decoration:none;}
+.landing-foot a:hover{text-decoration:underline;}
+.landing-foot img.gl{width:26px;height:26px;object-fit:contain;vertical-align:middle;}
+.landing-main a:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="index-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home is-current" href="index.html" aria-current="page">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="module-1/2-chain.html">2. Chain</a></li>
+<li><a href="module-1/3-router.html">3. Router</a></li>
+<li><a href="module-1/4-agent.html">4. Agent</a></li>
+<li><a href="module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="module-6/1-creating.html">1. Creating</a></li>
+<li><a href="module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<main class="landing-main" id="main-content" tabindex="-1">
+<div class="landing-inner">
+<header class="landing-hero">
+<img class="brand" src="matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu">
+<p class="landing-kicker">Matematik ve Yapay Zeka Enstitüsü</p>
+<h1>LangGraph Kursu</h1>
+<p class="landing-lead">Graph tabanlı LLM uygulamalarını; agent, bellek, state, streaming, insan-döngüde kontrol, checkpoint ve deployment kavramlarını uygulamalı notebook dersleriyle, tek bir merkezden öğrenin.</p>
+<div class="landing-cta">
+<a class="btn-primary" href="module-0/1-Basics.html">Kursa Başla</a>
+</div>
+</header>
+<section class="landing-section" aria-labelledby="amac-title">
+<h2 id="amac-title">Kursun Amacı</h2>
+<p style="color:#1f2937;line-height:1.6;margin:.2rem 0 .4rem;">Bu kurs, modern yapay zeka uygulamalarının temelini oluşturan LangChain ve LangGraph ekosistemini, sıfırdan üretime hazır yapılara kadar adım adım öğretmeyi amaçlar:</p>
+<ul class="landing-points"><li>LangChain ve LangGraph ekosistemini uygulamalı olarak öğrenmek.</li><li>Graph tabanlı LLM uygulamalarının nasıl tasarlandığını anlamak.</li><li>Agent, memory, state, streaming, interrupt, checkpoint, deployment ve assistant kavramlarını notebook örnekleriyle kavramak.</li><li>Tüm ders içeriklerine tek bir merkezden düzenli erişim sağlamak.</li><li>Yapay zeka uygulamalarını modüler, izlenebilir ve üretime hazır yapılarla geliştirmek.</li></ul>
+</section>
+<section class="landing-section" aria-labelledby="basla-title">
+<h2 id="basla-title">Nasıl Başlanır?</h2>
+<p style="color:#1f2937;line-height:1.6;">Soldaki menüden istediğiniz modüle ve derse doğrudan geçebilir veya <strong>Module 0 — Basics</strong> ile baştan başlayabilirsiniz. Her ders, kendi sayfasında tüm modüllere (sol menü) ve dersin kendi başlıklarına (sağ menü) erişim sağlar.</p>
+</section>
+<footer class="landing-foot">
+<span class="foot-left"><img class="gl" src="langgraph-logo.png" alt="LangGraph logosu"><span>Hazırlayan: <a href="https://www.linkedin.com/in/sefaisci/" target="_blank" rel="noopener noreferrer">Sefa İşci</a></span></span>
+<span class="foot-right">Referans: <a href="https://academy.langchain.com/" target="_blank" rel="noopener noreferrer">LangChain Academy</a></span>
+</footer>
+</div>
+</main>
+</div>
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

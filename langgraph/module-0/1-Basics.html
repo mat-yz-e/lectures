@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph İçin Temel Kurulum, Chat Modelleri ve Arama Araçları</title>
+  <style>
+    :root {
+      --lesson-bg: #ffffff;
+      --lesson-text: #111827;
+      --lesson-muted: #4b5563;
+      --lesson-soft: #f9fafb;
+      --lesson-soft-2: #f3f4f6;
+      --lesson-border: #e5e7eb;
+      --lesson-border-strong: #d1d5db;
+      --lesson-card: #ffffff;
+      --lesson-card-muted: #f8fafc;
+      --langgraph-primary: #153f3b;
+      --langgraph-secondary: #0f766e;
+      --langgraph-soft: #dbe9e7;
+      --code-bg: #f7f7f7;
+      --code-surface: #f7f7f7;
+      --code-text: #000000;
+      --code-muted: #4b5563;
+      --code-border: #cccccc;
+      --code-keyword: #008000;
+      --code-string: #ba2121;
+      --code-comment: #408080;
+      --code-function: #0000ff;
+      --code-number: #666666;
+      --code-class: #000000;
+      --code-builtin: #008000;
+      --code-operator: #aa22ff;
+    }
+
+    html,
+    body { margin: 0; padding: 0; background: var(--lesson-bg); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { color: var(--lesson-text); }
+    .lesson-page { width: min(100%, 1040px); margin: 0 auto; padding: clamp(1rem, 2.5vw, 2.5rem); background: var(--lesson-bg); color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.55; }
+    .lesson-page article { margin: 0 auto; counter-reset: section; }
+    .title-block { display: flex; flex-direction: column; align-items: center; margin: 0 0 2rem; text-align: center; }
+    .lesson-logo { display: block; width: clamp(3.5rem, 8vw, 5.5rem); height: clamp(3.5rem, 8vw, 5.5rem); object-fit: contain; margin: 0 auto 1rem; }
+    .lesson-logo-fallback { display: inline-grid; place-items: center; width: 4.5rem; height: 4.5rem; margin-bottom: 1rem; border: 1px solid var(--langgraph-soft); border-radius: 0.75rem; color: var(--langgraph-primary); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; }
+    .lesson-page h1, .lesson-page h2, .lesson-page h3, .lesson-page h4 { color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1.25; }
+    .lesson-page h1 { margin: 0; font-size: clamp(1.95rem, 3.6vw, 2.75rem); text-align: center; text-wrap: balance; }
+    .lesson-page h2 { display: flex; align-items: center; gap: 0.55rem; margin: 2.2rem 0 0.85rem; padding-top: 1.1rem; border-top: 1px solid var(--lesson-border); font-size: clamp(1.35rem, 2.1vw, 1.75rem); counter-increment: section; counter-reset: subsection; }
+    .lesson-page h2::before { content: counter(section) "."; color: currentColor; font-variant-numeric: tabular-nums; }
+    .lesson-page h2::after { content: none; }
+    .lesson-page h3 { display: flex; align-items: center; gap: 0.55rem; margin: 1.45rem 0 0.65rem; font-size: clamp(1.12rem, 1.65vw, 1.32rem); counter-increment: subsection; counter-reset: subsubsection; }
+    .lesson-page h3::before { content: counter(section) "." counter(subsection); color: currentColor; font-variant-numeric: tabular-nums; }
+    .lesson-page h3::after { content: none; }
+    .walk-card h3::before { content: attr(data-section) "." counter(subsection); }
+    .lesson-page h4 { display: flex; align-items: center; gap: 0.45rem; margin: 0 0 0.45rem; font-size: 1rem; counter-increment: subsubsection; }
+    .lesson-page h4::before { content: counter(section) "." counter(subsection) "." counter(subsubsection); color: currentColor; font-variant-numeric: tabular-nums; }
+    .lesson-page h4::after { content: none; }
+    .lesson-page p { margin: 0.85rem 0; }
+    .lesson-page ul, .lesson-page ol { padding-left: 1.35rem; }
+    .lesson-page li { margin: 0.35rem 0; }
+    .lead-text { width: min(100%, 760px); margin: 1rem auto 0; color: var(--lesson-muted); font-size: 1.08rem; text-align: center; text-wrap: balance; }
+    .definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment { border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); }
+    .definition-card, .example-card, .note-card, .question-card { margin: 1.1rem 0; padding: 1rem 1.1rem; }
+    .definition-card { border-left: 4px solid var(--langgraph-primary); background: linear-gradient(90deg, rgba(219, 233, 231, 0.7), #ffffff 46%); }
+    .note-card { border-left: 4px solid var(--langgraph-secondary); background: var(--lesson-card-muted); }
+    .question-card { border-left: 4px solid var(--lesson-border-strong); background: var(--lesson-soft); }
+    .definition-card h3, .definition-card h4, .example-card h3, .example-card h4, .note-card h3, .note-card h4, .question-card h3, .question-card h4, .mini-panel h3, .mini-panel h4, .output-comment h3, .output-comment h4 { display: block; margin: 0 0 0.55rem; counter-increment: none; counter-reset: none; }
+    .definition-card h3::before, .definition-card h4::before, .example-card h3::before, .example-card h4::before, .note-card h3::before, .note-card h4::before, .question-card h3::before, .question-card h4::before, .mini-panel h3::before, .mini-panel h4::before, .output-comment h3::before, .output-comment h4::before,
+    .definition-card h3::after, .definition-card h4::after, .example-card h3::after, .example-card h4::after, .note-card h3::after, .note-card h4::after, .question-card h3::after, .question-card h4::after, .mini-panel h3::after, .mini-panel h4::after, .output-comment h3::after, .output-comment h4::after { content: none; }
+    .table-wrap { width: 100%; margin: 1rem 0; overflow-x: auto; border: 1px solid var(--lesson-border); border-radius: 0.65rem; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; background: #ffffff; }
+    th, td { padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--lesson-border); text-align: left; vertical-align: top; }
+    th { background: var(--lesson-soft); color: var(--langgraph-primary); font-size: 0.95rem; }
+    tr:last-child td { border-bottom: 0; }
+    code:not(.code-body code):not(.output-body code) { padding: 0.08rem 0.24rem; border-radius: 0.28rem; background: #eeeeee; color: #111111; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.9em; }
+    .concept-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin: 1.2rem 0; align-items: stretch; }
+    .flow-step { min-height: 5.5rem; padding: 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: var(--lesson-soft); position: relative; }
+    .flow-step strong { display: block; margin-bottom: 0.35rem; color: var(--langgraph-primary); font-size: 0.98rem; }
+    .flow-step span { color: var(--lesson-muted); font-size: 0.95rem; line-height: 1.45; }
+    .flow-step:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.52rem; width: 0.5rem; height: 1px; background: var(--lesson-border-strong); }
+    .walk-card { margin: 2.05rem 0 2.35rem; padding: 0; border: 0; border-radius: 0; background: transparent; }
+    .code-card { position: relative; display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1.15rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+    .code-card::before { content: "In [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #303f9f; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+    .code-head { position: absolute; top: 0.35rem; right: 0.45rem; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0; border: 0; background: transparent; color: var(--code-muted); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.78rem; }
+    .code-title { display: none; }
+    .copy-btn { flex: 0 0 auto; border: 1px solid #c4c8cf; border-radius: 0.35rem; background: rgba(255,255,255,0.92); color: #374151; cursor: pointer; font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+    .copy-btn:focus-visible { outline: 2px solid var(--code-builtin); outline-offset: 2px; }
+    .code-body, .output-body { margin: 0; padding: 0.72rem 5.2rem 0.72rem 0.8rem; overflow-x: auto; color: var(--code-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.91rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; tab-size: 4; }
+    .code-body { grid-column: 2; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+    .code-line { display: block; width: 100%; min-width: 0; padding: 0 0.25rem; border-radius: 0.18rem; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+    .code-line[data-note] { cursor: help; }
+    .code-line[data-note]:hover, .code-line[data-note]:focus { background: #fff7d6; outline: 0; }
+    .line-tooltip { position: fixed; z-index: 50; max-width: 420px; padding: 10px 12px; border: 1px solid #d0d7de; border-left: 3px solid #4c78a8; border-radius: 4px; background: #fffdf5; color: #24292f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; line-height: 1.5; font-weight: 400; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity 120ms ease, transform 120ms ease; }
+    .line-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+    .output-card, .output-details { display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+    .output-card::before, .output-details::before { content: "Out [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #9f1239; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+    .output-head, .output-details summary { grid-column: 2; padding: 0.42rem 0.55rem; border: 1px solid var(--code-border); border-bottom: 0; border-radius: 0.2rem 0.2rem 0 0; background: var(--code-surface); color: var(--code-muted); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.78rem; }
+    .output-details summary { cursor: pointer; }
+    .output-details:not([open]) summary { border-bottom: 1px solid var(--code-border); border-radius: 0.2rem; }
+    .output-body { grid-column: 2; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+    .output-details .output-body { max-height: 28rem; overflow: auto; scrollbar-gutter: stable; scrollbar-color: #b8b8b8 #f2f2f2; scrollbar-width: auto; } .output-body:not(.output-visual) { max-height: 28rem; overflow: auto; scrollbar-gutter: stable; scrollbar-color: #b8b8b8 #f2f2f2; scrollbar-width: auto; } .output-body:not(.output-visual)::-webkit-scrollbar { width: 11px; height: 11px; } .output-body:not(.output-visual)::-webkit-scrollbar-track { background: #f2f2f2; border-left: 1px solid #d9d9d9; } .output-body:not(.output-visual)::-webkit-scrollbar-thumb { background: #b8b8b8; border: 2px solid #f2f2f2; border-radius: 6px; } .output-body:not(.output-visual)::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    .output-comment { margin: 0.65rem 0 1rem 4.95rem; padding: 0.9rem 1rem; background: #ffffff; }
+    .explain-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0 1rem 4.95rem; }
+    .mini-panel { padding: 0.9rem; background: var(--lesson-soft); }
+    .mini-panel p, .output-comment p { margin: 0; color: var(--lesson-muted); font-size: 0.98rem; line-height: 1.6; }
+    .state-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin: 1.1rem 0; }
+    .state-item { padding: 0.9rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: #ffffff; }
+    .state-item strong { display: block; color: var(--langgraph-primary); }
+    .chat-flow { display: grid; gap: 0.85rem; margin: 1rem 0; }
+    .chat-bubble { padding: 0.9rem 1rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-soft); }
+    .chat-bubble strong { color: var(--langgraph-primary); }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { position: relative; padding-left: 1.65rem; }
+    .checklist li::before { content: ""; position: absolute; left: 0; top: 0.62rem; width: 0.85rem; height: 0.85rem; border: 1px solid var(--langgraph-secondary); border-radius: 0.2rem; background: #ffffff; }
+    .tok-keyword { color: var(--code-keyword); font-weight: 700; } .tok-string { color: var(--code-string); } .tok-comment { color: var(--code-comment); font-style: italic; } .tok-function { color: var(--code-function); } .tok-number { color: var(--code-number); } .tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); } .tok-builtin { color: var(--code-builtin); } .tok-operator { color: var(--code-operator); }
+    @media (max-width: 860px) { .concept-map, .explain-grid, .state-list { grid-template-columns: 1fr; } .flow-step:not(:last-child)::after { display: none; } table { min-width: 620px; } }
+    @media (max-width: 560px) { .lesson-page { padding: 1rem; font-size: 1rem; line-height: 1.72; } .code-card, .output-card, .output-details { grid-template-columns: minmax(0, 1fr); } .code-card::before, .output-card::before, .output-details::before { grid-column: 1; grid-row: auto; padding: 0 0 0.25rem; text-align: left; } .code-body, .output-head, .output-details summary, .output-body { grid-column: 1; } .code-head { top: 1.8rem; right: 0.45rem; } .code-body, .output-body { font-size: 0.84rem; padding: 0.85rem 4.85rem 0.85rem 0.85rem; } .explain-grid, .output-comment { margin-left: 0; } }
+
+.code-line[data-note] { text-decoration: none; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus { text-decoration: none; }
+.line-tooltip {
+  max-width: 420px;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  white-space: normal;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.line-tooltip .tooltip-section {
+  display: block;
+  font-weight: 400;
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip .tooltip-section:first-child {
+  color: #24292f;
+  font-weight: 400;
+}
+.line-tooltip code {
+  display: inline;
+  padding: 1px 4px !important;
+  border: 1px solid #d8dee4 !important;
+  border-radius: 3px !important;
+  background: #f6f8fa !important;
+  color: #24292f !important;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html" class="is-active" aria-current="page">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu" loading="eager">
+        <h1 id="lesson-title">LangGraph İçin Temel Kurulum, Chat Modelleri ve Arama Araçları</h1>
+        <p class="lead-text">Bu bölüm, LangGraph ile üretilecek agent akışlarına başlamadan önce model, mesaj ve araç katmanını teknik olarak sağlam bir zemine yerleştirir.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>LangGraph’ın temel motivasyonu, LLM tabanlı uygulamalarda özellikle agent iş akışlarına daha fazla denetim ve kesinlik kazandırmaktır. Agent sistemleri, dış araçları çağırabilir, ara durumlara göre farklı yollar izleyebilir ve birden çok adımı koordine edebilir. Ancak bu esneklik, üretim ortamında güvenilirlik sorunlarını da beraberinde getirir.</p>
+        <p>Bu ders, doğrudan bir graph kurmaktan önce gerekli temel zemini hazırlar: Python ortamı, chat model nesnesi, mesaj biçimi, <code>invoke</code> arayüzü ve arama aracı çağrısı. Bunlar LangGraph’ın ilerleyen bölümlerde kullanacağı düğümlerin ham malzemesidir. Bir graph düğümü çoğu zaman bir Python fonksiyonudur; bu fonksiyonların içinde model çağrısı yapılır, mesajlar okunur, araçlar çalıştırılır ve sonuçlar state’e yazılır.</p>
+        <div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>LangGraph öğrenmeye başlamadan önce, model ve araç bileşenlerinin ortak bir çağrı arayüzüyle nasıl çalıştığını anlamak gerekir. Graph yapısı daha sonra bu çağrıları sıraya koyar, koşullandırır ve state üzerinden denetlenebilir hale getirir.</p></div>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul><li>LangGraph’ın agent iş akışlarında neden daha fazla kontrol ve orkestrasyon sağladığını açıklayabilmek.</li><li>Bir chat model nesnesini <code>model</code> ve <code>temperature</code> parametreleriyle yapılandırabilmek.</li><li><code>HumanMessage</code> ve <code>AIMessage</code> nesnelerinin konuşma tabanlı model arayüzündeki rolünü ayırt edebilmek.</li><li><code>invoke</code> çağrısının tam yanıt döndürme davranışını, string ve mesaj listesi girdileri üzerinden yorumlayabilmek.</li><li>Farklı chat model nesnelerinin ortak arayüzle nasıl değiştirilebilir olduğunu gösterebilmek.</li><li>Bir arama aracını doğrudan çağırıp dönen yapılandırılmış sonucu teknik olarak okuyabilmek.</li><li>Bu bileşenlerin daha sonra LangGraph node, edge ve state tasarımına nasıl bağlanacağını kavrayabilmek.</li></ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title"><h2 id="on-kosullar-title">Ön Koşullar</h2><p>Bu dersi verimli takip etmek için Python fonksiyonları, dictionary/list yapıları, type hint kullanımının temel mantığı ve paket kurulum akışı bilinmelidir. LLM kavramını daha önce duymuş olmak yararlıdır; fakat agent mimarisini ayrıntılı bilmek zorunlu değildir.</p><p>Ortam değişkeni kavramı da önemlidir: API anahtarları kod içine yazılmak yerine çalışma ortamından okunur. Bu, hem güvenlik hem de aynı kodun farklı makinelerde çalıştırılabilmesi için temel bir uygulama pratiğidir.</p></section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table><thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead><tbody>
+          <tr><td><code>ChatOpenAI</code></td><td>OpenAI chat modelini LangChain arayüzüyle kullanan sınıf.</td><td>Graph düğümleri içinde çağrılabilecek model nesnesi.</td></tr>
+          <tr><td><code>HumanMessage</code></td><td>Kullanıcı tarafından gönderilen mesajı temsil eden nesne.</td><td>Mesaj listesi taşıyan state şemalarının temel öğesi.</td></tr>
+          <tr><td><code>AIMessage</code></td><td>Modelin döndürdüğü sohbet mesajı.</td><td>Agent yanıtlarının state’e eklenebilecek çıktısı.</td></tr>
+          <tr><td><code>invoke</code></td><td>Bir model veya aracı tek girdiye karşılık tam sonuç döndürecek biçimde çağıran yöntem.</td><td>Node fonksiyonlarında sık kullanılan senkron çağrı biçimi.</td></tr>
+          <tr><td><code>stream</code></td><td>Yanıtı parça parça döndürme yaklaşımı.</td><td>İlerleyen graph akışlarında canlı çıktı üretimi için önemlidir.</td></tr>
+          <tr><td><code>temperature</code></td><td>Model çıktısındaki rastlantısallık derecesi.</td><td>Agent davranışının tutarlılığını etkileyen model ayarı.</td></tr>
+          <tr><td><code>TavilySearch</code></td><td>Arama sorgusunu dış servise gönderip yapılandırılmış sonuç döndüren araç.</td><td>Tool node veya tool-calling akışlarına dönüştürülebilecek dış bilgi kaynağı.</td></tr>
+          <tr><td><code>State</code></td><td>Bu derste açık şema olarak kurulmaz; kavramsal olarak ara verinin taşındığı yapı.</td><td>LangGraph’ın düğümler arasında veriyi yönetme biçimi.</td></tr>
+          <tr><td><code>Node</code></td><td>Bu derste henüz tanımlanmaz; genellikle bir işi yapan Python fonksiyonu olarak düşünülebilir.</td><td>Model çağrısı veya araç çağrısı gibi işlemler node içinde yer alır.</td></tr>
+          <tr><td><code>Edge</code></td><td>Bu derste henüz kurulmaz; adımlar arasındaki geçiş ilişkisini ifade eder.</td><td>Graph içindeki çalışma sırasını belirler.</td></tr>
+          <tr><td><code>compile</code></td><td>Bu derste kullanılmaz; graph tanımı tamamlandıktan sonra çalıştırılabilir hale getirme adımıdır.</td><td>LangGraph uygulamasını yürütülebilir nesneye dönüştürür.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title"><h2 id="buyuk-resim-title">Büyük Resim</h2><p>LLM uygulamalarında model çağrısı tek başına yeterli değildir. Üretim düzeyindeki agent sistemleri, hangi girdinin hangi biçimde modele verileceğini, hangi araçların ne zaman çağrılacağını, ara sonuçların nasıl saklanacağını ve hatalı durumlarda ne yapılacağını belirgin kurallarla yönetmek zorundadır.</p><p>LangGraph bu noktada bir orkestrasyon katmanı sağlar. Fakat orkestrasyonun anlamlı olabilmesi için önce bileşenlerin kendisi anlaşılmalıdır: chat model ortak arayüzü, mesaj nesneleri, araç çağrıları ve yapılandırılmış çıktılar. Bu dersin kodları tam olarak bu zemini kurar.</p><div class="concept-map" aria-label="Hazırlık akışı diyagramı"><div class="flow-step"><strong>Ortam</strong><span>Paketler ve API anahtarları hazırlanır.</span></div><div class="flow-step"><strong>Model</strong><span>Chat model nesneleri yapılandırılır.</span></div><div class="flow-step"><strong>Mesaj</strong><span>Kullanıcı girdisi mesaj biçimine getirilir.</span></div><div class="flow-step"><strong>Çağrı</strong><span><code>invoke</code> ile model veya araç çalıştırılır.</span></div><div class="flow-step"><strong>Sonuç</strong><span>Yanıt ve araç çıktısı okunabilir veri olarak döner.</span></div></div></section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title"><h2 id="ana-anlatim-title">Ana Anlatım</h2><h3 id="kontrol-ihtiyaci-ve-langgraphin-konumu">Kontrol İhtiyacı ve LangGraph’ın Konumu</h3><p>Agent uygulamaları caziptir çünkü model, hedefe ulaşmak için araç kullanabilir ve çok adımlı işler yürütebilir. Ancak “model karar versin” yaklaşımı tek başına yeterli değildir. Bazı uygulamalarda önce belirli bir aracın çağrılması, bazı durumlarda farklı prompt kullanılması veya ara sonucun denetlenmesi gerekir. LangGraph’ın değeri, bu karar noktalarını graph olarak görünür ve yönetilebilir hale getirmesidir.</p><div class="note-card"><h3 id="kritik-ayrim">Kritik Ayrım</h3><p>LangChain birçok model ve araç entegrasyonunu aynı arayüz altında toplar. LangGraph ise bu bileşenlerin hangi sırayla, hangi state üzerinden ve hangi koşullarla çalışacağını düzenleyen orkestrasyon katmanıdır.</p></div><h3 id="chat-model-arayuzu">Chat Model Arayüzü</h3><p>Chat modelleri, metin tamamlayıcılarından farklı olarak konuşma mesajlarıyla çalışır. Her mesajın bir rolü ve içeriği vardır. Bu yapı, agent belleği ve çok turlu diyalog için doğal bir biçim sağlar. Bu derste <code>HumanMessage</code> ile açık mesaj nesnesi oluşturulur; ardından aynı modelin string girdiyi de kabul edebildiği gösterilir.</p><p>Buradaki amaç, “model çağrısı”nı soyut bir kara kutu olarak bırakmamaktır. Model çağrısı, girdisi ve çıktısı belirli olan bir işlemdir. LangGraph’ta bu işlem çoğunlukla node içinde yer alır ve sonucu state’e eklenir.</p><h3 id="ortak-yontemler-invoke-ve-stream">Ortak Yöntemler: <code>invoke</code> ve <code>stream</code></h3><p><code>invoke</code>, girdiyi alır ve tam yanıtı döndürür. Bu dersin kodlarında görülen temel çağrı budur. <code>stream</code> ise yanıtı parça parça almak için kullanılır. İlerleyen agent uygulamalarında streaming, kullanıcıya bekleme süresini azaltan canlı geri bildirimler sunmak için önem kazanır.</p><p>Ortak yöntem fikri, model değiştirilebilirliğinin merkezindedir. Aynı uygulama mantığı, farklı sağlayıcıların chat modelleriyle büyük ölçüde aynı biçimde çalışabilir. Bununla birlikte, tool calling ve yapılandırılmış çıktı gibi gelişmiş davranışlarda sağlayıcıya özgü ayrıntıların test edilmesi gerekir.</p><h3 id="araclar-ve-dis-bilgi">Araçlar ve Dış Bilgi</h3><p>Arama aracı, modelin parametrelerinden farklı bir bileşendir: dış dünyadan bilgi alır ve yapılandırılmış sonuç döndürür. Bu derste arama aracı doğrudan çağrılır; yani henüz modelin aracı seçtiği bir agent döngüsü yoktur. Buna rağmen örnek önemlidir, çünkü LangGraph’ta bir araç çağrısı graph içinde ayrı bir node veya tool-calling adımı olarak düzenlenebilir.</p><div class="question-card"><h3 id="ogrencinin-sormasi-gereken-soru">Öğrencinin Sorması Gereken Soru</h3><p>Bu araç çıktısı bir agent sisteminde nereye yazılmalı, hangi düğüm tarafından okunmalı ve modelin nihai cevabına nasıl dönüştürülmelidir? LangGraph tasarımı bu soruları açık hale getirir.</p></div></section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title"><h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2><p>Kodlar, ortam hazırlığından model çağrısına ve araç kullanımına doğru ilerler. Her blok, ileride LangGraph node’ları içinde kullanılabilecek bir davranışı küçük ölçekte görünür hale getirir.</p><article class="walk-card" id="kod-adimi-1">
+<h3 data-section="7" id="bagimliliklarin-kurulmasi">Bağımlılıkların kurulması</h3>
+<p>Bu adım, ders boyunca kullanılacak LangChain entegrasyonlarını ve arama aracını ortamda hazırlar. Komut sessiz kurulum için ayarlandığından, başarılı çalıştığında görünür çıktı üretmesi beklenmez.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Bağımlılıkların kurulması</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="shell">%%capture --no-stderr
+%pip install --quiet -U langchain_openai langchain_core langchain_community langchain-tavily</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>İlk satır standart çıktıyı yakalar; ikinci satır paketleri günceller ve kurar. Burada amaç öğretim akışını paket kurulum ayrıntılarıyla bölmeden çalışma ortamını aynı arayüzleri kullanabilecek hale getirmektir.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph koduna geçmeden önce model, mesaj ve araç katmanlarının çalışır olması gerekir. Sonraki grafiklerde düğümler çoğunlukla bu bileşenleri çağıran Python fonksiyonları olacaktır.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Kurulum başarısızsa sonraki import ifadeleri de başarısız olur. Paketleri sessiz kurmak hata olmadığı anlamına gelmez; gerektiğinde terminal çıktısı ayrıca incelenmelidir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Görünür çıktı yoktur; bu, kurulum komutunun yakalama modunda çalışmasından kaynaklanır.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-2">
+<h3 data-section="7" id="api-anahtarini-guvenli-bicimde-isteme">API anahtarını güvenli biçimde isteme</h3>
+<p>Bu yardımcı fonksiyon, gerekli ortam değişkeni daha önce tanımlanmamışsa değeri kullanıcıdan gizli giriş olarak ister.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">API anahtarını güvenli biçimde isteme</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">import os, getpass
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+_set_env("OPENAI_API_KEY")</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>`os.environ` ortam değişkenlerini okur; `getpass.getpass` ise değeri ekrana yazdırmadan alır. Fonksiyonun parametreli tasarlanması aynı kalıbın farklı API anahtarları için tekrar kullanılmasını sağlar.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Agent sistemleri genellikle model sağlayıcıları, izleme servisleri ve araç API’leriyle çalışır. Bunları kod içine yazmak yerine ortam değişkeninden okumak daha güvenli ve taşınabilir bir tasarımdır.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu kod anahtarın gerçekten geçerli olduğunu doğrulamaz; yalnızca ortamda bulunmasını sağlar. Geçersiz anahtar hatası çoğunlukla ilk gerçek API çağrısında ortaya çıkar.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Eğer değişken zaten tanımlıysa görünür çıktı yoktur; tanımlı değilse etkileşimli gizli giriş beklenir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-3">
+<h3 data-section="7" id="chat-modellerini-ornekleme">Chat modellerini örnekleme</h3>
+<p>Bu blok iki farklı sohbet modelini aynı sınıf üzerinden oluşturur ve ikisini de düşük sıcaklıkla, yani daha deterministik cevap üretmeye yakın şekilde ayarlar.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Chat modellerini örnekleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">from langchain_openai import ChatOpenAI
+gpt4o_chat = ChatOpenAI(model="gpt-4o", temperature=0)
+gpt35_chat = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>`ChatOpenAI`, LangChain içindeki chat model sarmalayıcısıdır. `model` parametresi kullanılacak modeli, `temperature` parametresi ise yanıt çeşitliliğini belirler. Aynı değişkenlerde model nesnesini saklamak, sonraki çağrıların sade kalmasını sağlar.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph düğümleri içinde model çağırmak gerektiğinde model nesnesini bir kez oluşturup yeniden kullanmak yaygın bir desendir. Böylece graph mantığı model kurulum ayrıntısından ayrılır.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Farklı sağlayıcılar aynı temel arayüzü sunsa da tool calling, yapılandırılmış çıktı veya mesaj sırası gibi ayrıntılarda küçük farklar görülebilir. Bu ders bu farkları çözmeye değil ortak arayüzü tanımaya odaklanır.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Model nesneleri oluşturulduğu için terminal benzeri çıktı beklenmez.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-4">
+<h3 data-section="7" id="mesaj-nesnesiyle-model-cagirma">Mesaj nesnesiyle model çağırma</h3>
+<p>Bu blok, kullanıcı mesajını açık bir `HumanMessage` nesnesi olarak temsil eder ve modeli mesaj listesiyle çağırır.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Mesaj nesnesiyle model çağırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">from langchain_core.messages import HumanMessage
+
+# Create a message
+msg = HumanMessage(content="Hello world", name="Lance")
+
+# Message list
+messages = [msg]
+
+# Invoke the model with a list of messages
+gpt4o_chat.invoke(messages)</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>`HumanMessage`, konuşmadaki insan tarafını ifade eder. Mesajın `content` alanı asıl metni, `name` alanı ise isteğe bağlı konuşmacı adını taşır. Model çağrısına liste verilmesi, çok turlu konuşmalar ve agent geçmişi için temel veri şeklini gösterir.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph’ta state çoğu zaman mesaj listesini veya mesajlardan türetilen alanları taşır. Bu nedenle modelin tek bir string yerine mesaj dizisiyle çalışabilmesi, daha sonra kurulacak stateful agent akışları için kritik ön hazırlıktır.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Mesaj listesi graph state değildir; burada yalnızca model giriş biçimi görülür. Graph state, sonraki derslerde açık bir şema ile yönetilecektir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı bir `AIMessage` nesnesidir. İçerik alanı model yanıtını, ek metadata ise token kullanımı ve sağlayıcıya ait teknik bilgileri gösterir.</p></section>
+<div class="output-card"><div class="output-head">Çıktı</div><pre class="output-body"><code data-lang="output">AIMessage(
+    content='Hello! How can I assist you today?',
+    additional_kwargs={
+        'refusal': None,
+    },
+    response_metadata={
+        'token_usage': {
+            'completion_tokens': 9,
+            'prompt_tokens': 11,
+            'total_tokens': 20,
+            'completion_tokens_details': {
+                'accepted_prediction_tokens': 0,
+                'audio_tokens': 0,
+                'reasoning_tokens': 0,
+                'rejected_prediction_tokens': 0,
+            },
+            'prompt_tokens_details': {
+                'audio_tokens': 0,
+                'cached_tokens': 0,
+            },
+        },
+        'model_provider': 'openai',
+        'model_name': 'gpt-4o-2024-08-06',
+        'system_fingerprint': 'fp_eb3c3cb84d',
+        'id': 'chatcmpl-CSWGCGbWLCLdHUAOh9pkNFWl1MWf4',
+        'service_tier': 'default',
+        'finish_reason': 'stop',
+        'logprobs': None,
+    },
+    id='lc_run--529fb9c7-f813-47a7-9662-dea715d4be28-0',
+    usage_metadata={
+        'input_tokens': 11,
+        'output_tokens': 9,
+        'total_tokens': 20,
+        'input_token_details': {
+            'audio': 0,
+            'cache_read': 0,
+        },
+        'output_token_details': {
+            'audio': 0,
+            'reasoning': 0,
+        },
+    },
+)</code></pre></div>
+</article>
+<article class="walk-card" id="kod-adimi-5">
+<h3 data-section="7" id="string-girdiyi-dogrudan-cagirma">String girdiyi doğrudan çağırma</h3>
+<p>Bu kısa çağrı, chat modeline doğrudan string verildiğinde LangChain’in bunu kullanıcı mesajına dönüştürebildiğini gösterir.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">String girdiyi doğrudan çağırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">gpt4o_chat.invoke("hello world")</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>`invoke`, tam yanıtı tek seferde döndürür. String girdisi pratik bir kısayoldur; ancak karmaşık agent akışlarında açık mesaj nesneleri daha okunabilir ve denetlenebilir olur.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph düğümlerinde küçük prototipler için string çağrısı yeterli olabilir; üretim akışında ise mesaj tiplerinin açık olması state yönetimini daha anlaşılır kılar.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu kısayol, role ve ek mesaj metadata kontrolünü azaltır. Çok turlu veya tool kullanan akışlarda açık mesaj listesi tercih edilmelidir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Yanıt yine `AIMessage` biçimindedir. Girdi kısa olduğu için token sayıları da düşüktür.</p></section>
+<div class="output-card"><div class="output-head">Çıktı</div><pre class="output-body"><code data-lang="output">AIMessage(
+    content='Hello! How can I assist you today?',
+    additional_kwargs={
+        'refusal': None,
+    },
+    response_metadata={
+        'token_usage': {
+            'completion_tokens': 9,
+            'prompt_tokens': 9,
+            'total_tokens': 18,
+            'completion_tokens_details': {
+                'accepted_prediction_tokens': 0,
+                'audio_tokens': 0,
+                'reasoning_tokens': 0,
+                'rejected_prediction_tokens': 0,
+            },
+            'prompt_tokens_details': {
+                'audio_tokens': 0,
+                'cached_tokens': 0,
+            },
+        },
+        'model_provider': 'openai',
+        'model_name': 'gpt-4o-2024-08-06',
+        'system_fingerprint': 'fp_cbf1785567',
+        'id': 'chatcmpl-CSWGCXlVYTEWoHAFm3GXIIgUO1gCb',
+        'service_tier': 'default',
+        'finish_reason': 'stop',
+        'logprobs': None,
+    },
+    id='lc_run--43b070a6-7676-4aa1-984c-c0cd43d45c1e-0',
+    usage_metadata={
+        'input_tokens': 9,
+        'output_tokens': 9,
+        'total_tokens': 18,
+        'input_token_details': {
+            'audio': 0,
+            'cache_read': 0,
+        },
+        'output_token_details': {
+            'audio': 0,
+            'reasoning': 0,
+        },
+    },
+)</code></pre></div>
+</article>
+<article class="walk-card" id="kod-adimi-6">
+<h3 data-section="7" id="alternatif-modelle-ayni-arayuzu-kullanma">Alternatif modelle aynı arayüzü kullanma</h3>
+<p>Bu adım, farklı model nesnesinin aynı `invoke` arayüzüyle çağrılabildiğini gösterir.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Alternatif modelle aynı arayüzü kullanma</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">gpt35_chat.invoke("hello world")</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>Değişen kısım model nesnesidir; çağrı biçimi aynı kalır. Bu ortak arayüz, uygulama kodunun model sağlayıcısına sıkı bağlanmasını azaltır.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph içinde bir düğümün görevi “modelden yanıt al” ise düğümün geri kalan graph’a sunduğu davranış aynı kalabilir. Model seçimini değiştirmek, graph yapısını baştan yazmayı gerektirmemelidir.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Arayüz aynı olsa bile çıktı kalitesi, maliyet, hız ve bazı tool/structured-output ayrıntıları değişebilir. Bu nedenle model değişimi test edilmelidir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı biçimi önceki çağrıya benzer; model adı ve bazı sağlayıcı metadata alanları farklıdır.</p></section>
+<div class="output-card"><div class="output-head">Çıktı</div><pre class="output-body"><code data-lang="output">AIMessage(
+    content='Hello! How can I assist you today?',
+    additional_kwargs={
+        'refusal': None,
+    },
+    response_metadata={
+        'token_usage': {
+            'completion_tokens': 9,
+            'prompt_tokens': 9,
+            'total_tokens': 18,
+            'completion_tokens_details': {
+                'accepted_prediction_tokens': 0,
+                'audio_tokens': 0,
+                'reasoning_tokens': 0,
+                'rejected_prediction_tokens': 0,
+            },
+            'prompt_tokens_details': {
+                'audio_tokens': 0,
+                'cached_tokens': 0,
+            },
+        },
+        'model_provider': 'openai',
+        'model_name': 'gpt-3.5-turbo-0125',
+        'system_fingerprint': None,
+        'id': 'chatcmpl-CSWGDY5KePqihRcWDX3IGEZfSoyld',
+        'service_tier': 'default',
+        'finish_reason': 'stop',
+        'logprobs': None,
+    },
+    id='lc_run--f7963c03-f8b2-4eba-bc7f-4d58520fa661-0',
+    usage_metadata={
+        'input_tokens': 9,
+        'output_tokens': 9,
+        'total_tokens': 18,
+        'input_token_details': {
+            'audio': 0,
+            'cache_read': 0,
+        },
+        'output_token_details': {
+            'audio': 0,
+            'reasoning': 0,
+        },
+    },
+)</code></pre></div>
+</article>
+<article class="walk-card" id="kod-adimi-7">
+<h3 data-section="7" id="arama-api-anahtarini-isteme">Arama API anahtarını isteme</h3>
+<p>Aynı yardımcı fonksiyon bu kez arama aracı için gerekli anahtarı kontrol eder.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Arama API anahtarını isteme</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">_set_env("TAVILY_API_KEY")</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>Fonksiyonun tekrar kullanılması, ortam hazırlığını tek bir güvenli kalıp altında toplar. Model ve araç anahtarlarının ayrı tutulması yetki ve hata ayıklama açısından daha temizdir.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Agent sistemlerinde araçlar, model dışında dış dünyaya erişim sağlayan bileşenlerdir. LangGraph açısından araç çağrılarının güvenli biçimde yapılandırılması agent akışının güvenilirliğiyle doğrudan ilişkilidir.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu ders arama aracını doğrudan çağırır; bir agent’ın aracı ne zaman çağıracağına karar verdiği döngü henüz kurulmaz.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Değişken mevcutsa çıktı yoktur; mevcut değilse gizli giriş istenir.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-8">
+<h3 data-section="7" id="arama-aracini-hazirlama-ve-cagirma">Arama aracını hazırlama ve çağırma</h3>
+<p>Bu blok, LLM odaklı arama aracını oluşturur, sorgu gönderir ve dönen sonuçları `search_docs` değişkeninde toplar.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Arama aracını hazırlama ve çağırma</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">from langchain_tavily import TavilySearch  # updated at 1.0
+
+tavily_search = TavilySearch(max_results=3)
+
+data = tavily_search.invoke({"query": "What is LangGraph?"})
+search_docs = data.get("results", data)</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>`TavilySearch(max_results=3)` en fazla üç sonuç dönecek şekilde yapılandırılır. `invoke` çağrısı sözlük biçiminde sorgu alır. Dönen nesne doğrudan liste olabilir veya `results` anahtarını içeren bir sözlük olabilir; `data.get("results", data)` ifadesi iki duruma da uyum sağlar.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph agent’larında araç düğümleri ya da tool-calling akışları, dış bilgiye erişimi denetimli hale getirir. Burada görülen doğrudan araç çağrısı, daha sonra graph içinde bir düğüm veya tool adımı olarak kullanılabilecek temel mekanizmadır.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Arama sonucu model yanıtı değildir; dış araçtan gelen veri paketidir. Bir agent bu veriyi ayrıca yorumlayabilir, filtreleyebilir veya sonraki node’a aktarabilir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu blok değişken ataması yaptığı için doğrudan görünür çıktı üretmez.</p></section>
+</article>
+<article class="walk-card" id="kod-adimi-9">
+<h3 data-section="7" id="arama-sonuclarini-inceleme">Arama sonuçlarını inceleme</h3>
+<p>`search_docs` değişkeninin yazdırılması, arama aracından gelen yapılandırılmış sonuç listesini görünür hale getirir.</p>
+<div class="code-card"><div class="code-head"><span class="code-title">Arama sonuçlarını inceleme</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="python">search_docs</code></pre></div>
+<div class="explain-grid">
+<section class="mini-panel"><h4>Blok bazlı açıklama</h4><p>Sonuçlar sözlüklerden oluşan bir liste olarak görünür. Her öğede bağlantı, başlık, içerik özeti, skor ve ham içerik alanı bulunur. Bu yapı, dış araç çıktılarının graph state içinde taşınabilecek veri nesnelerine nasıl benzediğini gösterir.</p></section>
+<section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph’ta araçtan dönen sonuçlar genellikle state’e eklenir veya sonraki düğüme aktarılır. Bu nedenle tool çıktısının alanlarını ve veri biçimini görmek, agent tasarımında hangi bilginin kullanılacağını belirlemeye yardım eder.</p></section>
+<section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Arama skoru, sonucun model için otomatik olarak doğru veya yeterli olduğu anlamına gelmez. Üretim agent’larında filtreleme, doğrulama veya kaynak güvenilirliği stratejileri ayrıca düşünülmelidir.</p></section>
+</div>
+<section class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, üç sonuçtan oluşan bir listedir. Her sonuç sözlük biçiminde alanlara ayrılmıştır.</p></section>
+<div class="output-card"><div class="output-head">Çıktı</div><pre class="output-body"><code data-lang="output">[
+    {
+        'url': 'https://www.datacamp.com/tutorial/langgraph-tutorial',
+        'title': 'LangGraph Tutorial: What Is LangGraph and How to Use It?',
+        'content': ('LangGraph is a library within the LangChain ecosystem that provides a framework for '
+         'defining, coordinating, and executing multiple LLM agents (or chains) in a '
+         'structured and efficient manner. By managing the flow of data and the sequence of '
+         'operations, LangGraph allows developers to focus on the high-level logic of their '
+         'applications rather than the intricacies of agent coordination. Whether you need a '
+         'chatbot that can handle various types of user requests or a multi-agent system that '
+         'performs complex tasks, LangGraph provides the tools to build exactly what you need. '
+         'LangGraph significantly simplifies the development of complex LLM applications by '
+         'providing a structured framework for managing state and coordinating agent '
+         'interactions.'),
+        'score': 0.9581988,
+        'raw_content': None,
+    },
+    {
+        'url': 'https://www.geeksforgeeks.org/machine-learning/what-is-langgraph/',
+        'title': 'What is LangGraph? - GeeksforGeeks',
+        'content': ('LangGraph is an open-source framework built by LangChain that streamlines the '
+         'creation and management of AI agent workflows. By treating workflows as '
+         'interconnected nodes and edges, LangGraph offers a scalable, transparent and '
+         'developer-friendly way to design advanced AI systems ranging from simple chatbots to '
+         'multi-agent system. * ****Enhanced decision-making:**** Models relationships between '
+         'nodes, enabling AI agents to learn from past actions and feedback. * '
+         '****langgraph:**** Framework for building graph-based AI workflows. * Build the '
+         'workflow graph using LangGraph, adding nodes for classification and response, '
+         'connecting them with edges and compiling the app. * Send each input through the '
+         'workflow graph and returns the bot’s response, either a greeting or an AI-powered '
+         'answer.'),
+        'score': 0.95067275,
+        'raw_content': None,
+    },
+    {
+        'url': 'https://langchain-ai.github.io/langgraph/concepts/why-langgraph/',
+        'title': 'Learn LangGraph basics - Overview',
+        'content': ('Trusted by companies shaping the future of agents— including Klarna, Replit, '
+         'Elastic, and more— LangGraph is a low-level orchestration framework and runtime for '
+         'building, managing, and deploying long-running, stateful agents. LangGraph is very '
+         'low-level, and focused entirely on agent **orchestration**. Before using LangGraph, '
+         'we recommend you familiarize yourself with some of the components used to build '
+         'agents, starting with models and tools. LangGraph is focused on the underlying '
+         'capabilities important for agent orchestration: durable execution, streaming, '
+         'human-in-the-loop, and more. LangGraph provides low-level supporting infrastructure '
+         'for *any* long-running, stateful workflow or agent. While LangGraph can be used '
+         'standalone, it also integrates seamlessly with any LangChain product, giving '
+         'developers a full suite of tools for building agents. Contains agent abstractions '
+         'built on top of LangGraph.'),
+        'score': 0.94911116,
+        'raw_content': None,
+    },
+]</code></pre></div>
+</article>
+</section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title"><h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2><p>Model çağrılarında görülen <code>AIMessage</code>, yalnızca metinsel cevaptan ibaret değildir. <code>content</code> alanı kullanıcıya gösterilebilecek yanıtı taşırken, metadata alanları model adı, token kullanımı ve çağrının tamamlanma sebebi gibi teknik bilgileri içerir. Bu alanlar üretim sistemlerinde maliyet izleme, hata ayıklama ve gözlemlenebilirlik için değerlidir.</p><p>Arama sonucunda dönen liste ise farklı bir çıktı tipidir. Burada modelin doğal dil cevabı değil, bir aracın döndürdüğü yapılandırılmış veri vardır. Agent tasarımında bu ayrım önemlidir: model mesajı, araç sonucu ve graph state aynı şey değildir; her biri farklı bir sorumluluk taşır.</p></section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title"><h2 id="graph-akisi-title">Graph Akışı</h2><p>Bu bölümde gerçek bir <code>StateGraph</code> tanımı bulunmaz. Buna rağmen kodun pedagojik akışı, ileride graph olarak düzenlenecek bileşenleri gösterir. Aşağıdaki akış bir LangGraph uygulaması değil, derste kurulan bileşenlerin çalışma sırasıdır.</p><div class="concept-map" aria-label="Model ve araç hazırlık akışı"><div class="flow-step"><strong>Gizli yapılandırma</strong><span>API anahtarları ortamdan okunur veya güvenli girişle alınır.</span></div><div class="flow-step"><strong>Model nesnesi</strong><span><code>ChatOpenAI</code> örnekleri düşük sıcaklıkla oluşturulur.</span></div><div class="flow-step"><strong>Mesaj girdisi</strong><span><code>HumanMessage</code> veya string girdisi modele verilir.</span></div><div class="flow-step"><strong>Model çıktısı</strong><span><code>AIMessage</code> ve çağrı metadata alanları döner.</span></div><div class="flow-step"><strong>Araç çıktısı</strong><span>Arama aracı liste biçiminde sonuç üretir.</span></div></div></section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title"><h2 id="state-evrimi-title">State’in Evrimi</h2><p>Bu derste açık bir LangGraph state şeması tanımlanmaz. Bunun yerine, daha sonra state içinde taşınabilecek Python değerleri görülür. Bu değerlerin nasıl oluştuğunu izlemek, graph state fikrine geçişi kolaylaştırır.</p><div class="state-list"><div class="state-item"><strong><code>msg</code></strong><span>Tek bir kullanıcı mesajını temsil eder.</span></div><div class="state-item"><strong><code>messages</code></strong><span>Modele verilecek mesaj listesidir.</span></div><div class="state-item"><strong><code>data</code></strong><span>Arama aracının ham dönüş değeridir.</span></div><div class="state-item"><strong><code>search_docs</code></strong><span>Sonraki adımda kullanılabilecek sonuç listesidir.</span></div></div><p>Gerçek bir LangGraph akışında bu alanlar, örneğin <code>messages</code> veya <code>search_docs</code> gibi state anahtarları altında tutulabilir. Bu derste böyle bir şema kurulmadığı için bu anlatım temsilî bir graph state’i değil, görünür Python değişkenlerinin evrimidir.</p></section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title"><h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2><p>Bu derste modelin aracı seçtiği bir agent döngüsü yoktur. Araç doğrudan Python koduyla çağrılır. Buna rağmen agent-tool ilişkisini anlamak için iki ayrı yol belirginleşir:</p><div class="chat-flow"><div class="chat-bubble"><strong>Model yolu:</strong> Kullanıcı mesajı modele gider; model <code>AIMessage</code> döndürür.</div><div class="chat-bubble"><strong>Araç yolu:</strong> Sorgu arama aracına gider; araç yapılandırılmış sonuç listesi döndürür.</div><div class="chat-bubble"><strong>LangGraph’ta birleşim:</strong> İlerleyen tasarımlarda graph, hangi yolun ne zaman çalışacağını state ve edge mantığıyla belirleyebilir.</div></div></section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title"><h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2><ul><li>API anahtarının varlığını, anahtarın geçerli olduğu anlamına yorumlamak.</li><li><code>temperature=0</code> ayarını tamamen değişmez ve her zaman aynı çıktı garantisi olarak görmek.</li><li>String girdinin otomatik dönüştürülmesini, mesaj nesnelerinin gereksiz olduğu şeklinde yorumlamak.</li><li><code>AIMessage</code> içindeki metadata alanlarını kullanıcı cevabıyla karıştırmak.</li><li>Farklı chat modellerinde ortak arayüz olduğu için tüm gelişmiş özelliklerin birebir aynı davranacağını varsaymak.</li><li>Arama aracından gelen sonucu modelin doğrulanmış nihai cevabı sanmak.</li><li>Doğrudan tool çağrısı ile agent’ın tool seçimi yaptığı döngüyü aynı şey kabul etmek.</li><li>Graph kurulmadan önce model ve araç bileşenlerini test etmeyi gereksiz görmek.</li></ul></section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title"><h2 id="son-cikarimlar-title">Son Çıkarımlar</h2><ol><li>LangGraph, agent iş akışlarına daha fazla kontrol ve kesinlik kazandırmak için kullanılır.</li><li>Bu ders graph kurmaz; graph’a girecek model, mesaj ve araç temelini hazırlar.</li><li>Chat modelleri mesaj alır ve mesaj döndürür; bu yapı agent belleği için temeldir.</li><li><code>invoke</code>, model veya aracı tek girişten tam sonuca götüren ortak çağrı yöntemidir.</li><li>String girdisi pratik olsa da açık mesaj nesneleri karmaşık akışlarda daha denetlenebilirdir.</li><li><code>temperature</code> modelin yanıt çeşitliliğini etkileyen temel parametrelerden biridir.</li><li>Farklı chat modelleri ortak arayüz sunabilir; gelişmiş özelliklerde farklar test edilmelidir.</li><li>API anahtarları kod içine yazılmamalı, ortamdan güvenli biçimde alınmalıdır.</li><li>Arama aracı çıktısı model cevabı değil, dış bilgi paketidir.</li><li>Tool çıktıları, LangGraph state tasarımında hangi alanların taşınacağını belirlemeye yardım eder.</li><li>Graph tasarımına geçmeden önce bileşenleri bağımsız test etmek hata ayıklamayı kolaylaştırır.</li></ol></section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title"><h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2><p>Bu bölüm, derste kullanılan çalıştırılabilir kod parçalarını tek akışta toplar.</p><div class="code-card combined-code"><div class="code-head"><span class="code-title">Dersin kod akışı</span><button class="copy-btn" type="button">Kopyala</button></div>
+<pre class="code-body"><code data-lang="mixed">%%capture --no-stderr
+%pip install --quiet -U langchain_openai langchain_core langchain_community langchain-tavily
+
+import os, getpass
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+_set_env("OPENAI_API_KEY")
+
+from langchain_openai import ChatOpenAI
+gpt4o_chat = ChatOpenAI(model="gpt-4o", temperature=0)
+gpt35_chat = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+
+from langchain_core.messages import HumanMessage
+
+# Create a message
+msg = HumanMessage(content="Hello world", name="Lance")
+
+# Message list
+messages = [msg]
+
+# Invoke the model with a list of messages
+gpt4o_chat.invoke(messages)
+
+gpt4o_chat.invoke("hello world")
+
+gpt35_chat.invoke("hello world")
+
+_set_env("TAVILY_API_KEY")
+
+from langchain_tavily import TavilySearch  # updated at 1.0
+
+tavily_search = TavilySearch(max_results=3)
+
+data = tavily_search.invoke({"query": "What is LangGraph?"})
+search_docs = data.get("results", data)
+
+search_docs</code></pre></div></section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title"><h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2><div class="table-wrap"><table><thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead><tbody><tr><td>Agent</td><td>Agent / eyleyici sistem</td><td>Modelin araçlar ve ara kararlarla görev yürütebildiği uygulama yapısı.</td></tr><tr><td>Chat Model</td><td>Sohbet modeli</td><td>Mesaj dizisini girdi alıp mesaj döndüren LLM arayüzü.</td></tr><tr><td>Message</td><td>Mesaj</td><td>Rol ve içerik taşıyan konuşma birimi.</td></tr><tr><td>HumanMessage</td><td>İnsan mesajı</td><td>Kullanıcı tarafından gelen mesaj nesnesi.</td></tr><tr><td>AIMessage</td><td>Model mesajı</td><td>Chat modelinin döndürdüğü yanıt nesnesi.</td></tr><tr><td>Invoke</td><td>Çağırma</td><td>Bir runnable bileşeni girdiye karşılık tam sonuç döndürecek biçimde çalıştırma.</td></tr><tr><td>Stream</td><td>Akış</td><td>Yanıtı tek seferde değil, parçalar halinde alma yöntemi.</td></tr><tr><td>Temperature</td><td>Sıcaklık</td><td>Model çıktısındaki çeşitlilik ve rastlantısallık ayarı.</td></tr><tr><td>Tool</td><td>Araç</td><td>Model dışındaki işlev veya dış servis çağrısı.</td></tr><tr><td>Search Tool</td><td>Arama aracı</td><td>Dış bilgi araması yapıp yapılandırılmış sonuç döndüren bileşen.</td></tr><tr><td>State</td><td>Durum</td><td>Graph adımları arasında taşınan veri yapısı.</td></tr><tr><td>Node</td><td>Düğüm</td><td>Graph içinde belirli bir işi yapan işlem adımı.</td></tr><tr><td>Edge</td><td>Kenar / geçiş</td><td>Bir düğümden diğerine çalışma akışını belirleyen bağlantı.</td></tr><tr><td>Conditional Edge</td><td>Koşullu geçiş</td><td>State veya sonuçlara göre farklı yola geçmeyi sağlayan bağlantı.</td></tr><tr><td>Compile</td><td>Derleme</td><td>Graph tanımını çalıştırılabilir uygulama biçimine getirme.</td></tr><tr><td>Orchestration</td><td>Orkestrasyon</td><td>Birden fazla adımın sırasını, koşulunu ve veri akışını yönetme.</td></tr><tr><td>Metadata</td><td>Üst veri</td><td>Yanıtın kendisi dışında çağrı hakkında teknik bilgi taşıyan alanlar.</td></tr><tr><td>Token Usage</td><td>Token kullanımı</td><td>Model çağrısında tüketilen giriş ve çıkış token miktarı.</td></tr><tr><td>Environment Variable</td><td>Ortam değişkeni</td><td>Gizli veya ortama bağlı ayarları kod dışından sağlayan değişken.</td></tr><tr><td>API Key</td><td>API anahtarı</td><td>Dış servise kimlik doğrulama için verilen gizli erişim bilgisi.</td></tr><tr><td>Structured Output</td><td>Yapılandırılmış çıktı</td><td>Metin yerine belirli alanlara ayrılmış veri biçimi.</td></tr><tr><td>Tracing</td><td>İzleme</td><td>Çalışma adımlarını hata ayıklama ve gözlemleme amacıyla kaydetme pratiği.</td></tr></tbody></table></div></section>
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph İçin Temel Kurulum, Chat Modelleri ve Arama Araçları</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l3"><a href="#kontrol-ihtiyaci-ve-langgraphin-konumu">Kontrol İhtiyacı ve LangGraph’ın Konumu</a></li>
+<li class="toc-l3"><a href="#chat-model-arayuzu">Chat Model Arayüzü</a></li>
+<li class="toc-l3"><a href="#ortak-yontemler-invoke-ve-stream">Ortak Yöntemler: invoke ve stream</a></li>
+<li class="toc-l3"><a href="#araclar-ve-dis-bilgi">Araçlar ve Dış Bilgi</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#bagimliliklarin-kurulmasi">Bağımlılıkların kurulması</a></li>
+<li class="toc-l3"><a href="#api-anahtarini-guvenli-bicimde-isteme">API anahtarını güvenli biçimde isteme</a></li>
+<li class="toc-l3"><a href="#chat-modellerini-ornekleme">Chat modellerini örnekleme</a></li>
+<li class="toc-l3"><a href="#mesaj-nesnesiyle-model-cagirma">Mesaj nesnesiyle model çağırma</a></li>
+<li class="toc-l3"><a href="#string-girdiyi-dogrudan-cagirma">String girdiyi doğrudan çağırma</a></li>
+<li class="toc-l3"><a href="#alternatif-modelle-ayni-arayuzu-kullanma">Alternatif modelle aynı arayüzü kullanma</a></li>
+<li class="toc-l3"><a href="#arama-api-anahtarini-isteme">Arama API anahtarını isteme</a></li>
+<li class="toc-l3"><a href="#arama-aracini-hazirlama-ve-cagirma">Arama aracını hazırlama ve çağırma</a></li>
+<li class="toc-l3"><a href="#arama-sonuclarini-inceleme">Arama sonuçlarını inceleme</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+
+  <script>
+    (function () {
+      function escapeHtml(value) { return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+      function span(cls, value) { return '<span class="' + cls + '">' + escapeHtml(value) + '</span>'; }
+      function escapeAttr(value) { return escapeHtml(value).replace(/"/g, "&quot;"); }
+      const lineNotesByText = {
+        "%%capture --no-stderr": "Çalışma ortamında kurulum çıktısını yakalar. Böylece paket kurulum logları ders akışını görsel olarak bölmez.",
+        "%pip install --quiet -U langchain_openai langchain_core langchain_community langchain-tavily": "Bu satır model entegrasyonu, temel LangChain tipleri, topluluk bileşenleri ve Tavily arama aracı için gerekli paketleri günceller.",
+        "import os, getpass": "Ortam değişkenlerini okumak için os, gizli anahtar girişini ekranda göstermemek için getpass kullanılır.",
+        "def _set_env(var: str):": "Tekrar kullanılabilir yardımcı fonksiyon tanımlar. Parametre olarak ortam değişkeni adını alır.",
+        "if not os.environ.get(var):": "Anahtar zaten ortamda varsa kullanıcıdan yeniden istemez. Bu, çalışma akışı tekrarlarında gereksiz girişleri önler.",
+        "os.environ[var] = getpass.getpass(f\"{var}: \")": "Eksik anahtarı gizli girişle alır ve çalışma sürecinin ortam değişkenlerine yazar. Değer kod içine açık metin olarak gömülmez.",
+        "_set_env(\"OPENAI_API_KEY\")": "OpenAI model çağrıları için gerekli anahtarın çalışma ortamında hazır olduğunu garanti etmeye çalışır.",
+        "from langchain_openai import ChatOpenAI": "OpenAI chat modellerini LangChain'in ortak chat model arayüzüyle kullanmak için sınıfı içe aktarır.",
+        "gpt4o_chat = ChatOpenAI(model=\"gpt-4o\", temperature=0)": "Daha güçlü varsayılan modeli düşük sıcaklıkla oluşturur. Düşük sıcaklık, eğitim örneklerinde daha odaklı ve tutarlı yanıtlar için seçilir.",
+        "gpt35_chat = ChatOpenAI(model=\"gpt-3.5-turbo-0125\", temperature=0)": "Aynı arayüzle alternatif model oluşturur. Bu, downstream kodun model nesnesi değişse bile aynı kalabileceğini gösterir.",
+        "from langchain_core.messages import HumanMessage": "Kullanıcı girdisini açık bir mesaj nesnesi olarak temsil etmek için HumanMessage tipini getirir.",
+        "# Create a message": "Bu yorum, tek bir kullanıcı mesajı oluşturma adımını işaretler.",
+        "msg = HumanMessage(content=\"Hello world\", name=\"Lance\")": "Mesaj içeriği ve isteğe bağlı ad alanı belirlenir. Bu nesne, chat modelin beklediği konuşma biçimine uygundur.",
+        "# Message list": "Chat modelleri çoğunlukla tek mesaj değil, mesaj dizisi üzerinden çalışır.",
+        "messages = [msg]": "Tek kullanıcı mesajı listeye alınır. İlerleyen agent akışlarında bu liste konuşma geçmişinin temelini oluşturur.",
+        "# Invoke the model with a list of messages": "Bu yorum, model çağrısının açık mesaj listesiyle yapılacağını belirtir.",
+        "gpt4o_chat.invoke(messages)": "Modeli mesaj listesiyle çağırır ve tam AIMessage yanıtını döndürür. LangGraph node'larında benzer çağrılar sık görülür.",
+        "gpt4o_chat.invoke(\"hello world\")": "String girdi kısayolunu gösterir. LangChain bunu kullanıcı mesajı gibi ele alabilir, ancak karmaşık akışlarda açık mesaj nesneleri daha denetlenebilirdir.",
+        "gpt35_chat.invoke(\"hello world\")": "Aynı invoke arayüzünün farklı model nesnesiyle de çalıştığını gösterir. Model değişse bile çağrı biçimi aynı kalır.",
+        "_set_env(\"TAVILY_API_KEY\")": "Arama aracı için gerekli API anahtarını aynı güvenli ortam değişkeni kalıbıyla hazırlar.",
+        "from langchain_tavily import TavilySearch  # updated at 1.0": "Tavily arama aracını içe aktarır. Yorum, kullanılan import yolunun güncel paket sürümüne göre seçildiğini belirtir.",
+        "tavily_search = TavilySearch(max_results=3)": "Arama aracını en fazla üç sonuç döndürecek şekilde yapılandırır. Bu sınır, araç çıktısının kontrol edilebilir kalmasını sağlar.",
+        "data = tavily_search.invoke({\"query\": \"What is LangGraph?\"})": "Arama aracını sözlük biçimindeki sorguyla çağırır. Bu, model çağrısından farklı olarak dış servis sonucu üretir.",
+        "search_docs = data.get(\"results\", data)": "Dönen veri sözlükse results alanını, değilse ham veriyi kullanır. Böylece farklı dönüş biçimlerine karşı daha toleranslı olur.",
+        "search_docs": "Arama sonuçlarını görünür hale getirir. Bu çıktı, ileride graph state'e aktarılabilecek yapılandırılmış tool verisine örnektir."
+      };
+      function highlightPython(code) {
+        const keywords = new Set(['False','None','True','and','as','assert','async','await','break','class','continue','def','del','elif','else','except','finally','for','from','global','if','import','in','is','lambda','nonlocal','not','or','pass','raise','return','try','while','with','yield']);
+        const builtins = new Set(['print','len','range','str','int','float','list','dict','set','tuple']);
+        const tokenPattern = /(#.*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b[A-Za-z_][A-Za-z0-9_]*\b|\b\d+(?:\.\d+)?\b|==|!=|<=|>=|->|[=+\-*\/<>:])/g;
+        let result = ''; let last = 0; let match; let expectDefinitionName = false;
+        while ((match = tokenPattern.exec(code)) !== null) {
+          const value = match[0]; result += escapeHtml(code.slice(last, match.index));
+          if (value.startsWith('#')) {
+            result += span('tok-comment', value);
+          } else if (value.startsWith('"') || value.startsWith("'")) {
+            result += span('tok-string', value);
+          } else if (/^\d/.test(value)) {
+            result += span('tok-number', value);
+          } else if (keywords.has(value)) {
+            result += span('tok-keyword', value);
+            expectDefinitionName = value === 'def' || value === 'class';
+          } else if (builtins.has(value)) {
+            result += span('tok-builtin', value);
+            expectDefinitionName = false;
+          } else if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) {
+            result += expectDefinitionName ? span('tok-function', value) : span('tok-name', value);
+            expectDefinitionName = false;
+          } else if (/^(==|!=|<=|>=|->|[=+\-*\/<>:])$/.test(value)) {
+            result += span('tok-operator', value);
+          } else {
+            result += escapeHtml(value);
+            expectDefinitionName = false;
+          }
+          last = tokenPattern.lastIndex;
+        }
+        result += escapeHtml(code.slice(last)); return result;
+      }
+      function highlightShell(code) {
+        const tokenPattern = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+|\b[A-Za-z_][A-Za-z0-9_\-]*\b)/g;
+        let result = ''; let last = 0; let match;
+        while ((match = tokenPattern.exec(code)) !== null) {
+          const value = match[0]; result += escapeHtml(code.slice(last, match.index));
+          if (value.startsWith('#')) result += span('tok-comment', value);
+          else if (value.startsWith('%%') || value.startsWith('%')) result += span('tok-keyword', value);
+          else if (value.startsWith('-')) result += span('tok-builtin', value);
+          else if (['pip','install','quiet','capture'].includes(value)) result += span('tok-function', value);
+          else result += escapeHtml(value);
+          last = tokenPattern.lastIndex;
+        }
+        result += escapeHtml(code.slice(last)); return result;
+      }
+      function highlightOutput(code) {
+        const tokenPattern = /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\bNone\b|\bTrue\b|\bFalse\b|\bAIMessage\b|\bHumanMessage\b|\b\d+(?:\.\d+)?\b)/g;
+        let result = ''; let last = 0; let match;
+        while ((match = tokenPattern.exec(code)) !== null) {
+          const value = match[0];
+          result += escapeHtml(code.slice(last, match.index));
+          if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+          else if (value === 'None' || value === 'True' || value === 'False') result += span('tok-keyword', value);
+          else if (value === 'AIMessage' || value === 'HumanMessage') result += span('tok-class', value);
+          else result += span('tok-number', value);
+          last = tokenPattern.lastIndex;
+        }
+        result += escapeHtml(code.slice(last));
+        return result;
+      }
+      function highlightLine(lang, line) {
+        if (lang === 'shell') return highlightShell(line);
+        if (lang === 'mixed') return line.trim().startsWith('%') ? highlightShell(line) : highlightPython(line);
+        if (lang === 'python') return highlightPython(line);
+        return highlightOutput(line);
+      }
+
+      function noteJoin(parts) {
+        const seen = new Set();
+        return parts.filter(Boolean).map(function (part) { return String(part).trim(); }).filter(function (part) {
+          if (!part || seen.has(part)) return false;
+          seen.add(part);
+          return true;
+        }).join('\n\n');
+      }
+      function compactToken(token) {
+        return String(token || '').trim().replace(/,$/, '').replace(/^['"]|['"]$/g, '');
+      }
+      function splitTopLevelArgs(text) {
+        const args = [];
+        let current = '';
+        let depth = 0;
+        let quote = '';
+        let escaped = false;
+        for (let i = 0; i < text.length; i += 1) {
+          const ch = text[i];
+          if (quote) {
+            current += ch;
+            if (escaped) escaped = false;
+            else if (ch === '\\') escaped = true;
+            else if (ch === quote) quote = '';
+            continue;
+          }
+          if (ch === '"' || ch === "'") { quote = ch; current += ch; continue; }
+          if (ch === '(' || ch === '[' || ch === '{') depth += 1;
+          if (ch === ')' || ch === ']' || ch === '}') depth -= 1;
+          if (ch === ',' && depth === 0) { args.push(current.trim()); current = ''; continue; }
+          current += ch;
+        }
+        if (current.trim()) args.push(current.trim());
+        return args;
+      }
+      function collectCallText(lines, index) {
+        let text = '';
+        let depth = 0;
+        let started = false;
+        for (let i = index; i < Math.min(lines.length, index + 12); i += 1) {
+          const part = lines[i].trim();
+          text += (text ? ' ' : '') + part;
+          for (let j = 0; j < part.length; j += 1) {
+            const ch = part[j];
+            if (ch === '(') { depth += 1; started = true; }
+            if (ch === ')') depth -= 1;
+          }
+          if (started && depth <= 0) break;
+        }
+        return text;
+      }
+      function argsForCall(callText) {
+        const start = callText.indexOf('(');
+        const end = callText.lastIndexOf(')');
+        if (start === -1 || end === -1 || end <= start) return [];
+        return splitTopLevelArgs(callText.slice(start + 1, end));
+      }
+      function tokenRole(token) {
+        const value = compactToken(token);
+        if (value === 'START') return 'START sabiti, graph çalıştırıldığında ilk izlenecek sanal başlangıç düğümünü temsil eder.';
+        if (value === 'END') return 'END sabiti, graph yürütmesinin biteceği sanal son düğümü temsil eder.';
+        return '`' + value + '` adlı gerçek graph node kimliğini temsil eder.';
+      }
+      function findNearby(lines, index, pattern, span) {
+        const start = Math.max(0, index - span);
+        const end = Math.min(lines.length - 1, index + span);
+        for (let i = start; i <= end; i += 1) {
+          if (pattern.test(lines[i].trim())) return lines[i].trim();
+        }
+        return '';
+      }
+      function messageContext(lines, index) {
+        for (let i = index; i >= Math.max(0, index - 8); i -= 1) {
+          const t = lines[i].trim();
+          if (/\bHumanMessage\(/.test(t)) return 'HumanMessage';
+          if (/\bAIMessage\(/.test(t)) return 'AIMessage';
+          if (/\bSystemMessage\(/.test(t)) return 'SystemMessage';
+          if (/\bToolMessage\(/.test(t)) return 'ToolMessage';
+        }
+        return '';
+      }
+      function describeMessageClass(kind) {
+        if (kind === 'HumanMessage') return 'HumanMessage(content, **kwargs): kullanıcı girdisini temsil eden mesaj sınıfıdır. `content` str veya multimodal blok listesi olabilir; `name` opsiyonel str olarak konuşmacı/aktör etiketi verir. Graph state içinde genellikle `messages` listesine eklenir ve modelin kullanıcı talimatı olarak okunur.';
+        if (kind === 'AIMessage') return 'AIMessage(content, **kwargs): model cevabını temsil eder. `content` str/list olabilir; tool calling senaryosunda `tool_calls`, `additional_kwargs` ve `response_metadata` alanları da taşıyabilir. Bu derste geçmiş konuşma veya model çıktısı olarak `messages` state alanında tutulur.';
+        if (kind === 'SystemMessage') return 'SystemMessage(content, **kwargs): modele davranış/politika talimatı veren sistem mesajıdır. `content` str/list formatındadır; genellikle `[sys_msg] + state["messages"]` ile kullanıcı mesajlarından önce modele verilir.';
+        if (kind === 'ToolMessage') return 'ToolMessage(content, tool_call_id=..., name=...): çalışan tool sonucunu modele geri taşır. ToolNode bu mesajları çoğunlukla otomatik üretir.';
+        return '';
+      }
+      function generatedGraphNote(trimmed, lines, index) {
+        if (/StateGraph\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const schema = compactToken(args[0] || 'State');
+          return 'StateGraph(state_schema, ...): graph builder nesnesi oluşturur. `state_schema` TypedDict, MessagesState veya Pydantic benzeri bir şema olabilir; node fonksiyonları bu state’i input olarak alır ve sadece güncellediği alanları dict olarak döndürür. Bu satırda şema `' + schema + '`; yani sonraki node ve edge tanımları bu state şekline göre derlenir.';
+        }
+        if (/\.add_node\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const name = compactToken(args[0] || 'node');
+          const action = compactToken(args[1] || '(aynı adlı callable veya Runnable)');
+          return 'add_node(node, action=None, *, metadata=None, input_schema=None, retry_policy=None, cache_policy=None, ...): StateGraph içine çalıştırılabilir node ekler. `node` str kimliktir; `action` state -> partial state döndüren fonksiyon, Runnable veya ToolNode olabilir. Bu satırda `' + name + '` node adı, `' + action + '` ise çalışacak işlevdir. Edge’ler daha sonra bu ada bağlanır.';
+        }
+        if (/\.add_edge\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const source = args[0] || 'start_key';
+          const target = args[1] || 'end_key';
+          const sourceName = compactToken(source); const targetName = compactToken(target); return 'add_edge(start_key, end_key): sabit yönlü edge ekler. `start_key` str veya list[str] olabilir; list verilirse hedef node çalışmadan önce listedeki tüm kaynakların bitmesi beklenir. `end_key` str node adı veya END olabilir. Akış yönü: `' + sourceName + '` -> `' + targetName + '`. Kaynak: ' + tokenRole(source) + ' Hedef: ' + tokenRole(target);
+        }
+        if (/\.add_conditional_edges\(/.test(trimmed) || trimmed === 'builder.add_conditional_edges(') {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const source = compactToken(args[0] || findNearby(lines, index, /['"][A-Za-z0-9_\-]+['"],?$/, 4) || 'source');
+          const path = compactToken(args[1] || findNearby(lines, index, /(tools_condition|decide_mood|route|router)/, 8) || 'path');
+          let route = 'Bu callable mevcut state’i okur ve bir sonraki node adını, END değerini veya node adları dizisini döndürür.';
+          if (/tools_condition/.test(path) || /tools_condition/.test(call)) route = '`tools_condition` son AIMessage içinde tool_calls varsa `tools` node’una; tool çağrısı yoksa `END` yönüne karar verir. Böylece model cevap mı verecek, tool mu çalıştıracak ayrımı yapılır.';
+          if (/decide_mood/.test(path) || /decide_mood/.test(call)) route = '`decide_mood` state’e veya rastgeleliğe bakarak örnekte `node_2` ya da `node_3` döndürür; dönen değer gidilecek node adıdır.';
+          return 'add_conditional_edges(source, path, path_map=None): koşullu yönlendirme edge’i ekler. `source` str başlangıç node’udur; `path` Callable/Runnable olup Hashable veya Sequence[Hashable] döndürebilir; `path_map` opsiyonel dict/list ile dönüş değerlerini gerçek node adlarına eşler. Akış: `' + source + '` node’u bittikten sonra routing fonksiyonu çalışır. ' + route;
+        }
+        if (/\.compile\(/.test(trimmed)) {
+          const hasCheckpointer = /checkpointer\s*=/.test(trimmed) || /checkpointer\s*=/.test(collectCallText(lines, index));
+          return 'compile(checkpointer=None, *, cache=None, store=None, interrupt_before=None, interrupt_after=None, debug=False, name=None, ...): builder tanımını çalıştırılabilir CompiledStateGraph nesnesine dönüştürür. Bundan sonra `invoke`, `stream`, `ainvoke`, `astream` kullanılabilir. ' + (hasCheckpointer ? 'Bu kullanımda `checkpointer=memory` verildiği için state snapshot’ları thread_id üzerinden hatırlanır.' : 'Bu kullanımda checkpointer verilmediği için kalıcılık graph’ın dışındaki çalıştırma bağlamına bağlı değildir.');
+        }
+        if (/tools_condition\s*,?$/.test(trimmed)) {
+          return 'tools_condition(state, messages_key="messages") -> Literal["tools", "__end__"]: prebuilt routing fonksiyonudur. State dict, mesaj listesi veya BaseModel alabilir; `messages_key` ile mesaj listesinin hangi alanda durduğu seçilir. Son AIMessage içinde tool_calls varsa `tools`, yoksa `__end__` döndürür; add_conditional_edges içinde bu dönüş graph yönünü belirler.';
+        }
+        if (/ToolNode\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const tools = compactToken(args[0] || 'tools');
+          return 'ToolNode(tools, options=None): tool çağrılarını yürüten hazır LangGraph node’udur. `tools` StructuredTool/BaseTool/callable listesi formatındadır. Input state içinde son AIMessage.tool_calls okunur; her çağrı ilgili tool’a argüman dict’i ile uygulanır ve sonuçlar `messages` alanına ToolMessage olarak döner. Bu satırda tool koleksiyonu: `' + tools + '`.';
+        }
+        return '';
+      }
+      function generatedLangChainNote(trimmed, lines, index) {
+        if (/ChatOpenAI\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const modelArg = args.find(function (arg) { return /^model\s*=/.test(arg); }) || 'model=<model adı>';
+          const tempArg = args.find(function (arg) { return /^temperature\s*=/.test(arg); }) || 'temperature varsayılan değerde';
+          return 'ChatOpenAI(model=..., temperature=..., **kwargs): OpenAI uyumlu chat model wrapper’ıdır. `model` str olarak kullanılacak model adını, `temperature` float olarak çıktı rastgeleliğini belirler; ek provider parametreleri kwargs ile geçilebilir. Bu satırda ' + modelArg + '; ' + tempArg + '. Çıktı genellikle AIMessage nesnesidir.';
+        }
+        if (/\.bind_tools\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          const args = argsForCall(call);
+          const tools = compactToken(args[0] || 'tools');
+          const parallel = /parallel_tool_calls\s*=\s*False/.test(call) ? ' `parallel_tool_calls=False` ile modelin aynı adımda paralel tool çağırması kapatılmıştır.' : '';
+          return 'bind_tools(tools, *, tool_choice=None, strict=None, parallel_tool_calls=None, response_format=None, **kwargs): chat modeline tool şemalarını bağlar ve Runnable[LanguageModelInput, AIMessage] döndürür. `tools` dict, Pydantic class, callable veya BaseTool listesi olabilir; callable fonksiyonlarda type hint ve docstring tool şemasına dönüşür. Bu satırda bağlanan araç seti: `' + tools + '`.' + parallel;
+        }
+        if (/\.invoke\(/.test(trimmed)) {
+          const call = collectCallText(lines, index);
+          if (/graph\.invoke|react_graph/.test(trimmed) || /graph\.invoke|react_graph/.test(call)) return 'invoke(input, config=None, **kwargs): derlenmiş graph’ı tek sefer çalıştırır. `input` state şemasına uygun dict olmalıdır; örneğin `{"messages": [HumanMessage(...)]}` veya `{"graph_state": "..."}`. Sonuç, reducer’lar uygulandıktan sonra final state dict’idir.';
+          if (/tavily_search/.test(trimmed)) return 'TavilySearch.invoke(input): arama tool’unu senkron çalıştırır. `input` genellikle `{"query": <sorgu str>}` dict formatındadır; çıktı provider’a göre results/list/dict alanları içerebilir.';
+          if (/llm_with_tools/.test(trimmed)) return 'llm_with_tools.invoke(messages): tool şemaları bağlanmış modeli çağırır. `messages` str, BaseMessage listesi veya LangChain mesaj temsili olabilir. Model doğrudan cevap verebilir ya da AIMessage.tool_calls alanında çalıştırılması gereken tool istekleri üretebilir.';
+          return 'invoke(input, config=None, **kwargs): LangChain Runnable arayüzünün senkron çağrısıdır. Girdi tipi çağrılan nesneye bağlıdır; chat model için str veya mesaj listesi, graph için state dict, tool için argüman dict’i beklenir.';
+        }
+        const messageKind = /\b(HumanMessage|AIMessage|SystemMessage|ToolMessage)\(/.exec(trimmed);
+        if (messageKind) return describeMessageClass(messageKind[1]);
+        if (/^content\s*=/.test(trimmed)) {
+          const kind = messageContext(lines, index);
+          return '`content` parametresi mesajın ana içeriğidir. ' + (kind ? kind + ' içinde ' : '') + 'str, multimodal blok listesi veya provider destekliyorsa dict blokları alabilir. Bu değer model tarafından okunan gerçek metin/girdi alanıdır; metadata yerine semantik içerik burada tutulur.';
+        }
+        if (/^name\s*=/.test(trimmed)) return '`name` parametresi opsiyonel str etikettir. Aynı role sahip farklı konuşmacıları veya tool/model kaynaklarını ayırt etmeye yarar; model sağlayıcısına göre API’ye aktarılabilir veya izleme/pretty_print çıktısında görünür.';
+        if (/^tool_call\.tool_calls$/.test(trimmed) || /\.tool_calls$/.test(trimmed)) return '`tool_calls` AIMessage üzerindeki yapılandırılmış tool istekleri listesidir. Her öğe genellikle `name` (tool adı), `args` (dict), `id` ve `type` alanlarını taşır; ToolNode bu listeyi okuyarak gerçek fonksiyonları çalıştırır.';
+        if (/\.pretty_print\(\)/.test(trimmed)) return 'pretty_print(): BaseMessage nesnesini terminalde okunabilir role/ içerik formatında yazdırır. State’i değiştirmez; yalnızca Human/AI/Tool mesajlarını pedagojik olarak izlemek için kullanılır.';
+        return '';
+      }
+      function generatedPythonNote(trimmed, lines, index) {
+        if (/^from .* import /.test(trimmed)) return 'Import satırı: soldaki modülden sağdaki sınıf/fonksiyonları mevcut namespace’e alır. Bu satır kodun hangi kütüphane bileşenine dayandığını gösterir; sonraki satırlarda bu isimler doğrudan çağrılır.';
+        if (/^import /.test(trimmed)) return 'Import satırı: Python modülünü namespace’e alır. Örneğin `os` ortam değişkenleri, `getpass` gizli giriş, `random` rastgele seçim, `pprint` okunabilir dict/list çıktısı için kullanılır.';
+        if (/^class .*\(TypedDict\)/.test(trimmed)) return 'TypedDict state şeması tanımıdır. Sınıf gövdesindeki alan adları graph state dict’inde bulunabilecek key’leri, type hint’ler de beklenen değer tiplerini belirtir. LangGraph node’ları bu şemaya uygun partial dict döndürmelidir.';
+        if (/^class .*\(MessagesState\)/.test(trimmed)) return 'MessagesState genişletmesi: LangGraph’ın hazır `messages` alanını koruyup ek state alanları tanımlamak için kullanılır. Hazır yapı mesaj listesini add_messages reducer mantığıyla biriktirir.';
+        if (/^messages:\s*Annotated\[/.test(trimmed)) return 'Bu state alanı Annotated ile reducer’a bağlanır. Format: `Annotated[list[AnyMessage], add_messages]`; ilk argüman gerçek tip, ikinci argüman LangGraph’ın node çıktısını mevcut state ile nasıl birleştireceğini söyleyen reducer fonksiyonudur.';
+        if (/^messages:\s*list\[AnyMessage\]/.test(trimmed)) return '`messages` alanı LangChain BaseMessage türevlerinden oluşan liste bekler. Reducer yoksa node dönüşü bu alanı değiştirdiğinde normal state güncelleme kuralları uygulanır; add_messages kullanıldığında yeni mesajlar geçmişe eklenir.';
+        if (/^graph_state:\s*str/.test(trimmed)) return '`graph_state` state alanının tipini str olarak belirler. Node fonksiyonları bu string’i okuyup yeni string değeriyle partial state döndürür.';
+        if (/^def _set_env\(var: str\)/.test(trimmed)) return '_set_env(var: str) -> None: `var` adlı ortam değişkeni yoksa kullanıcıdan gizli girişle değer ister. `var` str formatında environment variable adıdır; fonksiyon pedagojik olarak API anahtarını koda yazmamak için kullanılır.';
+        if (/^if not os\.environ\.get\(var\)/.test(trimmed)) return 'os.environ.get(var): ortam değişkenini str key ile okur; yoksa None döner. Bu koşul, daha önce ayarlanmış anahtarı yeniden istememek için guard görevi görür.';
+        if (/^os\.environ\[var\]\s*=\s*getpass\.getpass/.test(trimmed)) return 'os.environ[var] = getpass.getpass(...): terminalden gizli girilen değeri process ortam değişkenine yazar. Sol taraf key str, sağ taraf kullanıcıdan gelen str değerdir; anahtar kod dosyasında görünmez.';
+        if (/^os\.environ\["LANGSMITH_TRACING"\]/.test(trimmed)) return 'LANGSMITH_TRACING ortam değişkeni tracing davranışını açmak için str değer alır. Bu derste "true" verilerek LangSmith izlerinin kaydedilmesi hedeflenir.';
+        if (/^os\.environ\["LANGSMITH_PROJECT"\]/.test(trimmed)) return 'LANGSMITH_PROJECT ortam değişkeni trace kayıtlarının hangi proje adı altında gruplanacağını belirleyen str değerdir.';
+        if (/^def \w+\(.*state.*\)/.test(trimmed)) return 'Node fonksiyonu tanımıdır. LangGraph bu fonksiyona mevcut state dict’ini verir; fonksiyon yalnızca değiştirmek istediği alanları içeren partial state dict’i döndürmelidir. Edge’ler bu node tamamlandıktan sonra bir sonraki adımı belirler.';
+        if (/^def (add|multiply|divide)\(/.test(trimmed)) return 'Tool fonksiyonu tanımıdır. Parametre type hint’leri (`a: int`, `b: int`) ve docstring, bind_tools tarafından tool şemasına dönüştürülebilir. Fonksiyon normal Python değeri döndürür; ToolNode çalıştırırsa sonuç ToolMessage içeriğine çevrilir.';
+        if (/^def decide_mood/.test(trimmed)) return 'Routing fonksiyonu tanımıdır. `state` mevcut graph state’idir; dönüş tipi Literal ile sınırlandığında LangGraph görselleştirmesi hangi node’lara gidilebileceğini daha doğru gösterir. Dönen string node adı olarak kullanılır.';
+        if (/^return \{/.test(trimmed)) return 'Node dönüşü partial state dict formatındadır. Key, state alan adıdır; value yeni güncellemedir. Reducer tanımlıysa eski ve yeni değer reducer ile birleştirilir, yoksa alan normal şekilde güncellenir.';
+        if (/^"messages"\s*:/.test(trimmed)) return '`messages` state alanına yazılıyor. Format genellikle BaseMessage listesi veya tek BaseMessage güncellemesidir; add_messages reducer varsa yeni mesajlar mevcut listeye eklenir veya aynı id varsa güncellenir.';
+        if (/state\["messages"\]|state\['messages'\]/.test(trimmed)) return '`state["messages"]` mevcut konuşma geçmişini okur. Tipik format list[BaseMessage]’dır; model invoke çağrısına verildiğinde model tüm geçmişi bağlam olarak görür.';
+        if (/\[sys_msg\]\s*\+\s*state\["messages"\]/.test(trimmed)) return 'Sistem mesajı kullanıcı/model geçmişinin önüne eklenir. Format list birleşimidir: önce SystemMessage, sonra mevcut `messages` listesi. Bu, model davranış talimatının her çağrıda bağlama dahil edilmesini sağlar.';
+        if (/^return a \* b/.test(trimmed)) return 'Tool gövdesi: iki sayısal parametreyi çarpar ve sonucu döndürür. Type hint int olsa da Python runtime bunu otomatik zorlamaz; tool şeması modelin doğru argüman üretmesine yardımcı olur.';
+        if (/^return a \+ b/.test(trimmed)) return 'Tool gövdesi: iki sayısal parametreyi toplar. Model bu tool’u çağırdığında args dict’i örneğin `{ "a": 3, "b": 4 }` biçimindedir.';
+        if (/^return a \/ b/.test(trimmed)) return 'Tool gövdesi: bölme işlemi yapar ve float sonuç döndürür. Sıfıra bölme gibi Python hataları gerçek tool çalışmasında ele alınmalıdır; bu örnek pedagojik düzeydedir.';
+        if (/^tools\s*=\s*\[/.test(trimmed)) return '`tools` listesi, modele bağlanacak ve ToolNode tarafından çalıştırılacak Python callable araçlarını tutar. Format list[Callable/BaseTool] şeklindedir.';
+        if (/^config\s*=\s*\{"configurable"/.test(trimmed)) return 'Checkpointer config formatıdır: `{"configurable": {"thread_id": <str>}}`. `thread_id` aynı konuşma/çalışma geçmişini sürdürmek için primary key gibi kullanılır.';
+        if (/MemorySaver\(\)/.test(trimmed)) return 'MemorySaver()/InMemorySaver(): checkpoint’leri process belleğinde saklayan checkpointer oluşturur. Resmî kullanımda test/debug için uygundur; üretimde kalıcı saver tercih edilir. Graph compile edilirken `checkpointer=memory` olarak verilir.';
+        if (/random\.random\(\)/.test(trimmed)) return 'random.random() 0.0 ile 1.0 arasında float üretir. Bu örnekte koşullu edge’in farklı node’lara gidebildiğini göstermek için routing kararı rastgeleleştirilir.';
+        if (/^display\(Image\(.*draw_mermaid_png/.test(trimmed)) return 'Graph görselleştirme satırıdır. `graph.get_graph()` derlenmiş graph yapısını alır; `draw_mermaid_png()` Mermaid diyagramını PNG’ye çevirir; `Image/display` Jupyter içinde gösterir. State’i veya graph davranışını değiştirmez.';
+        if (/^for m in messages/.test(trimmed)) return 'Mesaj listesini dolaşan döngüdür. `messages` list[BaseMessage] veya graph çıktısındaki `messages` alanıdır; her öğe HumanMessage/AIMessage/ToolMessage olabilir.';
+        if (/^type\(result\)/.test(trimmed)) return 'type(result): model çağrısından dönen nesnenin Python sınıfını gösterir. Chat model çağrısında beklenen çıktı genellikle AIMessage’tır.';
+        if (/^result\.response_metadata/.test(trimmed)) return 'response_metadata: model sağlayıcısından gelen ek bilgileri taşır; örneğin model adı, token kullanımı, bitiş nedeni veya sistem fingerprint alanları bulunabilir. Cevap içeriği değildir, gözlem/izleme verisidir.';
+        return '';
+      }
+      function generatedSdkNote(trimmed, lines, index) {
+        if (/get_client\(/.test(trimmed)) return 'get_client(url=..., api_key=None, ...): LangGraph SDK istemcisi oluşturur. `url` str olarak yerel veya bulut Graph API adresidir; bulut ortamında api_key parametresi veya ilgili ortam değişkeni gerekir. Dönen client üzerinden assistants, threads ve runs API’leri çağrılır.';
+        if (/assistants\s*=\s*await client\.assistants\.search\(\)/.test(trimmed)) return 'client.assistants.search(): API’de kayıtlı assistant/graph tanımlarını async olarak listeler. Dönen değer dict listesi formatındadır; her kayıt assistant_id, graph_id, config ve metadata gibi alanlar taşıyabilir.';
+        if (/assistants\[/.test(trimmed)) return 'Assistant listesinden bir kayıt seçiliyor. Seçilen dict içindeki `graph_id`, sonraki run çağrısında hangi graph’ın çalışacağını belirler. Liste sırası ortama göre değişebileceği için gerçek uygulamada graph_id/name ile doğrulamak daha güvenlidir.';
+        if (/thread\s*=\s*await client\.threads\.create\(\)/.test(trimmed)) return 'client.threads.create(): state geçmişini tutacak yeni thread oluşturur. Dönen dict içinde `thread_id` bulunur; bu id run çağrısına verilirse state/checkpoint geçmişi aynı thread altında izlenir.';
+        if (/client\.runs\.stream\(/.test(trimmed)) return 'client.runs.stream(thread_id, assistant_id, *, input=None, stream_mode=...): graph run’ını başlatır ve async chunk akışı döndürür. İlk argüman thread_id str/None, ikinci argüman assistant_id veya graph_id str, `input` state dict, `stream_mode` ise dönecek olay/veri tipidir.';
+        if (/thread\["thread_id"\]|thread\['thread_id'\]/.test(trimmed)) return '`thread["thread_id"]` create() sonucundaki benzersiz thread id değerini okur. Format str/UUID benzeri değerdir; run stream çağrısında state geçmişinin hangi thread’e yazılacağını belirtir.';
+        if (/stream_mode\s*=\s*"values"/.test(trimmed)) return '`stream_mode="values"`: her graph adımından sonra state’in tam değerini chunk.data içinde stream eder. Debug/öğrenme için yararlıdır; büyük state yapılarında çıktı hacmini artırabilir.';
+        if (/if chunk\.data && chunk\.event != "metadata"/.test(trimmed) || /if chunk\.data and chunk\.event != "metadata"/.test(trimmed)) return 'Chunk filtresi: metadata olaylarını atlayıp yalnızca gerçek state/veri içeren chunk’ları işler. `chunk.data` boş değilse son mesaj okunabilir.';
+        if (/print\(chunk\.data\["messages"\]\[-1\]\)/.test(trimmed)) return 'chunk.data["messages"][-1]: values stream içindeki güncel state’in son mesajını alır. Bu sayede insan mesajı, AI tool call, ToolMessage ve nihai AI cevabı sırayla görülebilir.';
+        return '';
+      }
+      function getGeneratedLineNote(trimmed, rawLine, index, lines) {
+        if (!trimmed) return '';
+        if (/^#/.test(trimmed)) return '';
+        return noteJoin([
+          generatedGraphNote(trimmed, lines, index),
+          generatedLangChainNote(trimmed, lines, index),
+          generatedPythonNote(trimmed, lines, index),
+          generatedSdkNote(trimmed, lines, index)
+        ]);
+      }
+
+      const safeHighlightPythonWithTripleState = typeof highlightPythonWithTripleState === 'function' ? highlightPythonWithTripleState : function (line, state) { return highlightPython(line); };
+      function renderCodeLines(block, raw, lang) {
+        const tripleState = { inTriple: false, quote: '' };
+        const lines = raw.split('\n');
+        block.innerHTML = lines.map(function (line, index) {
+          const trimmed = line.trim();
+          const exactNote = lineNotesByText[trimmed] || '';
+          let generatedNote = '';
+          try { generatedNote = getGeneratedLineNote(trimmed, line, index, lines) || ''; } catch (err) { generatedNote = ''; }
+          const note = noteJoin([exactNote, generatedNote]);
+          const usePython = lang === 'python' || lang === 'mixed';
+          const highlighted = usePython && trimmed.startsWith('%') && !tripleState.inTriple ? highlightShell(line) : (usePython ? safeHighlightPythonWithTripleState(line, tripleState) : (highlightLine(lang, line) || '&nbsp;'));
+          const attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeAttr(note) + '"' : ' class="code-line"';
+          return '<span' + attrs + '>' + highlighted + '</span>';
+        }).join('');
+      }
+      document.querySelectorAll('pre code[data-lang]').forEach(function (block) {
+        try {
+          const lang = block.getAttribute('data-lang');
+          const raw = block.textContent;
+          block.dataset.rawCode = raw;
+          if (block.closest('.code-body')) renderCodeLines(block, raw, lang);
+          else block.innerHTML = highlightOutput(raw);
+        } catch (err) {
+          block.dataset.renderError = err && err.message ? err.message : 'true';
+        }
+      });
+      const tooltip = document.createElement('div');
+      tooltip.className = 'line-tooltip';
+      document.body.appendChild(tooltip);
+      let activeLine = null;
+      function positionTooltip(event) {
+        const gap = 8;
+        const pad = 16;
+        const lineRect = activeLine ? activeLine.getBoundingClientRect() : null;
+        tooltip.style.left = '0px';
+        tooltip.style.top = '0px';
+        const tipRect = tooltip.getBoundingClientRect();
+        let left;
+        let top;
+        if (lineRect) {
+          left = lineRect.right + gap;
+          top = lineRect.top + Math.min(4, Math.max(0, lineRect.height / 4));
+          if (left + tipRect.width > window.innerWidth - pad) {
+            left = lineRect.left;
+            top = lineRect.bottom + gap;
+          }
+          if (top + tipRect.height > window.innerHeight - pad) {
+            top = lineRect.top - tipRect.height - gap;
+          }
+        } else {
+          left = (event && typeof event.clientX === 'number' ? event.clientX : pad) + gap;
+          top = (event && typeof event.clientY === 'number' ? event.clientY : pad) + gap;
+        }
+        left = Math.min(Math.max(pad, left), Math.max(pad, window.innerWidth - tipRect.width - pad));
+        top = Math.min(Math.max(pad, top), Math.max(pad, window.innerHeight - tipRect.height - pad));
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      }
+
+      function formatTooltipText(note) {
+        return String(note || '').split(/\n{2,}/).map(function (part) {
+          const safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+          return '<span class="tooltip-section">' + safe + '</span>';
+        }).join('');
+      }
+      function showTooltip(line, event) {
+        activeLine = line;
+        tooltip.innerHTML = formatTooltipText(line.dataset.note || '');
+        tooltip.classList.add('is-visible');
+        positionTooltip(event);
+      }
+      function hideTooltip() {
+        activeLine = null;
+        tooltip.classList.remove('is-visible');
+      }
+      document.addEventListener('pointerover', function (event) {
+        const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+        if (line) showTooltip(line, event);
+      });
+      document.addEventListener('pointermove', function (event) {
+        if (activeLine) positionTooltip(event);
+      });
+      document.addEventListener('pointerout', function (event) {
+        if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+      });
+      document.addEventListener('mouseover', function (event) {
+        const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+        if (line) showTooltip(line, event);
+      });
+      document.addEventListener('mousemove', function (event) {
+        if (activeLine) positionTooltip(event);
+      });
+      document.addEventListener('mouseout', function (event) {
+        if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+      });
+      document.addEventListener('click', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line, event); }); document.addEventListener('focusin', function (event) {
+        const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+        if (!line) return;
+        const rect = line.getBoundingClientRect();
+        showTooltip(line, { clientX: rect.left, clientY: rect.bottom });
+      });
+      document.addEventListener('focusout', function (event) {
+        if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+      });
+      function copyText(text) { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text); return new Promise(function (resolve, reject) { const area = document.createElement('textarea'); area.value = text; area.setAttribute('readonly', ''); area.style.position = 'fixed'; area.style.left = '-9999px'; document.body.appendChild(area); area.select(); try { document.execCommand('copy'); resolve(); } catch (err) { reject(err); } finally { document.body.removeChild(area); } }); }
+      document.querySelectorAll('.copy-btn').forEach(function (button) { button.addEventListener('click', function () { const card = button.closest('.code-card'); const code = card ? card.querySelector('code[data-lang]') : null; const text = code ? (code.dataset.rawCode || code.textContent) : ''; copyText(text).then(function () { const original = button.textContent; button.textContent = 'Kopyalandı!'; setTimeout(function () { button.textContent = original; }, 1500); }); }); });
+      function fitTitle() { const title = document.getElementById('lesson-title'); if (!title) return; let size = parseFloat(window.getComputedStyle(title).fontSize); while (title.scrollWidth > title.clientWidth && size > 28) { size -= 1; title.style.fontSize = size + 'px'; } }
+      window.addEventListener('load', fitTitle); window.addEventListener('resize', fitTitle);
+    })();
+  </script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>

@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangGraph’ta Mesaj Geçmişi: Filtreleme ve Kırpma</title>
+  <style>
+:root {
+  --lesson-bg: #ffffff;
+  --lesson-text: #111827;
+  --lesson-muted: #4b5563;
+  --lesson-soft: #f9fafb;
+  --lesson-soft-2: #f3f4f6;
+  --lesson-border: #e5e7eb;
+  --lesson-border-strong: #d1d5db;
+  --lesson-card: #ffffff;
+  --lesson-card-muted: #f8fafc;
+  --langgraph-primary: #153f3b;
+  --langgraph-secondary: #0f766e;
+  --langgraph-soft: #dbe9e7;
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+html, body { margin: 0; padding: 0; max-width: 100%; overflow-x: hidden; background: var(--lesson-bg); }
+*, *::before, *::after { box-sizing: border-box; }
+.lesson-page { width: min(100%, 1040px); margin: 0 auto; padding: clamp(1rem, 2.5vw, 2.5rem); background: var(--lesson-bg); color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 1rem; line-height: 1.55; }
+.lesson-page > article { margin: 0 auto; counter-reset: section; }
+.lesson-page, .lesson-page section, .title-block, .definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment, .flow-step, .state-item { min-width: 0; max-width: 100%; }
+.title-block { display: flex; flex-direction: column; align-items: stretch; margin: 0 0 2rem; text-align: center; }
+.lesson-logo { align-self: center; display: block; width: clamp(3.5rem, 8vw, 5.5rem); height: clamp(3.5rem, 8vw, 5.5rem); object-fit: contain; margin: 0 auto 1rem; }
+.lesson-logo-fallback { margin: 0 auto 1rem; padding: 0.55rem 0.8rem; border: 1px solid var(--lesson-border); border-radius: 0.4rem; color: var(--langgraph-primary); font-weight: 700; }
+.lesson-page h1, .lesson-page h2, .lesson-page h3, .lesson-page h4 { color: var(--lesson-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1.25; }
+.lesson-page h1 { width: 100%; min-width: 0; max-width: 100%; margin: 0; font-size: clamp(1.95rem, 3.6vw, 2.75rem); text-align: center; text-wrap: balance; overflow-wrap: anywhere; word-break: normal; }
+.lead-text { width: 100%; min-width: 0; max-width: 760px; margin: 0.9rem auto 0; color: var(--lesson-muted); font-size: 1.05rem; }
+.lesson-page p, .lesson-page li, .lead-text { overflow-wrap: anywhere; word-break: normal; }
+.lesson-page h2 { display: flex; align-items: center; gap: 0.55rem; margin: 2.2rem 0 0.85rem; padding-top: 1.1rem; border-top: 1px solid var(--lesson-border); font-size: clamp(1.35rem, 2.1vw, 1.75rem); counter-increment: section; counter-reset: subsection; }
+.lesson-page h2::before { content: counter(section) "."; color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h3 { display: flex; align-items: center; gap: 0.55rem; margin: 1.45rem 0 0.65rem; font-size: clamp(1.12rem, 1.65vw, 1.32rem); counter-increment: subsection; counter-reset: subsubsection; }
+.lesson-page h3::before { content: counter(section) "." counter(subsection); color: currentColor; font-variant-numeric: tabular-nums; }
+.lesson-page h4 { margin: 1rem 0 0.45rem; font-size: 1.02rem; counter-increment: subsubsection; }
+.lesson-page h4::before { content: counter(section) "." counter(subsection) "." counter(subsubsection) " "; font-variant-numeric: tabular-nums; }
+.definition-card h3, .example-card h3, .note-card h3, .question-card h3, .mini-panel h3, .output-comment h3 { display: block; counter-increment: none; counter-reset: none; margin: 0 0 0.45rem; font-size: 1rem; }
+.definition-card h3::before, .example-card h3::before, .note-card h3::before, .question-card h3::before, .mini-panel h3::before, .output-comment h3::before { content: none; }
+p { margin: 0.55rem 0 0.9rem; } ul, ol { margin: 0.65rem 0 1rem; padding-left: 1.35rem; } li + li { margin-top: 0.32rem; }
+code:not(.code-body code):not(.output-body code) { padding: 0.08rem 0.24rem; border-radius: 0.28rem; background: #eeeeee; color: #111111; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.9em; }
+.definition-card, .example-card, .note-card, .question-card, .mini-panel, .output-comment { border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); padding: 0.95rem 1rem; }
+.definition-card { border-left: 4px solid var(--langgraph-primary); background: linear-gradient(90deg, rgba(219,233,231,0.55), #ffffff 38%); }
+.note-card { border-left: 4px solid var(--langgraph-secondary); background: var(--lesson-card-muted); }
+.question-card { border-left: 4px solid var(--lesson-border-strong); background: var(--lesson-soft); }
+.definition-card strong, .note-card strong, .question-card strong, .mini-panel strong { color: var(--lesson-text); }
+.explain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0 1rem 4.95rem; }
+.mini-panel p { margin-bottom: 0; color: var(--lesson-muted); }
+.output-comment { margin: 0.65rem 0 1rem 4.95rem; background: #ffffff; color: var(--lesson-muted); }
+.output-comment strong { color: var(--lesson-text); }
+.table-wrap { width: 100%; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--lesson-border); border-radius: 0.65rem; }
+table { width: 100%; border-collapse: collapse; min-width: 680px; background: #ffffff; }
+th, td { padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--lesson-border); text-align: left; vertical-align: top; }
+th { background: var(--lesson-soft); color: var(--langgraph-primary); font-size: 0.95rem; }
+tr:last-child td { border-bottom: 0; }
+.concept-map { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin: 1.2rem 0; align-items: stretch; }
+.flow-step { min-height: 5.5rem; padding: 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.6rem; background: var(--lesson-soft); position: relative; }
+.flow-step strong { display: block; margin-bottom: 0.35rem; color: var(--langgraph-primary); font-size: 0.98rem; }
+.flow-step span { color: var(--lesson-muted); font-size: 0.95rem; line-height: 1.45; }
+.flow-step:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.52rem; width: 0.5rem; height: 1px; background: var(--lesson-border-strong); }
+.state-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin: 1rem 0; }
+.state-item { padding: 0.9rem 1rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-card); }
+.state-item strong { display: block; margin-bottom: 0.3rem; color: var(--langgraph-primary); }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li { position: relative; padding-left: 1.25rem; }
+.checklist li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--langgraph-secondary); }
+.walk-card { margin: 1.35rem 0 1.75rem; }
+.code-card { position: relative; display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1.15rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+.code-card::before { content: "In [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #303f9f; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+.code-head { position: absolute; top: 0.35rem; right: 0.45rem; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0; border: 0; background: transparent; }
+.code-title { display: none; }
+.copy-btn { border: 1px solid #c4c8cf; border-radius: 0.35rem; background: rgba(255,255,255,0.92); color: #374151; cursor: pointer; font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+.copy-btn:hover { background: #ffffff; }
+.code-body, .output-body { margin: 0; overflow-x: auto; color: var(--code-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.91rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; tab-size: 4; }
+.code-body { grid-column: 2; padding: 0.72rem 5.2rem 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+.code-line { display: block; width: 100%; min-width: 0; padding: 0 0.25rem; border-radius: 0.18rem; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.code-line[data-note] { cursor: help; text-decoration: none; border-bottom: 0; }
+.code-line[data-note] * { text-decoration: none; }
+.code-line[data-note]:hover, .code-line[data-note]:focus { background: #fff7d6; outline: 0; text-decoration: none; }
+.line-tooltip { position: fixed; z-index: 50; max-width: 420px; padding: 10px 12px; border: 1px solid #d0d7de; border-left: 3px solid #4c78a8; border-radius: 4px; background: #fffdf5; color: #24292f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; line-height: 1.5; font-weight: 400; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity 120ms ease, transform 120ms ease; }
+.line-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+.line-tooltip .tooltip-section + .tooltip-section { margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px solid #eaeef2; }
+.line-tooltip code { padding: 1px 4px; border: 1px solid #d8dee4; border-radius: 3px; background: #f6f8fa; color: #24292f; font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12.5px; }
+.output-card, .output-details { display: grid; grid-template-columns: 4.35rem minmax(0, 1fr); align-items: start; gap: 0 0.65rem; margin: 1rem 0; border: 0; border-radius: 0; overflow: visible; background: transparent; }
+.output-card::before, .output-details::before { content: "Out [ ]:"; grid-column: 1; grid-row: 1 / span 2; padding-top: 0.62rem; color: #9f1239; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 0.88rem; line-height: 1.4; text-align: right; white-space: nowrap; }
+.output-head, .output-details summary { grid-column: 2; padding: 0.42rem 0.55rem; border: 1px solid var(--code-border); border-bottom: 0; border-radius: 0.2rem 0.2rem 0 0; background: var(--code-surface); color: var(--code-muted); font-size: 0.78rem; cursor: default; }
+.output-details summary { cursor: pointer; }
+.output-body { grid-column: 2; padding: 0.72rem 0.8rem; border: 1px solid var(--code-border); border-radius: 0 0 0.2rem 0.2rem; background: var(--code-bg); }
+.output-details .output-body { max-height: 24rem; overflow: auto; }
+.output-card.output-scroll .output-body { max-height: 28rem; overflow: auto; scrollbar-gutter: stable; scrollbar-color: #b8b8b8 #f2f2f2; scrollbar-width: auto; }
+.output-card.output-scroll .output-body::-webkit-scrollbar { width: 11px; height: 11px; }
+.output-card.output-scroll .output-body::-webkit-scrollbar-track { background: #f2f2f2; border-left: 1px solid #d9d9d9; }
+.output-card.output-scroll .output-body::-webkit-scrollbar-thumb { background: #b8b8b8; border: 2px solid #f2f2f2; border-radius: 6px; }
+.output-card.output-scroll .output-body::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+.output-visual { white-space: normal; text-align: center; }
+.output-visual img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+@media (max-width: 860px) { .concept-map, .explain-grid, .state-list { grid-template-columns: 1fr; } .flow-step:not(:last-child)::after { display: none; } table { min-width: 620px; } }
+@media (max-width: 560px) { .lesson-page { padding: 1rem; font-size: 1rem; line-height: 1.72; } .title-block { display: block; } .lesson-logo { margin-left: auto; margin-right: auto; } .lesson-page h1 { display: block; width: 100%; font-size: clamp(1.55rem, 7vw, 1.9rem); line-height: 1.22; word-break: break-word; } .lead-text { display: block; width: 100%; font-size: 1rem; } .code-card, .output-card, .output-details { grid-template-columns: minmax(0, 1fr); } .code-card::before, .output-card::before, .output-details::before { grid-column: 1; grid-row: auto; padding: 0 0 0.25rem; text-align: left; } .code-body, .output-head, .output-details summary, .output-body { grid-column: 1; } .code-head { top: 1.8rem; right: 0.45rem; } .code-body { font-size: 0.84rem; padding: 0.85rem 4.85rem 0.85rem 0.85rem; } .output-body { font-size: 0.84rem; padding: 0.85rem; } .explain-grid, .output-comment { margin-left: 0; } .line-tooltip { max-width: calc(100vw - 32px); } }
+
+.definition-card h4, .example-card h4, .note-card h4, .question-card h4, .mini-panel h4, .output-comment h4 { display: block; counter-increment: none; counter-reset: none; margin: 0 0 0.45rem; font-size: 1rem; }
+.definition-card h4::before, .example-card h4::before, .note-card h4::before, .question-card h4::before, .mini-panel h4::before, .output-comment h4::before { content: none; }
+
+.definition-card h4, .example-card h4, .note-card h4, .question-card h4, .mini-panel h4, .output-comment h4 { display: block; counter-increment: none; counter-reset: none; margin: 0 0 0.45rem; font-size: 1rem; }
+.definition-card h4::before, .example-card h4::before, .note-card h4::before, .question-card h4::before, .mini-panel h4::before, .output-comment h4::before { content: none; }
+.chat-flow { display: grid; gap: 0.65rem; margin: 1rem 0; }
+.chat-bubble { max-width: 78%; padding: 0.75rem 0.85rem; border: 1px solid var(--lesson-border); border-radius: 0.65rem; background: var(--lesson-soft); }
+.chat-bubble.user { justify-self: end; background: #ffffff; border-color: var(--lesson-border-strong); }
+.chat-bubble.assistant { justify-self: start; border-left: 3px solid var(--langgraph-secondary); }
+.chat-bubble strong { display: block; margin-bottom: 0.25rem; color: var(--langgraph-primary); font-size: 0.9rem; }
+@media (max-width: 560px) { .chat-bubble { max-width: 100%; } }
+
+/* Codex course-wide notebook QA overrides */
+:root {
+  --code-bg: #f7f7f7;
+  --code-surface: #f7f7f7;
+  --code-text: #000000;
+  --code-muted: #4b5563;
+  --code-border: #cccccc;
+  --code-keyword: #008000;
+  --code-string: #ba2121;
+  --code-comment: #408080;
+  --code-function: #0000ff;
+  --code-number: #666666;
+  --code-class: #000000;
+  --code-builtin: #008000;
+  --code-operator: #aa22ff;
+}
+.code-card,
+.output-card {
+  display: grid;
+  grid-template-columns: 4.35rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.65rem;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+}
+.code-card::before {
+  content: "In [ ]:";
+  color: #303f9f;
+  text-align: right;
+  white-space: nowrap;
+}
+.output-card::before {
+  content: "Out [ ]:";
+  color: #9f1239;
+  text-align: right;
+  white-space: nowrap;
+}
+.code-body,
+.output-body {
+  color: var(--code-text);
+  background: var(--code-bg);
+}
+.output-body,
+.output-body code,
+.output-body * {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-decoration: none !important;
+}
+.output-body [class^="tok-"],
+.output-body [class*=" tok-"] {
+  color: rgb(0, 0, 0) !important;
+}
+.output-visual,
+.output-visual img,
+.output-body img,
+.output-card img {
+  background: rgb(255, 255, 255);
+}
+.tok-keyword { color: var(--code-keyword); font-weight: 700; }
+.tok-string { color: var(--code-string); }
+.tok-comment { color: var(--code-comment); font-style: italic; }
+.tok-function { color: var(--code-function); }
+.tok-attribute { color: var(--code-function); }
+.tok-number { color: var(--code-number); }
+.tok-class { color: var(--code-function); }
+.tok-name { color: var(--code-class); }
+.tok-builtin { color: var(--code-builtin); }
+.tok-operator { color: var(--code-operator); }
+.code-line[data-note] { text-decoration: none; cursor: help; }
+.code-line[data-note]:hover,
+.code-line[data-note]:focus {
+  text-decoration: none;
+  background: #fff7d6;
+  outline: 0;
+}
+.line-tooltip {
+  position: fixed;
+  z-index: 50;
+  max-width: 420px;
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-left: 3px solid #4c78a8;
+  border-radius: 4px;
+  background: #fffdf5;
+  color: #24292f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.line-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.line-tooltip .tooltip-section + .tooltip-section {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #eaeef2;
+}
+.line-tooltip code {
+  padding: 1px 4px;
+  border: 1px solid #d8dee4;
+  border-radius: 3px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12.5px;
+}
+@media (max-width: 560px) {
+  .code-card,
+  .output-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .code-card::before,
+  .output-card::before {
+    grid-column: 1;
+    grid-row: auto;
+    padding: 0 0 0.25rem;
+    text-align: left;
+  }
+  .code-body,
+  .output-head,
+  .output-body {
+    grid-column: 1;
+  }
+  .code-body {
+    font-size: 0.84rem;
+    padding: 0.85rem 4.85rem 0.85rem 0.85rem;
+  }
+  .output-body {
+    font-size: 0.84rem;
+    padding: 0.85rem;
+  }
+  .line-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+  </style>
+<style data-nav="1">
+:root{
+  --nav-accent:#0f766e; --nav-accent-dark:#153f3b; --nav-bg:#ffffff;
+  --nav-soft:#f3f8f7; --nav-border:#e5e7eb; --nav-text:#111827; --nav-muted:#4b5563;
+}
+html{scroll-behavior:smooth;}
+.notebook-shell,.index-shell{display:block;background:#ffffff;}
+.notebook-main,.landing-main{min-width:0;}
+.notebook-main h1,.notebook-main h2,.notebook-main h3{scroll-margin-top:4.5rem;}
+/* ---- list / text resets so global lesson rules don't leak into sidebars ---- */
+.course-sidebar ul,.toc-sidebar ul{list-style:none;margin:0;padding:0;}
+.course-sidebar li,.toc-sidebar li{margin:0;}
+.course-sidebar p,.toc-sidebar p{margin:0;}
+.course-sidebar a,.toc-sidebar a{text-decoration:none;color:var(--nav-text);}
+.course-sidebar,.toc-sidebar{
+  background:var(--nav-bg);color:var(--nav-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;line-height:1.5;
+}
+/* ---- brand ---- */
+.sidebar-brand{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--nav-border);margin-bottom:.75rem;}
+.sidebar-brand img{width:84px;max-width:72%;height:auto;object-fit:contain;margin-bottom:.75rem;}
+.sidebar-brand-title{font-size:.95rem;font-weight:700;color:#111827;line-height:1.25;}
+.sidebar-brand-subtitle{margin-top:.25rem;font-size:.82rem;font-weight:600;color:#2f6f68;}
+/* ---- left nav ---- */
+.course-nav{padding:0 .65rem 1.5rem;}
+.nav-home{display:block;margin:.15rem .35rem .55rem;padding:.45rem .65rem;border-radius:.45rem;
+  font-weight:600;color:var(--nav-accent-dark);border:1px solid transparent;}
+.nav-home:hover{background:var(--nav-soft);}
+.nav-home.is-current{background:var(--nav-accent);color:#fff;}
+.nav-module{margin:.35rem 0 .15rem;}
+.nav-module-title{font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--nav-accent-dark);font-weight:700;padding:.5rem .65rem .25rem;}
+.nav-lessons a{display:block;padding:.3rem .65rem .3rem .85rem;margin:.05rem .2rem;
+  border-left:2px solid transparent;border-radius:.3rem;color:var(--nav-muted);font-size:.85rem;}
+.nav-lessons a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.nav-lessons a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+.nav-lessons a.is-active::before{content:"\25B8\00a0";color:var(--nav-accent);}
+/* ---- right toc ---- */
+.toc-sidebar{border-left:1px solid var(--nav-border);}
+.toc-nav{padding:1.15rem 1rem 2rem;}
+.toc-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--nav-muted);font-weight:700;margin-bottom:.55rem!important;}
+.toc-list a{display:block;padding:.26rem .5rem;margin:.02rem 0;border-left:2px solid transparent;
+  border-radius:.3rem;color:var(--nav-muted);font-size:.84rem;line-height:1.35;}
+.toc-list a:hover{background:var(--nav-soft);color:var(--nav-text);}
+.toc-list .toc-l1>a{font-weight:700;color:var(--nav-text);font-size:.9rem;}
+.toc-list .toc-l2>a{padding-left:.95rem;}
+.toc-list .toc-l3>a{padding-left:1.7rem;font-size:.8rem;}
+.toc-list a.is-active{color:var(--nav-accent);border-left-color:var(--nav-accent);
+  background:var(--nav-soft);font-weight:600;}
+/* ---- skip link / toggles / backdrop (mobile-first) ---- */
+.skip-link{position:fixed;left:.5rem;top:-3.5rem;z-index:1200;background:#fff;
+  border:1px solid var(--nav-border);border-radius:.4rem;padding:.45rem .75rem;
+  color:var(--nav-accent-dark);font-weight:600;transition:top .2s ease;}
+.skip-link:focus{top:.5rem;}
+.nav-toggle{position:fixed;top:.55rem;z-index:1100;display:inline-flex;align-items:center;
+  gap:.35rem;padding:.4rem .7rem;border:1px solid var(--nav-border);border-radius:.5rem;
+  background:#ffffff;color:var(--nav-accent-dark);font-weight:600;font-size:.82rem;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+.nav-toggle-left{left:.55rem;}
+.nav-toggle-right{right:.55rem;}
+.nav-toggle:hover{background:var(--nav-soft);}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:900;
+  opacity:0;visibility:hidden;transition:opacity .2s ease;}
+.nav-backdrop.is-open{opacity:1;visibility:visible;}
+.course-sidebar,.toc-sidebar{position:fixed;top:0;height:100vh;width:300px;max-width:86vw;
+  z-index:1000;overflow-y:auto;overscroll-behavior:contain;transition:transform .25s ease;
+  box-shadow:0 0 26px rgba(0,0,0,.16);}
+.course-sidebar{left:0;border-right:1px solid var(--nav-border);transform:translateX(-100%);}
+.toc-sidebar{right:0;transform:translateX(100%);}
+.course-sidebar.is-open,.toc-sidebar.is-open{transform:translateX(0);}
+.notebook-main,.landing-main{padding-top:3.4rem;}
+/* ---- focus visibility ---- */
+.course-sidebar a:focus-visible,.toc-sidebar a:focus-visible,
+.nav-toggle:focus-visible,.nav-home:focus-visible{outline:2px solid var(--nav-accent);outline-offset:2px;}
+/* ---- desktop: real 3-col / 2-col grid, sticky sidebars ---- */
+@media (min-width:1080px){
+  html,body{overflow-x:visible;overflow-y:visible;}
+  .nav-toggle,.nav-backdrop{display:none;}
+  .notebook-shell{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;align-items:start;}
+  .index-shell{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;}
+  .course-sidebar,.toc-sidebar{position:sticky;top:0;height:100vh;width:auto;max-width:none;
+    transform:none;box-shadow:none;z-index:1;}
+  .notebook-main,.landing-main{padding-top:0;}
+}
+@media (min-width:1080px) and (max-width:1199px){
+  .notebook-shell{grid-template-columns:260px minmax(0,1fr) 260px;}
+  .index-shell{grid-template-columns:260px minmax(0,1fr);}
+}
+</style>
+</head>
+<body>
+<!--NAV-TOP-->
+<a class="skip-link" href="#main-content">İçeriğe geç</a><button class="nav-toggle nav-toggle-left" type="button" aria-controls="course-sidebar" aria-expanded="false" aria-label="Kurs navigasyonunu aç veya kapat">Kurs Menüsü</button><button class="nav-toggle nav-toggle-right" type="button" aria-controls="toc-sidebar" aria-expanded="false" aria-label="Ders içindekiler listesini aç veya kapat">İçindekiler</button><div class="nav-backdrop" data-nav-backdrop hidden></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-sidebar" aria-label="Kurs navigasyonu">
+<div class="sidebar-brand"><img src="../matematik_ve_yapay_zeka_logo.jpeg" alt="Matematik ve Yapay Zeka Enstitüsü logosu"><div class="sidebar-brand-title">Matematik ve Yapay Zeka Enstitüsü</div><div class="sidebar-brand-subtitle">LangGraph Kursu</div></div>
+<nav class="course-nav" aria-label="Modüller ve dersler">
+<a class="nav-home" href="../index.html">Ana Sayfa</a>
+<ul class="nav-modules">
+<li class="nav-module">
+<div class="nav-module-title">Module 0 — Basics</div>
+<ul class="nav-lessons">
+<li><a href="../module-0/1-Basics.html">1. Basics</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 1 — Introduction to LangGraph</div>
+<ul class="nav-lessons">
+<li><a href="../module-1/1-simple-graph.html">1. Simple Graph</a></li>
+<li><a href="../module-1/2-chain.html">2. Chain</a></li>
+<li><a href="../module-1/3-router.html">3. Router</a></li>
+<li><a href="../module-1/4-agent.html">4. Agent</a></li>
+<li><a href="../module-1/5-agent-memory.html">5. Agent Memory</a></li>
+<li><a href="../module-1/6-deployment.html">6. Deployment</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 2 — State and Memory Foundations</div>
+<ul class="nav-lessons">
+<li><a href="../module-2/1-state-schema.html">1. State Schema</a></li>
+<li><a href="../module-2/2-state-reducers.html">2. State Reducers</a></li>
+<li><a href="../module-2/3-multiple-schemas.html">3. Multiple Schemas</a></li>
+<li><a href="../module-2/4-trim-filter-messages.html" class="is-active" aria-current="page">4. Trim / Filter Messages</a></li>
+<li><a href="../module-2/5-chatbot-summarization.html">5. Chatbot Summarization</a></li>
+<li><a href="../module-2/6-chatbot-external-memory.html">6. Chatbot External Memory</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 3 — Human-in-the-loop and Time Travel</div>
+<ul class="nav-lessons">
+<li><a href="../module-3/1-streaming-interruption.html">1. Streaming / Interruption</a></li>
+<li><a href="../module-3/2-breakpoints.html">2. Breakpoints</a></li>
+<li><a href="../module-3/3-edit-state-human-feedback.html">3. Edit State / Human Feedback</a></li>
+<li><a href="../module-3/4-dynamic-breakpoints.html">4. Dynamic Breakpoints</a></li>
+<li><a href="../module-3/5-time-travel.html">5. Time Travel</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 4 — Parallelization and Advanced Graph Patterns</div>
+<ul class="nav-lessons">
+<li><a href="../module-4/1-parallelization.html">1. Parallelization</a></li>
+<li><a href="../module-4/2-sub-graph.html">2. Sub-Graph</a></li>
+<li><a href="../module-4/3-map-reduce.html">3. Map-Reduce</a></li>
+<li><a href="../module-4/4-research-assistant.html">4. Research Assistant</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 5 — Long-term Memory</div>
+<ul class="nav-lessons">
+<li><a href="../module-5/1-memory_store.html">1. Memory Store</a></li>
+<li><a href="../module-5/2-memoryschema_profile.html">2. Memory Schema Profile</a></li>
+<li><a href="../module-5/3-memoryschema_collection.html">3. Memory Schema Collection</a></li>
+<li><a href="../module-5/4-memory_agent.html">4. Memory Agent</a></li>
+</ul></li>
+<li class="nav-module">
+<div class="nav-module-title">Module 6 — Deployment and Assistants</div>
+<ul class="nav-lessons">
+<li><a href="../module-6/1-creating.html">1. Creating</a></li>
+<li><a href="../module-6/2-connecting.html">2. Connecting</a></li>
+<li><a href="../module-6/3-double-texting.html">3. Double Texting</a></li>
+<li><a href="../module-6/4-assistant.html">4. Assistant</a></li>
+</ul></li>
+</ul></nav></aside>
+<!--/NAV-TOP-->
+  <main class="lesson-page notebook-main" id="main-content" tabindex="-1">
+    <article>
+
+      <header class="title-block">
+        <img class="lesson-logo" src="data:image/png;base64,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" alt="LangGraph logosu">
+        <h1 id="lesson-title">LangGraph’ta Mesaj Geçmişi: Filtreleme ve Kırpma</h1>
+        <p class="lead-text">Bu ders, uzun konuşma geçmişlerinde mesaj listesini nasıl yöneteceğimizi; eski mesajları state’ten silmeyi, modele gönderilen bağlamı daraltmayı ve token bütçesine göre kırpmayı teknik olarak açıklar.</p>
+      </header>
+
+      <section id="kapsam-baglam" aria-labelledby="kapsam-baglam-title">
+        <h2 id="kapsam-baglam-title">Kapsam ve Bağlam</h2>
+        <p>Chatbot ve agent graph’larında state’in en önemli parçalarından biri mesaj geçmişidir. Konuşma uzadıkça bu geçmiş model çağrısına daha fazla token taşır; bu da gecikme, maliyet ve context window sınırı problemlerini büyütür. Bu derste amaç, LangGraph içinde mesaj geçmişini yönetmenin üç düzeyini ayırmaktır: state listesinden eski mesajları silmek, state’i koruyup yalnızca modele giden listeyi daraltmak ve token bütçesine göre otomatik kırpma yapmak.</p>
+        <div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p><code>MessagesState</code> konuşma geçmişini taşır; fakat her çalıştırmada tüm geçmişi modele göndermek zorunda değildir. <code>RemoveMessage</code> state listesini azaltır, liste slice işlemleri model input’unu daraltır, <code>trim_messages</code> ise token bütçesine göre daha kontrollü bir kırpma kuralı sağlar.</p></div>
+      </section>
+
+      <section id="ogrenme-hedefleri" aria-labelledby="ogrenme-hedefleri-title">
+        <h2 id="ogrenme-hedefleri-title">Öğrenme Hedefleri</h2>
+        <ul class="checklist">
+          <li><code>AIMessage</code> ve <code>HumanMessage</code> nesneleriyle mesaj geçmişi kurmak.</li>
+          <li><code>MessagesState</code> kullanarak mesaj listesini LangGraph state’i içinde taşımak.</li>
+          <li><code>RemoveMessage</code> ile eski mesajları id tabanlı silme update’i olarak ifade etmek.</li>
+          <li>State listesini değiştirmek ile yalnızca model input’unu daraltmak arasındaki farkı açıklamak.</li>
+          <li><code>trim_messages</code> fonksiyonunun <code>max_tokens</code>, <code>strategy</code>, <code>token_counter</code> ve <code>allow_partial</code> parametrelerini yorumlamak.</li>
+          <li>Uzun konuşma geçmişlerinde token bütçesi, latency ve maliyet ilişkisini teknik olarak değerlendirmek.</li>
+        </ul>
+      </section>
+
+      <section id="on-kosullar" aria-labelledby="on-kosullar-title">
+        <h2 id="on-kosullar-title">Ön Koşullar</h2>
+        <p>Bu ders için Python listeleri, dictionary yapısı, fonksiyon tanımı, type hint okuma ve temel LLM mesaj kavramları bilinmelidir. LangGraph tarafında <code>StateGraph</code>, node, edge, <code>MessagesState</code>, reducer ve <code>invoke</code> kavramlarının temel düzeyde anlaşılması yeterlidir. Model çağrıları için API anahtarının ortam değişkeni olarak ayarlanması gerekir.</p>
+      </section>
+
+      <section id="notasyon-terimler" aria-labelledby="notasyon-terimler-title">
+        <h2 id="notasyon-terimler-title">Notasyon ve Terim Tablosu</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>LangGraph Bağlantısı</th></tr></thead>
+          <tbody>
+            <tr><td><code>MessagesState</code></td><td><code>messages</code> kanalına sahip hazır state şeması.</td><td>Mesaj geçmişini graph state’i içinde taşır.</td></tr>
+            <tr><td><code>AIMessage</code></td><td>Model tarafından üretilmiş mesaj nesnesi.</td><td>State içindeki mesaj listesine eklenir.</td></tr>
+            <tr><td><code>HumanMessage</code></td><td>Kullanıcı mesajını temsil eden nesne.</td><td>Model input’unun kullanıcı tarafını oluşturur.</td></tr>
+            <tr><td><code>RemoveMessage</code></td><td>Belirli id’ye sahip mesajı silme komutu.</td><td><code>MessagesState</code> reducer’ı tarafından yorumlanır.</td></tr>
+            <tr><td><code>trim_messages</code></td><td>Mesaj listesini token bütçesine göre kısaltan yardımcı fonksiyon.</td><td>Node içinde modele gönderilecek bağlamı hazırlar.</td></tr>
+            <tr><td><code>ChatOpenAI</code></td><td>OpenAI chat modelini çağıran LangChain sınıfı.</td><td>Graph node’u içinde model çağrısı yapar.</td></tr>
+            <tr><td><code>max_tokens</code></td><td>Kırpılmış mesaj listesinin hedef token bütçesi.</td><td>Context window ve maliyet kontrolüne hizmet eder.</td></tr>
+            <tr><td><code>strategy="last"</code></td><td>En yeni mesajlardan başlayarak seçim yapma kuralı.</td><td>Son kullanıcı talebini korumayı hedefler.</td></tr>
+            <tr><td><code>allow_partial</code></td><td>Mesajın ortasından kesilip kesilemeyeceğini belirler.</td><td>False olduğunda yalnızca tam mesajlar korunur.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section id="buyuk-resim" aria-labelledby="buyuk-resim-title">
+        <h2 id="buyuk-resim-title">Büyük Resim</h2>
+        <p>Bu derste mesaj yönetimi, graph topolojisinden çok node içindeki input hazırlama mantığıyla ilgilidir. Aynı <code>MessagesState</code> kanalında uzun bir geçmiş tutulabilir; fakat chat model node’u bu geçmişin tamamını, son birkaç mesajını veya token bütçesine göre kırpılmış alt listesini kullanabilir.</p>
+        <div class="concept-map" aria-label="Mesaj yönetimi zihinsel modeli">
+          <div class="flow-step"><strong>Mesaj geçmişi</strong><span><code>AIMessage</code> ve <code>HumanMessage</code> listesi state’e girer.</span></div>
+          <div class="flow-step"><strong>State filtresi</strong><span><code>RemoveMessage</code> ile eski mesajlar silinebilir.</span></div>
+          <div class="flow-step"><strong>Input filtresi</strong><span>State korunup yalnızca model input’u daraltılabilir.</span></div>
+          <div class="flow-step"><strong>Token kırpma</strong><span><code>trim_messages</code> context bütçesini uygular.</span></div>
+          <div class="flow-step"><strong>Model cevabı</strong><span>Yeni <code>AIMessage</code> state’e eklenir.</span></div>
+        </div>
+      </section>
+
+      <section id="ana-anlatim" aria-labelledby="ana-anlatim-title">
+        <h2 id="ana-anlatim-title">Ana Anlatım</h2>
+        <h3 id="mesaj-gecmisi-neden-yonetilmelidir">Mesaj Geçmişi Neden Yönetilmelidir?</h3>
+        <p>Bir chat graph’ı kısa bir konuşmada tüm mesajları modele gönderebilir. Ancak uzun süreli agent akışlarında onlarca mesaj birikir. Her model çağrısı bu geçmişi yeniden token olarak taşırsa maliyet, gecikme ve context sınırı problemi oluşur.</p>
+        <h3 id="statei-silmek-ve-model-inputunu-daraltmak">State’i Silmek ve Model Input’unu Daraltmak</h3>
+        <p><code>RemoveMessage</code>, graph state’indeki mesaj listesini gerçekten azaltır. Buna karşılık <code>state["messages"][-1:]</code> gibi bir slice yalnızca modele gönderilen listeyi azaltır; state’in kendisi korunabilir. Bu iki yaklaşım farklı tasarım kararlarıdır.</p>
+        <h3 id="token-butcesine-gore-kirpma">Token Bütçesine Göre Kırpma</h3>
+        <p><code>trim_messages</code>, sabit sayıda mesaj seçmek yerine token sayımıyla çalışır. Bu, model context window sınırlarını dikkate alan daha genel bir yöntemdir. <code>strategy="last"</code> en yeni mesajları öncelemeyi, <code>allow_partial=False</code> ise mesajları ortadan kesmemeyi ifade eder.</p>
+      </section>
+
+      <section id="kod-yuruyusu" aria-labelledby="kod-yuruyusu-title">
+        <h2 id="kod-yuruyusu-title">Kod Yürüyüşü</h2>
+
+<article class="walk-card" id="kod-adimi-1">
+  <h3 id="ortam-bagimliliklarini-hazirlama">Ortam bağımlılıklarını hazırlama</h3>
+  <p>Bu blok, mesaj state’i, OpenAI chat modeli ve LangGraph graph örnekleri için gerekli paketleri hazırlar.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Ortam bağımlılıklarını hazırlama</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langchain_core langgraph langchain_openai</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Kurulum, <code>MessagesState</code>, <code>RemoveMessage</code>, <code>trim_messages</code>, <code>ChatOpenAI</code> ve graph API bileşenlerini kullanılabilir hale getirir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Paket sürümleri materyalde sabitlenmediği için belirli bir sürüm numarası verilmez.</p></section>
+  </div>
+
+</article>
+
+<article class="walk-card" id="kod-adimi-2">
+  <h3 id="api-anahtarlarini-guvenli-bicimde-isteme">API anahtarlarını güvenli biçimde isteme</h3>
+  <p>Bu yardımcı fonksiyon, gerekli ortam değişkeni yoksa değeri gizli giriş olarak ister; açık anahtar kod içine yazılmaz.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">API anahtarlarını güvenli biçimde isteme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+
+_set_env("OPENAI_API_KEY")</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Model çağrısı için gerekli anahtarlar runtime ortamından alınır. Bu yaklaşım, ders kodunun paylaşılabilir kalmasını sağlar.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Fonksiyon yalnızca değişken yoksa giriş ister; mevcut ortam değişkenini yeniden yazmaz.</p></section>
+  </div>
+
+</article>
+
+<article class="walk-card" id="kod-adimi-3">
+  <h3 id="langsmith-izleme-degiskenlerini-ayarlama">LangSmith izleme değişkenlerini ayarlama</h3>
+  <p>Bu blok, çalışma izleme için gerekli LangSmith ortam değişkenlerini ayarlar. Değerler graph mantığını değiştirmez; izlenebilir geliştirme sürecini destekler.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">LangSmith izleme değişkenlerini ayarlama</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">_set_env("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "langchain-academy"</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Uzun mesaj akışlarında modelin gerçekten hangi mesajları gördüğünü izlemek önemlidir; tracing bu doğrulamaya zemin hazırlar.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Tracing ayarları API anahtarı değerini içermez; açık değerler kodda saklanmamalıdır.</p></section>
+  </div>
+
+</article>
+
+<article class="walk-card" id="kod-adimi-4">
+  <h3 id="mesaj-nesneleriyle-konusma-gecmisi-kurma">Mesaj nesneleriyle konuşma geçmişi kurma</h3>
+  <p>Bu blok, model ve kullanıcı mesajlarını yapılandırılmış LangChain mesaj nesneleri olarak oluşturur ve okunabilir biçimde yazdırır.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Mesaj nesneleriyle konuşma geçmişi kurma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">from pprint import pprint
+from langchain_core.messages import AIMessage, HumanMessage
+
+messages = [
+    AIMessage(
+        f"So you said you were researching ocean mammals?",
+        name="Bot",
+    )
+]
+messages.append(
+    HumanMessage(
+        f"Yes, I know about whales. But what others should I learn about?",
+        name="Lance",
+    )
+)
+
+for m in messages:
+    m.pretty_print()</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>MessagesState</code> içinde taşınacak veri tipi bu nesnelerdir. <code>AIMessage</code> ve <code>HumanMessage</code>, role ve içerik bilgisini standartlaştırır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>pprint</code> import edilmiştir fakat bu blokta kullanılmaz; mesajların görünümü <code>pretty_print()</code> ile sağlanır.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Mesaj çıktısı</div><pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Name: Bot
+
+So you said you were researching ocean mammals?
+================================ Human Message =================================
+Name: Lance
+
+Yes, I know about whales. But what others should I learn about?</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı iki mesajın role ve isim bilgisiyle yazdırıldığını gösterir. Bu yapı, sonraki graph örneklerinde <code>messages</code> kanalının temel veri formatıdır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-5">
+  <h3 id="mesaj-listesini-dogrudan-chat-modeline-verme">Mesaj listesini doğrudan chat modeline verme</h3>
+  <p>Bu blok, mesaj listesinin bir chat modeline doğrudan verilebildiğini gösterir. Henüz LangGraph devrede değildir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Mesaj listesini doğrudan chat modeline verme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o")
+llm.invoke(messages)</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>LangGraph graph’ları da temelde bu model çağrısını node içine taşır; önce doğrudan model davranışı gözlemlenir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Model çıktıları deterministik olmayabilir. Sayfadaki çıktı, çalıştırma anında görünen sonucu korur.</p></section>
+  </div>
+  <div class="output-card output-scroll"><div class="output-head">Python çıktısı</div><pre class="output-body"><code data-lang="output">AIMessage(
+    content=(
+        'Great question, Lance! Ocean mammals are a fascinating group of '
+        'animals. Here are a few more ocean mammals you might want to learn '
+        'about:\\n'
+        '\\n'
+        '1. **Dolphins**: These intelligent and social creatures are known '
+        'for their playful behavior and complex communication skills. There '
+        'are several species of dolphins, including the bottlenose dolphin '
+        'and the common dolphin.\\n'
+        '\\n'
+        '2. **Porpoises**: Similar to dolphins but typically smaller and '
+        'stouter, porpoises are less well-known but equally interesting. '
+        'The harbor porpoise is one example.\\n'
+        '\\n'
+        '3. **Seals**: These include both true seals (like the harbor seal) '
+        'and eared seals (which include sea lions and fur seals). They are '
+        'known for their ability to live both in the water and on land.\\n'
+        '\\n'
+        '4. **Sea Lions**: These are a type of eared seal, easily '
+        'recognized by their external ear flaps and their ability to "walk" '
+        'on land using their large flippers.\\n'
+        '\\n'
+        '5. **Walruses**: Known for their distinctive long tusks and '
+        'whiskers, walruses are social animals that live in Arctic regions.\\n'
+        '\\n'
+        '6. **Manatees and Dugongs**: Often called "sea cows," these gentle '
+        'herbivores are found in warm coastal waters and rivers. Manatees '
+        'are found in the Americas and Africa, while dugongs are found in '
+        'the Indo-Pacific region.\\n'
+        '\\n'
+        '7. **Sea Otters**: Although not exclusively marine, sea otters '
+        'spend much of their time in the water. They are known for their '
+        'use of tools to open shellfish.\\n'
+        '\\n'
+        '8. **Polar Bears**: While primarily land animals, polar bears are '
+        'excellent swimmers and spend a significant amount of time hunting '
+        'on sea ice.\\n'
+        '\\n'
+        '9. **Sperm Whales**: Known for their large heads and deep diving '
+        'abilities, sperm whales are the largest of the toothed whales.\\n'
+        '\\n'
+        '10. **Narwhals**: Often called the "unicorns of the sea," these '
+        'Arctic whales are known for their long, spiral tusk, which is '
+        'actually an elongated tooth.\\n'
+        '\\n'
+        'Each of these animals has unique adaptations and behaviors that '
+        'make them fascinating subjects of study. Happy researching!'
+    ),
+    additional_kwargs={
+        'refusal': None,
+    },
+    response_metadata={
+        'token_usage': {
+            'completion_tokens': 434,
+            'prompt_tokens': 39,
+            'total_tokens': 473,
+        },
+        'model_name': 'gpt-4o-2024-05-13',
+        'system_fingerprint': 'fp_25624ae3a5',
+        'finish_reason': 'stop',
+        'logprobs': None,
+    },
+    id='run-513c189f-66e0-4c3c-bdb8-5d59934d10f9-0',
+    usage_metadata={
+        'input_tokens': 39,
+        'output_tokens': 434,
+        'total_tokens': 473,
+    },
+)</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Model cevabı, mesaj listesinin doğrudan chat modeline verilebildiğini gösterir. Uzun temsil ayrıntıları metadata ve token kullanımını da içerir.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-6">
+  <h3 id="messagesstate-ile-basit-chat-graph-kurma">MessagesState ile basit chat graph kurma</h3>
+  <p>Bu blok, aynı mesaj listesini LangGraph state’i içinde taşıyan tek node’lu bir graph kurar.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">MessagesState ile basit chat graph kurma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">from IPython.display import Image, display
+from langgraph.graph import MessagesState
+from langgraph.graph import StateGraph, START, END
+
+
+# Node
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"messages": llm.invoke(state["messages"])}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>MessagesState</code>, <code>messages</code> alanı için hazır reducer davranışı sağlar; model cevabı mevcut konuşma geçmişine eklenebilir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Burada model tüm mesaj geçmişini görür; uzun konuşmalarda bu maliyet ve gecikme yaratabilir.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Graph görseli tek node’lu akışı gösterir: <code>START</code> noktasından <code>chat_model</code> node’una, oradan <code>END</code> noktasına geçilir.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-7">
+  <h3 id="graphi-tam-mesaj-gecmisiyle-calistirma">Graph’ı tam mesaj geçmişiyle çalıştırma</h3>
+  <p>Bu çağrı, graph’ın mesaj geçmişini state içinde koruduğunu ve model cevabını aynı <code>messages</code> kanalına eklediğini gösterir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Graph’ı tam mesaj geçmişiyle çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">output = graph.invoke({"messages": messages})
+for m in output["messages"]:
+    m.pretty_print()</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Çıktı, graph state’inin mesaj geçmişini ve yeni model cevabını aynı kanal altında taşıdığını gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>State içinde tüm mesajlar kaldığı için uzun akışlarda context window ve token maliyeti büyüyebilir.</p></section>
+  </div>
+  <div class="output-card output-scroll"><div class="output-head">Mesaj çıktısı</div><pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Name: Bot
+
+So you said you were researching ocean mammals?
+================================ Human Message =================================
+Name: Lance
+
+Yes, I know about whales. But what others should I learn about?
+================================== Ai Message ==================================
+
+Absolutely, whales are fascinating! But there are many other ocean mammals worth learning about. Here are a few you might find interesting:
+
+1. **Dolphins**: Highly intelligent and social, dolphins are known for their playful behavior and complex communication. There are many species, including the bottlenose dolphin and the orca (killer whale), which is actually the largest member of the dolphin family.
+
+2. **Seals and Sea Lions**: These pinnipeds are often found lounging on beaches or frolicking in the water. Seals tend to be more solitary, while sea lions are social and known for their barking calls.
+
+3. **Manatees and Dugongs**: Often referred to as sea cows, these gentle herbivores graze on seagrasses in shallow coastal areas. Manatees are found in the Atlantic waters, while dugongs are found in the Indo-Pacific region.
+
+4. **Walruses**: Known for their distinctive tusks, walruses are large, social pinnipeds that inhabit the Arctic region. They use their tusks for various purposes, including pulling themselves out of the water and breaking through ice.
+
+5. **Narwhals**: Sometimes called the "unicorns of the sea," narwhals are known for their long, spiral tusks, which are actually elongated teeth. They live in Arctic waters and are relatively elusive.
+
+6. **Porpoises**: Similar to dolphins but generally smaller and with different physical characteristics, porpoises are also highly intelligent and social animals. They are less acrobatic than dolphins and have more triangular dorsal fins.
+
+7. **Sea Otters**: Found along the coasts of the northern and eastern North Pacific Ocean, sea otters are known for their use of tools and their dense fur, which is the thickest of any animal.
+
+8. **Polar Bears**: Though they spend a lot of time on ice, polar bears are excellent swimmers and are considered marine mammals because they depend on the ocean for their primary food source, seals.
+
+Each of these ocean mammals has unique adaptations and behaviors that make them interesting subjects of study. If you're into marine biology, you might find their various ecosystems, social structures, and survival strategies particularly compelling.</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Çıktı, başlangıç mesajlarıyla birlikte model cevabının da <code>messages</code> kanalında yer aldığını gösterir.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-8">
+  <h3 id="removemessage-ile-eski-mesajlari-filtreleyen-graph-kurma">RemoveMessage ile eski mesajları filtreleyen graph kurma</h3>
+  <p>Bu blok, <code>RemoveMessage</code> nesneleriyle eski mesajları state’ten silen bir filtre node’u ekler.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">RemoveMessage ile eski mesajları filtreleyen graph kurma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">from langchain_core.messages import RemoveMessage
+
+
+# Nodes
+def filter_messages(state: MessagesState):
+    """
+    Run the filter_messages graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # Delete all but the 2 most recent messages
+    delete_messages = [
+        RemoveMessage(id=m.id) for m in state["messages"][:-2]
+    ]
+    return {"messages": delete_messages}
+
+
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"messages": [llm.invoke(state["messages"])]}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("filter", filter_messages)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "filter")
+builder.add_edge("filter", "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>RemoveMessage</code>, <code>MessagesState</code> içindeki <code>add_messages</code> reducer’ı tarafından silme komutu olarak yorumlanır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>RemoveMessage</code> için güvenilir silme davranışı, mesajların <code>id</code> alanlarına sahip olmasına bağlıdır.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAFNAIIDASIAAhEBAxEB/8QAHQABAAIDAQEBAQAAAAAAAAAAAAUGBAcIAgMBCf/EAFAQAAEDBAADAQkKCAwFBQAAAAEAAgMEBQYRBxIhMQgTFBciQVFWlBU2YXF1lbLR0tMWIzI0VHShsSQzNUJEVWJzgZGztAlDcoPBUlOSk/D/xAAaAQEAAgMBAAAAAAAAAAAAAAAAAQIDBAUG/8QAMhEBAAECAgcFBwUBAAAAAAAAAAECEQMxBBIUIVFSkQUzQXGBIjJhkqGx0RMjYsHw4f/aAAwDAQACEQMRAD8A/qmiIgIiICLFudyp7Pb56yqeWQQt5ncrS5x9DWtHVzidANGySQBslQQsFXk47/fZJaeldsx2enl5Gtaezv72ncj/AEgHkG9AP1znLTRExrVTaP8AZJsmaq+22ikLKi4UsDx0LZZ2tP8AkSvj+FVl/rig9pZ9a+VPheP0jAyCxW2JoAGmUkY7Og8y+v4K2X+p6D2Zn1K/7Px+idx+FVl/rig9pZ9a9R5NZ5XBrLrQvcewNqWE/vXn8FbL/U9B7Mz6l5kxKxysLH2W3vYe1rqWMg/sT9n4/Q3JVrg9oc0gtI2CPOv1Vl+D01ue6ox+X3Bqtl3JA3dLIT/7kGw0jfnbyu9DhtSVjvTro2eCpg8DuVI4MqaYu5gCRsPY7Q543drXaHYQQ1zXNFaqItrUTePqi3BKIiLCgREQEREBERAREQVe76u2bWe2v06mo4JLlIw/zpA5scPxgc0ruvnaw9o2LQqxOPA+JFLI7YZXWx8LXa6c8Ugdy79JEriP+k+hWdbGLlREZW/ub/VMtU23uouGd9qMgprTkrbpUWOjqK6sbS0dQ9ghg0JXMeI+WXlJA/Flx2Rre1W+C3dfYjxQ4T1uZXOR9gfa4hPd6TwaplZRNfM9kQbJ3oCYkMG+9g6J6gLXXAm2ZLjXF9+N4Xj2Z2DhXNT1z7ja8wt4hprbUuJMZoJiS57HvJJYCQA4k7P5NUwm7cUcR7k6l4f2TDMzx/KsaqmQXWtpraOeajfWSOldbpHEiaXkcOrR02SD2Fa6HTVq7prhne8DvmZUWUxT49Y3NbcpxSziWlLiA3ngMffRsnp5HXr6CqJxL7t3BsUwB+SY3UPyYC409uH8Dq4ISZDtz2yGHTw1gc7ye3QAOyFzlcOHuVVeMd0OLdifEKppclslpktT8pppqm5V7oZuSQPIDjzgkkRnygwA6AXSfdQ4Peb53NNFQY7ZKi5V1pmtdYLTRR/jnxwSRl7I2edwaD5I69NDr0QbqwzMrTxAxmiyCxVElVaq0OME0tPLTucGuLDuORrXt6tPaB6exYWS6tWSY/dY9NM05ttT/bika5zPjIlazW+wPfrtIORgeX/h3i1HexZbxj4qS/Vvv1IaWsi5Xubt8RJ5d8vMOvUEHzr4ZoPC6vHKBuzJPc45ug3pkLXSkn0DbGj43D0rYwPft4WnpZMZrOiItdAiIgIiICIiAiIgisispvNFH3mRsFfSyipo6hwJEUwBAJAIJaQ5zXAEba9w2N7XmzZFDc5X0k7PArrCPx1DIfKH9thIHPGfM8DXmOnAtEuo684/bsghjjuFJHU97JdG87D4nEaJY8acw66baQVmpqpmNWvL7f7/AHjefNIoqucGMfSnyG+0zOgDPDBLofHI1zj8ZO0/Amo9ar9/90P3StqYfP8ASS0cVoRar4V2+65jgdsu9wym8CsqDMHiCWEM8mV7Bod7PmaPOrZ+BExBD8nvz2ntHhEbf2tjB/an6eHz/SS0cU3dbxR2Ol8IrZ2wR75WjRc57vM1jRsvcfM1oJPmCjbJb6itucl9uMPeKl8XeKSmJ26mgJDnB3m749zWl2ug5GNG+Uud9bVh9rtFX4ZHDJU1+iPDa2Z9RMAe0Ne8ktB6eS3Q6Dp0CmlE1U0RMYfj4nkIiLAgREQEREBERAREQEREBERBr3gAQeEtj0SRuo7f1iX4SthLXvAHfilse9dtR2a1+cS+hbCQEREBERAREQEREBERAREQEREBERBrzufxrhJY+od1qOoHT84lWw1rzufteKOxa6jdR5tf0iVbDQEREBERAREQEREBERARF5kkZDG6SRzWRsBc5zjoADtJKD0ipRy6+3VoqbRa6JtvkAdDLcamSOWVp7Hd7bGeQHoQCd6PUNPRefd3MP0Cx+1zfdrc2XE8bR6wmy7rWHdGcZKzgLwzqMxpcZkyiCkqI46umjqxTGGF+2995uR+wH8jda/n730Ux7u5h+gWP2ub7tRuSxZDl2PXKyXS02Kpttwp30tRC6rm8pj2lpH8X0Oj2+ZNlr4x1gs0r3CndK1XGi2VuOQ4dJarZYIHSS3d1cJWvmlmc5kQjETdEtMh3v8AmdnXp1mue+564Q3XudsAGMWams9bz1MlVU1s1RK2Sd7jobAjOg1oa0Dfm35ytm+7uYfoFj9rm+7TZa+MdYLLuipHu7mH6BY/a5vu16bf8ujPM+2WaZo7WMrpWuPxExEf/vN2pstfGOsFl1RR9jvUF/t7aqBr4/KdHJDKNSRSNOnMcOo2CPMSD0IJBBMgtWqmaZmmc0CIiqCIiAiIgKCzxxZg2ROadEW6pIP/AGnKdUDn3vEyP5Nqf9JyzYPe0+cJjNgWsBtsowAABCzQH/SFlLGtn8m0n9yz6IWSt6rOUCKiP44YWyLJJhd3yU2OtebnVRUVQ+CEsdyvaJGxlsjmu6FrC5wO9hT1Bm9juV6vVpgr2mvs0MFRXxvY5jYI5mudG4vcA0ghjz0J1rrpVvAnUWJabrR3210lyt1VFW0FXE2enqYHB0csbhtrmkdCCCCCstSCIiDC4dncmUDzC7v0P+xCf/KuCp3Dr+Oyn5Yd/t4FcVraT3s+n2hacxERaqoiIgIiICgc+94mR/JtT/pOU8oHPveJkfybU/6Tlmwe9p84TGbBtn8m0n9yz6IX7cKJtxoKmkfJNCyeJ0TpKeV0UjQ4Eba9pBa4b6EHYPUL8tn8m0n9yz6IWSt6rOUOLLRYJsX7hjKb5ashyOhukU9yq4qiC91LXRSQ3CpjbyEP8kOHV4HR7vKds9Vs99Ay7cTe6Eo5JZ4mzWC0gvppnRSj+DVf5L2kOHZ5itqu4SYm7h7V4ObVvFqsTCag8Jl8vvsrpZPxnPzjb3uPR3TehodFnO4f4+/NPws9zWNyA0fgDq1r3tMkG98j2g8r9HsLgSNnRCxRTaw5eoKm74D3M/B2gxW43HwvM5rVQ1NTW3uZgpxJSF5hp5ntl8FD3RhjQxmm7PKAdEZud2ninw64RZ/PV3uotNBIy2i1Pbkc91rqKoNZGyVwqXwxP729jm+Q4u7HddOIW8KHueeHtuxq649DjkbrHc3MfPb5qmeWFpY5zmd6a95EPKXEjvXLo9nYF96LgRg9BitzxyOzyPtNzlinrI56+pmlnfG5roy6Z8hk8ksboc2umuxRqyLHiOLR4janUTLjc7qXyGZ9Tdq19VK55AB05x8lvTfI0Bo2dAKbRFkGDw6/jsp+WHf7eBXFU7h1/HZT8sO/28CuK19J72fT7QtVmIiLVVEREBERAUDn3vEyP5Nqf9Jynl8K6jiuNDUUk4LoZ43RPAOttcNH9hWTDqiiuKp8JTGatWz+TaT+5Z9ELJUHHFkNggjoTZJr2yBojjrKKohZ3xoGgXNle0tdoDeiRvqPQP33Wv3qZdfaqL79dSabzeKo6x+U2TaKE91r96mXX2qi+/T3Wv3qZdfaqL79Rqfyj5o/JZNoqnj2b1+V2eC6WvFLrU0M/N3uXv8ASM5uVxaejpge1pHZ5lI+61+9TLr7VRffpqfyj5o/JZNooT3Wv3qZdfaqL79em3LIJTysxGuicex1RV0rWD4y2Vx/yaU1P5R80flFmXw6/jsp+WHf7eBXFQ2LWJ9ht0jJ5Wz1lTM6pqJGAhhkdro0HrygANG/MFMrQx6orxJmnInMREWugREQEREBERAREQEREGvuAY1wnsY1rrUdNa/pEnwBbBWveADeXhLYxojrUdCNH84lWwkBERAREQEREBERAREQEREBERAREQa87n8g8I7Fo7G6jza/pEq2Gte8Ag4cJrHzFxO6j8saP5xIthICIiAiIgIiICIiAiKFvGbY9j9UKa53y3W+pI5u81NUxj9enlJ3pXpoqrm1MXlNrppFVvGlh3rTaPbY/rTxpYd602j22P61l2fG5J6SnVngtKKreNLDvWm0e2x/WnjSw71ptHtsf1ps+NyT0k1Z4LSorI8rsmH0TKy/Xi32SjkkELKi41TKeNzyCQ0OeQCdNcddugfQovxpYd602j22P61rDulLbgvHfg7fsUkyayiukj8It0z62P8AFVbATGd76A9WE/8Ape5NnxuSekmrPBNdzXnOM33h5abTa8gtVwucLKiaShpK2KWeOPwl/luY1xcG+W3qenlD0hbeXCv/AA6+H+PcIMOu+UZRdbbbcpvUhpmUtVUsZLTUkbuwgnYL3jmIPmZGfOuwfGlh3rTaPbY/rTZ8bknpJqzwWlFVvGlh3rTaPbY/rTxpYd602j22P602fG5J6Sas8FpRVbxpYd602j22P608aWHetNo9tj+tNnxuSekmrPBaUVap+JWJVc7IYcmtEkrzysYK2Pbj6B16lWVY68OvD9+JjzRMTGYiIsaGFeqx1vs9dVMAL4IJJWg+lrSR+5VHEqSOmsFFIBzT1MTJ55ndXzSOaC57iepJJ/w7OwKz5V72Lx+pzfQKr2Ne9y1fqkX0AuhgbsKfNPgkkRFdAiIgIiICIiAiIgIiIPE8EVVC+GaNk0TwWujkaHNcPQQe1fPh1UPfaK2kc9z46CumpYS8kkRggtbskk6DuUfAAvusPhv+b3/5Xn/cxK9+DV6LRlK3oiLmKovKvexeP1Ob6BVexr3uWr9Ui+gFYcq97F4/U5voFV7Gve5av1SL6AXRwe5nz/pPgzqiojpKeWeZ7YoYml73uOg1oGyT/gtYcN+LeScS5rddaLBXUmEXLnfSXqqukbal8QDiyZ1Lybax+hryy7TgSAFsu40EN1t9VRVDS+nqYnQyNB1trgQR/kVqjhJhnErhxSWPE6urxm5YdZ2eCw3EeENuM1KxpbCx0XL3tr2+QC4PIIafJBOwm90KB3PnHLJqTh7wxjyuwVlRasgkFrhyiquramomq3d9cwyxEFwY/vbmh5eT0G2jYVyuvdGy4zxUt+JX2w2+hprjcxa6WogyCnqK7meSIZZKJoD2RvIHlcxI5m7AWJYeBF/tfCfhNjEtZbXV+JXqkuVdIyWQxSRxGUuERLNlx743QcGjoeoVbh7nPN6CG3W6mlxR9Ha8sZk7brN3/wB0LoRVmbkqHcmo3Bjy3nBk3yMGmjeqe1EC5cFM8zrKs84i0N8ttCbJbL/NRQVTLjzSUobT07mQtiEDedpDy8vLwQXluiACdx1tR4JRzz8vP3qNz+Xet6G9LU9mxzI+FOdZne3Pt1bgl7r/AHZqe9RVM10p5jTxwuZHBFG8StLomHoQQC7odKcZxixzIXC10kWQNqq3+DROqcYucMQe/wAkc8j6cNY3Z6ucQAOpKtE2zGvbN3TeUXugwWti4bNbTZrHq0k36PmEwiMrhMO9eRHytkcHtLnENG2AnlUzH3SEr8fbGMUmfmr8hlxhmOxVzHMdWRxiVzvCC0DvIhIkLyzYB1y7XzxbgffbHj3BCgnq7c+bB3ONxdHJIWy7opYPxO2Dm8qRp8rl6A+fosGr4B5LT3K7ZBarhaosigzWbKLQ2pMjqeSCWjipZKechvMwua2TqwO1pp69QK+0JZ/dHsstkygZFjVTbcssNXSULrBR1Tao1k1XoUgp5tNDhISRstaW8j9jp1psvG6/YbxYym88QLZNi9ptOGQVps1LdhXQSSOrXsbIzoxglcS2LZA7B5XLoqTufc9ZVldLlGR3a72mhz+43K2XO3ihbJLb6F1vJdTxuLg18gcXy87tN/L6DydH4ZLwBzXizdsnrM1rLBaDdcbp7PTmwSzzmnqIaw1UcpErGczQ/lOunZr+0k6w8UfdTQZfBesekitVuu9VYq+tt1Tj2S0925HQwlzmymHldDIAQ4drTyu07YW3eCtfU3Xg5gdbW1MtZWVNhoJp6ioeXySyOp4y57nHq5xJJJPUkqCxzGM9vVru1szWLE6OlqrbJRNnx5s75pJHt5TKe+NaGN5SfIHN1P5XRTvBzGr5hfDTH8eyGW3z19opI7e2e2l/epYomhkbyHgEOLGtLh2A70dK0XvvFzWHw3/N7/8AK8/7mLMWHw3/ADe//K8/7mK9fc1ei0ZSt6Ii5iqLyr3sXj9Tm+gVXsa97lq/VIvoBWm80brjaK6kYQHzwSRAnzFzSP8AyqhiVZHUWGjhB5KmmhZBUQO6Phka0BzHA9QQf8xojoQuhgb8KY+KfBMIiK6BERAREQEREBERAREQFh8N/wA3v/yvP+5iyKipipIHzTyshhYOZ8kjg1rR6ST2Lzw7ppI7TW1T2PjZXV01VEHtLXGMkBrtEAjYaHaPmISvdg1ei0ZStKIi5iooW8YVj+Q1AqLpY7bcZwOUS1VJHI8D0bcCdKaRWprqom9M2kyVbxV4Z6p2T5vi+ynirwz1TsnzfF9lWlFm2jG556ym88VW8VeGeqdk+b4vsp4q8M9U7J83xfZVpRNoxueesl54qt4q8M9U7J83xfZTxV4Z6p2T5vi+yrSibRjc89ZLzxad4I8O8XuvDCzVVdj1qrqqQz8889HFI92p5ANuIO9AAdvmV58VeGeqdk+b4vsqG4BEnhNYyTzHdR16/pEnpWwk2jG556yXniq3irwz1TsnzfF9lPFXhnqnZPm+L7KtKJtGNzz1kvPFVvFXhnqnZPm+L7KeKvDPVOyfN8X2VaUTaMbnnrJeeKt0vDbEqGoZPT4xZ4ZmHmZIygiDmn0g8vQqyIix14leJvrmZ8y9xERY0CIiAiIgIiICIiDXvAEFvCWxgt5Duo8nr+kS+lbCWvO5/aWcJLGC0tO6jo7t/OJVsNAREQEREBERAREQEREBERAREQERaw7pLNcz4ccIbzlGDUVtuV2tLRVTUlzgklZJTN330tEcjCHNHl7J1prumyEGbwBGuEtjAAHWo7N6/OJPSthLkD/h6cYM/wCLWK3T3bttmocQtBNNRz0dPMyoqKp7zK8FzpXNLWNd1AaD5bOvQ76/QEREBERAREQEREBERAREQFXM0zmgwmijkqQ+pq5yRT0cGjJKR2nr0a0bG3HoNgdSQDO1lXFQUk9VUPEcEDHSSPPY1oGyf8guY6y81OT3GovVbsVFbpzWOO+8wgkxxD4Gg9ddri4/ziuz2boMaZXM1+7Tn8fgfFY7pxWy66yF0FXS2SLe2xUkAmeB6HSSAh3xhjfiUZU5pltXDLDNk9TJDK0sfE+io3Nc09C0gw9Rrp1UWi9pTomjUxaMOnpE/dGtLD4f01w4WYvTY7i15qLRZ6dz3x00dNTP8p7i5xLnRFziSe0k9NDsAVqpuJGZUcokF9ZWgf8AKrqKIsPx97EZ/aoFVjJM8psay3FbBLTSzVGQSzxwysIDIu9R87i7z9egGlFej6LEe1h0/LHju4GtLpDBOK1PlFUy23GmFsuzgTG0P54ajQ2e9u0NO115CN63ouAJF9XK0sQlZrmcxwcHskjcWuY4EFrmkdQ4EAgjsIBXQHDXKZMuxKlq6ktNfE51NV8g0DKw6LgPMHDTwPMHBeV7U7Pp0a2Nhe7O63D/AInNaURF50EREBERAREQEREFY4nh54b5T3vfN7l1PRvaR3p29fDra5/aQ5oLdFpHTS6kmhZUQyRSsD45Glrmu7CD0IK5nvGN1GG3WWzVIcWw7NLM7/nwb0x2/OQNNd6CPQQT67sPFptXhTnmTvhzX3T1TW1mZYPY6ia3w43WCpfPHeKyWkoamdoHIyaWMEjW9tHQEnqqVdcWr7bwvo6OpvFruFgq8xoWUENhuU1VHRsLnNliZM8BwAPZonWydrrC82K25FRGjutvpbnSEhxp6yBs0ZI7DyuBCxmYfYY7bTW5tktzbfTStngpBSRiKKRp217Wa01wPYQNhdXF0KcTErrvn+Ii3kq55vVNUcKsn4o2fCmzUFKzFo7nBSRSPeIZ+ZzHSxhxOncuz07SB6FDYfZsGt/EjgvWYrXw3C51rKuW6TCudPO+TwTfNKwuPI7mL/MPOPMuqm2a3suktybQ0zbjLEIJKwQt78+MHYYX62Wg9db0oyg4fYtaq+OuosatFHWxPdIypp6CJkjHOGnODg3YJBIJ84UToU60TExaJv5e1fd9hPravAMuNoyI9e9e6mhs/wA7weDevg7P8QVqkiR744oIn1FTK4RwwR9XSPPY0fX2AbJ0AV0LgGLfgfi1HbnubJVeVNUyM7HTPJc/XwAnQ+ABa3bWLTRo/wCnOdU/bxWjJYkRF4YEREBERAREQEREBQ2UYnbswt3gdxic4NPNFNE7llhdrXMx3mP7COhBHRTKK9FdWHVFVE2mBo+58Fcjo5iLbXW+6U/m8Mc+mlA+Eta9rj8Om/EsA8KMx2dUNtI/X3fdrf6LtU9s6VEWm0+n4sndwaA8VGZfoNt9vd92vvTcHcuqZWtlNpoIj+VKaiSZ4+JgY0H/AOQW+EUz21pU5W6f9N3BT8J4aW/DnmqMr7jdHN5XVk4A5Ae1sbR0Y06+Enzk6CuCIuNi4tePXNeJN5QIiLECIiAiIg//2Q==" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Graph görselinde filtre node’u model node’undan önce çalışır. Böylece silme güncellemeleri model çağrısından önce state’e uygulanır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-9">
+  <h3 id="preamble-iceren-mesaj-listesini-filtreleme">Preamble içeren mesaj listesini filtreleme</h3>
+  <p>Bu blok, başında kısa bir preamble bulunan mesaj listesini filtre graph’ına verir; yalnızca en güncel konuşma bağlamı korunur.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Preamble içeren mesaj listesini filtreleme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"># Message list with a preamble
+messages = [AIMessage("Hi.", name="Bot", id="1")]
+messages.append(HumanMessage("Hi.", name="Lance", id="2"))
+messages.append(
+    AIMessage(
+        "So you said you were researching ocean mammals?",
+        name="Bot",
+        id="3",
+    )
+)
+messages.append(
+    HumanMessage(
+        "Yes, I know about whales. But what others should I learn about?",
+        name="Lance",
+        id="4",
+    )
+)
+
+# Invoke
+output = graph.invoke({"messages": messages})
+for m in output["messages"]:
+    m.pretty_print()</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Preamble temizleme, uzun konuşmalarda gereksiz başlangıç mesajlarını state’ten çıkarmanın pratik bir örneğidir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Silme state üzerinde uygulanır; bu yaklaşım sadece model input’unu değil, graph state’inin mesaj listesini de değiştirir.</p></section>
+  </div>
+  <div class="output-card output-scroll"><div class="output-head">Mesaj çıktısı</div><pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Name: Bot
+
+So you said you were researching ocean mammals?
+================================ Human Message =================================
+Name: Lance
+
+Yes, I know about whales. But what others should I learn about?
+================================== Ai Message ==================================
+
+That's great that you know about whales! There are a variety of other fascinating ocean mammals you might be interested in learning about. Here are a few:
+
+1. **Dolphins**: These highly intelligent and social animals are part of the cetacean family, which also includes whales and porpoises. There are many species of dolphins, including the common bottlenose dolphin and the orca, or killer whale, which is actually the largest member of the dolphin family.
+
+2. **Porpoises**: Similar to dolphins but generally smaller and with different facial structures and teeth. The harbor porpoise is one of the more well-known species.
+
+3. **Seals and Sea Lions**: These pinnipeds are known for their playful nature and agility in water. Seals typically have smaller flippers and no visible ear flaps, while sea lions have larger flippers and visible ear flaps.
+
+4. **Walruses**: Recognizable by their large tusks, whiskers, and significant bulk, walruses are pinnipeds as well and are usually found in Arctic regions.
+
+5. **Manatees and Dugongs**: These gentle giants, often called sea cows, are slow-moving and primarily herbivorous. Manatees are found in the Caribbean and the Gulf of Mexico, while dugongs inhabit the coastal waters of the Indian and western Pacific Oceans.
+
+6. **Sea Otters**: Known for their use of tools to open shells and their thick fur, sea otters are a keystone species in their ecosystems, particularly in kelp forest habitats along the Pacific coast of North America.
+
+7. **Polar Bears**: While not exclusively marine, polar bears depend heavily on the ocean for hunting seals and are excellent swimmers.
+
+Each of these groups has unique adaptations and behaviors that make them fascinating subjects of study. Happy researching!</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Başlangıçtaki “Hi” preamble mesajları kaldırılmış; daha güncel iki mesaj ve yeni model cevabı korunmuştur.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-10">
+  <h3 id="yalnizca-son-mesaji-modele-veren-graph-kurma">Yalnızca son mesajı modele veren graph kurma</h3>
+  <p>Bu blok, state’i değiştirmeden yalnızca model çağrısına giden mesajları daraltan daha basit bir node tanımlar.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Yalnızca son mesajı modele veren graph kurma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"># Node
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"messages": [llm.invoke(state["messages"][-1:])]}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu yaklaşım state’i silmez; yalnızca LLM’e gönderilen bağlamı daraltır. Bu, uygulama state’i ile model input’unu ayırır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>State korunur ama model geçmişi görmez. Bu ayrım LangSmith gibi izleme araçlarıyla doğrulanabilir.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Graph hâlâ tek model node’una sahiptir; fark, node içinde modele gönderilen liste diliminin daraltılmasıdır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-11">
+  <h3 id="takip-sorusunu-konusma-gecmisine-ekleme">Takip sorusunu konuşma geçmişine ekleme</h3>
+  <p>Bu blok, önceki model cevabını geçmişe ekler ve yeni bir takip sorusu oluşturur.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Takip sorusunu konuşma geçmişine ekleme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">messages.append(output["messages"][-1])
+messages.append(HumanMessage(f"Tell me more about Narwhals!", name="Lance"))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Bu adım, çok turlu konuşmanın büyüdüğünü ve bağlam yönetimi ihtiyacının neden oluştuğunu gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Önceki model cevabı state’e eklendiği için liste uzunluğu hızla artabilir.</p></section>
+  </div>
+
+</article>
+
+<article class="walk-card" id="kod-adimi-12">
+  <h3 id="uzayan-mesaj-gecmisini-gozlemleme">Uzayan mesaj geçmişini gözlemleme</h3>
+  <p>Bu çıktı, konuşma geçmişinin nasıl uzadığını ve sonraki model çağrısına hangi içeriklerin aday olduğunu görünür kılar.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Uzayan mesaj geçmişini gözlemleme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">for m in messages:
+    m.pretty_print()</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Tam geçmişin görünür olması, filtreleme ve trimming ihtiyacını teknik olarak somutlaştırır.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu görünüm modelin mutlaka tüm listeyi göreceği anlamına gelmez; node içindeki filtreleme modeli sınırlayabilir.</p></section>
+  </div>
+  <div class="output-card output-scroll"><div class="output-head">Mesaj çıktısı</div><pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Name: Bot
+
+Hi.
+================================ Human Message =================================
+Name: Lance
+
+Hi.
+================================== Ai Message ==================================
+Name: Bot
+
+So you said you were researching ocean mammals?
+================================ Human Message =================================
+Name: Lance
+
+Yes, I know about whales. But what others should I learn about?
+================================== Ai Message ==================================
+
+That's great that you know about whales! There are many other fascinating ocean mammals you can learn about. Here are a few:
+
+1. **Dolphins**: Highly intelligent and social animals, dolphins are known for their playful behavior and sophisticated communication skills. There are many species of dolphins, including the well-known bottlenose dolphin.
+
+2. **Porpoises**: Often confused with dolphins, porpoises are smaller and have different body shapes and teeth. They are generally more reclusive and less acrobatic than dolphins.
+
+3. **Seals**: Seals are part of the pinniped family, which also includes sea lions and walruses. They have streamlined bodies and flippers, making them excellent swimmers. Common types of seals include harbor seals and elephant seals.
+
+4. **Sea Lions**: Similar to seals but with some key differences, sea lions have external ear flaps and can rotate their hind flippers to walk on land. They are also very social and often gather in large groups.
+
+5. **Walruses**: Recognizable by their long tusks and whiskers, walruses are large marine mammals that are found in Arctic regions. They use their tusks to help them climb out of the water and to break through ice.
+
+6. **Manatees and Dugongs**: These gentle giants are often referred to as sea cows. Manatees are found in the Atlantic Ocean, while dugongs are found in the Indian and Pacific Oceans. They are herbivores and spend most of their time grazing on underwater vegetation.
+
+7. **Sea Otters**: Known for their playful behavior and use of tools, sea otters are an important part of the marine ecosystem. They have thick fur to keep them warm in cold waters and are often seen floating on their backs.
+
+8. **Polar Bears**: While not exclusively marine, polar bears spend a significant amount of time in the ocean, particularly in Arctic regions. They are excellent swimmers and rely on sea ice to hunt seals, their primary food source.
+
+9. **Narwhals**: Often called the "unicorns of the sea," narwhals have a long, spiral tusk that is actually an elongated tooth. They are found in Arctic waters and are known for their deep diving abilities.
+
+10. **Orcas (Killer Whales)**: Though they are technically a type of dolphin, orcas are often considered separately due to their size and distinctive black-and-white coloring. They are apex predators and have complex social structures.
+
+Each of these ocean mammals has unique behaviors, adaptations, and ecological roles, making them fascinating subjects for study.
+================================ Human Message =================================
+Name: Lance
+
+Tell me more about Narwhals!</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Bu çıktı, geçmişin preamble, önceki cevap ve yeni takip sorusuyla uzadığını gösterir.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-13">
+  <h3 id="son-mesaj-filtresiyle-graphi-calistirma">Son mesaj filtresiyle graph’ı çalıştırma</h3>
+  <p>Bu çağrı, uzun state korunurken modelin yalnızca son kullanıcı mesajıyla çağrılabildiğini gösterir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Son mesaj filtresiyle graph’ı çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"># Invoke, using message filtering
+output = graph.invoke({"messages": messages})
+for m in output["messages"]:
+    m.pretty_print()</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Node içinde <code>state["messages"][-1:]</code> kullanılması, model input’unun son mesaja indirildiğini gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Çıktı state içinde tüm geçmişi gösterebilir; kritik nokta model çağrısına gönderilen alt listedir.</p></section>
+  </div>
+  <div class="output-card output-scroll"><div class="output-head">Mesaj çıktısı</div><pre class="output-body"><code data-lang="output">================================== Ai Message ==================================
+Name: Bot
+
+Hi.
+================================ Human Message =================================
+Name: Lance
+
+Hi.
+================================== Ai Message ==================================
+Name: Bot
+
+So you said you were researching ocean mammals?
+================================ Human Message =================================
+Name: Lance
+
+Yes, I know about whales. But what others should I learn about?
+================================== Ai Message ==================================
+
+That's great that you know about whales! There are many other fascinating ocean mammals you can learn about. Here are a few:
+
+1. **Dolphins**: Highly intelligent and social animals, dolphins are known for their playful behavior and sophisticated communication skills. There are many species of dolphins, including the well-known bottlenose dolphin.
+
+2. **Porpoises**: Often confused with dolphins, porpoises are smaller and have different body shapes and teeth. They are generally more reclusive and less acrobatic than dolphins.
+
+3. **Seals**: Seals are part of the pinniped family, which also includes sea lions and walruses. They have streamlined bodies and flippers, making them excellent swimmers. Common types of seals include harbor seals and elephant seals.
+
+4. **Sea Lions**: Similar to seals but with some key differences, sea lions have external ear flaps and can rotate their hind flippers to walk on land. They are also very social and often gather in large groups.
+
+5. **Walruses**: Recognizable by their long tusks and whiskers, walruses are large marine mammals that are found in Arctic regions. They use their tusks to help them climb out of the water and to break through ice.
+
+6. **Manatees and Dugongs**: These gentle giants are often referred to as sea cows. Manatees are found in the Atlantic Ocean, while dugongs are found in the Indian and Pacific Oceans. They are herbivores and spend most of their time grazing on underwater vegetation.
+
+7. **Sea Otters**: Known for their playful behavior and use of tools, sea otters are an important part of the marine ecosystem. They have thick fur to keep them warm in cold waters and are often seen floating on their backs.
+
+8. **Polar Bears**: While not exclusively marine, polar bears spend a significant amount of time in the ocean, particularly in Arctic regions. They are excellent swimmers and rely on sea ice to hunt seals, their primary food source.
+
+9. **Narwhals**: Often called the "unicorns of the sea," narwhals have a long, spiral tusk that is actually an elongated tooth. They are found in Arctic waters and are known for their deep diving abilities.
+
+10. **Orcas (Killer Whales)**: Though they are technically a type of dolphin, orcas are often considered separately due to their size and distinctive black-and-white coloring. They are apex predators and have complex social structures.
+
+Each of these ocean mammals has unique behaviors, adaptations, and ecological roles, making them fascinating subjects for study.
+================================ Human Message =================================
+Name: Lance
+
+Tell me more about Narwhals!
+================================== Ai Message ==================================
+
+Of course! Narwhals (Monodon monoceros) are fascinating marine mammals that belong to the family Monodontidae, which also includes the beluga whale. They are best known for the long, spiral tusk that protrudes from the head of the males, which has earned them the nickname "unicorns of the sea."
+
+Here are some key facts about narwhals:
+
+### Physical Characteristics
+- **Tusk**: The most distinctive feature of the narwhal is the tusk, which is actually an elongated tooth. It can grow up to 10 feet (3 meters) long and is usually found in males, though some females may also develop smaller tusks. The tusk grows in a spiral pattern and is thought to have sensory capabilities, with millions of nerve endings.
+- **Body**: Narwhals have a stocky body with a mottled black and white skin pattern. They lack a dorsal fin, which is thought to be an adaptation to swimming under ice.
+- **Size**: Adult narwhals typically range from 13 to 20 feet (4 to 6 meters) in length, with males generally being larger than females.
+- **Weight**: They can weigh between 1,760 to 3,530 pounds (800 to 1,600 kilograms).
+
+### Habitat and Distribution
+- Narwhals are native to the Arctic waters of Canada, Greenland, Norway, and Russia. They are especially common in the Baffin Bay and the waters surrounding Greenland.
+- They prefer deep waters and are often found in areas with heavy sea ice.
+
+### Behavior and Diet
+- **Diving**: Narwhals are deep divers and can reach depths of up to 5,000 feet (1,500 meters) in search of food. They can hold their breath for up to 25 minutes.
+- **Diet**: Their diet primarily consists of fish such as Arctic cod and Greenland halibut, as well as squid and shrimp.
+- **Social Structure**: Narwhals are social animals and are often found in groups called pods, which typically consist of 5 to 10 individuals but can sometimes number in the hundreds.
+
+### Reproduction and Lifespan
+- Females give birth to a single calf after a gestation period of about 14 to 15 months. Calves are usually born in the spring or early summer.
+- Narwhals have a long lifespan and can live up to 50 years, although some individuals may live even longer.
+
+### Conservation Status
+- Narwhals are currently classified as "Near Threatened" by the International Union for Conservation of Nature (IUCN). Their main threats include climate change, which affects their sea ice habitat, and human activities such as shipping and oil exploration.
+- Indigenous communities in the Arctic have traditionally hunted narwhals for their meat, blubber, and tusks, which are used for various purposes, including art and tools.
+
+### Cultural Significance
+- The narwhal's tusk has fascinated humans for centuries and was often sold as a "unicorn horn" in medieval Europe, believed to possess magical properties.
+- Narwhals hold significant cultural and economic value for indigenous Arctic communities.
+
+Overall, narwhals are remarkable creatures with unique adaptations that allow them to thrive in some of the planet's harshest environments.</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>State geçmişi uzun görünse de node modeli yalnızca son mesajla çağıracak şekilde tasarlanmıştır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-14">
+  <h3 id="trim-messages-ile-token-butcesine-dayali-graph-kurma">trim_messages ile token bütçesine dayalı graph kurma</h3>
+  <p>Bu blok, manuel son-mesaj seçimi yerine token bütçesine dayalı <code>trim_messages</code> yaklaşımını graph node’una yerleştirir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">trim_messages ile token bütçesine dayalı graph kurma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">from langchain_core.messages import trim_messages
+
+
+# Node
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    messages = trim_messages(
+        state["messages"],
+        max_tokens=100,
+        strategy="last",
+        token_counter=ChatOpenAI(model="gpt-4o"),
+        allow_partial=False,
+    )
+    return {"messages": [llm.invoke(messages)]}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p><code>trim_messages</code>, sabit sayıdaki son mesajı seçmek yerine token bütçesine göre daha genel bir sınır koyar.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p><code>allow_partial=False</code>, mesajların ortasından kesilmesini engeller; bu nedenle sonuç bazen çok kısa bir liste olabilir.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Graph görseli</div><div class="output-body output-visual"><img src="data:image/jpeg;base64,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" alt="Graph akışını gösteren görsel çıktı"></div></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Graph görseli yine tek model node’unu gösterir; kırpma topolojiyi değil node içi model input hazırlığını değiştirir.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-15">
+  <h3 id="yeni-takip-sorusunu-ekleme">Yeni takip sorusunu ekleme</h3>
+  <p>Bu blok, kırpma örneği için konuşmaya yeni bir takip sorusu ekler.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Yeni takip sorusunu ekleme</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">messages.append(output["messages"][-1])
+messages.append(HumanMessage(f"Tell me where Orcas live!", name="Lance"))</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Yeni takip sorusu, kırpma algoritmasının en yeni kullanıcı talebini koruma davranışını test eder.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu ekleme sonrası kırpma, en son kullanıcı talebini korumaya çalışır.</p></section>
+  </div>
+
+</article>
+
+<article class="walk-card" id="kod-adimi-16">
+  <h3 id="mesajlari-token-butcesine-gore-kirpma">Mesajları token bütçesine göre kırpma</h3>
+  <p>Bu blok, tüm mesaj listesinin <code>max_tokens</code> sınırına göre nasıl kırpıldığını doğrudan gösterir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Mesajları token bütçesine göre kırpma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"># Example of trimming messages
+trim_messages(
+    messages,
+    max_tokens=100,
+    strategy="last",
+    token_counter=ChatOpenAI(model="gpt-4o"),
+    allow_partial=False,
+)</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Çıktı, <code>strategy="last"</code> ve <code>allow_partial=False</code> ile yalnızca bütçeye tam sığan son mesajın kaldığını gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu örnek çıktı yalnızca kırpılmış mesaj listesini gösterir; model cevabı üretmez.</p></section>
+  </div>
+  <div class="output-card"><div class="output-head">Kırpılmış mesaj listesi</div><pre class="output-body"><code data-lang="output">[HumanMessage(content='Tell me where Orcas live!', name='Lance')]</code></pre></div>
+<div class="output-comment"><h4>Çıktı Yorumu</h4><p>Kırpma sonucu yalnızca son kullanıcı mesajını içerir. <code>allow_partial=False</code> olduğu için önceki uzun mesajın parçası alınmamıştır.</p></div>
+</article>
+
+<article class="walk-card" id="kod-adimi-17">
+  <h3 id="kirpma-kullanan-graphi-calistirma">Kırpma kullanan graph’ı çalıştırma</h3>
+  <p>Bu son çağrı, kırpma mantığı graph node’u içinde uygulanırken graph’ın nasıl çalıştırıldığını gösterir.</p>
+  <div class="code-card"><div class="code-head"><span class="code-title">Kırpma kullanan graph’ı çalıştırma</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"># Invoke, using message trimming in the chat_model_node
+messages_out_trim = graph.invoke({"messages": messages})</code></pre></div>
+  <div class="explain-grid">
+    <section class="mini-panel"><h4>LangGraph açısından önemi</h4><p>Graph çalıştırması, token bütçesiyle sınırlandırılmış model input’unun üretim graph’ına nasıl taşınacağını gösterir.</p></section>
+    <section class="mini-panel"><h4>Dikkat edilmesi gereken nokta</h4><p>Bu kodun görünür çıktısı yoktur; doğrulama için LangSmith veya graph içi çıktı incelemesi kullanılabilir.</p></section>
+  </div>
+
+</article>
+
+      </section>
+
+      <section id="ciktilarin-yorumlanmasi" aria-labelledby="ciktilarin-yorumlanmasi-title">
+        <h2 id="ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</h2>
+        <p>Çıktılar, mesaj listesinin graph state’i olarak taşındığını ve farklı filtreleme stratejilerinin farklı sonuçlar ürettiğini gösterir. Uzun model cevapları açılır panellerde korunmuştur. Kısa çıktılar doğrudan görünür bırakılmıştır. Buradaki kritik ayrım, bazı blokların state listesini gerçekten değiştirmesi, bazı blokların ise yalnızca model çağrısına giden alt listeyi değiştirmesidir.</p>
+      </section>
+
+      <section id="graph-akisi" aria-labelledby="graph-akisi-title">
+        <h2 id="graph-akisi-title">Graph Akışı</h2>
+        <div class="concept-map" aria-label="Mesaj filtreleme graph akışı">
+          <div class="flow-step"><strong>START</strong><span>Mesaj listesi graph state’i olarak girer.</span></div>
+          <div class="flow-step"><strong>filter</strong><span>Varsa eski mesajlar <code>RemoveMessage</code> ile silinir.</span></div>
+          <div class="flow-step"><strong>chat_model</strong><span>Model, seçilen veya kırpılan mesaj listesini görür.</span></div>
+          <div class="flow-step"><strong>messages reducer</strong><span>Yeni cevap ve silme komutları state’e uygulanır.</span></div>
+          <div class="flow-step"><strong>END</strong><span>Güncellenmiş mesaj state’i döner.</span></div>
+        </div>
+      </section>
+
+      <section id="state-evrimi" aria-labelledby="state-evrimi-title">
+        <h2 id="state-evrimi-title">State’in Evrimi</h2>
+        <div class="state-list">
+          <div class="state-item"><strong>İlk geçmiş</strong><code>[AIMessage, HumanMessage]</code><span>Model ve kullanıcı mesajları liste halinde başlar.</span></div>
+          <div class="state-item"><strong>Tam graph çağrısı</strong><code>[AIMessage, HumanMessage, AIMessage]</code><span>Model cevabı aynı <code>messages</code> kanalına eklenir.</span></div>
+          <div class="state-item"><strong>RemoveMessage filtresi</strong><code>[son iki mesaj, yeni cevap]</code><span>Preamble mesajları id tabanlı silme komutlarıyla kaldırılır.</span></div>
+          <div class="state-item"><strong>Son mesaj input’u</strong><code>state korunur, model input’u daralır</code><span>Graph state’i uzun kalabilir; model yalnızca son mesajı görebilir.</span></div>
+          <div class="state-item"><strong>Token kırpma</strong><code>[HumanMessage("Tell me where Orcas live!")]</code><span>Token bütçesine sığan son mesaj korunur.</span></div>
+        </div>
+      </section>
+
+      <section id="agent-tool-etkilesimi" aria-labelledby="agent-tool-etkilesimi-title">
+        <h2 id="agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</h2>
+        <p>Bu derste tool çağrısı yoktur; ancak konu agent graph’ları için doğrudan gereklidir. Agent akışlarında tool sonuçları, kullanıcı mesajları ve model cevapları aynı geçmişte büyüyebilir. Mesaj filtreleme ve trimming, bu geçmişin modele hangi kapsamda gösterileceğini kontrol eden temel mekanizmalardır.</p>
+        <div class="chat-flow" aria-label="Mesaj akışı örneği">
+          <div class="chat-bubble assistant"><strong>AIMessage</strong>Önceki bağlamı özetleyen model mesajı.</div>
+          <div class="chat-bubble user"><strong>HumanMessage</strong>Yeni kullanıcı takip sorusu.</div>
+          <div class="chat-bubble assistant"><strong>Filtered / Trimmed Input</strong>Model yalnızca seçilen bağlamla çağrılır.</div>
+        </div>
+      </section>
+
+      <section id="yaygin-hatalar" aria-labelledby="yaygin-hatalar-title">
+        <h2 id="yaygin-hatalar-title">Yaygın Hatalar</h2>
+        <ul>
+          <li><code>MessagesState</code> içindeki tüm geçmişin her zaman modele gönderildiğini sanmak.</li>
+          <li><code>RemoveMessage</code> nesnesini normal model mesajı gibi düşünmek.</li>
+          <li>Mesajlarda <code>id</code> yokken id tabanlı silme davranışına güvenmek.</li>
+          <li>State listesini silmek ile yalnızca model input’unu slice etmek arasındaki farkı kaçırmak.</li>
+          <li><code>trim_messages</code> sonucunu model cevabı sanmak; bu fonksiyon yalnızca mesaj listesi döndürür.</li>
+          <li><code>allow_partial=False</code> kullanıldığında kırpılmış sonucun beklenenden kısa olabileceğini gözden kaçırmak.</li>
+          <li>Token bütçesi küçük olduğunda önceki uzun cevabın tamamen atılabileceğini hesaba katmamak.</li>
+          <li>API anahtarını kod içine açık metin olarak yazmak.</li>
+        </ul>
+      </section>
+
+      <section id="son-cikarimlar" aria-labelledby="son-cikarimlar-title">
+        <h2 id="son-cikarimlar-title">Son Çıkarımlar</h2>
+        <ul class="checklist">
+          <li>Uzun konuşma geçmişi token maliyeti ve gecikme üretir.</li>
+          <li><code>MessagesState</code>, mesaj geçmişini graph state’i olarak taşır.</li>
+          <li><code>AIMessage</code> ve <code>HumanMessage</code> mesaj rollerini standartlaştırır.</li>
+          <li><code>RemoveMessage</code>, id tabanlı silme update’i üretir.</li>
+          <li>Silme update’i, <code>MessagesState</code> reducer’ı tarafından uygulanır.</li>
+          <li>Model input’unu slice etmek state’i silmekten farklıdır.</li>
+          <li><code>state["messages"][-1:]</code>, son mesajı liste formatında modele verir.</li>
+          <li><code>trim_messages</code>, token bütçesine göre daha genel bir kırpma sağlar.</li>
+          <li><code>strategy="last"</code>, en yeni mesajları korumaya öncelik verir.</li>
+          <li><code>allow_partial=False</code>, mesajların ortadan kesilmesini engeller.</li>
+          <li>Tracing, modelin gerçekten hangi mesajları gördüğünü doğrulamak için yararlıdır.</li>
+        </ul>
+      </section>
+
+      <section id="kod-akisi-tek-parca" aria-labelledby="kod-akisi-tek-parca-title">
+        <h2 id="kod-akisi-tek-parca-title">Dersin Kod Akışı</h2>
+        <p>Bu bölüm, derste kullanılan çalıştırılabilir kod parçalarını ders akışındaki sırayla tek yerde toplar.</p>
+        <div class="code-card"><div class="code-head"><span class="code-title">Dersin Kod Akışı</span><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python">%%capture --no-stderr
+%pip install --quiet -U langchain_core langgraph langchain_openai
+
+import getpass
+import os
+
+
+def _set_env(var: str):
+    """
+    Set an environment variable when it is missing.
+
+    Args:
+        var: Environment variable name.
+    """
+    if not os.environ.get(var):
+        os.environ[var] = getpass.getpass(f"{var}: ")
+
+
+_set_env("OPENAI_API_KEY")
+
+_set_env("LANGSMITH_API_KEY")
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "langchain-academy"
+
+from pprint import pprint
+from langchain_core.messages import AIMessage, HumanMessage
+
+messages = [
+    AIMessage(
+        f"So you said you were researching ocean mammals?",
+        name="Bot",
+    )
+]
+messages.append(
+    HumanMessage(
+        f"Yes, I know about whales. But what others should I learn about?",
+        name="Lance",
+    )
+)
+
+for m in messages:
+    m.pretty_print()
+
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o")
+llm.invoke(messages)
+
+from IPython.display import Image, display
+from langgraph.graph import MessagesState
+from langgraph.graph import StateGraph, START, END
+
+
+# Node
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"messages": llm.invoke(state["messages"])}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+output = graph.invoke({"messages": messages})
+for m in output["messages"]:
+    m.pretty_print()
+
+from langchain_core.messages import RemoveMessage
+
+
+# Nodes
+def filter_messages(state: MessagesState):
+    """
+    Run the filter_messages graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    # Delete all but the 2 most recent messages
+    delete_messages = [
+        RemoveMessage(id=m.id) for m in state["messages"][:-2]
+    ]
+    return {"messages": delete_messages}
+
+
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"messages": [llm.invoke(state["messages"])]}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("filter", filter_messages)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "filter")
+builder.add_edge("filter", "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+# Message list with a preamble
+messages = [AIMessage("Hi.", name="Bot", id="1")]
+messages.append(HumanMessage("Hi.", name="Lance", id="2"))
+messages.append(
+    AIMessage(
+        "So you said you were researching ocean mammals?",
+        name="Bot",
+        id="3",
+    )
+)
+messages.append(
+    HumanMessage(
+        "Yes, I know about whales. But what others should I learn about?",
+        name="Lance",
+        id="4",
+    )
+)
+
+# Invoke
+output = graph.invoke({"messages": messages})
+for m in output["messages"]:
+    m.pretty_print()
+
+# Node
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    return {"messages": [llm.invoke(state["messages"][-1:])]}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+messages.append(output["messages"][-1])
+messages.append(HumanMessage(f"Tell me more about Narwhals!", name="Lance"))
+
+for m in messages:
+    m.pretty_print()
+
+# Invoke, using message filtering
+output = graph.invoke({"messages": messages})
+for m in output["messages"]:
+    m.pretty_print()
+
+from langchain_core.messages import trim_messages
+
+
+# Node
+def chat_model_node(state: MessagesState):
+    """
+    Run the chat_model_node graph node.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        Value produced for the surrounding example.
+    """
+    messages = trim_messages(
+        state["messages"],
+        max_tokens=100,
+        strategy="last",
+        token_counter=ChatOpenAI(model="gpt-4o"),
+        allow_partial=False,
+    )
+    return {"messages": [llm.invoke(messages)]}
+
+
+# Build graph
+builder = StateGraph(MessagesState)
+builder.add_node("chat_model", chat_model_node)
+builder.add_edge(START, "chat_model")
+builder.add_edge("chat_model", END)
+graph = builder.compile()
+
+# View
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+messages.append(output["messages"][-1])
+messages.append(HumanMessage(f"Tell me where Orcas live!", name="Lance"))
+
+# Example of trimming messages
+trim_messages(
+    messages,
+    max_tokens=100,
+    strategy="last",
+    token_counter=ChatOpenAI(model="gpt-4o"),
+    allow_partial=False,
+)
+
+# Invoke, using message trimming in the chat_model_node
+messages_out_trim = graph.invoke({"messages": messages})</code></pre></div>
+      </section>
+
+      <section id="terimler-sozlugu" aria-labelledby="terimler-sozlugu-title">
+        <h2 id="terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>English Term</th><th>Türkçe Karşılık</th><th>Kısa Açıklama</th></tr></thead>
+          <tbody>
+            <tr><td>Message</td><td>Mesaj</td><td>Model veya kullanıcı konuşma öğesi.</td></tr>
+            <tr><td>Message History</td><td>Mesaj geçmişi</td><td>Konuşmadaki mesajların sıralı listesi.</td></tr>
+            <tr><td>MessagesState</td><td>Mesaj durumu</td><td><code>messages</code> kanalını taşıyan hazır LangGraph state şeması.</td></tr>
+            <tr><td>AIMessage</td><td>Model mesajı</td><td>Asistan/model tarafından üretilmiş mesaj nesnesi.</td></tr>
+            <tr><td>HumanMessage</td><td>Kullanıcı mesajı</td><td>Kullanıcı tarafından verilen mesaj nesnesi.</td></tr>
+            <tr><td>RemoveMessage</td><td>Mesaj silme komutu</td><td>Belirli id’ye sahip mesajı silmek için kullanılan özel update.</td></tr>
+            <tr><td>Filter</td><td>Filtreleme</td><td>Mesaj listesinden bazı öğeleri çıkarmak veya modele göndermemek.</td></tr>
+            <tr><td>Trim</td><td>Kırpma</td><td>Mesaj listesini token sınırına göre kısaltmak.</td></tr>
+            <tr><td>Token Budget</td><td>Token bütçesi</td><td>Model çağrısında kullanılmasına izin verilen yaklaşık token sınırı.</td></tr>
+            <tr><td>Context Window</td><td>Bağlam penceresi</td><td>Modelin tek çağrıda işleyebildiği maksimum bağlam uzunluğu.</td></tr>
+            <tr><td>Reducer</td><td>Birleştirici</td><td>State güncellemelerini mevcut değerle birleştiren kural.</td></tr>
+            <tr><td>Tracing</td><td>İzleme</td><td>Graph ve model çağrılarının incelenebilir kayıtlarının tutulması.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+    </article>
+  </main>
+<!--NAV-RIGHT-->
+<aside class="toc-sidebar" id="toc-sidebar" aria-label="Ders içeriği">
+<nav class="toc-nav" aria-label="Ders içindekiler">
+<p class="toc-title">İçindekiler</p>
+<ul class="toc-list">
+<li class="toc-l1"><a href="#lesson-title">LangGraph’ta Mesaj Geçmişi: Filtreleme ve Kırpma</a></li>
+<li class="toc-l2"><a href="#kapsam-baglam-title">Kapsam ve Bağlam</a></li>
+<li class="toc-l2"><a href="#ogrenme-hedefleri-title">Öğrenme Hedefleri</a></li>
+<li class="toc-l2"><a href="#on-kosullar-title">Ön Koşullar</a></li>
+<li class="toc-l2"><a href="#notasyon-terimler-title">Notasyon ve Terim Tablosu</a></li>
+<li class="toc-l2"><a href="#buyuk-resim-title">Büyük Resim</a></li>
+<li class="toc-l2"><a href="#ana-anlatim-title">Ana Anlatım</a></li>
+<li class="toc-l3"><a href="#mesaj-gecmisi-neden-yonetilmelidir">Mesaj Geçmişi Neden Yönetilmelidir?</a></li>
+<li class="toc-l3"><a href="#statei-silmek-ve-model-inputunu-daraltmak">State’i Silmek ve Model Input’unu Daraltmak</a></li>
+<li class="toc-l3"><a href="#token-butcesine-gore-kirpma">Token Bütçesine Göre Kırpma</a></li>
+<li class="toc-l2"><a href="#kod-yuruyusu-title">Kod Yürüyüşü</a></li>
+<li class="toc-l3"><a href="#ortam-bagimliliklarini-hazirlama">Ortam bağımlılıklarını hazırlama</a></li>
+<li class="toc-l3"><a href="#api-anahtarlarini-guvenli-bicimde-isteme">API anahtarlarını güvenli biçimde isteme</a></li>
+<li class="toc-l3"><a href="#langsmith-izleme-degiskenlerini-ayarlama">LangSmith izleme değişkenlerini ayarlama</a></li>
+<li class="toc-l3"><a href="#mesaj-nesneleriyle-konusma-gecmisi-kurma">Mesaj nesneleriyle konuşma geçmişi kurma</a></li>
+<li class="toc-l3"><a href="#mesaj-listesini-dogrudan-chat-modeline-verme">Mesaj listesini doğrudan chat modeline verme</a></li>
+<li class="toc-l3"><a href="#messagesstate-ile-basit-chat-graph-kurma">MessagesState ile basit chat graph kurma</a></li>
+<li class="toc-l3"><a href="#graphi-tam-mesaj-gecmisiyle-calistirma">Graph’ı tam mesaj geçmişiyle çalıştırma</a></li>
+<li class="toc-l3"><a href="#removemessage-ile-eski-mesajlari-filtreleyen-graph-kurma">RemoveMessage ile eski mesajları filtreleyen graph kurma</a></li>
+<li class="toc-l3"><a href="#preamble-iceren-mesaj-listesini-filtreleme">Preamble içeren mesaj listesini filtreleme</a></li>
+<li class="toc-l3"><a href="#yalnizca-son-mesaji-modele-veren-graph-kurma">Yalnızca son mesajı modele veren graph kurma</a></li>
+<li class="toc-l3"><a href="#takip-sorusunu-konusma-gecmisine-ekleme">Takip sorusunu konuşma geçmişine ekleme</a></li>
+<li class="toc-l3"><a href="#uzayan-mesaj-gecmisini-gozlemleme">Uzayan mesaj geçmişini gözlemleme</a></li>
+<li class="toc-l3"><a href="#son-mesaj-filtresiyle-graphi-calistirma">Son mesaj filtresiyle graph’ı çalıştırma</a></li>
+<li class="toc-l3"><a href="#trim-messages-ile-token-butcesine-dayali-graph-kurma">trim_messages ile token bütçesine dayalı graph kurma</a></li>
+<li class="toc-l3"><a href="#yeni-takip-sorusunu-ekleme">Yeni takip sorusunu ekleme</a></li>
+<li class="toc-l3"><a href="#mesajlari-token-butcesine-gore-kirpma">Mesajları token bütçesine göre kırpma</a></li>
+<li class="toc-l3"><a href="#kirpma-kullanan-graphi-calistirma">Kırpma kullanan graph’ı çalıştırma</a></li>
+<li class="toc-l2"><a href="#ciktilarin-yorumlanmasi-title">Çıktıların Yorumlanması</a></li>
+<li class="toc-l2"><a href="#graph-akisi-title">Graph Akışı</a></li>
+<li class="toc-l2"><a href="#state-evrimi-title">State’in Evrimi</a></li>
+<li class="toc-l2"><a href="#agent-tool-etkilesimi-title">Agent / Tool Etkileşimi</a></li>
+<li class="toc-l2"><a href="#yaygin-hatalar-title">Yaygın Hatalar</a></li>
+<li class="toc-l2"><a href="#son-cikarimlar-title">Son Çıkarımlar</a></li>
+<li class="toc-l2"><a href="#kod-akisi-tek-parca-title">Dersin Kod Akışı</a></li>
+<li class="toc-l2"><a href="#terimler-sozlugu-title">İngilizce - Türkçe Terimler Sözlüğü</a></li>
+</ul></nav></aside>
+</div><!-- /notebook-shell -->
+<!--/NAV-RIGHT-->
+  <script>
+(function () {
+  const keywords = new Set(['from','import','class','def','return','if','else','elif','for','in','try','except','as','with','None','True','False','or','and','not']);
+  const builtins = new Set(['print','str','int','list','dict','set','len','range','super']);
+  function escapeHtml(value) { return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function span(cls, value) { return '<span class="' + cls + '">' + escapeHtml(value) + '</span>'; }
+  function highlightShell(line) {
+    const tokenPattern = /(#[^\n]*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+|\b[A-Za-z_][A-Za-z0-9_\-]*\b)/g;
+    let result = '', last = 0, match;
+    while ((match = tokenPattern.exec(line)) !== null) {
+      const value = match[0];
+      result += escapeHtml(line.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('%%') || value.startsWith('%')) result += span('tok-keyword', value);
+      else if (/^-[A-Z]$/.test(value)) result += span('tok-operator', value);
+      else if (value.startsWith('-')) result += span('tok-builtin', value);
+      else if (['pip','install','capture'].includes(value)) result += span('tok-function', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(line.slice(last));
+  }
+  function findTripleQuote(line) {
+    const tripleDouble = String.fromCharCode(34, 34, 34);
+    const tripleSingle = String.fromCharCode(39, 39, 39);
+    const doubleIndex = line.indexOf(tripleDouble);
+    const singleIndex = line.indexOf(tripleSingle);
+    if (doubleIndex === -1) return singleIndex === -1 ? null : { index: singleIndex, quote: tripleSingle };
+    if (singleIndex === -1) return { index: doubleIndex, quote: tripleDouble };
+    return doubleIndex < singleIndex ? { index: doubleIndex, quote: tripleDouble } : { index: singleIndex, quote: tripleSingle };
+  }
+  function highlightPythonBase(line) {
+    const tokenPattern = /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_]*\b|->|==|!=|<=|>=|[=+\-*\/|:\[\]{}(),.])/g;
+    let result = '', last = 0, match, expectFunction = false, expectClass = false;
+    while ((match = tokenPattern.exec(line)) !== null) {
+      const value = match[0];
+      result += escapeHtml(line.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+      else if (/^\d/.test(value)) result += span('tok-number', value);
+      else if (expectFunction && /^[A-Za-z_]/.test(value)) { result += span('tok-function', value); expectFunction = false; }
+      else if (expectClass && /^[A-Za-z_]/.test(value)) { result += span('tok-class', value); expectClass = false; }
+      else if (keywords.has(value)) { result += span('tok-keyword', value); expectFunction = value === 'def'; expectClass = value === 'class'; }
+      else if (builtins.has(value)) result += span('tok-builtin', value);
+      else if (/^(->|==|!=|<=|>=|=|\+|-|\*|\/|\||:)$/.test(value)) result += span('tok-operator', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(line.slice(last));
+  }
+  function highlightPythonWithTripleState(line, state) {
+    if (state.inTriple) {
+      const end = line.indexOf(state.quote);
+      if (end === -1) return span('tok-string', line);
+      const before = line.slice(0, end + state.quote.length);
+      const after = line.slice(end + state.quote.length);
+      state.inTriple = false;
+      state.quote = '';
+      return span('tok-string', before) + highlightPythonWithTripleState(after, state);
+    }
+    const found = findTripleQuote(line);
+    if (!found) return highlightPythonBase(line);
+    const before = line.slice(0, found.index);
+    const rest = line.slice(found.index);
+    const close = rest.indexOf(found.quote, found.quote.length);
+    if (close === -1) {
+      state.inTriple = true;
+      state.quote = found.quote;
+      return highlightPythonBase(before) + span('tok-string', rest);
+    }
+    const literal = rest.slice(0, close + found.quote.length);
+    const after = rest.slice(close + found.quote.length);
+    return highlightPythonBase(before) + span('tok-string', literal) + highlightPythonWithTripleState(after, state);
+  }
+  function highlightOutput(text) {
+    const tokenPattern = /(#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_][A-Za-z0-9_]*\b|[{}\[\]():,=])/g;
+    let result = '', last = 0, match;
+    while ((match = tokenPattern.exec(text)) !== null) {
+      const value = match[0];
+      result += escapeHtml(text.slice(last, match.index));
+      if (value.startsWith('#')) result += span('tok-comment', value);
+      else if (value.startsWith('"') || value.startsWith("'")) result += span('tok-string', value);
+      else if (/^\d/.test(value)) result += span('tok-number', value);
+      else if (['Error','TypeError','InvalidUpdateError','Validation','LangChainBetaWarning'].includes(value)) result += span('tok-keyword', value);
+      else if (/^[{}\[\]():,=]$/.test(value)) result += span('tok-operator', value);
+      else result += escapeHtml(value);
+      last = tokenPattern.lastIndex;
+    }
+    return result + escapeHtml(text.slice(last));
+  }
+  function noteHtml(parts) {
+    return parts.map(function (part) { return '<div class="tooltip-section">' + part + '</div>'; }).join('');
+  }
+
+
+  function noteForLine(line) {
+    const t = line.trim();
+    if (!t) return '';
+    if (t.startsWith('%%capture')) return noteHtml(['<code>%%capture --no-stderr</code>, Jupyter çıktısındaki kurulum loglarını yakalar. <code>--no-stderr</code> hata akışını gizlemez; böylece gerçek kurulum hataları görünür kalabilir.']);
+    if (t.startsWith('%pip install')) return noteHtml(['<code>%pip install --quiet -U ...</code>, kernel ortamına paket kurar. <code>--quiet</code> logları azaltır, <code>-U</code> paketleri günceller; bu derste <code>langchain_core</code>, <code>langgraph</code> ve <code>langchain_openai</code> gerekir.']);
+    if (t === 'import getpass') return noteHtml(['<code>getpass</code>, API anahtarını terminalde gizli giriş olarak almak için kullanılır. Kullanıcı değeri yazarken ekrana açık metin basılmaz.']);
+    if (t === 'import os') return noteHtml(['<code>os</code>, ortam değişkenlerini okumak ve yazmak için kullanılır. Bu derste <code>os.environ</code> üzerinden API ve tracing ayarları yapılır.']);
+    if (t.startsWith('def _set_env')) return noteHtml(['<code>_set_env(var: str)</code>, ortam değişkeni eksikse değeri isteyen yardımcı fonksiyondur. Parametre <code>var</code> string değişken adıdır; fonksiyon değer döndürmez, <code>os.environ</code> üzerinde yan etki üretir.']);
+    if (t.startsWith('if not os.environ.get')) return noteHtml(['<code>os.environ.get(var)</code>, adı <code>var</code> olan ortam değişkenini okur. Değer yoksa <code>None</code> benzeri falsy sonuç döner; bu koşul anahtarı tekrar istememek için guard görevi görür.']);
+    if (t.includes('getpass.getpass')) return noteHtml(['<code>getpass.getpass(prompt)</code>, kullanıcıdan gizli metin alır. Prompt olarak <code>f&quot;{var}: &quot;</code> verilir; dönüş değeri string olarak <code>os.environ[var]</code> içine yazılır.']);
+    if (t.startsWith('_set_env(')) return noteHtml(['Bu çağrı, verilen ortam değişkeninin ayarlı olduğundan emin olur. Değişken zaten varsa mevcut değer korunur; yoksa kullanıcıdan gizli giriş istenir.']);
+    if (t.includes('LANGSMITH_TRACING')) return noteHtml(['<code>LANGSMITH_TRACING=&quot;true&quot;</code>, izleme kayıtlarını etkinleştirir. Bu ayar modelin hangi mesajları gördüğünü daha sonra denetlemek için yararlıdır.']);
+    if (t.includes('LANGSMITH_PROJECT')) return noteHtml(['<code>LANGSMITH_PROJECT</code>, izleme kayıtlarının hangi proje altında gruplanacağını belirler. Değer string formatındadır ve model/graph davranışını doğrudan değiştirmez.']);
+    if (t.startsWith('from pprint import pprint')) return noteHtml(['<code>pprint</code>, karmaşık Python nesnelerini okunabilir basmak için kullanılan standart yardımcıdır. Bu blokta import edilmiştir; mesaj gösteriminde asıl kullanılan yöntem <code>pretty_print()</code> çağrısıdır.']);
+    if (t.startsWith('from langchain_core.messages import AIMessage, HumanMessage')) return noteHtml(['<code>AIMessage</code> model cevabını, <code>HumanMessage</code> kullanıcı mesajını temsil eder. İkisi de <code>content</code> metni, isteğe bağlı <code>name</code> ve gerektiğinde <code>id</code> alanı taşıyabilir.']);
+    if (t.startsWith('from langchain_openai import ChatOpenAI')) return noteHtml(['<code>ChatOpenAI</code>, OpenAI chat modelini LangChain arayüzüyle çağıran sınıftır. Bu derste <code>model=&quot;gpt-4o&quot;</code> argümanıyla örneklenir.']);
+    if (t.startsWith('from IPython.display import Image, display')) return noteHtml(['<code>Image</code> ve <code>display</code>, graph çizimini Jupyter çıktısı olarak göstermek için kullanılır. State veya mesaj içeriğini değiştirmez.']);
+    if (t.startsWith('from langgraph.graph import MessagesState')) return noteHtml(['<code>MessagesState</code>, içinde <code>messages</code> kanalı bulunan hazır state şemasıdır. Bu kanal, mesaj ekleme/güncelleme/silme davranışı için <code>add_messages</code> reducer semantiğiyle çalışır.']);
+    if (t.startsWith('from langgraph.graph import StateGraph')) return noteHtml(['<code>StateGraph</code> graph builder sınıfıdır. <code>START</code> sanal başlangıç, <code>END</code> sanal bitiş düğümüdür; edge tanımları bu sembollerle kurulur.']);
+    if (t.startsWith('from langchain_core.messages import RemoveMessage')) return noteHtml(['<code>RemoveMessage</code>, bir mesajı listeden elle silmek yerine reducer’a “bu <code>id</code> değerli mesajı kaldır” komutu veren özel mesaj nesnesidir.']);
+    if (t.startsWith('from langchain_core.messages import trim_messages')) return noteHtml(['<code>trim_messages</code>, mesaj listesini token bütçesi, seçim stratejisi ve token sayacı gibi kurallarla kırpar. Uzun konuşmalarda model input’unu context window içine sığdırmak için kullanılır.']);
+    if (t === 'messages = [' || t.startsWith('messages = [AIMessage')) return noteHtml(['<code>messages</code>, konuşma geçmişini tutan Python listesidir. Elemanları <code>AIMessage</code> ve <code>HumanMessage</code> nesneleridir; LangGraph içinde bu liste <code>MessagesState</code> kanalına verilir.']);
+    if (t.includes('AIMessage(')) return noteHtml(['<code>AIMessage(content, name=..., id=...)</code>, model tarafını temsil eder. İlk argüman ya da <code>content</code> mesaj metnidir; <code>name</code> okunabilir kaynak etiketi, <code>id</code> ise reducer işlemleri için kimliktir.']);
+    if (t.includes('HumanMessage(')) return noteHtml(['<code>HumanMessage(content, name=..., id=...)</code>, kullanıcı mesajını temsil eder. <code>content</code> string olmalıdır; <code>name</code> konuşmacı adını, <code>id</code> ise güncelleme/silme eşleştirmesini kolaylaştırır.']);
+    if (t.startsWith('name=')) return noteHtml(['<code>name</code>, mesajın hangi aktörden geldiğini okunabilir hale getirir. Model çağrısının ana içeriği değildir; çıktıların ve trace kayıtlarının anlaşılmasını kolaylaştırır.']);
+    if (t.startsWith('id=')) return noteHtml(['<code>id</code>, mesaj reducer’ı için kimlik alanıdır. <code>RemoveMessage(id=...)</code> bu kimliği kullanarak hangi mesajın silineceğini belirtir.']);
+    if (t === 'for m in messages:' || t === 'for m in output["messages"]:') return noteHtml(['Bu döngü mesaj listesindeki her nesneyi sırayla gezer. <code>m</code> değişkeni her adımda bir <code>AIMessage</code> veya <code>HumanMessage</code> nesnesidir.']);
+    if (t === 'm.pretty_print()') return noteHtml(['<code>pretty_print()</code>, mesaj nesnesini role, isim ve içerik bölümleriyle okunabilir formatta terminal çıktısına basar. State’i değiştirmez.']);
+    if (t.startsWith('llm = ChatOpenAI')) return noteHtml(['<code>ChatOpenAI(model=&quot;gpt-4o&quot;)</code>, kullanılacak chat modelini seçer. Argüman <code>model</code> string model adıdır; API anahtarı ortam değişkeninden okunur.']);
+    if (t === 'llm.invoke(messages)') return noteHtml(['<code>llm.invoke(messages)</code>, mesaj listesini doğrudan modele gönderir. Parametre <code>list[BaseMessage]</code> formatındadır; dönüş değeri genellikle bir <code>AIMessage</code> nesnesidir.']);
+    if (t.startsWith('def chat_model_node')) return noteHtml(['<code>chat_model_node(state: MessagesState)</code>, graph node fonksiyonudur. Parametre <code>state</code> içinde <code>messages</code> alanı bulunur; dönüş değeri kısmi state update sözlüğüdür.']);
+    if (t === 'return {"messages": llm.invoke(state["messages"])}') return noteHtml(['Bu node, state’teki tüm mesaj geçmişini modele gönderir ve dönen <code>AIMessage</code> nesnesini <code>messages</code> kanalına update olarak verir.']);
+    if (t === 'return {"messages": [llm.invoke(state["messages"])]}') return noteHtml(['Bu dönüşte model cevabı liste içine alınır. <code>MessagesState</code> reducer’ı yeni mesaj listesini mevcut geçmişe ekleyebilir.']);
+    if (t.includes('state["messages"][-1:]')) return noteHtml(['<code>state[&quot;messages&quot;][-1:]</code>, listenin yalnızca son elemanını yine liste olarak döndürür. Böylece model çağrısı tam state geçmişini değil, son mesajı görür.']);
+    if (t.startsWith('builder = StateGraph(MessagesState)')) return noteHtml(['<code>StateGraph(MessagesState)</code>, <code>messages</code> kanalına sahip graph builder oluşturur. Hazır reducer davranışı bu state şemasından gelir.']);
+    if (t.startsWith('builder.add_node(')) return noteHtml(['<code>add_node(name, action)</code>, graph’a node ekler. <code>name</code> string node adıdır; <code>action</code> state alıp kısmi state update döndüren fonksiyondur.']);
+    if (t.startsWith('builder.add_edge(START,')) return noteHtml(['<code>add_edge(START, hedef)</code>, graph’ın sanal başlangıcından ilk gerçek node’a yönlü geçiş kurar. Bu satır ilk çalışacak node’u belirler.']);
+    if (t.includes('add_edge("filter", "chat_model")')) return noteHtml(['Bu edge, <code>filter</code> node’u tamamlandıktan sonra akışı <code>chat_model</code> node’una taşır. Böylece silme update’leri model çağrısından önce uygulanır.']);
+    if (t.includes('add_edge("chat_model", END)')) return noteHtml(['Bu edge, chat model node’u tamamlandıktan sonra graph’ı <code>END</code> noktasına bağlar ve final state’in döndürülmesini sağlar.']);
+    if (t === 'graph = builder.compile()') return noteHtml(['<code>compile()</code>, builder üzerinde tanımlı node ve edge yapısını çalıştırılabilir graph nesnesine dönüştürür. Bu adımdan sonra <code>invoke</code> kullanılabilir.']);
+    if (t.startsWith('display(Image(graph.get_graph().draw_mermaid_png()))')) return noteHtml(['Bu satır graph topolojisini görselleştirir: <code>get_graph()</code> çizilebilir temsili alır, <code>draw_mermaid_png()</code> PNG üretir, <code>display(Image(...))</code> sonucu gösterir.']);
+    if (t.startsWith('output = graph.invoke')) return noteHtml(['<code>graph.invoke({&quot;messages&quot;: messages})</code>, graph’ı tek giriş state’iyle çalıştırır. Girdi formatı <code>{&quot;messages&quot;: list[BaseMessage]}</code> şeklindedir.']);
+    if (t.startsWith('def filter_messages')) return noteHtml(['<code>filter_messages(state: MessagesState)</code>, mevcut mesaj listesini okuyup silme update’leri döndüren node’dur. Model çağırmaz; yalnızca state listesini küçültmek için çalışır.']);
+    if (t.includes('Delete all but the 2 most recent messages')) return noteHtml(['Bu yorum, filtre stratejisini açıklar: son iki mesaj korunur, daha eski mesajlar için <code>RemoveMessage</code> üretilir.']);
+    if (t === 'delete_messages = [') return noteHtml(['<code>delete_messages</code>, silme komutlarını taşıyan listedir. Elemanları gerçek mesaj değil <code>RemoveMessage</code> nesneleridir; reducer bunları uygulayarak eski mesajları kaldırır.']);
+    if (t.includes('RemoveMessage(id=m.id)')) return noteHtml(['<code>RemoveMessage(id=m.id)</code>, mevcut mesajın <code>id</code> değerini silme komutuna dönüştürür. Liste üreteci <code>state[&quot;messages&quot;][:-2]</code> ile son iki mesaj hariç tüm eski mesajları hedefler.']);
+    if (t.includes('state["messages"][:-2]')) return noteHtml(['<code>state[&quot;messages&quot;][:-2]</code>, son iki eleman dışındaki tüm eski mesajları seçer. Bu slice, hangi mesajlara silme komutu üretileceğini belirler.']);
+    if (t === 'return {"messages": delete_messages}') return noteHtml(['Bu dönüş, mesaj içeriği değil silme komutları içeren kısmi state update’idir. <code>MessagesState</code> reducer’ı bu <code>RemoveMessage</code> nesnelerini yorumlayarak gerçek listeyi günceller.']);
+    if (t.startsWith('messages.append(output["messages"][-1])')) return noteHtml(['<code>output[&quot;messages&quot;][-1]</code>, önceki graph çalıştırmasının son mesajını alır. Bu genellikle model cevabıdır ve konuşma geçmişine eklenir.']);
+    if (t.startsWith('messages.append(')) return noteHtml(['<code>messages.append(...)</code>, konuşma geçmişine yeni mesaj ekler. Eklenen nesne <code>AIMessage</code> veya <code>HumanMessage</code> formatındadır.']);
+    if (t.startsWith('messages = trim_messages(')) return noteHtml(['<code>trim_messages(...)</code> sonucu yerel <code>messages</code> değişkenine atanır. Bu değişken, node içinde modele gönderilecek kırpılmış mesaj listesidir; graph state’inin tamamıyla aynı olmak zorunda değildir.']);
+    if (t === 'trim_messages(') return noteHtml(['Bu çağrı, mesaj listesini token bütçesine göre kırpma işlemini doğrudan gösterir. Model cevabı üretmez; yalnızca seçilen mesaj alt listesini döndürür.']);
+    if (t === 'state["messages"],' || t === 'messages,') return noteHtml(['Bu argüman kırpılacak mesaj listesidir. Format <code>list[BaseMessage]</code> olmalıdır; elemanlar <code>AIMessage</code> ve <code>HumanMessage</code> gibi mesaj nesneleridir.']);
+    if (t.startsWith('max_tokens=')) return noteHtml(['<code>max_tokens</code>, kırpılmış mesaj listesinin hedef token bütçesidir. Değer tamsayıdır; bu derste <code>100</code> kullanılır.']);
+    if (t.startsWith('strategy=')) return noteHtml(['<code>strategy=&quot;last&quot;</code>, seçim yönünü son mesajlardan başlatır. Uzun konuşmada en yeni kullanıcı talebini korumak için kullanılır.']);
+    if (t.startsWith('token_counter=')) return noteHtml(['<code>token_counter</code>, mesajların kaç token tuttuğunu hesaplayan sayaçtır. Bu örnekte aynı model ailesine uygun sayım için <code>ChatOpenAI(model=&quot;gpt-4o&quot;)</code> verilir.']);
+    if (t.startsWith('allow_partial=')) return noteHtml(['<code>allow_partial=False</code>, mesajın ortasından kesilmesine izin vermez. Bir mesaj bütçeye tam sığmıyorsa parça olarak alınmaz; bu nedenle sonuç yalnızca son kısa mesaj olabilir.']);
+    if (t === 'return {"messages": [llm.invoke(messages)]}') return noteHtml(['Bu dönüş, kırpılmış yerel <code>messages</code> listesini modele gönderir ve model cevabını state’in <code>messages</code> kanalına yeni update olarak verir.']);
+    if (t.startsWith('messages_out_trim = graph.invoke')) return noteHtml(['Bu çağrı kırpma yapan graph’ı çalıştırır ve sonucu <code>messages_out_trim</code> değişkenine yazar. Görünür çıktı üretmez; sonuç değişkende tutulur.']);
+    if (t.startsWith('# Message list with a preamble')) return noteHtml(['Bu bölüm, bilinçli olarak gereksiz başlangıç mesajları içeren bir konuşma geçmişi kurar. Amaç filtre node’unun bu preamble kısmını silebildiğini göstermektir.']);
+    if (t.startsWith('# Invoke')) return noteHtml(['Bu bölüm graph çalıştırmasını başlatır. Girdi state’i <code>messages</code> anahtarı altında mesaj listesini taşır.']);
+    if (t.startsWith('# Node')) return noteHtml(['Bu yorumdan sonra graph içinde çalışacak node fonksiyonu tanımlanır. Node, state okur ve kısmi state update döndürür.']);
+    if (t.startsWith('# Build graph')) return noteHtml(['Bu bölüm builder, node ve edge tanımlarını bir araya getirir. Graph topolojisi burada kurulup <code>compile()</code> ile yürütülebilir hale getirilir.']);
+    if (t.startsWith('# View')) return noteHtml(['Bu bölüm graph yapısını görselleştirir. Model çağrısı veya state güncellemesi üretmez; topolojiyi incelemeye yarar.']);
+    return noteHtml(['Bu satır çalıştırılabilir ders kodunun parçasıdır. Bağlamı, bulunduğu mesaj yönetimi stratejisi ve <code>MessagesState</code> kanalının reducer davranışıyla birlikte değerlendirilmelidir.']);
+  }
+
+  function renderCodeLines(block, raw, lang) {
+    const lines = raw.split('\n');
+    const tripleState = { inTriple: false, quote: '' };
+    block.innerHTML = '';
+    lines.forEach(function (line) {
+      const lineEl = document.createElement('span');
+      lineEl.className = 'code-line';
+      const trimmed = line.trim();
+      let htmlLine;
+      if (lang === 'shell' || (trimmed.startsWith('%') && !tripleState.inTriple)) htmlLine = highlightShell(line);
+      else if (lang === 'python') htmlLine = highlightPythonWithTripleState(line, tripleState);
+      else htmlLine = highlightOutput(line);
+      lineEl.innerHTML = htmlLine || '&nbsp;';
+      const note = noteForLine(line);
+      if (note) { lineEl.dataset.note = note; lineEl.tabIndex = 0; }
+      block.appendChild(lineEl);
+    });
+  }
+  document.querySelectorAll('pre code[data-lang]').forEach(function (block) {
+    try {
+      const lang = block.getAttribute('data-lang');
+      const raw = block.textContent;
+      block.dataset.rawCode = raw;
+      if (block.closest('.code-body')) renderCodeLines(block, raw, lang);
+      else block.innerHTML = highlightOutput(raw);
+    } catch (err) {
+      block.dataset.renderError = err && err.message ? err.message : 'true';
+    }
+  });
+  const tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  let activeLine = null;
+  function positionTooltip(line) {
+    const rect = line.getBoundingClientRect();
+    tooltip.style.maxWidth = window.innerWidth <= 560 ? 'calc(100vw - 32px)' : '420px';
+    const tipRect = tooltip.getBoundingClientRect();
+    let left = rect.right + 12;
+    let top = rect.top - 4;
+    if (left + tipRect.width > window.innerWidth - 16) {
+      left = Math.max(16, rect.left);
+      top = rect.bottom + 8;
+    }
+    if (top + tipRect.height > window.innerHeight - 16) top = Math.max(16, rect.top - tipRect.height - 8);
+    if (left + tipRect.width > window.innerWidth - 16) left = Math.max(16, window.innerWidth - tipRect.width - 16);
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(line) {
+    activeLine = line;
+    tooltip.innerHTML = line.dataset.note || '';
+    tooltip.classList.add('is-visible');
+    positionTooltip(line);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line); });
+  document.addEventListener('pointerout', function (event) { if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip(); });
+  document.addEventListener('scroll', function () { if (activeLine) positionTooltip(activeLine); }, true);
+  window.addEventListener('resize', function () { if (activeLine) positionTooltip(activeLine); });
+  document.addEventListener('focusin', function (event) { const line = event.target.closest ? event.target.closest('.code-line[data-note]') : null; if (line) showTooltip(line); });
+  document.addEventListener('focusout', function (event) { if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip(); });
+  document.querySelectorAll('.copy-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const card = button.closest('.code-card');
+      const code = card ? card.querySelector('code[data-lang]') : null;
+      const text = code ? (code.dataset.rawCode || code.textContent) : '';
+      function done() { const old = button.textContent; button.textContent = 'Kopyalandı!'; setTimeout(function () { button.textContent = old; }, 1500); }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+      else fallback();
+      function fallback() {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.left = '-9999px';
+        document.body.appendChild(area);
+        area.select();
+        try { document.execCommand('copy'); done(); } catch (err) { button.textContent = 'Kopyalanamadı'; }
+        document.body.removeChild(area);
+      }
+    });
+  });
+  function fitTitle() {
+    const title = document.getElementById('lesson-title');
+    if (!title) return;
+    title.style.fontSize = '';
+    const min = 28;
+    let size = parseFloat(window.getComputedStyle(title).fontSize);
+    while (title.scrollWidth > title.clientWidth && size > min) {
+      size -= 1;
+      title.style.fontSize = size + 'px';
+    }
+  }
+  fitTitle();
+  window.addEventListener('resize', fitTitle);
+})();
+</script>
+
+<!-- Codex course-wide notebook QA patch -->
+<script>
+(function () {
+  'use strict';
+  var KEYWORDS = /^(as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)$/;
+  var BUILTINS = /^(abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)$/;
+  var ONLY_CLOSERS = /^[\s\]\}\),;:]+$/;
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+  function span(cls, value) {
+    return '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+  function tokenClass(token) {
+    if (!token) return 'tok-name';
+    if (token.charAt(0) === '#') return 'tok-comment';
+    if (/^[rRuUbBfF]*["']/.test(token)) return 'tok-string';
+    if (/^\.[A-Za-z_]\w*/.test(token)) return 'tok-attribute';
+    if (KEYWORDS.test(token)) return 'tok-keyword';
+    if (BUILTINS.test(token)) return 'tok-builtin';
+    if (/^\d/.test(token)) return 'tok-number';
+    if (/^[A-Za-z_]\w*(?=\s*\()/.test(token)) return 'tok-function';
+    if (/^(==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|=|\+|\-|\*\*|\*|\/|\/\/|%|\||&|:)$/.test(token)) return 'tok-operator';
+    return 'tok-name';
+  }
+  function highlightPython(line, state) {
+    if (state.inTriple) {
+      var done = line.indexOf(state.quote) !== -1;
+      if (done) state.inTriple = false;
+      return span('tok-string', line);
+    }
+    var tripleMatch = /[rRuUbBfF]*(\"\"\"|''')/.exec(line);
+    if (tripleMatch) {
+      var quote = tripleMatch[1];
+      var first = line.indexOf(quote);
+      var second = line.indexOf(quote, first + 3);
+      if (second === -1) state.inTriple = true;
+      state.quote = quote;
+      return span('tok-string', line);
+    }
+    var tokenRe = /([rRuUbBfF]*"(?:\\.|[^"\\])*"|[rRuUbBfF]*'(?:\\.|[^'\\])*'|#.*|\.[A-Za-z_]\w*|\b(?:as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield|None|True|False|and)\b|\b(?:abs|all|any|bool|dict|enumerate|float|int|isinstance|len|list|max|min|print|range|round|set|sorted|str|sum|super|tuple|type|zip)\b|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*(?=\s*\()|\b[A-Za-z_]\w*\b|==|!=|>=|<=|->|\+=|-=|\*=|\/=|:=|\*\*|\/\/|[=+\-*\/%|&:])/g;
+    var out = '';
+    var last = 0;
+    var match;
+    var expectDefinitionName = false;
+    var inClassBaseList = false;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      var tokenEnd = match.index + token.length;
+      var klass = tokenClass(token);
+      var isIdentifier = /^[A-Za-z_]\w*$/.test(token);
+      if (expectDefinitionName && isIdentifier) {
+        klass = 'tok-class';
+        expectDefinitionName = false;
+        inClassBaseList = /^\s*\(/.test(line.slice(tokenEnd));
+      } else if (klass === 'tok-name' && isIdentifier && /^\s*\(/.test(line.slice(tokenEnd))) {
+        klass = 'tok-function';
+      }
+      out += span(klass, token);
+      if (token === 'def' || token === 'class') {
+        expectDefinitionName = true;
+      } else if (token === ':') {
+        inClassBaseList = false;
+      }
+      last = tokenEnd;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function highlightShell(line) {
+    var tokenRe = /(#.*|%%?[A-Za-z_\-]+|--?[A-Za-z0-9_\-]+)/g;
+    var out = '';
+    var last = 0;
+    var match;
+    while ((match = tokenRe.exec(line)) !== null) {
+      out += escapeHtml(line.slice(last, match.index));
+      var token = match[0];
+      if (token.charAt(0) === '#') out += span('tok-comment', token);
+      else if (token.charAt(0) === '%') out += span('tok-keyword', token);
+      else if (token.charAt(0) === '-') out += (match.index > 0 && /[A-Za-z0-9_]/.test(line.charAt(match.index - 1))) ? escapeHtml(token) : span('tok-keyword', token);
+      else out += span('tok-function', token);
+      last = match.index + token.length;
+      if (token.charAt(0) === '#') break;
+    }
+    out += escapeHtml(line.slice(last));
+    return out || '&nbsp;';
+  }
+  function compactCode(line) {
+    var trimmed = String(line || '').trim().replace(/\s+/g, ' ');
+    if (trimmed.length > 44) trimmed = trimmed.slice(0, 41) + '...';
+    return '`' + trimmed.replace(/`/g, '') + '`';
+  }
+  function words(note) {
+    return String(note || '').replace(/`[^`]+`/g, 'kod').trim().split(/\s+/).filter(Boolean);
+  }
+  function cap(note) {
+    var parts = words(note);
+    if (parts.length <= 42) return note;
+    return parts.slice(0, 41).join(' ') + '.';
+  }
+  function assignmentName(t) {
+    var m = /^([A-Za-z_][\w\.]*(?:\[[^\]]+\])?)\s*(?::[^=]+)?=/.exec(t);
+    return m ? m[1] : '';
+  }
+  function noteForLine(line, lang) {
+    var t = String(line || '').trim();
+    if (!t || ONLY_CLOSERS.test(t)) return '';
+    if (lang === 'output') return '';
+    if (/^#/.test(t)) return cap('Yorum satırı, ' + compactCode(t) + ' ifadesiyle kodun amacını açıklar; Python tarafından yürütülmez, notebook içinde okuma bağlamı sağlar.');
+    if (/^%%?/.test(t) || /^!/.test(t)) return cap(compactCode(t) + ' Jupyter/IPython komutudur. Kurulum veya hücre davranışını yönetir; Python state güncellemesi üretmeden ortamı hazırlar.');
+    if (/^from\s+.+\s+import\s+/.test(t) || /^import\s+/.test(t)) return cap('Import satırı, ' + compactCode(t) + ' ile gerekli modül veya adları namespace içine alır; sonraki Python, LangChain ya da LangGraph çağrıları bu isimleri kullanır.');
+    if (/^@/.test(t)) return cap('Decorator satırı, ' + compactCode(t) + ' ile alttaki fonksiyona metadata veya sarmalayıcı davranış ekler; tool, validator ya da runtime kaydı için kullanılır.');
+    if (/^(async\s+def|def)\s+/.test(t)) return cap('Fonksiyon tanımı, ' + compactCode(t) + ' imzasıyla çalıştırılabilir bir Python birimi oluşturur; parametreleri dışarıdan alır ve notebook akışında yardımcı, node veya tool rolü üstlenir.');
+    if (/^class\s+/.test(t)) return cap('Class tanımı, ' + compactCode(t) + ' ile yeni bir Python tipi veya state şeması oluşturur; alanlar LangGraph/Pydantic tarafında veri sözleşmesi gibi okunur.');
+    if (/^return\b/.test(t)) return cap('Return satırı, ' + compactCode(t) + ' değerini çağırana döndürür. LangGraph node içinde dict dönüyorsa bu partial state güncellemesi olarak reducer mantığına girer.');
+    if (/^(if|elif|else|for|while|try|except|finally|with)\b/.test(t)) return cap('Control-flow satırı, ' + compactCode(t) + ' koşulunu veya bloğunu yönetir; Python yürütme sırasını ve LangGraph örneğinde hangi verinin işleneceğini belirler.');
+    if (/\.add_node\(/.test(t)) return cap(compactCode(t) + ' graph builder içine node kaydeder; ilk değer node kimliği, callable ise state okuyup partial state döndüren yürütme birimidir.');
+    if (/\.add_edge\(/.test(t)) return cap(compactCode(t) + ' graph akışına sabit edge ekler; kaynak node tamamlanınca hedef node ya da END yönüne geçileceğini belirtir.');
+    if (/\.add_conditional_edges\(/.test(t)) return cap(compactCode(t) + ' koşullu edge ekler; routing callable state değerini okuyarak sonraki node adını, END değerini veya path_map karşılığını seçer.');
+    if (/StateGraph\(/.test(t)) return cap(compactCode(t) + ' StateGraph builder oluşturur; verilen state şeması node girdilerini, node dönüşlerinin de hangi alanları güncelleyebileceğini tanımlar.');
+    if (/\.compile\(/.test(t)) return cap(compactCode(t) + ' builder tanımını çalıştırılabilir CompiledStateGraph nesnesine çevirir; checkpointer, store veya interrupt ayarları runtime davranışını belirler.');
+    if (/ChatOpenAI\(/.test(t)) return cap(compactCode(t) + ' LangChain chat model wrapper oluşturur; model adı, temperature ve provider ayarları Runnable çağrısının davranışını belirler.');
+    if (/ToolNode\(/.test(t) || /\.bind_tools\(/.test(t)) return cap(compactCode(t) + ' tool calling yapısını kurar; callable listesi veya tool şemaları modelin yapılandırılmış araç çağrısı üretmesini sağlar.');
+    var assigned = assignmentName(t);
+    if (assigned) return cap('Atama satırı, ' + compactCode(assigned) + ' değişkenine bu ifadenin sonucunu bağlar; sonraki Python, LangChain veya LangGraph adımları bu değeri kullanır.');
+    if (/^[A-Za-z_][\w\.]*\s*\(/.test(t) || /\.[A-Za-z_]\w*\s*\(/.test(t)) return cap('Fonksiyon veya method çağrısı, ' + compactCode(t) + ' ifadesini çalıştırır; argümanlar çağrılan API’nin beklediği girdi, çıktı ise sonraki adıma veri sağlar.');
+    if (/^["'][^"']+["']\s*:/.test(t) || /^[A-Za-z_][\w-]*\s*:/.test(t)) return cap('Sözlük veya şema alanı, ' + compactCode(t) + ' anahtarını ve değer tipini belirtir; state, config veya API payload yapısını okunur hale getirir.');
+    return cap('Anlamlı kod satırı, ' + compactCode(t) + ' ifadesiyle notebook akışında veri, kontrol veya API davranışı tanımlar; bağlamı sonraki satırlar kullanır.');
+  }
+  function renderCodeBlock(block) {
+    var lang = (block.getAttribute('data-lang') || 'python').toLowerCase();
+    var raw = block.dataset.rawCode || block.textContent || '';
+    block.dataset.rawCode = raw;
+    var lines = raw.replace(/\n$/, '').split('\n');
+    var state = { inTriple: false, quote: '' };
+    block.innerHTML = lines.map(function (line) {
+      var trimmed = line.trim();
+      var rendered = (lang === 'shell' || trimmed.indexOf('%') === 0 || trimmed.indexOf('!') === 0) ? highlightShell(line) : highlightPython(line, state);
+      var note = noteForLine(line, lang);
+      var attrs = note ? ' class="code-line" tabindex="0" data-note="' + escapeHtml(note) + '"' : ' class="code-line"';
+      return '<span' + attrs + '>' + (rendered || '&nbsp;') + '</span>';
+    }).join('');
+  }
+  function normalizeOutputs() {
+    document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').forEach(function (block) {
+      var raw = block.dataset.rawCode || block.textContent || '';
+      block.dataset.rawCode = raw;
+      block.textContent = raw;
+      block.removeAttribute('data-note');
+      block.querySelectorAll('[data-note]').forEach(function (node) { node.removeAttribute('data-note'); node.removeAttribute('tabindex'); });
+    });
+  }
+  document.querySelectorAll('pre.code-body code[data-lang]').forEach(renderCodeBlock);
+  normalizeOutputs();
+  document.querySelectorAll('.output-visual, .output-visual img, .output-body img, .output-card img').forEach(function (node) {
+    node.style.backgroundColor = 'rgb(255, 255, 255)';
+  });
+
+  document.querySelectorAll('.line-tooltip').forEach(function (node) { node.remove(); });
+  var tooltip = document.createElement('div');
+  tooltip.className = 'line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine = null;
+  function formatTooltipText(note) {
+    return String(note || '').split(/\n{2,}/).filter(Boolean).map(function (part) {
+      var safe = escapeHtml(part).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+      return '<span class="tooltip-section">' + safe + '</span>';
+    }).join('');
+  }
+  function positionTooltip(target) {
+    tooltip.style.left = '0px';
+    tooltip.style.top = '0px';
+    var tooltipWidth = tooltip.getBoundingClientRect().width;
+    var tooltipHeight = tooltip.getBoundingClientRect().height;
+    var left = target.getBoundingClientRect().right + 12;
+    var top = target.getBoundingClientRect().top;
+    if (left + tooltipWidth > window.innerWidth - 16) {
+      left = target.getBoundingClientRect().left;
+      top = target.getBoundingClientRect().bottom + 8;
+    }
+    if (top + tooltipHeight > window.innerHeight - 16) {
+      top = Math.max(16, target.getBoundingClientRect().top - tooltipHeight - 8);
+    }
+    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+    top = Math.max(16, Math.min(top, window.innerHeight - tooltipHeight - 16));
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function showTooltip(target) {
+    if (!target || !target.dataset || !target.dataset.note) return;
+    activeLine = target;
+    tooltip.innerHTML = formatTooltipText(target.dataset.note);
+    tooltip.classList.add('is-visible');
+    positionTooltip(target);
+  }
+  function hideTooltip() {
+    activeLine = null;
+    tooltip.classList.remove('is-visible');
+  }
+  document.addEventListener('pointerover', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function (event) {
+    if (activeLine && !activeLine.contains(event.relatedTarget)) hideTooltip();
+  });
+  document.addEventListener('focusin', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('focusout', function (event) {
+    if (event.target.closest && event.target.closest('.code-line[data-note]')) hideTooltip();
+  });
+  document.addEventListener('click', function (event) {
+    var target = event.target.closest ? event.target.closest('.code-line[data-note]') : null;
+    if (target && target.closest('.code-body')) showTooltip(target);
+  });
+  document.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', hideTooltip);
+  var notebookQAPatch = {
+    codeCells: document.querySelectorAll('pre.code-body code[data-lang]').length,
+    outputCells: document.querySelectorAll('pre.output-body code[data-lang], .output-card pre.output-body code, .output-details pre.output-body code').length,
+    notedLines: document.querySelectorAll('pre.code-body .code-line[data-note]').length,
+    outputNotes: document.querySelectorAll('pre.output-body [data-note], .output-card [data-note], .output-details [data-note]').length,
+    tooltips: document.querySelectorAll('.line-tooltip').length
+  };
+  try {
+    window.__notebookQAPatch = notebookQAPatch;
+  } catch (_err) {}
+})();
+</script>
+
+<!--NAV-JS-->
+<script data-nav="1">
+(function(){
+  'use strict';
+  var backdrop=document.querySelector('[data-nav-backdrop]');
+  var toggles=[].slice.call(document.querySelectorAll('.nav-toggle'));
+  function closeAll(){
+    document.querySelectorAll('.course-sidebar.is-open,.toc-sidebar.is-open').forEach(function(s){s.classList.remove('is-open');});
+    toggles.forEach(function(b){b.setAttribute('aria-expanded','false');});
+    if(backdrop){backdrop.classList.remove('is-open');backdrop.setAttribute('hidden','');}
+  }
+  function openSide(side,btn){
+    closeAll();
+    side.classList.add('is-open');
+    if(btn)btn.setAttribute('aria-expanded','true');
+    if(backdrop){backdrop.removeAttribute('hidden');backdrop.classList.add('is-open');}
+  }
+  toggles.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var side=document.getElementById(btn.getAttribute('aria-controls'));
+      if(!side)return;
+      if(side.classList.contains('is-open'))closeAll();else openSide(side,btn);
+    });
+  });
+  if(backdrop)backdrop.addEventListener('click',closeAll);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  var mqMobile=window.matchMedia('(max-width:1079px)');
+  document.querySelectorAll('.course-sidebar a,.toc-sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){if(mqMobile.matches)closeAll();});
+  });
+  /* scroll-spy for the table of contents */
+  var tocLinks=[].slice.call(document.querySelectorAll('.toc-sidebar a[href^="#"]'));
+  if(tocLinks.length){
+    var targets=tocLinks.map(function(a){
+      var id=a.getAttribute('href').slice(1);
+      return {a:a,el:document.getElementById(id)};
+    }).filter(function(x){return x.el;});
+    function update(){
+      var cur=null,offset=130;
+      for(var i=0;i<targets.length;i++){
+        if(targets[i].el.getBoundingClientRect().top-offset<=1)cur=targets[i];else break;
+      }
+      if(!cur&&targets.length)cur=targets[0];
+      tocLinks.forEach(function(a){a.classList.remove('is-active');a.removeAttribute('aria-current');});
+      if(cur){cur.a.classList.add('is-active');cur.a.setAttribute('aria-current','true');}
+    }
+    var lastT=0,pend=null;
+    function schedule(){
+      var now=Date.now();
+      if(now-lastT>=80){lastT=now;update();}
+      else{clearTimeout(pend);pend=setTimeout(function(){lastT=Date.now();update();},80);}
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    update();
+  }
+})();
+</script>
+<!--/NAV-JS-->
+</body>
+</html>
