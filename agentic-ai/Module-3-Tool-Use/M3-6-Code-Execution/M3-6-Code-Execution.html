@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kod Yürütme</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --accent:#fe4a61; --accent-dark:#c2384a; --code-bg:#f7f7f7; --code-surface:#f7f7f7; --code-text:#000000;
+--code-border:#cccccc; --code-muted:#4b5563;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-class:#000000; --code-builtin:#008000; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);max-width:100%;margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);overflow-x:hidden;background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{max-width:100%;margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;overflow-wrap:anywhere;}
+.lead-text{width:min(100%,780px);max-width:100%;margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;overflow-wrap:anywhere;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;overflow-wrap:anywhere;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+code:not(.code-body code):not(.output-body code){padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.note-card,.warn-card,.mini-panel{max-width:100%;margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;}
+.definition-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:650px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;}.term-table td.term{white-space:nowrap;font-weight:600;}
+.comparison-grid,.insight-grid{display:grid;gap:0.85rem;margin:1rem 0;}
+.comparison-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.insight-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+.cmp-card,.insight-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.cmp-card{border-top:3px solid var(--dlai-coral);}
+.cmp-card h4,.insight-card strong{display:block;margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;}.cmp-card li,.insight-card span{font-size:0.94rem;color:var(--lesson-muted);}
+.flow-wrap{margin:1.2rem 0;padding:1.1rem 1.05rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:linear-gradient(180deg,#fff,var(--lesson-soft));}
+.flow-title{display:block;margin:0 0 0.85rem;font-weight:700;}
+.flow-chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.55rem;align-items:stretch;}
+.flow-node{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:6rem;padding:1.05rem 0.75rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.55rem;background:#fff;text-align:center;box-shadow:0 1px 2px rgba(17,24,39,0.04);}
+.flow-node::before{content:"";position:absolute;top:0.55rem;left:50%;transform:translateX(-50%);width:1.35rem;height:0.27rem;border-radius:999px;background:var(--dlai-coral);}
+.flow-node strong{display:block;font-size:0.92rem;}
+.flow-node small{display:block;margin-top:0.28rem;color:var(--lesson-muted);font-size:0.76rem;line-height:1.35;}
+.flow-node.is-model{background:var(--dlai-coral-soft);border-color:#ff9aa8;}
+.flow-node.is-run{border:1.5px dashed #ff7b8c;background:var(--dlai-coral-muted);}
+.prompt-box{margin:1rem 0;padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.prompt-box strong{display:block;margin-bottom:0.45rem;color:var(--accent-dark);}
+.prompt-box p{margin:0;color:#111;}
+.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1.05rem 0;background:transparent;}
+.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#c2384a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.code-head{position:absolute;top:0.35rem;right:0.45rem;z-index:2;display:flex;justify-content:flex-end;}
+.copy-btn{border:1px solid #c4c8cf;border-radius:0.35rem;background:rgba(255,255,255,0.92);color:#374151;cursor:pointer;font-size:0.78rem;padding:0.22rem 0.5rem;}
+.copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.code-body,.output-body{margin:0;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.55;tab-size:4;}
+.code-body{grid-column:2;padding:0.72rem 5.2rem 0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0.2rem;background:var(--code-bg);white-space:pre;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.code-body code{font-family:inherit;display:block;width:max-content;min-width:100%;}
+.code-line{display:block;width:max-content;min-width:100%;padding:0 0.25rem;border-radius:0.18rem;white-space:pre;}
+.code-line:empty::before{content:"\00a0";}
+.code-line[data-note]{cursor:help;}
+.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:0;}
+.tok-keyword{color:var(--code-keyword);font-weight:700;} .tok-string{color:var(--code-string);}
+.tok-comment{color:var(--code-comment);font-style:italic;} .tok-function{color:var(--code-function);}
+.tok-attribute{color:var(--code-function);} .tok-number{color:var(--code-number);}
+.tok-class{color:var(--code-function);} .tok-name{color:var(--code-class);}
+.tok-builtin{color:var(--code-builtin);} .tok-operator{color:var(--code-operator);}
+.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid var(--dlai-coral);border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease;}
+.line-tooltip.is-visible{opacity:1;transform:translateY(0);}
+.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,monospace;font-size:12.5px;}
+.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1rem 0;background:transparent;}
+.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.output-head{grid-column:2;padding:0.42rem 0.55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:0.2rem 0.2rem 0 0;background:var(--code-bg);color:var(--code-muted);font-size:0.78rem;}
+.output-body{grid-column:2;padding:0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0 0 0.2rem 0.2rem;background:var(--code-bg);}
+.output-body pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.5;color:#000;}
+.output-comment{margin:0.6rem 0 1rem 4.95rem;padding:0.85rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.output-comment p{margin:0;color:var(--lesson-muted);font-size:0.97rem;line-height:1.6;}
+@media (max-width:900px){.flow-chain{grid-template-columns:repeat(2,minmax(0,1fr));}.comparison-grid,.insight-grid{grid-template-columns:1fr;}}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.lesson-page h1{font-size:clamp(1.58rem,7.2vw,1.95rem);line-height:1.22;}
+.lead-text{font-size:1rem;line-height:1.62;}
+.flow-chain{grid-template-columns:1fr;}
+.code-card,.output-card{grid-template-columns:minmax(0,1fr);}
+.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 0.25rem;text-align:left;}
+.code-body,.output-head,.output-body{grid-column:1;}
+.code-head{top:1.7rem;}.code-body{padding:0.85rem 4.85rem 0.85rem 0.85rem;font-size:0.84rem;}
+.output-comment{margin-left:0;}
+.line-tooltip{max-width:calc(100vw - 32px);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-3-Tool-Use/M3-6-Code-Execution/M3-6-Code-Execution.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Kod Yürütme</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="kod-yurutme">Kod Yürütme</h1>
+<p class="lead-text">Kod yürütmeyi bir araç olarak düşünmek, tek tek özel fonksiyonlar yazmak yerine modelin göreve uygun Python kodu üretip sonucunu kullanabildiği daha genel bir agentik desen sağlar.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bazı agentik uygulamalarda dil modeline yalnızca hazır araçlar seçtirmek yetmez; modelin göreve uygun küçük bir program yazması ve bu programın sonucu üzerinden devam etmesi çok daha güçlü bir yaklaşım olabilir. Özellikle matematiksel hesaplama, veri dönüştürme ve ara sonuç üretme gibi işlerde kod yürütme, birçok küçük aracı tek tek tasarlama ihtiyacını azaltır.</p>
+<p>Bu dersin temel sorusu şudur: Basit bir hesap makinesi gibi <code>add</code>, <code>subtract</code>, <code>multiply</code> ve <code>divide</code> araçlarını tek tek vermek yerine, modele kontrollü biçimde “görevi çözmek için Python kodu yaz” dersek ne kazanırız, ne kaybederiz ve bunu nasıl daha güvenli hale getiririz?</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-fikri">Bu Dersin Ana Fikri</h3><p>Kod yürütme, model için çok genel bir araçtır. Model bir görevi çözmek üzere Python kodu yazabilir; uygulama bu kodu ayıklayıp çalıştırabilir; çıkan değer modele geri verildiğinde model son kullanıcıya daha düzenli bir cevap üretebilir. Bu güç, güvenlik ve sandbox ihtiyacını da beraberinde getirir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Kod yürütmenin neden “çok sayıda özel araç” yaklaşımına alternatif olduğunu açıklayabilmek.</li>
+<li>Model çıktısında yürütülecek kodu özel etiketlerle ayırma fikrini kavrayabilmek.</li>
+<li>Modelin ürettiği kodun çıktısının son yanıta nasıl geri beslendiğini okuyabilmek.</li>
+<li>Hata çıktısının modele geri verilerek reflection döngüsünde nasıl kullanılabileceğini açıklayabilmek.</li>
+<li>Rastgele kod çalıştırmanın güvenlik risklerini ve sandbox yaklaşımının neden gerekli olduğunu değerlendirebilmek.</li>
+<li>Model Context Protocol fikrinin, hazır araç ekosistemine geçişte neden önemli olduğunu kavrayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table"><colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Kod yürütme</td><td>Modelin ürettiği kodun uygulama tarafından çalıştırılıp sonucunun alınması.</td><td>Model kodu yazar; çalıştırma ortamı ayrı bir güvenlik kararıdır.</td></tr>
+<tr><td class="term">Özel araç</td><td>Toplama, çıkarma veya bölme gibi belirli bir işi yapan ayrı fonksiyon.</td><td>Görev çeşitlendikçe araç sayısı hızla artabilir.</td></tr>
+<tr><td class="term"><code>&lt;execute_python&gt;</code></td><td>Modelin yürütülecek Python kodunu ayırmak için kullandığı başlangıç etiketi.</td><td>Kod ile açıklama metnini birbirinden ayırmayı kolaylaştırır.</td></tr>
+<tr><td class="term"><code>exec</code></td><td>Python’da verilen kod metnini çalıştıran yerleşik mekanizma.</td><td>Güçlüdür, fakat rastgele kod çalıştırdığı için dikkat gerektirir.</td></tr>
+<tr><td class="term">Reflection</td><td>Kod çalışmazsa hata mesajını modele geri verip daha iyi ikinci deneme isteme döngüsü.</td><td>Hata çıktısı, model için dış geri bildirim işlevi görür.</td></tr>
+<tr><td class="term">Sandbox</td><td>Kodun ana sistemi tehlikeye atmadan çalıştığı izole ortam.</td><td>Veri kaybı ve hassas bilgi sızıntısı riskini azaltır.</td></tr>
+</tbody></table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Özel araç yaklaşımı ile kod yürütme yaklaşımı aynı problemi farklı yerlerden çözer. Özel araçlarda her işlem için ayrı fonksiyon gerekir. Kod yürütmede ise model, göreve göre küçük bir program üretir ve uygulama bu programın çıktısını kullanır.</p>
+<div class="flow-wrap">
+<span class="flow-title">Kod yürütmenin sadeleştirilmiş döngüsü</span>
+<div class="flow-chain">
+<div class="flow-node"><strong>Kullanıcı sorusu</strong><small>Örneğin karekök veya daha karmaşık hesaplama</small></div>
+<div class="flow-node is-model"><strong>Model kod yazar</strong><small>Python kodu özel etiketler arasında döner</small></div>
+<div class="flow-node is-run"><strong>Kod ayıklanır</strong><small>Etiketler arasındaki bölüm alınır</small></div>
+<div class="flow-node is-run"><strong>Çalıştırılır</strong><small>Çıktı veya hata elde edilir</small></div>
+<div class="flow-node"><strong>Son yanıt</strong><small>Model çıktıyı doğal dile çevirir</small></div>
+</div>
+</div>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Tek tek araç eklemek</h4><ul><li>Toplama, çıkarma, çarpma ve bölme için ayrı araçlar yazılır.</li><li>Karekök veya üs alma gibi yeni ihtiyaçlar yeni araç gerektirir.</li><li>Bilimsel hesap makinesi ölçeğinde araç sayısı hızla büyür.</li></ul></div>
+<div class="cmp-card"><h4>Kod yazdırmak</h4><ul><li>Model, göreve uygun Python kodunu üretir.</li><li>Aynı mekanizma birçok farklı hesaplama türünü kapsar.</li><li>Güvenlik için çalıştırma ortamı dikkatle sınırlandırılmalıdır.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="basit-hesap-makinesi-neden-yetmez">Basit Hesap Makinesi Neden Yetmez?</h2>
+<p>Bir kullanıcı “13.2 ile 18.9’u topla” dediğinde <code>add</code> aracı yeterlidir. Model bu aracı çağırır, sonuç <code>32.1</code> olur ve son cevap rahatça yazılır. Fakat kullanıcı “2’nin karekökü nedir?” dediğinde sadece toplama, çıkarma, çarpma ve bölme araçları yetersiz kalır.</p>
+<p>Bu noktada karekök için yeni bir araç yazılabilir. Ardından üs alma, trigonometrik fonksiyonlar, faiz hesapları ve daha zor matematiksel işlemler geldikçe her biri için yeni araç eklemek gerekir. Modern bilimsel hesap makinesindeki düğme sayısını düşünmek, bu yaklaşımın neden hızla ölçeklenmediğini gösterir.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Dar araçlar güvenlidir</strong><span>Her fonksiyonun davranışı sınırlıdır ve denetlenmesi kolaydır.</span></div>
+<div class="insight-card"><strong>Ama kapsam büyür</strong><span>Yeni işlem türleri geldikçe araç listesi sürekli genişler.</span></div>
+<div class="insight-card"><strong>Kod daha geneldir</strong><span>Bir Python programı, birçok özel matematik aracının yaptığı işi kapsayabilir.</span></div>
+</div>
+</section>
+
+<section><h2 id="modelin-kod-yazmasina-izin-vermek">Modelin Kod Yazmasına İzin Vermek</h2>
+<p>Alternatif yaklaşım, modele özel bir sistem yönergesi vermektir: kullanıcının sorusunu çözmek için Python kodu yaz ve bu kodu belirli etiketler arasında döndür. Etiketler, sonradan yalnızca çalıştırılacak kodu seçebilmek için önemlidir.</p>
+<div class="prompt-box"><strong>Yönerge örneği</strong><p>Write code to solve the user’s query. Return your answer as Python code delimited with <code>&lt;execute_python&gt;</code> and <code>&lt;/execute_python&gt;</code> tags.</p></div>
+<p>Kullanıcı “2’nin karekökü nedir?” diye sorduğunda model, yürütülebilir küçük bir Python parçası üretebilir. Burada amaç, modelin sadece cevabı tahmin etmesi değil, cevabı hesaplayacak kodu yazmasıdır.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Başlangıç etiketi, uygulamanın yürütülecek kod bölümünü bulmasını sağlar." tabindex="0">&lt;execute_python&gt;</span>
+<span class="code-line" data-note="Karekök hesabı için Python'un math modülü kullanılır." tabindex="0"><span class="tok-keyword">import</span> <span class="tok-name">math</span></span>
+<span class="code-line" data-note="2'nin karekökü hesaplanır ve standart çıktıya yazdırılır." tabindex="0"><span class="tok-function">print</span>(<span class="tok-name">math</span><span class="tok-attribute">.sqrt</span>(<span class="tok-number">2</span>))</span>
+<span class="code-line" data-note="Kapanış etiketi, kod bölümünün nerede bittiğini belirtir." tabindex="0">&lt;/execute_python&gt;</span></code></pre></div>
+<div class="output-card"><div class="output-head">Kod çıktısı</div><div class="output-body"><pre>1.4142135623730951</pre></div></div>
+<div class="output-comment"><p>Bu sayısal çıktı modele geri verildiğinde, model onu son kullanıcıya daha okunaklı bir cümleyle sunabilir: “2’nin karekökü yaklaşık 1.4142’dir.” Böylece hesaplama ve anlatım iki ayrı aşama olarak çalışır.</p></div>
+</section>
+
+<section><h2 id="kodu-ayiklama-ve-calistirma">Kodu Ayıklama ve Çalıştırma</h2>
+<p>Uygulama, model çıktısında başlangıç ve bitiş etiketlerini arayarak yalnızca aradaki Python bölümünü alabilir. Bunun için pattern matching veya düzenli ifade kullanılabilir. Daha sonra bu kod çalıştırılır ve çıktı alınır.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Slayttaki sade gösterim, ayıklanan kod çıktısının çalıştırılması fikrini temsil eder." tabindex="0"><span class="tok-function">exec</span>(<span class="tok-name">output</span>)</span></code></pre></div>
+<p><code>exec</code> güçlü bir mekanizmadır: verilen kodu çalıştırır. Bu yüzden kod yürütme aracı, diğer birçok araçtan daha genel bir kapasite sağlar. Ancak aynı nedenle güvenlik sınırları açıkça düşünülmelidir.</p>
+<div class="note-card"><h3 id="iki-asamali-zihin-yapisi">İki Aşamalı Zihin Yapısı</h3><p>İlk aşamada model kod üretir; ikinci aşamada uygulama bu kodu çalıştırıp sonucunu alır. Son kullanıcıya verilen yanıt, ham kodun değil, kod çıktısının modele geri beslenmesiyle oluşan açıklamanın ürünüdür.</p></div>
+</section>
+
+<section><h2 id="hata-ciktisiyla-reflection">Hata Çıktısıyla Reflection</h2>
+<p>Kod yürütme her zaman ilk denemede başarılı olmayabilir. Model geçersiz bir Python parçası üretebilir; örneğin bir string kapanmamış olabilir. Bu durumda hata mesajını modele geri vermek, reflection deseninin dış geri bildirimli sürümünü oluşturur.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="İlk taslak, görevi çözmeye çalışan ancak hata içerebilecek bir fonksiyon fikrini temsil eder." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">do_task</span>(<span class="tok-name">args</span>)<span class="tok-operator">:</span></span>
+<span class="code-line" data-note="Buradaki üç nokta, ayrıntıları verilmemiş görev kodunu temsil eder." tabindex="0">    ...</span></code></pre></div>
+<div class="output-card"><div class="output-head">Hata çıktısı</div><div class="output-body"><pre>SyntaxError: unterminated string literal (detected at line 1)</pre></div></div>
+<p>Bu hata mesajı modele geri verildiğinde, model kendi ilk taslağını yeniden değerlendirebilir ve ikinci bir sürüm yazabilir. Bu döngü, özellikle karmaşık kod üretiminde doğruluğu artırabilir.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="İkinci taslak, hata mesajından sonra düzeltilmiş fonksiyon fikrini temsil eder." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">do_task_v2</span>(<span class="tok-name">args</span>)<span class="tok-operator">:</span></span>
+<span class="code-line" data-note="Yeni sürüm, önceki hatayı dikkate alarak yeniden yazılır." tabindex="0">    ...</span></code></pre></div>
+<div class="flow-wrap">
+<span class="flow-title">Hata geri bildirimiyle iyileştirme akışı</span>
+<div class="flow-chain">
+<div class="flow-node is-model"><strong>İlk kod</strong><small>Model görev için ilk taslağı yazar</small></div>
+<div class="flow-node is-run"><strong>Çalıştırma</strong><small>Uygulama kodu dener</small></div>
+<div class="flow-node is-run"><strong>Hata</strong><small>Çıktı veya hata mesajı oluşur</small></div>
+<div class="flow-node is-model"><strong>Reflection</strong><small>Model hatayı okuyup düzeltir</small></div>
+<div class="flow-node"><strong>İkinci kod</strong><small>Daha doğru sürüm denenir</small></div>
+</div>
+</div>
+</section>
+
+<section><h2 id="guvenlik-ve-sandbox">Güvenlik ve Sandbox</h2>
+<p>Kod yürütmenin gücü, aynı zamanda en büyük riskidir. Modelin ürettiği rastgele kodu doğrudan ana çalışma ortamında çalıştırmak; veri kaybı, hassas bilgi sızıntısı veya beklenmeyen dosya değişiklikleri gibi sonuçlara yol açabilir. Tek bir kod parçasının risk düzeyi her zaman yüksek olmayabilir, fakat agentik sistemlerde küçük bir hata büyük yan etki doğurabilir.</p>
+<div class="warn-card"><h3 id="en-iyi-uygulama">En İyi Uygulama</h3><p>Kod yürütme, mümkün olduğunca sandbox içinde yapılmalıdır. Docker veya E2B gibi izole ortamlar, hatalı ya da zararlı kodun ana sisteme zarar verme olasılığını azaltır.</p></div>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Sandbox dışında çalıştırma</h4><ul><li>Kurulumu basittir ve hızlı denenir.</li><li>Ana dosya sistemi ve ortam değişkenleri risk altında olabilir.</li><li>Yanlışlıkla dosya silme veya hassas veriye erişme ihtimali vardır.</li></ul></div>
+<div class="cmp-card"><h4>Sandbox içinde çalıştırma</h4><ul><li>Çalıştırma ortamı izole edilir.</li><li>Dosya sistemi, ağ erişimi ve yetkiler sınırlandırılabilir.</li><li>Agentik uygulamalar için daha güvenli varsayılan yaklaşımdır.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="kod-yurutme-neden-temel-bir-aractir">Kod Yürütme Neden Temel Bir Araçtır?</h2>
+<p>Kod yürütme, birçok modern dil modeli uygulamasında özel olarak desteklenen bir beceri haline gelmiştir. Bunun nedeni açıktır: Kod, yalnızca hesaplama yapmak için değil, aynı zamanda deneme, ara sonuç üretme, hata mesajından öğrenme ve daha karmaşık görevleri parçalara ayırma için de kullanılabilir.</p>
+<p>Bu dersin sonunda ulaşılan ana sonuç şudur: Model için tek tek araçlar tanımlamak güçlüdür; fakat kod yürütme, modelin kendi küçük aracını göreve göre yazabildiği daha genel bir mekanizma sağlar. Bu mekanizma doğru sınırlarla kullanıldığında agentik uygulamaların kapasitesini ciddi biçimde artırır.</p>
+<div class="note-card"><h3 id="mcpye-gecis-fikri">MCP’ye Geçiş Fikri</h3><p>Birçok ekip benzer araçları tekrar tekrar inşa etmektedir. Model Context Protocol, geliştiricilerin geniş araç kümelerine daha düzenli biçimde erişmesini amaçlayan yeni bir standart olarak önem kazanır. Kod yürütme, araçların ne kadar güçlü olabileceğini gösterirken; bu protokol, araç erişimini daha sistematik hale getirme yönünde bir adımdır.</p></div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Kod yürütme, karekök, üs alma veya daha karmaşık hesaplar için tek tek yeni araçlar yazma ihtiyacını azaltır.</li>
+<li><code>&lt;execute_python&gt;</code> benzeri etiketler, model çıktısındaki yürütülecek kodu diğer metinden ayırmak için pratik bir yoldur.</li>
+<li>Kod çıktısı modele geri verildiğinde, model ham sayısal sonucu daha okunabilir bir yanıta dönüştürebilir.</li>
+<li>Hata mesajlarını modele geri vermek, reflection döngüsüyle daha doğru ikinci denemeler üretilmesini sağlayabilir.</li>
+<li>Rastgele kod çalıştırma risklidir; üretim düzeyinde sandbox yaklaşımı temel güvenlik gereksinimi olarak görülmelidir.</li>
+<li>Kod yürütme, araç kullanımının en genel ve en güçlü biçimlerinden biridir; bu nedenle agentik sistem tasarımında özel bir yere sahiptir.</li>
+</ul>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#kod-yurutme" class="toc-h1">Kod Yürütme</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-fikri" class="toc-h3">Bu Dersin Ana Fikri</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#basit-hesap-makinesi-neden-yetmez" class="toc-h2">Basit Hesap Makinesi Neden Yetmez?</a>
+<a href="#modelin-kod-yazmasina-izin-vermek" class="toc-h2">Modelin Kod Yazmasına İzin Vermek</a>
+<a href="#kodu-ayiklama-ve-calistirma" class="toc-h2">Kodu Ayıklama ve Çalıştırma</a>
+<a href="#iki-asamali-zihin-yapisi" class="toc-h3">İki Aşamalı Zihin Yapısı</a>
+<a href="#hata-ciktisiyla-reflection" class="toc-h2">Hata Çıktısıyla Reflection</a>
+<a href="#guvenlik-ve-sandbox" class="toc-h2">Güvenlik ve Sandbox</a>
+<a href="#en-iyi-uygulama" class="toc-h3">En İyi Uygulama</a>
+<a href="#kod-yurutme-neden-temel-bir-aractir" class="toc-h2">Kod Yürütme Neden Temel Bir Araçtır?</a>
+<a href="#mcpye-gecis-fikri" class="toc-h3">MCP’ye Geçiş Fikri</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+
+<script>
+(function(){
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+  function formatTooltipText(note){
+    return String(note==null?'':note).split(/\n{2,}/).map(function(part){
+      var safe=escapeHtml(part).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+      return '<span class="tooltip-section">'+safe+'</span>';
+    }).join('');
+  }
+  var tooltip=document.createElement('div');
+  tooltip.className='line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine=null;
+  function positionTooltip(){
+    if(!activeLine)return;
+    var rect=activeLine.getBoundingClientRect();
+    tooltip.style.left='0px';tooltip.style.top='0px';
+    var tipW=tooltip.offsetWidth;var tipH=tooltip.offsetHeight;
+    var left=rect.right+12;
+    var top=rect.top;
+    if(left+tipW>window.innerWidth-16){left=rect.left;top=rect.bottom+8;}
+    if(top+tipH>window.innerHeight-16){top=Math.max(16,rect.top-tipH-8);}
+    left=Math.max(16,Math.min(left,window.innerWidth-tipW-16));
+    top=Math.max(16,Math.min(top,window.innerHeight-tipH-16));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  function showTooltip(line){
+    activeLine=line;
+    tooltip.innerHTML=formatTooltipText(line.getAttribute('data-note')||'');
+    tooltip.classList.add('is-visible');
+    positionTooltip();
+  }
+  function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+  document.addEventListener('mouseover',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('mouseout',function(event){
+    if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();
+  });
+  document.addEventListener('focusin',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('focusout',function(event){
+    if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();
+  });
+  window.addEventListener('scroll',function(){if(activeLine)hideTooltip();},true);
+  window.addEventListener('resize',function(){if(activeLine)hideTooltip();});
+  function copyText(text){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve,reject){
+      var area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');
+      area.style.position='fixed';area.style.left='-9999px';document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');resolve();}catch(err){reject(err);}finally{document.body.removeChild(area);}
+    });
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(button){
+    button.addEventListener('click',function(){
+      var card=button.closest('.code-card');
+      var lines=card?[].slice.call(card.querySelectorAll('.code-line')):[];
+      var text=lines.map(function(l){return l.textContent;}).join('\n');
+      copyText(text).then(function(){
+        var original=button.textContent;button.textContent='Kopyaland\u0131!';
+        setTimeout(function(){button.textContent=original;},1500);
+      });
+    });
+  });
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

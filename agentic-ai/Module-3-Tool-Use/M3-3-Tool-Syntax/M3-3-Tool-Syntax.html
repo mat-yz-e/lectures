@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Araç Söz Dizimi</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--code-bg:#f7f7f7; --code-surface:#f7f7f7; --code-text:#000000; --code-muted:#4b5563; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-class:#000000; --code-builtin:#008000; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel,.output-comment{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4,.output-comment h4{display:block;margin:0 0 0.4rem;counter-increment:none;}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:25%;} .term-table td.term{white-space:nowrap;font-weight:600;}
+code:not(.code-body code):not(.output-body code){padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.6rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;padding:0.95rem 0.8rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.95rem;}
+.bp-step span:not(.bp-num){color:var(--lesson-muted);font-size:0.88rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);z-index:1;}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+.flow-wrap{margin:1.35rem 0;padding:1.2rem 1.15rem 1.3rem;border:1px solid var(--lesson-border);border-radius:0.72rem;background:linear-gradient(180deg,#fff,var(--lesson-soft) 88%);}
+.flow-wrap .flow-title{display:block;margin:0 0 1rem;font-weight:700;color:var(--lesson-text);font-size:0.98rem;}
+.flow-chain{display:grid;grid-template-columns:minmax(8.2rem,0.98fr) 1.35rem minmax(10.5rem,1.22fr) 1.35rem minmax(8.3rem,0.94fr) 1.35rem minmax(5.2rem,0.6fr) 1.35rem minmax(8.4rem,0.96fr);align-items:stretch;gap:0.46rem;}
+.flow-node{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:6.15rem;padding:1.12rem 0.76rem 0.76rem;border:1px solid var(--lesson-border-strong);border-radius:0.52rem;background:#fff;font-size:0.86rem;line-height:1.38;color:var(--lesson-text);text-align:center;box-shadow:0 1px 0 rgba(17,24,39,0.03);}
+.flow-node::before{content:"";position:absolute;top:0.58rem;left:50%;transform:translateX(-50%);width:1.35rem;height:0.28rem;border-radius:999px;background:var(--dlai-coral);}
+.flow-node.is-prompt{background:linear-gradient(180deg,var(--dlai-coral-soft),#fff 78%);border-color:#ff9aa8;}
+.flow-node.is-llm{background:linear-gradient(180deg,#ffffff,var(--lesson-soft-2));border-color:var(--lesson-border-strong);font-weight:700;}
+.flow-node.is-tool{background:#fff;border:1.5px solid #ff7b8c;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.82rem;color:var(--accent-dark);}
+.flow-node.is-data{background:linear-gradient(180deg,var(--dlai-coral-muted),#fff 72%);border:1.5px dashed #ff7b8c;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.8rem;color:#111;}
+.flow-node.is-output{background:linear-gradient(180deg,#fff,var(--lesson-soft-2));border-color:var(--lesson-border-strong);}
+.flow-main{display:block;width:100%;font-weight:600;text-align:center;}
+.flow-node.is-tool .flow-main{font-size:0.68rem;line-height:1.15;white-space:nowrap;}
+.flow-node.is-data .flow-main{font-size:0.8rem;line-height:1.2;}
+.flow-node small{display:block;margin-top:0.32rem;color:var(--lesson-muted);font-size:0.75rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-weight:400;line-height:1.35;}
+.flow-arrow{position:relative;display:flex;align-items:center;justify-content:center;color:transparent;font-size:0;min-width:0;}
+.flow-arrow::before{content:"";width:100%;height:2px;border-radius:999px;background:linear-gradient(90deg,var(--dlai-coral-soft),var(--dlai-coral));}
+.flow-arrow::after{content:"";width:0.48rem;height:0.48rem;margin-left:-0.42rem;border-top:2px solid var(--dlai-coral);border-right:2px solid var(--dlai-coral);transform:rotate(45deg);}
+.schema-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.schema-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;}
+.schema-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.schema-card p{margin:0;color:var(--lesson-muted);font-size:0.95rem;}
+.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1.05rem 0;background:transparent;}
+.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#c2384a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.code-head{position:absolute;top:0.35rem;right:0.45rem;z-index:2;display:flex;justify-content:flex-end;}
+.copy-btn{border:1px solid #c4c8cf;border-radius:0.35rem;background:rgba(255,255,255,0.92);color:#374151;cursor:pointer;font-size:0.78rem;padding:0.22rem 0.5rem;}
+.copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.code-body,.output-body{margin:0;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.55;tab-size:4;}
+.code-body{grid-column:2;padding:0.72rem 5.2rem 0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0.2rem;background:var(--code-bg);white-space:pre;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.code-body::-webkit-scrollbar{height:10px;}
+.code-body::-webkit-scrollbar-track{background:#f2f2f2;border-top:1px solid #e3e3e3;}
+.code-body::-webkit-scrollbar-thumb{background:#c4c4c4;border:2px solid #f2f2f2;border-radius:6px;}
+.code-body::-webkit-scrollbar-thumb:hover{background:#9ca3af;}
+.code-body code{font-family:inherit;display:block;width:max-content;min-width:100%;}
+.code-line{display:block;width:max-content;min-width:100%;padding:0 0.25rem;border-radius:0.18rem;white-space:pre;}
+.code-line:empty::before{content:"\00a0";}
+.code-line[data-note]{cursor:help;}
+.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:0;}
+.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid var(--dlai-coral);border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease;}
+.line-tooltip.is-visible{opacity:1;transform:translateY(0);}
+.line-tooltip .tooltip-section{display:block;font-weight:400;}
+.line-tooltip .tooltip-section + .tooltip-section{margin-top:0.55rem;padding-top:0.55rem;border-top:1px solid #eaeef2;}
+.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,monospace;font-size:12.5px;}
+.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1rem 0;background:transparent;}
+.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.output-head{grid-column:2;padding:0.42rem 0.55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:0.2rem 0.2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-size:0.78rem;}
+.output-body{grid-column:2;padding:0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0 0 0.2rem 0.2rem;background:var(--code-bg);}
+.output-body pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.5;color:#000;}
+.output-body:not(.output-visual){max-height:30rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;}
+.output-body:not(.output-visual)::-webkit-scrollbar{width:11px;height:11px;}
+.output-body:not(.output-visual)::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d9d9d9;}
+.output-body:not(.output-visual)::-webkit-scrollbar-thumb{background:#b8b8b8;border:2px solid #f2f2f2;border-radius:6px;}
+.output-comment{margin:0.6rem 0 1rem 4.95rem;background:#fff;}
+.output-comment p{margin:0;color:var(--lesson-muted);font-size:0.97rem;line-height:1.6;}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin:0.9rem 0 0.9rem 4.95rem;}
+.mini-panel{margin:0;background:var(--lesson-soft);}
+.mini-panel p{margin:0;color:var(--lesson-muted);font-size:0.95rem;}
+.mini-panel h4{color:var(--accent-dark);}
+.tok-keyword{color:var(--code-keyword);font-weight:700;} .tok-string{color:var(--code-string);}
+.tok-comment{color:var(--code-comment);font-style:italic;} .tok-function{color:var(--code-function);}
+.tok-attribute{color:var(--code-function);} .tok-number{color:var(--code-number);}
+.tok-class{color:var(--code-function);} .tok-name{color:var(--code-class);}
+.tok-builtin{color:var(--code-builtin);} .tok-operator{color:var(--code-operator);}
+@media (max-width:920px){.bp-flow{grid-template-columns:repeat(2,minmax(0,1fr));} .bp-step::after{display:none;}}
+@media (max-width:860px){.comparison-grid,.insight-grid,.explain-grid,.schema-grid{grid-template-columns:1fr;}}
+@media (max-width:680px){
+.flow-chain{grid-template-columns:1fr;gap:0.42rem;}
+.flow-node,.flow-node.is-llm{width:100%;text-align:center;align-items:center;}
+.flow-node{min-height:auto;padding:1.05rem 0.9rem 0.85rem;}
+.flow-arrow{height:1.25rem;}
+.flow-arrow::before{width:2px;height:100%;background:linear-gradient(180deg,var(--dlai-coral-soft),var(--dlai-coral));}
+.flow-arrow::after{margin:0 0 -0.42rem;width:0.5rem;height:0.5rem;transform:rotate(135deg);}
+.bp-flow{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.code-card,.output-card{grid-template-columns:minmax(0,1fr);}
+.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 0.25rem;text-align:left;}
+.code-body,.output-head,.output-body{grid-column:1;}
+.code-head{top:1.7rem;} .code-body{padding:0.85rem 4.85rem 0.85rem 0.85rem;font-size:0.84rem;}
+.output-comment,.explain-grid{margin-left:0;}
+.line-tooltip{max-width:calc(100vw - 32px);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-3-Tool-Use/M3-3-Tool-Syntax/M3-3-Tool-Syntax.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Araç Söz Dizimi</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="arac-soz-dizimi">Araç Söz Dizimi</h1>
+<p class="lead-text">Bir Python işlevini dil modeline araç olarak sunarken, işlev tanımı, araç listesi, otomatik JSON şeması ve çok turlu çağrı döngüsü nasıl bir araya gelir?</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, bir dil modeline araç sunmanın modern söz dizimini inceler. Örnek olarak güncel saati döndüren küçük bir Python işlevi kullanılır; ardından bu işlevin AISuite çağrısına nasıl geçirildiği, arka planda nasıl JSON şemasına dönüştürüldüğü ve parametre alan araçlarda bu şemanın nasıl genişlediği adım adım açıklanır.</p>
+<p>Buradaki teknik ayrım önemlidir: geliştiriciler konuşma dilinde çoğu zaman “model aracı çağırdı” der. Daha doğru ifade ise şudur: model, aracın çağrılmasını <strong>talep eder</strong>; aracı gerçekten çalıştıran, sonucu alıp yeniden modele veren uygulama katmanıdır. Modern kütüphane söz dizimi bu uygulama katmanının büyük bölümünü tek çağrının içine yerleştirir.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-fikri">Bu Dersin Ana Fikri</h3><p>Araç söz dizimi yalnızca bir Python fonksiyonunu listeye koymak değildir. Fonksiyon adı, açıklama metni, varsa parametreleri ve çok turlu çağrı sınırı birlikte modele “hangi aracı, ne zaman ve hangi argümanla istemeliyim?” bilgisini verir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Bir Python işlevinin AISuite çağrısında araç olarak nasıl geçirildiğini açıklayabilmek.</li>
+<li>Modelin aracı doğrudan çalıştırmadığını, çağrı talebi ürettiğini teknik olarak ayırt edebilmek.</li>
+<li>Fonksiyon adının ve docstring açıklamasının otomatik JSON şemasına nasıl yansıdığını okuyabilmek.</li>
+<li>Parametre alan bir araçta şemanın neden parametre açıklaması içermesi gerektiğini kavrayabilmek.</li>
+<li><code>max_turns</code> sınırının, ardışık araç çağrılarında olası sonsuz döngüyü sınırlamak için kullanıldığını anlamak.</li>
+<li>Kod yürütme aracının neden diğer araçlara göre daha geniş bir eylem alanı verdiğini yorumlayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Python’da <code>def</code>, <code>return</code>, import ve fonksiyon argümanı okuma becerisi.</li>
+<li>Bir sohbet modeline <code>messages</code> dizisiyle bağlam gönderme fikrine temel aşinalık.</li>
+<li>JSON nesnesinin anahtar-değer yapısını ve şema kavramının ne işe yaradığını genel düzeyde bilmek.</li>
+<li>Araç kullanımında modelin talep eden, uygulama kodunun çalıştıran taraf olduğunu ayırt edebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table"><colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Araç</td><td>Modele sunulan ve gerektiğinde çağrılması istenebilen Python işlevi.</td><td>İşlevi model değil, istemci tarafındaki çalışma katmanı yürütür.</td></tr>
+<tr><td class="term">AISuite</td><td>Birden çok model sağlayıcısına benzer arayüzle çağrı yapmayı kolaylaştıran istemci kütüphanesi.</td><td>Söz dizimi, sohbet tamamlama çağrısına benzer biçimde kuruludur.</td></tr>
+<tr><td class="term">Docstring</td><td>Fonksiyonun amacını anlatan üç tırnaklı kısa açıklama metni.</td><td>Araç açıklamasının otomatik oluşturulmasında belirleyici rol oynar.</td></tr>
+<tr><td class="term">JSON şeması</td><td>Aracın adını, açıklamasını ve parametrelerini modele yapılandırılmış biçimde anlatan nesne.</td><td>Bazı arayüzlerde elle yazılır; burada otomatik oluşturulur.</td></tr>
+<tr><td class="term">Parametre</td><td>Fonksiyonun çağrılırken alacağı girdi değeri; örnekte zaman dilimi adıdır.</td><td>Modelin doğru argüman üretmesi için açıklama net olmalıdır.</td></tr>
+<tr><td class="term"><code>max_turns</code></td><td>Bir araç çağrısından sonra modelin yeni araçlar istemeye devam edebileceği tur sayısına üst sınır koyar.</td><td>Genellikle sınıra ulaşılmaz; asıl amacı kontrolsüz döngüyü kesmektir.</td></tr>
+</tbody></table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Araç söz diziminde yüzeyde görülen şey tek bir istemci çağrısıdır; arka planda ise işlevin açıklanması, şemaya dönüştürülmesi, modelin çağrı talebi üretmesi ve gerekiyorsa birden fazla araç turunun yönetilmesi vardır.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>İşlevi tanımla</strong><span>Python fonksiyonu ve docstring, aracın ne yaptığını belirtir.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Listeye ekle</strong><span>İşlev, model çağrısındaki <code>tools</code> listesine yerleştirilir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Şema oluşur</strong><span>Ad, açıklama ve parametre bilgisi JSON biçimine çevrilir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Model karar verir</strong><span>Gerekirse aracın çağrılmasını talep eder.</span></div>
+<div class="bp-step"><span class="bp-num">5</span><strong>Tur sınırı korur</strong><span>Araçtan sonra yeni talepler olursa döngü üst sınırla yönetilir.</span></div>
+</div></div>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Elle şema yazmak</h4><ul><li>Araç adı, açıklaması ve parametreleri geliştirici tarafından JSON olarak kurulur.</li><li>Her araç için tekrar eden ve hata yapmaya açık bir temsil gerekir.</li><li>Fonksiyon değişirse şemanın da elle güncellenmesi gerekir.</li></ul></div>
+<div class="cmp-card"><h4>Otomatik şema üretimi</h4><ul><li>Fonksiyon adı ve docstring açıklaması doğrudan araç tanımına yansır.</li><li>Parametreler, fonksiyon imzası ve açıklama bilgisiyle temsil edilir.</li><li>Model, çağrıyı hangi biçimde istemesi gerektiğini daha düzenli görür.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="modern-soz-diziminin-temel-bicimi">Modern söz diziminin temel biçimi</h3>
+<p>Önce araç olarak sunulacak işlev tanımlanır. Bu örnekte işlev argüman almaz; yalnızca sistemden güncel zamanı okur ve saat:dakika:saniye biçiminde metin döndürür. İşlev kısa olsa bile docstring kritik bir parçadır, çünkü modelin bu aracın ne işe yaradığını anlamasına yardımcı olan açıklama buradan çıkarılır.</p>
+
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` modülünden güncel zaman bilgisini okuyacak sınıf içe aktarılır." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line"></span><span class="code-line" data-note="Argüman almayan `get_current_time` işlevi tanımlanır; araç olarak sunulacak birim budur." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>()<span class="tok-operator">:</span></span><span class="code-line" data-note="Docstring, aracın ne yaptığını kısa ve doğal dille açıklar; otomatik araç açıklamasının temelidir." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns the current time as a string&quot;&quot;&quot;</span></span><span class="code-line" data-note="Güncel zaman okunur ve `%H:%M:%S` biçimiyle metne çevrilerek çağırana döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>()<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+
+<div class="explain-grid">
+<div class="mini-panel"><h4>Neden docstring var?</h4><p>Bu metin yalnızca geliştiriciye yorum değildir; araç açıklamasının otomatik üretilmesinde kullanılır. Bu yüzden kısa, doğru ve davranışı temsil eden bir ifade olmalıdır.</p></div>
+<div class="mini-panel"><h4>Neden argüman yok?</h4><p>İlk örnekte araç sabit bir işi yapar: çağrıldığı anda sistem saatini döndürür. Bu nedenle JSON şemasında parametre alanı boş kalır.</p></div>
+</div>
+
+<p>Ardından istemci oluşturulur ve sohbet tamamlama çağrısına model, mesajlar, araç listesi ve tur sınırı verilir. Söz dizimi, OpenAI tarzı sohbet çağrısına yakındır; fark, <code>tools</code> alanına doğrudan Python işlevinin konmasıdır.</p>
+
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="AISuite kütüphanesi `ai` kısa adıyla içe aktarılır; istemci bu ad alanından oluşturulur." tabindex="0"><span class="tok-keyword">import</span> <span class="tok-name">aisuite</span> <span class="tok-keyword">as</span> <span class="tok-name">ai</span></span><span class="code-line"></span><span class="code-line" data-note="Sohbet tamamlama çağrılarını yapacak istemci nesnesi kurulur." tabindex="0"><span class="tok-name">client</span> <span class="tok-operator">=</span> <span class="tok-name">ai</span><span class="tok-attribute">.Client</span>()</span><span class="code-line" data-note="Model yanıtı, sohbet tamamlama arayüzü üzerinden istenir." tabindex="0"><span class="tok-name">response</span> <span class="tok-operator">=</span> <span class="tok-name">client</span><span class="tok-attribute">.chat</span><span class="tok-attribute">.completions</span><span class="tok-attribute">.create</span>(</span><span class="code-line" data-note="Kullanılacak model sağlayıcı ve model adı birlikte belirtilir." tabindex="0">    <span class="tok-name">model</span><span class="tok-operator">=</span><span class="tok-string">&quot;openai:gpt-4o&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Modele verilecek konuşma bağlamı daha önce hazırlanmış `messages` dizisinden gelir." tabindex="0">    <span class="tok-name">messages</span><span class="tok-operator">=</span><span class="tok-name">messages</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Araç listesine doğrudan Python işlevi verilir; istemci bu işlevi modele açıklanabilir araç tanımına çevirir." tabindex="0">    <span class="tok-name">tools</span><span class="tok-operator">=</span>[<span class="tok-name">get_current_time</span>]<span class="tok-operator">,</span></span><span class="code-line" data-note="Araç çağrısı döngüsü için üst sınır koyar; araç sonucundan sonra model yeniden araç isteyebilir." tabindex="0">    <span class="tok-name">max_turns</span><span class="tok-operator">=</span><span class="tok-number">5</span></span><span class="code-line">)</span></code></pre></div>
+
+<div class="note-card"><h3 id="tek-cagrinin-icinde-ne-sakli">Tek çağrının içinde ne saklı?</h3><p>Araç çağrısı dönerse istemci aracı çalıştırabilir, sonucu modele geri verebilir ve modelin yeni bir araç isteyip istemediğini izleyebilir. <code>max_turns</code> parametresi bu ardışık sürecin en fazla kaç tur devam edeceğini belirleyen güvenlik supabıdır; olağan kullanımda çoğu akış bu sınıra yaklaşmaz.</p></div>
+
+<h3 id="arka-planda-olusan-arac-semasi">Arka planda oluşan araç şeması</h3>
+<p>Model, Python fonksiyon nesnesinin kendisini doğrudan “görmez”. Ona yapılandırılmış bir araç tanımı verilir. Argüman almayan örnekte şema; aracın tipini, fonksiyon adını, açıklamasını ve boş parametre alanını içerir.</p>
+
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Araçlar liste içinde temsil edilir; tek araç varsa liste tek sözlük içerir." tabindex="0"><span class="tok-name">tools</span> <span class="tok-operator">=</span> [{</span><span class="code-line" data-note="Bu nesnenin bir fonksiyon aracı olduğunu belirtir." tabindex="0">    <span class="tok-string">&quot;type&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;function&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Fonksiyona ait ad, açıklama ve parametre bilgileri bu alt nesnede toplanır." tabindex="0">    <span class="tok-string">&quot;function&quot;</span><span class="tok-operator">:</span> {</span><span class="code-line" data-note="Fonksiyon adı otomatik olarak `get_current_time` biçiminde alınır." tabindex="0">        <span class="tok-string">&quot;name&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;get_current_time&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Açıklama, fonksiyon docstring metninden türetilir." tabindex="0">        <span class="tok-string">&quot;description&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;Returns the current time as a string&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Fonksiyon argüman almadığı için parametre şeması boştur." tabindex="0">        <span class="tok-string">&quot;parameters&quot;</span><span class="tok-operator">:</span> {}</span><span class="code-line">    }</span><span class="code-line">}]</span></code></pre></div>
+
+<div class="schema-grid">
+<div class="schema-card"><h4>Ad bilgisi</h4><p><code>name</code> alanı modelin hangi aracı çağırmak istediğini belirtmesini sağlar. Bu ad, Python fonksiyon adından gelir.</p></div>
+<div class="schema-card"><h4>Açıklama bilgisi</h4><p><code>description</code> alanı modelin aracı ne zaman istemesi gerektiğini anlamasına yardım eder. Kısa docstring burada değer kazanır.</p></div>
+<div class="schema-card"><h4>Parametre bilgisi</h4><p><code>parameters</code> alanı, aracın hangi argümanları beklediğini anlatır. Argüman yoksa boş kalır.</p></div>
+<div class="schema-card"><h4>Çağrı kararı</h4><p>Model bu şemaya bakarak aracı kullanmanın uygun olup olmadığını değerlendirir; yürütme adımı yine istemci katmanına aittir.</p></div>
+</div>
+
+<h3 id="parametre-alan-araclarda-soz-dizimi">Parametre alan araçlarda söz dizimi</h3>
+<p>Bir araç girdi aldığında şema da zenginleşir. Zaman dilimine göre saat döndüren sürümde işlev artık <code>timezone</code> argümanını alır. Bu argüman, kod tarafında <code>ZoneInfo</code> nesnesine çevrilir ve zaman okuma işlemi bu zaman dilimine göre yapılır.</p>
+
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Güncel zamanı okumak için `datetime` sınıfı içe aktarılır." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line" data-note="IANA zaman dilimi adlarını Python zaman dilimi nesnesine dönüştürmek için `ZoneInfo` alınır." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">zoneinfo</span> <span class="tok-keyword">import</span> <span class="tok-name">ZoneInfo</span></span><span class="code-line"></span><span class="code-line" data-note="Bu sürüm bir `timezone` argümanı bekler; modelin üretmesi gereken argüman budur." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>(<span class="tok-name">timezone</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Docstring, aracın verilen zaman dilimine göre saat döndürdüğünü açıklar." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns current time for the given time zone&quot;&quot;&quot;</span></span><span class="code-line" data-note="Metin olarak gelen zaman dilimi adı, `ZoneInfo` ile kullanılabilir zaman dilimi nesnesine çevrilir." tabindex="0">    <span class="tok-name">timezone</span> <span class="tok-operator">=</span> <span class="tok-function">ZoneInfo</span>(<span class="tok-name">timezone</span>)</span><span class="code-line" data-note="Güncel zaman, verilen zaman dilimine göre okunur ve metin biçiminde döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>(<span class="tok-name">timezone</span>)<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+
+<p>Bu durumda JSON şemasında <code>timezone</code> parametresi açıkça görünür. Model artık yalnızca “bu aracı çağır” demekle kalmaz; çağrı sırasında hangi zaman dilimi değerini göndermesi gerektiğini de bu parametre açıklamasından öğrenir.</p>
+
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Parametreli araç da aynı liste yapısı içinde temsil edilir." tabindex="0"><span class="tok-name">tools</span> <span class="tok-operator">=</span> [{</span><span class="code-line" data-note="Bu tanımın fonksiyon tipi bir araç olduğunu belirtir." tabindex="0">    <span class="tok-string">&quot;type&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;function&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Fonksiyonun modele gösterilecek yapılandırılmış tanımı başlar." tabindex="0">    <span class="tok-string">&quot;function&quot;</span><span class="tok-operator">:</span> {</span><span class="code-line" data-note="Çağrılacak aracın adı korunur." tabindex="0">        <span class="tok-string">&quot;name&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;get_current_time&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Açıklama, aracın verilen zaman dilimi için saat döndürdüğünü belirtir." tabindex="0">        <span class="tok-string">&quot;description&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;Returns current time for the given timezone.&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Parametre şeması, fonksiyonun beklediği girdileri içerir." tabindex="0">        <span class="tok-string">&quot;parameters&quot;</span><span class="tok-operator">:</span> {</span><span class="code-line" data-note="`timezone` adlı tek parametrenin tanımı başlar." tabindex="0">            <span class="tok-string">&quot;timezone&quot;</span><span class="tok-operator">:</span> {</span><span class="code-line" data-note="Parametrenin metin türünde olması gerektiğini bildirir." tabindex="0">                <span class="tok-string">&quot;type&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;string&quot;</span><span class="tok-operator">,</span></span><span class="code-line" data-note="Modelin hangi biçimde değer üretmesi gerektiğini örneklerle açıklar." tabindex="0">                <span class="tok-string">&quot;description&quot;</span><span class="tok-operator">:</span> <span class="tok-string">&quot;The IANA time zone string, e.g., 'America/New_York' or 'Pacific/Auckland'.&quot;</span></span><span class="code-line">            }</span><span class="code-line">        }</span><span class="code-line">    }</span><span class="code-line">}]</span></code></pre></div>
+
+<div class="flow-wrap">
+<span class="flow-title">Araç çağrısının sadeleştirilmiş akışı</span>
+<div class="flow-chain">
+<div class="flow-node is-prompt"><span class="flow-main">Mesajlar</span><small>Kullanıcı isteği ve konuşma bağlamı</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-tool"><span class="flow-main">tools=[get_current_time]</span><small>Python işlevi araç listesine eklenir</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-data"><span class="flow-main">JSON şeması</span><small>Ad, açıklama ve parametreler</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm"><span class="flow-main">Model</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-output"><span class="flow-main">Yanıt veya araç talebi</span><small>Gerekirse tur devam eder</small></div>
+</div>
+</div>
+</section>
+
+<section><h2 id="arac-ve-agent-etkilesim-mantigi">Araç ve Agent Etkileşim Mantığı</h2>
+<p>Araç söz dizimi, agentik iş akışlarının daha okunabilir hâle gelmesini sağlar; çünkü aracın ne olduğu Python tarafında, modelin onu nasıl görmesi gerektiği ise otomatik şema tarafında düzenlenir. Böylece geliştirici, uzun bir istem içinde aracı elle tarif etmek yerine, fonksiyonu araç listesine vererek daha doğrudan bir temsil kurar.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Talep ayrı, yürütme ayrı</strong><span>Model araç çağrısı isteyebilir; gerçek fonksiyon çağrısı istemci tarafından yapılır.</span></div>
+<div class="insight-card"><strong>Docstring davranışı anlatır</strong><span>Fonksiyonun açıklaması, modelin aracı ne zaman istemesi gerektiğini belirleyen ipucudur.</span></div>
+<div class="insight-card"><strong>Tur sınırı döngüyü yönetir</strong><span>Araç sonucu yeni bir araç talebini doğurabilir; üst sınır bu süreci kontrollü tutar.</span></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>“Model aracı çalıştırıyor” sanmak</h4><ul><li>Teknik olarak model çalıştırmaz, çağrı talebi üretir.</li><li>Bu ayrım hata ayıklamada önemlidir; hata model kararında mı, yoksa istemci yürütmesinde mi ayırt edilmelidir.</li></ul></div>
+<div class="cmp-card"><h4>Docstring metnini ihmal etmek</h4><ul><li>Açıklama belirsizse model aracın doğru kullanım anını daha zor seçer.</li><li>Kısa ama davranışı net anlatan açıklama, otomatik şemayı güçlendirir.</li></ul></div>
+<div class="cmp-card"><h4>Parametre açıklamasını eksik bırakmak</h4><ul><li>Parametreli araçlarda modelin yalnızca argüman adını görmesi yetmez.</li><li>Örnekte zaman dilimi değerinin IANA biçiminde olması gerektiği açıkça belirtilir.</li></ul></div>
+<div class="cmp-card"><h4><code>max_turns</code> değerini amaç sanmak</h4><ul><li>Bu değer bir kalite metriği değildir.</li><li>Araçtan araca uzayan döngünün belirli bir yerde durmasını sağlayan üst sınırdır.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="kod-yurutme-neden-ozel-bir-aractir">Kod Yürütme Neden Özel Bir Araçtır?</h2>
+<p>Dersin sonunda vurgulanan nokta, tüm araçlar içinde kod yürütmenin özel bir konuma sahip olduğudur. Bir modele “kod yazabilirsin, ben de bu kodu çalıştıracak bir aracı senin için kullanabilirim” demek, modele çok geniş bir işlem alanı açar. Kod; hesaplama, dönüştürme, veri üzerinde işlem yapma ve ara sonuç üretme açısından çok güçlü bir temsil olduğu için, kod yürütme aracı diğer birçok araçtan daha genel bir kapasite sağlar.</p>
+<div class="note-card"><h3 id="temel-cikarim">Temel çıkarım</h3><p>Araç söz dizimi ne kadar sade görünürse görünsün, güçlü agentik davranışın çekirdeği buradadır: model aracı seçer, uygulama çalıştırır, sonuç tekrar modele döner ve bu döngü gerektiğinde devam eder.</p></div>
+</section>
+
+<section><h2 id="dersin-kod-akisi">Dersin Kod Akışı</h2>
+<p>Bu derste çalıştırılabilir kod akışı dört parçadan oluşur: önce argümansız saat aracı tanımlanır, sonra AISuite çağrısına verilir, ardından bu tanımın JSON şemasına nasıl karşılık geldiği görülür ve son olarak parametre alan zaman dilimi sürümüne geçilir. Kod bloklarında yeni çıktı üretilmemiştir; bu nedenle sahte çıktı hücresi eklenmemiştir.</p>
+<ul>
+<li>Argümansız işlev: güncel saati string olarak döndürür.</li>
+<li>İstemci çağrısı: modeli, mesajları, araç listesini ve tur sınırını birleştirir.</li>
+<li>Argümansız JSON şeması: ad ve docstring açıklamasını içerir, parametreleri boş bırakır.</li>
+<li>Parametreli sürüm: zaman dilimi girdisiyle şema ve fonksiyon imzasını genişletir.</li>
+</ul>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Araç çağrısı, modelin dış dünyada doğrudan eylem yapması değil, eylem yapılmasını yapılandırılmış biçimde talep etmesidir.</li>
+<li>AISuite söz dizimi, Python fonksiyonunu araç listesine koyarak fonksiyon adını, açıklamasını ve parametrelerini modele uygun temsile dönüştürür.</li>
+<li>Docstring yalnızca belgeleyici metin değil, modelin aracı ne zaman kullanacağını anlamasına yardım eden açıklamadır.</li>
+<li>Parametreli araçlarda argümanın biçimi açıkça anlatılmalıdır; aksi hâlde model geçersiz veya belirsiz değer üretebilir.</li>
+<li>Kod yürütme aracı, modele geniş bir problem çözme alanı verdiği için agentik sistemlerde özellikle güçlüdür.</li>
+</ul>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#arac-soz-dizimi" class="toc-h1">Araç Söz Dizimi</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-fikri" class="toc-h3">Bu Dersin Ana Fikri</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#modern-soz-diziminin-temel-bicimi" class="toc-h3">Modern söz diziminin temel biçimi</a>
+<a href="#tek-cagrinin-icinde-ne-sakli" class="toc-h3">Tek çağrının içinde ne saklı?</a>
+<a href="#arka-planda-olusan-arac-semasi" class="toc-h3">Arka planda oluşan araç şeması</a>
+<a href="#parametre-alan-araclarda-soz-dizimi" class="toc-h3">Parametre alan araçlarda söz dizimi</a>
+<a href="#arac-ve-agent-etkilesim-mantigi" class="toc-h2">Araç ve Agent Etkileşim Mantığı</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#kod-yurutme-neden-ozel-bir-aractir" class="toc-h2">Kod Yürütme Neden Özel Bir Araçtır?</a>
+<a href="#temel-cikarim" class="toc-h3">Temel çıkarım</a>
+<a href="#dersin-kod-akisi" class="toc-h2">Dersin Kod Akışı</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+
+<script>
+(function(){
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+  function formatTooltipText(note){
+    return String(note==null?'':note).split(/\n{2,}/).map(function(part){
+      var safe=escapeHtml(part).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+      return '<span class="tooltip-section">'+safe+'</span>';
+    }).join('');
+  }
+  var tooltip=document.createElement('div');
+  tooltip.className='line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine=null;
+  function positionTooltip(){
+    if(!activeLine)return;
+    var rect=activeLine.getBoundingClientRect();
+    tooltip.style.left='0px';tooltip.style.top='0px';
+    var tipW=tooltip.offsetWidth;var tipH=tooltip.offsetHeight;
+    var left=rect.right+12;
+    var top=rect.top;
+    if(left+tipW>window.innerWidth-16){left=rect.left;top=rect.bottom+8;}
+    if(top+tipH>window.innerHeight-16){top=Math.max(16,rect.top-tipH-8);}
+    left=Math.max(16,Math.min(left,window.innerWidth-tipW-16));
+    top=Math.max(16,Math.min(top,window.innerHeight-tipH-16));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  function showTooltip(line){
+    activeLine=line;
+    tooltip.innerHTML=formatTooltipText(line.getAttribute('data-note')||'');
+    tooltip.classList.add('is-visible');
+    positionTooltip();
+  }
+  function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+  document.addEventListener('mouseover',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('mouseout',function(event){
+    if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();
+  });
+  document.addEventListener('focusin',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('focusout',function(event){
+    if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();
+  });
+  window.addEventListener('scroll',function(){if(activeLine)hideTooltip();},true);
+  window.addEventListener('resize',function(){if(activeLine)hideTooltip();});
+  function copyText(text){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve,reject){
+      var area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');
+      area.style.position='fixed';area.style.left='-9999px';document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');resolve();}catch(err){reject(err);}finally{document.body.removeChild(area);}
+    });
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(button){
+    button.addEventListener('click',function(){
+      var card=button.closest('.code-card');
+      var lines=card?[].slice.call(card.querySelectorAll('.code-line')):[];
+      var text=lines.map(function(l){return l.textContent;}).join('\n');
+      copyText(text).then(function(){
+        var original=button.textContent;button.textContent='Kopyaland\u0131!';
+        setTimeout(function(){button.textContent=original;},1500);
+      });
+    });
+  });
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body></html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daha Fazla Hata Analizi Örneği</title>
+<style>
+:root{
+--dlai-coral:#fe4a61;
+--dlai-coral-dark:#e63f55;
+--dlai-coral-soft:#ffe8ec;
+--dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff;
+--lesson-text:#111827;
+--lesson-muted:#4b5563;
+--lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6;
+--lesson-border:#e5e7eb;
+--lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff;
+--lesson-card-muted:#fff8f9;
+--accent:#fe4a61;
+--accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+--code-bg:#f7f7f7;
+--code-text:#000000;
+--code-border:#cccccc;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);}
+*,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{
+  width:min(100%,1040px);
+  margin:0 auto;
+  padding:clamp(1rem,2.5vw,2.5rem);
+  background:var(--lesson-bg);
+  color:var(--lesson-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;
+  line-height:1.62;
+}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin:0 0 1.6rem;
+  text-align:center;
+}
+.lesson-logo{
+  display:block;
+  width:clamp(180px,22vw,260px);
+  height:auto;
+  max-height:72px;
+  object-fit:contain;
+  margin:0 auto 1.15rem;
+}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{
+  color:var(--lesson-text);
+  font-weight:700;
+  line-height:1.25;
+}
+.lesson-page h1{
+  margin:0;
+  font-size:clamp(1.9rem,3.4vw,2.6rem);
+  text-align:center;
+  text-wrap:balance;
+}
+.lead-text{
+  width:min(100%,780px);
+  margin:0.85rem auto 0;
+  color:var(--lesson-muted);
+  font-size:1.08rem;
+  text-align:center;
+  text-wrap:balance;
+}
+.lesson-page h2{
+  display:flex;
+  align-items:center;
+  gap:0.55rem;
+  margin:2.2rem 0 0.85rem;
+  padding-top:1.1rem;
+  border-top:1px solid var(--lesson-border);
+  font-size:clamp(1.35rem,2.1vw,1.7rem);
+  counter-increment:section;
+  counter-reset:subsection;
+}
+.lesson-page h2::before{
+  content:counter(section) ".";
+  color:currentColor;
+  font-variant-numeric:tabular-nums;
+}
+.lesson-page h3{
+  display:flex;
+  align-items:center;
+  gap:0.55rem;
+  margin:1.5rem 0 0.6rem;
+  font-size:clamp(1.1rem,1.6vw,1.3rem);
+  counter-increment:subsection;
+}
+.lesson-page h3::before{
+  content:counter(section) "." counter(subsection) " ";
+  color:currentColor;
+  font-variant-numeric:tabular-nums;
+}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{
+  padding:0.08rem 0.26rem;
+  border-radius:0.28rem;
+  background:#f1f1f1;
+  color:#111;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:0.9em;
+}
+.definition-card,.note-card,.warn-card,.mini-panel,.example-card{
+  margin:1rem 0;
+  padding:0.95rem 1.05rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.65rem;
+  background:var(--lesson-card);
+}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.note-card h3,.warn-card h3,.example-card h3,.mini-panel h4{
+  display:block;
+  margin:0 0 0.4rem;
+  counter-increment:none;
+  color:var(--accent-dark);
+}
+.definition-card h3::before,.note-card h3::before,.warn-card h3::before,.example-card h3::before{content:none;}
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+  margin:1rem 0;
+  border:1px solid var(--lesson-border);
+  border-radius:0.65rem;
+}
+table{
+  width:100%;
+  min-width:680px;
+  border-collapse:collapse;
+  table-layout:fixed;
+  background:#fff;
+}
+th,td{
+  padding:0.82rem 0.9rem;
+  border-bottom:1px solid var(--lesson-border);
+  text-align:left;
+  vertical-align:top;
+}
+th{
+  background:var(--lesson-soft);
+  color:var(--accent-dark);
+  font-size:0.95rem;
+}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;}
+.term-table td.term{
+  white-space:nowrap;
+  font-weight:600;
+  color:var(--lesson-text);
+}
+.big-picture-panel{
+  margin:1.2rem 0;
+  padding:1.1rem 1.15rem 1.25rem;
+  border:1px solid var(--lesson-border);
+  border-left:4px solid var(--dlai-coral);
+  border-radius:0.7rem;
+  background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);
+}
+.bp-flow{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:0.65rem;
+  margin:0.9rem 0 0;
+  align-items:stretch;
+}
+.bp-step{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:0.95rem 0.85rem 0.9rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.6rem;
+  background:#fff;
+  text-align:center;
+}
+.bp-step .bp-num{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:1.7rem;
+  height:1.7rem;
+  border-radius:999px;
+  background:var(--dlai-coral);
+  color:#fff;
+  font-size:0.9rem;
+  font-weight:700;
+  margin:0 auto 0.55rem;
+}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  top:2.05rem;
+  right:-0.45rem;
+  width:0.5rem;
+  height:2px;
+  background:var(--dlai-coral);
+}
+.pipeline{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:0.45rem;
+  margin:1rem 0;
+  padding:1rem;
+  border:1px solid var(--lesson-border);
+  border-left:4px solid var(--dlai-coral);
+  border-radius:0.7rem;
+  background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);
+}
+.pipe-chip{
+  padding:0.5rem 0.8rem;
+  border:1px solid var(--lesson-border-strong);
+  border-radius:0.5rem;
+  background:#fff;
+  font-size:0.9rem;
+  color:var(--lesson-text);
+  text-align:center;
+}
+.pipe-chip small{
+  display:block;
+  color:var(--lesson-muted);
+  font-size:0.76rem;
+  font-weight:400;
+  margin-top:0.12rem;
+}
+.pipe-chip.is-llm{background:#eef0f4;color:#1f2937;}
+.pipe-chip.is-tool{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-chip.is-input{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-arrow{color:var(--dlai-coral);font-weight:700;}
+.case-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0.85rem;
+  margin:1rem 0;
+}
+.case-card{
+  padding:1rem 1.05rem 1.1rem;
+  border:1px solid var(--lesson-border);
+  border-top:3px solid var(--dlai-coral);
+  border-radius:0.6rem;
+  background:#fff;
+}
+.case-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.case-card p{margin:0.35rem 0;color:var(--lesson-muted);font-size:0.94rem;}
+.case-card ul{margin:0.5rem 0 0;padding-left:1.15rem;}
+.case-card li{font-size:0.93rem;color:var(--lesson-muted);}
+.metric-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0.75rem;
+  margin:1rem 0;
+}
+.metric-card{
+  padding:0.95rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.65rem;
+  background:var(--lesson-soft);
+  text-align:center;
+}
+.metric-card .metric-value{
+  display:block;
+  color:var(--accent-dark);
+  font-size:clamp(1.55rem,3vw,2.1rem);
+  font-weight:800;
+  line-height:1.1;
+}
+.metric-card strong{display:block;margin:0.35rem 0 0.2rem;font-size:0.95rem;}
+.metric-card span{display:block;color:var(--lesson-muted);font-size:0.88rem;line-height:1.45;}
+.analysis-table td:first-child{font-weight:600;color:var(--lesson-text);}
+.analysis-table .error-pill{
+  display:inline-block;
+  padding:0.18rem 0.4rem;
+  border-radius:0.3rem;
+  background:var(--dlai-coral-soft);
+  color:var(--accent-dark);
+  font-size:0.86rem;
+  line-height:1.35;
+}
+.analysis-table .quiet-pill{
+  display:inline-block;
+  padding:0.18rem 0.4rem;
+  border-radius:0.3rem;
+  background:var(--lesson-soft-2);
+  color:#6b7280;
+  font-size:0.86rem;
+}
+.analysis-table tr.total-row td{
+  border-top:2px solid var(--lesson-border-strong);
+  background:var(--lesson-soft);
+  font-weight:700;
+  color:var(--accent-dark);
+  text-align:center;
+}
+.analysis-table tr.total-row td:first-child{
+  color:var(--lesson-muted);
+  text-align:left;
+  font-weight:600;
+}
+.step-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-line{
+  display:grid;
+  grid-template-columns:1.9rem minmax(0,1fr);
+  align-items:start;
+  gap:0.7rem;
+  padding:0.75rem 0.85rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.6rem;
+  background:#fff;
+}
+.step-line .step-n{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:1.7rem;
+  height:1.7rem;
+  border-radius:999px;
+  background:var(--dlai-coral);
+  color:#fff;
+  font-size:0.88rem;
+  font-weight:700;
+}
+.step-line strong{display:block;color:var(--lesson-text);font-size:0.97rem;margin-bottom:0.12rem;}
+.step-line span{color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+.mail-panel{
+  margin:1rem 0;
+  padding:1rem;
+  border:1px solid var(--lesson-border);
+  border-left:4px solid var(--dlai-coral);
+  border-radius:0.7rem;
+  background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 72%);
+}
+.mail-card{
+  max-width:720px;
+  margin:0 auto;
+  padding:0.95rem 1rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.6rem;
+  background:#fff;
+}
+.mail-card .mail-label{
+  display:inline-block;
+  margin-bottom:0.55rem;
+  padding:0.18rem 0.55rem;
+  border-radius:999px;
+  background:var(--lesson-soft-2);
+  color:var(--lesson-muted);
+  font-size:0.78rem;
+  font-weight:700;
+}
+.mail-card p{margin:0;color:var(--lesson-text);}
+.decision-panel{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0.85rem;
+  margin:1rem 0;
+}
+.decision-card{
+  padding:1rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.65rem;
+  background:#fff;
+}
+.decision-card.is-primary{border-top:3px solid var(--dlai-coral);background:var(--lesson-card-muted);}
+.decision-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.decision-card p{margin:0;color:var(--lesson-muted);font-size:0.94rem;}
+.callout-row{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0.75rem;
+  margin:1rem 0;
+}
+.callout{
+  padding:0.9rem 0.95rem;
+  border:1px solid var(--lesson-border);
+  border-radius:0.6rem;
+  background:var(--lesson-soft);
+}
+.callout strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.callout span{display:block;color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+  .bp-flow,.case-grid,.metric-grid,.decision-panel,.callout-row{grid-template-columns:1fr;}
+  .bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:560px){
+  .lesson-page{padding:1rem;line-height:1.7;}
+  .term-table td.term{white-space:normal;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-3-More-Error-Analysis-Examples/M4-3-More-Error-Analysis-Examples.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Daha Fazla Hata Analizi Örneği</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="daha-fazla-hata-analizi-ornegi">Daha Fazla Hata Analizi Örneği</h1>
+<p class="lead-text">Agentic AI iş akışlarında hatanın hangi bileşenden geldiğini anlamak için çoklu örnekleri inceleyen, hata sayılarını öncelik kararına dönüştüren akademik bir ders notu.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Hata analizi yalnızca bir tekniğin adını bilmekle öğrenilmez; farklı örnekler üzerinde tekrar tekrar uygulanınca sezgi gelişir. Bu derste amaç, bir agentic iş akışında nihai çıktı yanlış olduğunda sorunun hangi bileşenden geldiğini daha güvenilir biçimde ayırt etmektir.</p>
+<p>İki örnek kullanılacaktır. İlk örnekte sistem, faturadan dört alanı çıkarıp veritabanına kaydetmeye çalışır ve çoğunlukla vade tarihinde hata yapar. İkinci örnekte sistem, müşteri e-postasını anlamaya, sipariş bilgilerini sorgulamaya ve insan onayına gidecek yanıt taslağı üretmeye çalışır. İki örnek de aynı ilkeye bağlanır: kötü nihai çıktıyı görünce tüm sistemi yeniden yazmak yerine, hatanın nerede oluştuğunu sayarak bulmak gerekir.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Çok bileşenli bir akışta görülen hata, ilk bakışta en görünür bileşenden geliyor gibi durabilir. Ancak doğru karar, hatalı örnekleri bir araya getirip her bileşende neyin bozulduğunu saydıktan sonra verilir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Bir agentic iş akışında nihai hatayı bileşenlere ayırarak inceleyebilmek.</li>
+<li>Hatalı çalışan örnekleri seçip doğru örnekleri analiz dışında bırakmanın neden verimli olduğunu açıklayabilmek.</li>
+<li>Belgeden metne dönüştürme hatası ile dil modelinin yanlış alan seçmesi arasındaki farkı ayırt edebilmek.</li>
+<li>Veritabanı sorgusu, veritabanı içeriği ve yanıt taslağı hatalarını ayrı sınıflar olarak değerlendirebilmek.</li>
+<li>Hata yüzdelerinin birbirini dışlamak zorunda olmadığını ve bu nedenle toplamın %100'ü aşabileceğini yorumlayabilmek.</li>
+<li>Uçtan uca değerlendirmeyi bileşen düzeyi değerlendirmelerle tamamlamanın ne zaman gerekli olduğunu kavrayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Agentic AI iş akışlarının birden fazla model, araç ve ara adımdan oluşabileceğini bilmek.</li>
+<li>Bir veritabanı sorgusunun doğru yazılması ile veritabanındaki bilginin doğru olması arasındaki farkı ayırt edebilmek.</li>
+<li>Basit bir çizelgede satırları örnek, sütunları hata türü olarak düzenleme fikrine aşina olmak.</li>
+</ul>
+<p>Ders kavramsal ve yöntem odaklıdır; çalıştırılabilir kod veya kayıtlı çıktı bulunmadığı için kod hücresi kullanılmaz.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Hata analizi</td><td>Hatalı nihai çıktılarda hangi bileşenin sorun ürettiğini belirleme süreci.</td><td>İyi çalışan örneklerden çok kötü çalışan örnekler incelenir.</td></tr>
+<tr><td class="term">Bileşen</td><td>İş akışındaki tek sorumlu adım: metne dönüştürme, alan çıkarma, sorgu yazma veya yanıt taslağı gibi.</td><td>Her bileşen kendi girdisiyle değerlendirilmelidir.</td></tr>
+<tr><td class="term">Ara çıktı</td><td>Nihai sonuçtan önce her adımın ürettiği gözlemlenebilir sonuç.</td><td>Nihai hata çoğu zaman ara çıktılara bakmadan açıklanamaz.</td></tr>
+<tr><td class="term">Hata sınıfı</td><td>Aynı türden tekrar eden problem kategorisi.</td><td>Bir örnekte birden fazla hata sınıfı aynı anda görülebilir.</td></tr>
+<tr><td class="term">Öncelik</td><td>İyileştirme çabasının ilk olarak hangi bileşene yöneltileceği.</td><td>En sık hata üreten ve iyileştirilebilir görünen bileşen öne alınır.</td></tr>
+<tr><td class="term">Bileşen değerlendirmesi</td><td>Uçtan uca sonuç yerine tek bir adımın doğruluğunu ölçme yaklaşımı.</td><td>Hata analizi bir bileşeni işaret ettiğinde özellikle yararlıdır.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersteki iki örnek farklı görünür: biri fatura alan çıkarımı, diğeri müşteri e-postasına yanıt üretimidir. Fakat ikisinde de aynı karar mantığı vardır: hatalı örnekleri seç, olası bileşenleri ayır, her hata sınıfını say, sonra çabayı en yüksek getirili bileşene yönlendir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Hatalı örnekleri seç</strong><span>Başarılı örnekler değil, nihai çıktısı tatmin etmeyen örnekler incelenir.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Bileşenleri ayır</strong><span>Her adımın ne üretmesi gerektiği ve ne ürettiği ayrı ayrı görülür.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Hata türlerini say</strong><span>Tekil gözlemler çizelgede tekrar eden sınıflara dönüştürülür.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Çabayı yönlendir</strong><span>En sık ve en düzeltilebilir görünen hata sınıfı geliştirme gündemine alınır.</span></div>
+</div></div>
+<div class="note-card"><h3 id="kritik-ilke">Kritik İlke</h3><p>Hata yüzdeleri her zaman birbirini dışlamaz. Aynı örnekte hem ilk dönüşüm hatası hem de modelin yanlış alan seçmesi görülebilir. Bu nedenle toplam yüzde %100'ü aşarsa bu, yöntemin hatalı olduğu anlamına gelmez; aynı satırda birden fazla neden işaretlenmiş olabilir.</p></div>
+</section>
+
+<section><h2 id="fatura-isleme-akisi">Fatura İşleme Akışı</h2>
+<p>İlk örnekte hedef, faturadaki dört zorunlu alanı bulmak ve bunları veritabanına kaydetmektir: fatura kesen taraf, adres, ödenecek tutar ve vade tarihi. Nihai sistem sık sık vade tarihini yanlış çıkardığında, soruyu şu şekilde sormak gerekir: metne dönüştürme adımı mı tarihi bozdu, yoksa metin yeterince iyiyken dil modeli yanlış tarihi mi seçti?</p>
+<div class="pipeline">
+<span class="pipe-chip is-input">Fatura</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Belgeden metne dönüştürme</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>dört alanı çıkar</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Veritabanını güncelle</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Kayıt oluşturuldu</span>
+</div>
+
+<h3 id="hatali-ornek-secimi">Hatalı örnek seçimi</h3>
+<p>Bu akışta doğru çalışan faturalar öncelikli değildir. Hata analizi için, vade tarihinin yanlış çıkarıldığı yaklaşık 10 ila 100 örnek seçilir. Amaç genel başarı oranını yeniden hesaplamak değil, yanlışlığın hangi adımdan çıktığını görmektir.</p>
+<div class="step-list">
+<div class="step-line"><span class="step-n">1</span><span><strong>Yanlış vade tarihi içeren örnekleri ayır</strong> Doğru çıkan faturalar bu incelemenin merkezinde değildir.</span></div>
+<div class="step-line"><span class="step-n">2</span><span><strong>Ara metni kontrol et</strong> İnsan, dönüştürülmüş metinden doğru vade tarihini anlayabiliyor mu?</span></div>
+<div class="step-line"><span class="step-n">3</span><span><strong>Modelin seçimini kontrol et</strong> Metin yeterliyken model fatura tarihini vade tarihi sanmış olabilir mi?</span></div>
+<div class="step-line"><span class="step-n">4</span><span><strong>Hataları say</strong> Her örnekte hangi bileşenlerin sorun ürettiği işaretlenir.</span></div>
+</div>
+
+<h3 id="fatura-orneginde-hata-cizelgesi">Fatura örneğinde hata çizelgesi</h3>
+<p>Aşağıdaki yapı, yirmi hatalı fatura üzerinde yapılan sayımın nasıl okunacağını gösterir. Burada bazı satırlar yalnızca dönüştürme hatası, bazıları yalnızca modelin yanlış tarih seçimi, bazıları da ikisini birden içerebilir.</p>
+<div class="table-wrap"><table class="analysis-table">
+<colgroup><col style="width:26%"><col><col></colgroup>
+<thead><tr><th>Örnek</th><th>Metne dönüştürme</th><th>Dil modeliyle alan çıkarımı</th></tr></thead>
+<tbody>
+<tr><td>Fatura 1</td><td><span class="error-pill">Tarih metni hatalı çıkarıldı</span></td><td><span class="quiet-pill">Belirgin ek hata yok</span></td></tr>
+<tr><td>Fatura 2</td><td><span class="quiet-pill">Metin yeterli</span></td><td><span class="error-pill">Yanlış tarih seçildi</span></td></tr>
+<tr><td>Fatura 3</td><td><span class="quiet-pill">Metin yeterli</span></td><td><span class="error-pill">Yanlış tarih seçildi</span></td></tr>
+<tr><td>...</td><td><span class="quiet-pill">...</span></td><td><span class="quiet-pill">...</span></td></tr>
+<tr><td>Fatura 20</td><td><span class="error-pill">Tarih metni hatalı çıkarıldı</span></td><td><span class="error-pill">Yanlış tarih seçildi</span></td></tr>
+<tr class="total-row"><td>Hata sıklığı</td><td>%15</td><td>%87</td></tr>
+</tbody>
+</table></div>
+
+<div class="metric-grid">
+<div class="metric-card"><span class="metric-value">%15</span><strong>Metne dönüştürme hatası</strong><span>Bazı örneklerde ara metin, insanın doğru vade tarihini güvenle ayırt etmesine yetmez.</span></div>
+<div class="metric-card"><span class="metric-value">%87</span><strong>Alan çıkarımı hatası</strong><span>Çoğu örnekte metin yeterli görünür; ancak model yanlış tarihi seçer.</span></div>
+<div class="metric-card"><span class="metric-value">10-100</span><strong>İnceleme aralığı</strong><span>Sezgi kazanmak ve sayım yapmak için hatalı örneklerden oluşan yönetilebilir bir küme kullanılır.</span></div>
+</div>
+
+<p>Bu sayımın sonucu açıktır: asıl geliştirme çabası belgeyi metne çeviren adımda değil, dil modelinin alan çıkarımında yoğunlaşmalıdır. Aksi halde ekip, haftalarca metne dönüştürme kalitesini ayarlayıp nihai performansta büyük bir ilerleme görmeyebilir.</p>
+</section>
+
+<section><h2 id="musteri-e-postasina-yanit-akisi">Müşteri E-postasına Yanıt Akışı</h2>
+<p>İkinci örnek, müşteri desteği benzeri bir akışa odaklanır. Sistem gelen e-postadan önemli bilgileri çıkarır, sipariş veritabanında ilgili kayıtları arar ve insan incelemesine gidecek bir yanıt taslağı hazırlar. Nihai taslak tatmin edici olmadığında en az üç olası neden vardır: sorgu yanlış yazılmış olabilir, veritabanındaki bilgi hatalı olabilir veya yanıt taslağı eldeki doğru bilgiyi iyi kullanmamış olabilir.</p>
+<div class="mail-panel"><div class="mail-card">
+<span class="mail-label">Kullanıcı durumu</span>
+<p>Bir müşteri, mavi bir mutfak ürünü sipariş ettiği hâlde kırmızı bir tost makinesi aldığını ve doğru ürünün hafta sonu için önemli olduğunu bildirir. Sistemden beklenen, siparişi doğrulayıp uygun bir yanıt taslağı hazırlamasıdır.</p>
+</div></div>
+
+<div class="pipeline">
+<span class="pipe-chip is-input">E-posta</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>önemli bilgileri çıkar</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Sipariş sorgusu</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Sipariş kayıtları</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>yanıt taslağı yaz</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">İnsan incelemesi</span>
+</div>
+
+<h3 id="uc-ana-hata-sinifi">Üç ana hata sınıfı</h3>
+<div class="case-grid">
+<div class="case-card"><h4>Sorgu yanlış yazıldı</h4><p>Dil modeli yanlış tabloyu veya yanlış veriyi isterse, veritabanı doğru olsa bile doğru müşteri bilgisi getirilemez.</p></div>
+<div class="case-card"><h4>Kayıt hatalıdır</h4><p>Sorgu doğru olsa bile veritabanı bozuk veya eksik bilgi içeriyorsa sonraki adım doğru zemine oturmaz.</p></div>
+<div class="case-card"><h4>Yanıt taslağı yetersizdir</h4><p>Doğru bilgi elde edilmiş olsa bile taslak, sipariş ayrıntılarını ele almayabilir veya tonu uygunsuz olabilir.</p></div>
+<div class="case-card"><h4>Birden fazla hata birleşir</h4><p>Bir örnekte hem kayıt hatası hem de zayıf yanıt taslağı görülebilir; bu nedenle sayımlar bağımsız sütunlar gibi tutulur.</p></div>
+</div>
+
+<h3 id="e-posta-orneginde-hata-cizelgesi">E-posta örneğinde hata çizelgesi</h3>
+<p>Aşağıdaki çizelge, tatmin etmeyen e-posta yanıtları için bileşen bazlı sayımın nasıl yapılacağını gösterir. Her satırda nihai sonuç kötüdür; analiz, bu kötülüğün nereden geldiğini ayırır.</p>
+<div class="table-wrap"><table class="analysis-table">
+<colgroup><col style="width:22%"><col><col><col></colgroup>
+<thead><tr><th>Örnek</th><th>Dil modelinin yazdığı sorgu</th><th>Sipariş veritabanı sorgusu</th><th>Dil modelinin yazdığı e-posta</th></tr></thead>
+<tbody>
+<tr><td>E-posta 1</td><td><span class="error-pill">Yanlış tablo istendi</span></td><td><span class="quiet-pill">Belirgin kayıt hatası yok</span></td><td><span class="quiet-pill">Belirgin taslak hatası yok</span></td></tr>
+<tr><td>E-posta 2</td><td><span class="quiet-pill">Sorgu uygun</span></td><td><span class="error-pill">Kayıt girdisi hatalı</span></td><td><span class="error-pill">Sipariş ayrıntısı ele alınmadı</span></td></tr>
+<tr><td>E-posta 3</td><td><span class="error-pill">Yanlış hesaplama</span></td><td><span class="quiet-pill">Belirgin kayıt hatası yok</span></td><td><span class="quiet-pill">Belirgin taslak hatası yok</span></td></tr>
+<tr><td>...</td><td><span class="quiet-pill">...</span></td><td><span class="quiet-pill">...</span></td><td><span class="quiet-pill">...</span></td></tr>
+<tr><td>E-posta 50</td><td><span class="quiet-pill">Sorgu uygun</span></td><td><span class="quiet-pill">Kayıt uygun</span></td><td><span class="error-pill">Savunmacı ton</span></td></tr>
+<tr class="total-row"><td>Hata sıklığı</td><td>%75</td><td>%4</td><td>%30</td></tr>
+</tbody>
+</table></div>
+
+<div class="metric-grid">
+<div class="metric-card"><span class="metric-value">%75</span><strong>Sorgu üretimi</strong><span>En sık sorun, dil modelinin doğru müşteri bilgisini getirecek sorguyu yazamamasıdır.</span></div>
+<div class="metric-card"><span class="metric-value">%4</span><strong>Veri kalitesi</strong><span>Veritabanı hataları vardır; fakat sayımda ana darboğaz gibi görünmez.</span></div>
+<div class="metric-card"><span class="metric-value">%30</span><strong>Yanıt taslağı</strong><span>Önemli ikinci alan, doğru bilgiyle daha uygun e-posta yazdırma biçimidir.</span></div>
+</div>
+</section>
+
+<section><h2 id="hata-sayimlarini-oncelige-donusturmek">Hata Sayımlarını Önceliğe Dönüştürmek</h2>
+<p>İki örnek aynı matematiği kullanır: yanlış çıkan sonuçlar arasında hangi bileşen en sık sorun üretiyor? Fatura akışında %87 ile alan çıkarımı öne çıkar. E-posta akışında %75 ile sorgu üretimi birinci, %30 ile yanıt taslağı ikinci dikkat noktası olur. Bu oranlar, sistemin iyi yaptığı şeyleri küçümsemek için değil, kötü yaptığı durumlarda çabanın nereye gitmesi gerektiğini seçmek için kullanılır.</p>
+<div class="decision-panel">
+<div class="decision-card is-primary"><h4>Birinci odak: en büyük darboğaz</h4><p>Fatura örneğinde vade tarihini yanlış seçen alan çıkarımı; e-posta örneğinde ise yanlış sorgu yazımı geliştirme gündeminin başına alınmalıdır.</p></div>
+<div class="decision-card"><h4>İkinci odak: anlamlı ama daha düşük pay</h4><p>E-posta taslağı üretimi de iyileştirilmelidir; fakat hata sıklığı sorgu üretimine göre daha düşüktür.</p></div>
+</div>
+<p>Bu yaklaşım, geliştiriciyi yanlış bileşene uzun süre odaklanmaktan korur. Örneğin fatura örneğinde yalnızca belgeyi metne dönüştürme kalitesini ayarlamak, nihai sistemde sınırlı etki yaratabilir; çünkü baskın sorun orada değildir. Benzer biçimde e-posta örneğinde veritabanı hataları gözlenir, fakat %4 gibi düşük bir oran, ilk büyük çabanın veri temizliğine değil sorgu yazımına gitmesi gerektiğini düşündürür.</p>
+</section>
+
+<section><h2 id="bilesen-degerlendirmeleriyle-tamamlama">Bileşen Değerlendirmeleriyle Tamamlama</h2>
+<p>Hata analizi hangi bileşene odaklanılacağını gösterdikten sonra, yalnızca uçtan uca değerlendirme yapmak çoğu zaman yeterli olmaz. Uçtan uca değerlendirme, sistemin nihai yanıtının iyi olup olmadığını söyler; fakat seçilen bileşeni hızlı iyileştirmek için o bileşene özel ölçüm gerekir.</p>
+<div class="callout-row">
+<div class="callout"><strong>Uçtan uca değerlendirme</strong><span>Nihai sistem davranışını ölçer; kullanıcıya giden sonucun iyi olup olmadığını gösterir.</span></div>
+<div class="callout"><strong>Bileşen değerlendirmesi</strong><span>Tek bir adımın doğruluğunu ölçer; örneğin sorgu doğru mu, vade tarihi doğru mu?</span></div>
+<div class="callout"><strong>Birlikte kullanım</strong><span>Hata analiziyle seçilen bileşen iyileştirilirken genel sistem etkisi de korunur.</span></div>
+</div>
+<p>Bu tamamlayıcı yaklaşım, geliştirmeyi daha verimli kılar. Çünkü ekip, artık yalnızca “sistem daha iyi oldu mu?” sorusunu değil, “özellikle sorunlu bileşen daha iyi çalışıyor mu?” sorusunu da yanıtlayabilir.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>Doğru örnekleri de aynı yoğunlukta incelemek:</strong> Hata analizi, özellikle başarısız örneklerden öğrenmek için kullanılır; iyi örnekler ana sayım kümesini bulanıklaştırabilir.</li>
+<li><strong>Nihai hatayı tek bileşene zorla bağlamak:</strong> Aynı örnekte birden fazla hata sınıfı bulunabilir; bu yüzden yüzdeler toplamı %100 olmayabilir.</li>
+<li><strong>En görünür adımı otomatik suçlamak:</strong> Son yanıt kötü göründüğü için taslak yazan adımı suçlamak kolaydır; fakat asıl hata yanlış sorguda başlamış olabilir.</li>
+<li><strong>Düşük oranlı bileşene fazla yatırım yapmak:</strong> Veri hataları önemli olabilir; ancak %4 gibi düşük bir oran, ilk büyük çabanın başka yerde olabileceğini gösterir.</li>
+<li><strong>Uçtan uca ölçümle yetinmek:</strong> Hata analizi bir bileşeni işaret ettiyse, o bileşene özel değerlendirme kurmak iyileştirme hızını artırır.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Hata analizi, agentic AI geliştirmede pratik bir yön bulma aracıdır. Fatura işleme örneği, yanlış vade tarihinin her zaman metne dönüştürme sorunundan doğmadığını; çoğu durumda dil modelinin yanlış alanı seçtiğini gösterir. Müşteri e-postası örneği ise kötü yanıt taslağının arkasında çoğu zaman yanlış veritabanı sorgusunun bulunabileceğini gösterir.</p>
+<p>Bu nedenle güçlü yöntem şudur: hatalı örnekleri seçin, ara adımları inceleyin, bileşen bazında sayım yapın ve en sık görülen, düzeltilebilir hata sınıfını önceliklendirin. Bu karar verildikten sonra, uçtan uca değerlendirmeyi bileşen düzeyi değerlendirmelerle tamamlamak geliştirme sürecini daha hızlı ve daha isabetli hale getirir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#daha-fazla-hata-analizi-ornegi" class="toc-h1">Daha Fazla Hata Analizi Örneği</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#kritik-ilke" class="toc-h3">Kritik İlke</a>
+<a href="#fatura-isleme-akisi" class="toc-h2">Fatura İşleme Akışı</a>
+<a href="#hatali-ornek-secimi" class="toc-h3">Hatalı örnek seçimi</a>
+<a href="#fatura-orneginde-hata-cizelgesi" class="toc-h3">Fatura örneğinde hata çizelgesi</a>
+<a href="#musteri-e-postasina-yanit-akisi" class="toc-h2">Müşteri E-postasına Yanıt Akışı</a>
+<a href="#uc-ana-hata-sinifi" class="toc-h3">Üç ana hata sınıfı</a>
+<a href="#e-posta-orneginde-hata-cizelgesi" class="toc-h3">E-posta örneğinde hata çizelgesi</a>
+<a href="#hata-sayimlarini-oncelige-donusturmek" class="toc-h2">Hata Sayımlarını Önceliğe Dönüştürmek</a>
+<a href="#bilesen-degerlendirmeleriyle-tamamlama" class="toc-h2">Bileşen Değerlendirmeleriyle Tamamlama</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add("js-enabled");
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

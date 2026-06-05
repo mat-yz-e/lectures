@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planlama İş Akışları</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5; --ink-soft:#374151;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.example-card{border-left:4px solid var(--dlai-coral);background:var(--lesson-soft);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* inventory table accents */
+.inv-table col.inv-id{width:10%;} .inv-table col.inv-name{width:18%;} .inv-table col.inv-price{width:13%;} .inv-table col.inv-stock{width:13%;}
+.inv-table td.num{font-variant-numeric:tabular-nums;}
+.inv-table tr.is-match td{background:var(--dlai-coral-muted);}
+.inv-table .match-tag{display:inline-block;margin-left:0.4rem;padding:0.05rem 0.45rem;border-radius:999px;font-size:0.72rem;font-weight:700;background:var(--dlai-coral-soft);color:var(--accent-dark);vertical-align:middle;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+/* tools grid */
+.tools-panel{margin:1.1rem 0;padding:1rem 1.05rem 1.15rem;border:1px dashed var(--lesson-border-strong);border-radius:0.7rem;background:var(--lesson-soft);}
+.tools-panel .tools-title{display:block;margin:0 0 0.7rem;text-align:center;font-weight:700;color:var(--ink-soft);letter-spacing:0.02em;}
+.tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.6rem;}
+.tool-chip{padding:0.6rem 0.7rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;}
+.tool-chip code{background:transparent;padding:0;color:var(--lesson-text);font-size:0.9rem;font-weight:600;}
+.tool-chip.is-used{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);}
+.tool-chip.is-used code{color:var(--accent-dark);}
+.tool-chip small{display:block;margin-top:0.2rem;color:var(--lesson-muted);font-size:0.78rem;font-weight:400;}
+/* plan list (numbered, centered markers) */
+.plan-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.plan-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0.9rem;border:1px solid var(--lesson-border);border-left:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.plan-item .plan-num{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-weight:700;font-size:0.9rem;}
+.plan-item .plan-text{color:var(--lesson-text);font-size:0.96rem;line-height:1.5;}
+.plan-item .plan-text code{font-size:0.86em;}
+/* execution chain */
+.exec-chain{display:grid;gap:0.7rem;margin:1.1rem 0;}
+.exec-prompt{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;padding:0.8rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.exec-prompt .pr-q{flex:1 1 220px;padding:0.55rem 0.7rem;border:1px solid var(--dlai-coral);border-radius:0.5rem;background:var(--dlai-coral-soft);color:var(--ink-soft);font-size:0.92rem;}
+.exec-prompt .pr-arrow{color:var(--dlai-coral);font-weight:700;font-size:1.1rem;}
+.exec-prompt .pr-llm{flex:0 0 auto;padding:0.55rem 1.1rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#eef0f4;color:#1f2937;font-weight:700;}
+.exec-prompt .pr-out{flex:1 1 200px;color:var(--lesson-muted);font-size:0.9rem;}
+.exec-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto minmax(0,1fr);align-items:center;gap:0.5rem;padding:0.7rem 0.8rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.exec-row .e-tool{justify-self:start;}
+.exec-row .e-in{font-size:0.9rem;color:var(--lesson-text);}
+.exec-row .e-in b{display:block;color:var(--accent-dark);font-size:0.82rem;font-weight:700;}
+.exec-row .e-in span{color:var(--lesson-muted);font-size:0.82rem;}
+.exec-row .e-arrow{color:var(--dlai-coral);font-weight:700;}
+.exec-row .e-llm{padding:0.4rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.45rem;background:#eef0f4;color:#1f2937;font-weight:700;font-size:0.85rem;text-align:center;}
+.exec-row .e-tool{padding:0.45rem 0.6rem;border:1px solid var(--dlai-coral);border-radius:0.45rem;background:var(--dlai-coral-soft);color:var(--accent-dark);font-size:0.84rem;text-align:center;}
+.exec-row .e-tool code{background:transparent;padding:0;color:var(--accent-dark);font-weight:600;font-size:0.95em;}
+/* pipeline chips */
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.pipe-chip{padding:0.45rem 0.75rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.9rem;color:var(--lesson-text);}
+.pipe-arrow{color:var(--dlai-coral);font-weight:700;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.tools-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.exec-row{grid-template-columns:1fr;text-align:left;}
+.exec-row .e-arrow{display:none;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-5-Patterns-for-Highly-Autonomous-Agents/M5-1-Planning-Workflows/M5-1-Planning-Workflows.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Planlama İş Akışları</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="planlama-is-akislari">Planlama İş Akışları</h1>
+<p class="lead-text">Bir dil modeline adımları önceden tek tek dayatmak yerine; modelin görevi çözmek için gereken adım dizisini kendisinin bir plan olarak çıkarıp bu adımları sırayla yürütmesine dayanan, yüksek otonomili agent tasarım deseni.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yüksek otonomili agent'lar kurmak için kullanılan tasarım desenlerinin ilkini ele alır: <strong>planlama deseni</strong> (planning pattern). Buradaki temel fikir, bir görevi çözmek için izlenecek adım dizisini <strong>önceden geliştiricinin sabit olarak kodlamamasıdır</strong>. Bunun yerine sistem, hangi adımları hangi sırayla atacağına çalışma anında kendisi karar verir.</p>
+<p>Anlatımı somutlaştırmak için iki tanıdık senaryo kullanacağız. Birincisi, elindeki ürün envanterini bir veritabanında tutan bir güneş gözlüğü mağazasının müşteri hizmetleri agent'ı. İkincisi, bir e-posta asistanı. Her iki senaryoda da agent'a bir araç (tool) kümesi verilir, modelden bu araçları kullanan adım adım bir plan üretmesi istenir ve ardından bu planın her adımı sırayla çalıştırılır. Dersin sonunda, bir modelin neden ve nasıl kendi planını çıkardığını, planın nasıl yürütüldüğünü ve bu yaklaşımın hangi durumlarda güçlü, hangi durumlarda kontrol açısından zor olduğunu kavramsal olarak anlamış olacaksınız.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Planlama deseninin ne olduğunu ve adımları önceden sabit kodlamaktan nasıl ayrıldığını açıklayabilmek.</li>
+<li>Bir modele araç kümesi ve istem (prompt) vererek nasıl adım adım bir plan ürettiğini tarif edebilmek.</li>
+<li>Üretilen planın her adımının, bir önceki adımın çıktısıyla birlikte modele yeniden verilerek nasıl yürütüldüğünü açıklayabilmek.</li>
+<li>Aynı araç kümesinin farklı isteklere göre nasıl farklı planlar doğurduğunu örneklerle gösterebilmek.</li>
+<li>Planlama deseninin avantajlarını ve özellikle <strong>kontrol edilebilirlik</strong> açısından getirdiği zorlukları değerlendirebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline istem (prompt) verip yanıt almanın ne demek olduğuna dair temel bir fikir.</li>
+<li>Bir agent'a "araç" (tool) verme kavramına, yani modelin dış işlevleri çağırabilmesine genel düzeyde aşinalık.</li>
+<li>Bir görevi adımlara bölme ve bir adımın çıktısını bir sonrakine aktarma gibi gündelik problem çözme alışkanlığı.</li>
+</ul>
+<p>Bu ders kavramsaldır; herhangi bir programlama deneyimi veya kod yazımı gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Planlama deseni</td><td>Modelin görevi çözmek için adım dizisini kendisinin çıkardığı tasarım yaklaşımı.</td><td>Adım sırası önceden değil, çalışma anında belirlenir.</td></tr>
+<tr><td class="term">Araç (tool)</td><td>Modelin çağırabileceği belirli bir işlev: bilgi getirme, kontrol etme, işlem yapma.</td><td>Model her aracı değil, göreve uygun olanları seçer.</td></tr>
+<tr><td class="term">Plan</td><td>Görevi tamamlamak için sırayla yapılacak adımların listesi.</td><td>Gerçekte tek satırlık değil, çoğu zaman daha ayrıntılıdır.</td></tr>
+<tr><td class="term">Adım yürütme</td><td>Bir adım metninin, bağlam ve önceki çıktıyla modele verilerek çalıştırılması.</td><td>Her adım, bir önceki adımın çıktısını girdi olarak alır.</td></tr>
+<tr><td class="term">Sistem istemi</td><td>Modele araçları tanıtan ve "adım adım plan döndür" diyen yönerge metni.</td><td>Planın kalitesi büyük ölçüde bu yönergeye bağlıdır.</td></tr>
+<tr><td class="term">Otonomi</td><td>Sistemin insan müdahalesi olmadan kendi kararlarıyla ilerleme derecesi.</td><td>Esneklik artar; karşılığında öngörülebilirlik azalabilir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir merkezi fikri var: <strong>önce planla, sonra adım adım yürüt.</strong> Geliştirici araçları sabit bir sırayla çağırmaz; bunun yerine modele araçları tanıtır, bir plan ister ve o planı tek tek hayata geçirir. Aşağıdaki dört adım, planlama deseninin iskeletidir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Araçları tanıt</strong><span>Modele kullanabileceği tüm araçlar ve ne işe yaradıkları açıklanır.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Plan iste</strong><span>Modelden, kullanıcının isteğini çözecek adım adım bir plan döndürmesi istenir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Adımları yürüt</strong><span>Her adım, bağlam ve önceki çıktıyla birlikte modele verilip çalıştırılır.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Yanıtı üret</strong><span>Son adımın çıktısı, kullanıcıya verilecek nihai cevabı oluşturur.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: geliştirici olarak siz hangi aracın hangi sırada çağrılacağını <strong>önceden belirlemezsiniz</strong>. Bu kararı modelin ürettiği plan verir. İşte bu, planlama desenini sabit kodlanmış iş akışlarından ayıran şeydir; aynı zamanda hem gücünün hem de kontrol zorluğunun kaynağıdır.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="problem-tek-bir-aracla-cozulemeyen-karmasik-istekler">Problem: tek bir araçla çözülemeyen karmaşık istekler</h3>
+<p>Bir güneş gözlüğü mağazası işlettiğinizi ve stokunuzdaki gözlüklerin bilgisini bir veritabanında tuttuğunuzu düşünün. Müşteri hizmetleri agent'ınızın şöyle bir soruyu yanıtlamasını istersiniz: <em>"Stokta 100 doların altında yuvarlak güneş gözlüğünüz var mı?"</em></p>
+<p>Bu, göründüğünden daha karmaşık bir sorgudur. Cevap verebilmek için sırasıyla şunları yapmak gerekir: önce ürün açıklamalarına bakıp hangi gözlüklerin <strong>yuvarlak</strong> olduğunu bulmak, sonra bunların <strong>stokta</strong> olup olmadığını kontrol etmek, en sonunda da stoktakilerin <strong>100 doların altında</strong> olup olmadığını görmek. Tek bir işlem bu sorunun tamamını çözmez; birkaç işin doğru sırayla zincirlenmesi gerekir.</p>
+
+<div class="example-card">
+<h3 id="ornek-envanter">Örnek envanter</h3>
+<p>Agent'ın eriştiği envanter, kavramsal olarak aşağıdaki gibi bir tablodur. Müşterinin sorgusuna uyan tek satır vurgulanmıştır: yuvarlak, stokta ve fiyatı 100 doların altında.</p>
+<div class="table-wrap"><table class="inv-table">
+<colgroup><col class="inv-id"><col class="inv-name"><col><col class="inv-price"><col class="inv-stock"></colgroup>
+<thead><tr><th>id</th><th>İsim</th><th>Açıklama</th><th>Fiyat</th><th>Stok</th></tr></thead>
+<tbody>
+<tr><td class="num">1001</td><td>Aviator</td><td>Her duruma uygun zamansız pilot stili, metal çerçeve</td><td class="num">$80</td><td class="num">12</td></tr>
+<tr><td class="num">1002</td><td>Catseye</td><td>Göz alıcı 1950'ler profili, plastik çerçeve</td><td class="num">$60</td><td class="num">28</td></tr>
+<tr><td class="num">1003</td><td>Moon</td><td>Büyük boy <strong>yuvarlak</strong> stil, plastik çerçeve</td><td class="num">$120</td><td class="num">15</td></tr>
+<tr class="is-match"><td class="num">1004</td><td>Classic</td><td>Klasik <strong>yuvarlak</strong> profil, altın çerçeve<span class="match-tag">uyan kayıt</span></td><td class="num">$60</td><td class="num">9</td></tr>
+</tbody>
+</table></div>
+<p>Burada Moon da yuvarlaktır ve stoktadır, ancak fiyatı 120 dolar olduğu için elenir. Classic ise hem yuvarlak hem stokta hem de 60 dolardır; dolayısıyla doğru cevap odur: <em>"Evet, Classic modelimiz var; klasik yuvarlak çerçeveli ve 60 dolar."</em></p>
+</div>
+
+<h3 id="arac-kumesini-tanimlamak">Araç kümesini tanımlamak</h3>
+<p>Böyle geniş bir soru yelpazesini yanıtlayabilmek için modele bir dizi araç veririz. Bu araçlar, modelin tek tek çağırabileceği yeteneklerdir: ürün açıklamalarını getirmek, stok kontrolü yapmak, fiyat öğrenmek, geçmiş işlemlere bakmak, satış işlemek ve iade işlemek gibi. Bu sorgu için iade aracı gerekmez, ama başka sorgular için lazım olacaktır; bu yüzden araç kümesi sorgudan daha geniştir.</p>
+<div class="tools-panel">
+<span class="tools-title">Araç kümesi</span>
+<div class="tools-grid">
+<div class="tool-chip is-used"><code>get_item_descriptions</code><small>ürün açıklamalarını getir</small></div>
+<div class="tool-chip is-used"><code>check_inventory</code><small>stok durumunu kontrol et</small></div>
+<div class="tool-chip"><code>process_item_return</code><small>iade işle</small></div>
+<div class="tool-chip is-used"><code>get_item_price</code><small>fiyat bilgisini getir</small></div>
+<div class="tool-chip"><code>check_past_transactions</code><small>geçmiş işlemlere bak</small></div>
+<div class="tool-chip"><code>process_item_sale</code><small>satış işle</small></div>
+</div>
+</div>
+<p>Vurgulanan üç araç, bu özel sorgu için seçilenlerdir. Diğerleri kümede durur ama bu istekte kullanılmaz. Kritik nokta şudur: geliştirici "şu üç aracı şu sırada çağır" demez; bu seçimi ve sırayı modelin çıkardığı plan belirler.</p>
+
+<h3 id="bir-plan-urettirmek">Bir plan ürettirmek</h3>
+<p>Modelin doğru araç sırasını kendisinin bulması için ona kabaca şöyle bir sistem istemi yazarız: <em>"Aşağıdaki araçlara erişimin var"</em> denir, her aracın ne yaptığı açıklanır ve ardından <em>"kullanıcının isteğini yerine getirmek için adım adım bir plan döndür"</em> talimatı verilir. Bu sorgu için modelin ürettiği makul bir plan üç adımdan oluşur:</p>
+<div class="plan-list">
+<div class="plan-item"><span class="plan-num">1</span><span class="plan-text"><code>get_item_descriptions</code> aracını kullanarak yuvarlak güneş gözlüklerini bul.</span></div>
+<div class="plan-item"><span class="plan-num">2</span><span class="plan-text"><code>check_inventory</code> aracını kullanarak bu sonuçların stokta olup olmadığını kontrol et.</span></div>
+<div class="plan-item"><span class="plan-num">3</span><span class="plan-text"><code>get_item_price</code> aracını kullanarak stoktaki sonuçların 100 doların altında olup olmadığını gör.</span></div>
+</div>
+
+<h3 id="plani-adim-adim-yurutmek">Planı adım adım yürütmek</h3>
+<p>Model planı ürettikten sonra onu otomatik olarak çalıştırmaz; planın her adımını ayrı ayrı yürütürüz. Önce birinci adımın metni alınır ve göreve, araçlara ve kullanıcı sorgusuna dair ek bağlamla birlikte modele verilir. Model bu adımı yürütür ve bir çıktı üretir. Sonra <strong>birinci adımın çıktısı, ikinci adımın talimatıyla birlikte</strong> modele yeniden verilir. Bu zincir, son adımın çıktısı nihai cevaba dönüşene kadar sürer.</p>
+<div class="exec-chain">
+<div class="exec-prompt">
+<span class="pr-q">"Stokta 100 doların altında yuvarlak güneş gözlüğünüz var mı?"</span>
+<span class="pr-arrow">&rarr;</span>
+<span class="pr-llm">LLM</span>
+<span class="pr-out">Araçları tanıtan istemle birlikte adım adım planı üretir.</span>
+</div>
+<div class="exec-row">
+<div class="e-in"><b>Adım 1 metni</b><span>+ görev ve araç bağlamı</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool"><code>get_item_descriptions</code></div>
+</div>
+<div class="exec-row">
+<div class="e-in"><b>Adım 1 çıktısı + Adım 2 metni</b><span>yuvarlak bulunan modeller</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool"><code>check_inventory</code></div>
+</div>
+<div class="exec-row">
+<div class="e-in"><b>Adım 2 çıktısı + Adım 3 metni</b><span>stokta olan modeller</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool"><code>get_item_price</code></div>
+</div>
+<div class="exec-row">
+<div class="e-in"><b>Adım 3 çıktısı</b><span>fiyatı uygun sonuç</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool" style="border-color:var(--lesson-border-strong);background:#eef0f4;color:#1f2937;">Kullanıcıya nihai yanıt</div>
+</div>
+</div>
+<p>Burada bilinçli olarak çok şey sadeleştirildi. Gerçekte modelin yazdığı plan, bu tek satırlık talimatlardan daha ayrıntılıdır. Ama temel iş akışı aynıdır: model birden çok adımlı bir plan yazar, sonra her adımı uygun bağlamla sırayla yürütür. Heyecan verici olan şu: bu karmaşık müşteri isteğini yanıtlamak için araçların hangi sırada çağrılacağına <strong>önceden karar vermek zorunda kalmadık</strong>.</p>
+
+<div class="definition-card">
+<h3 id="tanim">Tanım</h3>
+<p><strong>Planlama deseni</strong>, bir dil modeline bir araç kümesi ve "adım adım plan döndür" talimatı verip, ürettiği planın her adımını &mdash; bağlam ve önceki adımın çıktısıyla birlikte &mdash; sırayla çalıştırmaktan oluşan bir agent tasarım yaklaşımıdır. Adım dizisi geliştirici tarafından değil, çalışma anında model tarafından belirlenir.</p>
+</div>
+
+<h3 id="ayni-araclar-farkli-istek-farkli-plan">Aynı araçlar, farklı istek, farklı plan</h3>
+<p>Planlamanın gücü, aynı araç kümesinin farklı isteklere göre tamamen farklı planlar doğurabilmesinde görülür. Müşteri bu kez şöyle dese: <em>"Satın aldığım altın çerçeveli gözlükleri iade etmek istiyorum, ama metal çerçeveli olanları değil."</em> Model bu istek için bambaşka bir plan üretir:</p>
+<div class="plan-list">
+<div class="plan-item"><span class="plan-num">1</span><span class="plan-text"><code>check_past_transactions</code> aracını kullanarak müşterinin hangi gözlükleri satın aldığını bul.</span></div>
+<div class="plan-item"><span class="plan-num">2</span><span class="plan-text"><code>get_item_descriptions</code> aracını kullanarak bunların arasından altın çerçeveli olanları belirle.</span></div>
+<div class="plan-item"><span class="plan-num">3</span><span class="plan-text"><code>process_item_return</code> aracını kullanarak altın çerçeveli gözlükleri iade et.</span></div>
+</div>
+<p>Aynı altı araç, hiçbiri yeniden tanımlanmadan, bu kez stok sorgusu için değil bir iade işlemi için zincirlendi. Geliştirici iki senaryo için ayrı ayrı iş akışı kodlamadı; her iki planı da model üretti. Böyle planlayabilen bir agent, çok sayıda farklı aracı çok farklı sıralarda çağırmayı gerektiren çok daha geniş bir görev yelpazesini üstlenebilir.</p>
+</section>
+
+<section><h2 id="ikinci-ornek-e-posta-asistani">İkinci Örnek: E-posta Asistanı</h2>
+<p>Planlama deseni tek bir alana özgü değildir. Asistanınıza şöyle dediğinizi düşünün: <em>"Bob'un New York'taki yemek davetine yanıt ver, katılacağımı söyle ve sonra e-postasını arşivle."</em> Bu asistana e-posta arama, e-posta taşıma, e-posta silme ve e-posta gönderme gibi araçlar verilir.</p>
+<div class="tools-panel">
+<span class="tools-title">E-posta araç kümesi</span>
+<div class="tools-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+<div class="tool-chip is-used"><code>search_email</code><small>e-posta ara</small></div>
+<div class="tool-chip is-used"><code>move_email</code><small>e-postayı taşı</small></div>
+<div class="tool-chip"><code>delete_email</code><small>e-postayı sil</small></div>
+<div class="tool-chip is-used"><code>send_email</code><small>e-posta gönder</small></div>
+</div>
+</div>
+<p>Aynı kalıpla modele "şu araçlara erişimin var, adım adım bir plan döndür" denir. Model bu istek için şöyle makul bir plan çıkarır:</p>
+<div class="plan-list">
+<div class="plan-item"><span class="plan-num">1</span><span class="plan-text"><code>search_email</code> aracıyla Bob'dan gelen, "dinner" ve "New York" geçen e-postayı bul.</span></div>
+<div class="plan-item"><span class="plan-num">2</span><span class="plan-text"><code>send_email</code> aracıyla yanıt verip katılımı onayla.</span></div>
+<div class="plan-item"><span class="plan-num">3</span><span class="plan-text"><code>move_email</code> aracıyla e-postayı "arşiv" klasörüne taşı.</span></div>
+</div>
+<p>Yürütme tıpkı önceki örnekteki gibidir: birinci adım metni bağlamla modele verilir ve arama tetiklenir; bu adımın çıktısı ikinci adım talimatıyla birlikte modele verilip uygun yanıt gönderilir; e-posta başarıyla gönderildikten sonra üçüncü adımda e-posta arşive taşınır. Görev alanı değişse de desen değişmedi: planla, sonra adımları sırayla yürüt.</p>
+</section>
+
+<section><h2 id="planlamanin-avantajlari-ve-zorluklari">Planlamanın Avantajları ve Zorlukları</h2>
+<p>Planlama deseni, bugün özellikle <strong>yüksek otonomili kodlama sistemlerinde</strong> başarıyla kullanılıyor. Karmaşık bir uygulama yazması istendiğinde bu sistemler önce "şu bileşeni kur, sonra şunu kur" diye neredeyse bir kontrol listesi çıkarır ve ardından bu adımları tek tek uygulayarak hayli karmaşık yazılımlar üretebilir.</p>
+<p>Buna karşılık birçok başka uygulama alanında planlama hâlâ daha deneysel ve yaygınlaşması henüz sürüyor. Bunun başlıca nedeni bir <strong>kontrol zorluğudur</strong>: geliştirici olarak çalışma anında modelin hangi planı çıkaracağını tam olarak bilemezsiniz. Bu da sistemi bazen kontrol etmesi zor hale getirir. Kodlama dışındaki alanlarda planlamanın benimsenmesi büyümeye devam ediyor ve bu teknolojinin giderek olgunlaşıp daha fazla uygulamada görüleceği bekleniyor.</p>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Güçlü yanı: esneklik</h4>
+<p>Adım dizisini önceden sabit kodlamak zorunda kalmazsınız. Aynı araç kümesiyle, çok farklı ve karmaşık istekler için modelin kendi planını çıkarmasına izin verirsiniz.</p>
+</div>
+<div class="cmp-card">
+<h4>Zayıf yanı: öngörülebilirlik</h4>
+<p>Plan çalışma anında üretildiği için davranış önceden tam kestirilemez. Bu, sistemi denetlemeyi ve garanti vermeyi zorlaştırır; planlamanın bazı alanlarda hâlâ deneysel kalmasının nedeni budur.</p>
+</div>
+</div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Model planı yazar</strong><span>Adımların listesini ve sırasını geliştirici değil, model üretir.</span></div>
+<div class="insight-card"><strong>Çıktı bir sonrakine akar</strong><span>Her adımın çıktısı, bir sonraki adıma bağlam olarak verilir.</span></div>
+<div class="insight-card"><strong>Geniş görev yelpazesi</strong><span>Tek bir araç kümesi, çok sayıda farklı görevi karşılayabilir.</span></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>"Geliştirici araç sırasını belirler."</strong> Hayır; planlama deseninin tüm amacı, adım dizisini çalışma anında modelin çıkarmasıdır.</li>
+<li><strong>"Model planı üretince iş biter."</strong> Plan yalnızca bir listedir; asıl iş, her adımı bağlam ve önceki çıktıyla sırayla yürütmektir.</li>
+<li><strong>"Her araç her sorguda kullanılır."</strong> Model, kümeden yalnızca göreve uygun araçları seçer; geri kalanı o istekte kullanılmaz.</li>
+<li><strong>"Adımlar birbirinden bağımsızdır."</strong> Tam tersine, her adım bir önceki adımın çıktısını girdi olarak alır; zincir bu bağımlılık üzerine kuruludur.</li>
+<li><strong>"Daha otonom her zaman daha iyidir."</strong> Planlama esneklik kazandırır ama öngörülebilirliği azaltır; bu yüzden kontrolün kritik olduğu bazı alanlarda hâlâ deneyseldir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Planlama deseninin kalbinde basit ama güçlü bir fikir vardır: bir dil modeline araçları tanıtıp ondan <strong>adım adım bir plan</strong> istemek, sonra o planı her adımı uygun bağlamla sırayla yürüterek hayata geçirmek. Böylece karmaşık bir görevi çözmek için araçların hangi sırada çağrılacağını önceden sabit kodlamak zorunda kalmazsınız.</p>
+<p>Bu yaklaşımın en çekici yanı, aynı araç kümesinin çok farklı isteklere uyarlanabilmesidir: stok sorgusu da, iade işlemi de, e-posta yönetimi de aynı desenle, ayrı ayrı iş akışı yazılmadan çözülür. Karşılığında bir bedel vardır: plan çalışma anında üretildiği için sistemin davranışı her zaman önceden kestirilemez ve bu, kontrol açısından gerçek bir zorluktur.</p>
+<p>Planlama bugün yüksek otonomili kodlama sistemlerinde olgunlaşmış durumda; diğer alanlarda ise hızla yaygınlaşan, heyecan verici ve giderek gelişen bir teknoloji olarak öne çıkıyor.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#planlama-is-akislari" class="toc-h1">Planlama İş Akışları</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#problem-tek-bir-aracla-cozulemeyen-karmasik-istekler" class="toc-h3">Problem: tek bir araçla çözülemeyen karmaşık istekler</a>
+<a href="#ornek-envanter" class="toc-h3">Örnek envanter</a>
+<a href="#arac-kumesini-tanimlamak" class="toc-h3">Araç kümesini tanımlamak</a>
+<a href="#bir-plan-urettirmek" class="toc-h3">Bir plan ürettirmek</a>
+<a href="#plani-adim-adim-yurutmek" class="toc-h3">Planı adım adım yürütmek</a>
+<a href="#tanim" class="toc-h3">Tanım</a>
+<a href="#ayni-araclar-farkli-istek-farkli-plan" class="toc-h3">Aynı araçlar, farklı istek, farklı plan</a>
+<a href="#ikinci-ornek-e-posta-asistani" class="toc-h2">İkinci Örnek: E-posta Asistanı</a>
+<a href="#planlamanin-avantajlari-ve-zorluklari" class="toc-h2">Planlamanın Avantajları ve Zorlukları</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

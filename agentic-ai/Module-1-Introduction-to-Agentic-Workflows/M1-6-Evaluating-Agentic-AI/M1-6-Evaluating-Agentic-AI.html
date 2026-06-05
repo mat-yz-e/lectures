@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Yapay Zekâyı Değerlendirme</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--node-model-bg:#eef2ff; --node-model-border:#8b95c9; --node-model-text:#28336b;
+--node-tool-bg:#fff3f5; --node-tool-border:#fe4a61; --node-tool-text:#8f2638;
+--node-output-bg:#f8fafc; --node-output-border:#cbd5e1; --node-output-text:#1f2937;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.eval-table col.kind-col{width:25%;} .eval-table td.kind{font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+.diagram{margin:1.2rem 0;padding:1.1rem 1.1rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram-title{margin:0 0 0.2rem;font-weight:700;color:var(--lesson-text);font-size:1rem;}
+.diagram-sub{margin:0 0 0.9rem;color:var(--lesson-muted);font-size:0.9rem;}
+.node-flow{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:0.3rem;}
+.node-col{display:flex;flex-direction:column;align-items:center;width:8rem;}
+.node{display:flex;align-items:center;justify-content:center;width:100%;min-height:3.15rem;padding:0.42rem 0.5rem;border:1.5px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;font-size:0.84rem;font-weight:600;line-height:1.2;}
+.node-input{background:#fff;border-color:var(--lesson-border-strong);color:var(--lesson-text);}
+.node-model{background:var(--node-model-bg);border-color:var(--node-model-border);color:var(--node-model-text);}
+.node-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);color:var(--node-tool-text);}
+.node-output{background:var(--node-output-bg);border-color:var(--node-output-border);color:var(--node-output-text);}
+.node-cap{margin-top:0.35rem;color:var(--lesson-muted);font-size:0.8rem;line-height:1.3;text-align:center;}
+.node-arrow{align-self:flex-start;padding-top:1rem;color:var(--lesson-muted);font-weight:700;font-size:1.05rem;}
+.legend{display:flex;flex-wrap:wrap;gap:0.7rem 1.3rem;margin:0.4rem 0 0;padding-top:0.85rem;border-top:1px dashed var(--lesson-border);}
+.legend-item{display:flex;align-items:center;gap:0.45rem;font-size:0.84rem;color:var(--lesson-muted);}
+.legend-swatch{width:1.05rem;height:1.05rem;border-radius:0.25rem;border:1.5px solid var(--lesson-border-strong);flex:none;}
+.sw-model{background:var(--node-model-bg);border-color:var(--node-model-border);}
+.sw-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);}
+.sw-output{background:var(--node-output-bg);border-color:var(--node-output-border);}
+.metric-panel{margin:1.1rem 0;padding:1rem 1.05rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:var(--lesson-card-muted);}
+.metric-row{display:grid;grid-template-columns:10rem minmax(0,1fr) 4.5rem;gap:0.75rem;align-items:center;padding:0.55rem 0;border-top:1px solid var(--lesson-border);}
+.metric-row:first-of-type{border-top:0;}
+.metric-label{font-weight:700;color:var(--lesson-text);}
+.metric-track{height:0.8rem;border-radius:999px;background:var(--lesson-soft-2);overflow:hidden;border:1px solid var(--lesson-border);}
+.metric-fill{display:block;height:100%;border-radius:999px;background:var(--dlai-coral);}
+.metric-value{font-variant-numeric:tabular-nums;color:var(--lesson-muted);font-size:0.9rem;text-align:right;}
+.judge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.judge-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.judge-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.judge-card p{margin:0.35rem 0;color:var(--lesson-muted);font-size:0.94rem;}
+.score-strip{display:flex;gap:0.35rem;margin:0.75rem 0 0;}
+.score-dot{display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:999px;border:1px solid var(--lesson-border);background:var(--lesson-soft);color:var(--lesson-muted);font-weight:700;font-size:0.86rem;}
+.score-dot.is-active{background:var(--dlai-coral);border-color:var(--dlai-coral);color:#fff;}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.trace-panel{margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.trace-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin-top:0.85rem;}
+.trace-item{padding:0.85rem 0.8rem;border:1px solid var(--lesson-border);border-left:3px solid var(--dlai-coral);border-radius:0.55rem;background:var(--lesson-soft);}
+.trace-item strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);}
+.trace-item span{font-size:0.9rem;color:var(--lesson-muted);line-height:1.45;}
+@media (max-width:860px){
+.bp-flow,.insight-grid,.judge-grid,.comparison-grid,.trace-list{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.metric-row{grid-template-columns:1fr;gap:0.35rem;}
+.metric-value{text-align:left;}
+}
+@media (max-width:640px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.node-col{width:7rem;}
+.node-arrow{width:100%;padding:0.15rem 0;text-align:center;transform:rotate(90deg);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-6-Evaluating-Agentic-AI/M1-6-Evaluating-Agentic-AI.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Agentic Yapay Zekâyı Değerlendirme</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="agentic-yapay-zekayi-degerlendirme">Agentic Yapay Zekâyı Değerlendirme</h1>
+<p class="lead-text">Agentic iş akışlarında kaliteyi sezgiyle değil, çıktı inceleme, objektif ölçütler, LLM yargıçları, izler ve hata analiziyle disiplinli biçimde iyileştirme yaklaşımı.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Agentic iş akışlarını etkili biçimde geliştiren ekipleri ayıran en önemli becerilerden biri, düzenli bir değerlendirme süreci kurabilmeleridir. Çünkü bir iş akışı kurulduğunda, neyin yanlış gideceğini baştan tam olarak bilmek çoğu zaman mümkün değildir.</p>
+<p>Bu ders, değerlendirmeyi iş akışının sonuna eklenen geçici bir kontrol olarak değil, geliştirme sürecini yöneten temel mekanizma olarak ele alır. Önce düşük kaliteli çıktıları nasıl fark edeceğimizi, sonra ölçülebilir hatalar için objektif eval kurmayı, daha öznel kalite ölçütlerinde LLM-as-judge yaklaşımını ve son olarak trace inceleme ile hata analizini göreceğiz.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Agentic sistemlerde iyileştirme, “daha iyi prompt yazalım” sezgisinden çok, hangi hatanın ne sıklıkta oluştuğunu gözlemleme ve bu hatayı azaltacak tasarım değişikliklerini ölçerek yapma disiplinine dayanır.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Agentic iş akışlarında eval sürecinin neden geliştirme hızını ve kaliteyi belirlediğini açıklayabilmek.</li>
+<li>Önceden tahmin edilemeyen hataları, gerçek çıktıları okuyarak keşfetme yaklaşımını kavramak.</li>
+<li>Rakip adlarının yanlış biçimde anılması gibi objektif hataları kodla ölçülebilir eval haline getirebilmek.</li>
+<li>Öznel kalite ölçütleri için LLM-as-judge yaklaşımını ve basit puanlama ölçeklerinin sınırlarını yorumlayabilmek.</li>
+<li>Uçtan uca eval ile bileşen düzeyi eval arasındaki farkı ayırt edebilmek.</li>
+<li>Trace inceleme ve hata analizinin agentic sistemleri iyileştirmedeki rolünü açıklayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Agentic iş akışı, alt adım, araç çağrısı ve model çıktısı kavramlarına temel aşinalık.</li>
+<li>Bir müşteri yanıtı veya araştırma raporu gibi serbest metin çıktısında kalite sorunlarını okuyarak fark edebilme.</li>
+<li>Bir ölçütün objektif mi yoksa öznel mi olduğunu ayırt edebilme.</li>
+</ul>
+<p>Bu ders kavramsaldır; yürütülebilir kod veya kayıtlı çıktı içermez. Bu nedenle sayfada Jupyter kod hücresi veya çıktı bloğu oluşturulmamıştır.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Eval</td><td>Bir agentic iş akışının belirli bir kalite veya hata ölçütüne göre değerlendirilmesi.</td><td>Tek seferlik gözlem değil, ilerlemeyi takip eden ölçüm mekanizmasıdır.</td></tr>
+<tr><td class="term">Objektif eval</td><td>Doğru/yanlış veya sayılabilir bir koşulla ölçülen değerlendirme.</td><td>Örneğin belirli bir rakip adının geçip geçmediği kodla kontrol edilebilir.</td></tr>
+<tr><td class="term">LLM-as-judge</td><td>Bir modelin başka bir model çıktısını değerlendirmesi.</td><td>Öznel kalite ölçütlerinde kullanılır; puan ölçeği dikkatli tasarlanmalıdır.</td></tr>
+<tr><td class="term">Uçtan uca eval</td><td>Tüm agentic sistemin nihai çıktısını değerlendiren ölçüm.</td><td>Kullanıcıya görünen genel kaliteyi yakalar.</td></tr>
+<tr><td class="term">Bileşen eval</td><td>İş akışındaki tek bir adımın çıktısını ayrı değerlendiren ölçüm.</td><td>Hatanın hangi adımda oluştuğunu bulmayı kolaylaştırır.</td></tr>
+<tr><td class="term">Trace</td><td>İş akışının ara adımlarında oluşan model ve araç çıktılarının izlenebilir kaydı.</td><td>Hata analizinde ara sonuçları tek tek okumayı sağlar.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Değerlendirme süreci, agentic sistem geliştirmeyi kapalı döngüye çevirir. Önce sistem gerçek çıktılar üretir; geliştirici bu çıktılarda nelerin memnun edici olmadığını bulur; sonra bu sorunlar ölçülebilir eval haline getirilir ve iyileştirmelerin gerçekten işe yarayıp yaramadığı takip edilir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Çıktıları oku</strong><span>Önceden tahmin edemediğin kalite sorunlarını gerçek sonuçlarda ara.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Hatayı tanımla</strong><span>İstenmeyen davranışı açık bir ölçüte dönüştür.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Eval ekle</strong><span>Objektifse kodla, öznel ise yargıç modelle ölç.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>İyileştir</strong><span>Değişiklikten sonra hata oranının veya kalite puanının nasıl değiştiğini izle.</span></div>
+</div></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Önce gözlem</strong><span>Her hatayı baştan kestirmek zordur; gerçek çıktıları okumak gerekir.</span></div>
+<div class="insight-card"><strong>Sonra ölçüm</strong><span>Bulunan hata, ilerlemeyi takip eden bir eval ölçütüne çevrilir.</span></div>
+<div class="insight-card"><strong>En son tasarım</strong><span>Prompt, araç veya akış değişiklikleri ölçülen sonuçlara göre yapılır.</span></div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="neden-eval-sureci-gerekir">Neden eval süreci gerekir?</h3>
+<p>Bir müşteri sipariş sorusunu yanıtlayan iş akışı kurduğunuzu düşünün. Akış ilk bakışta mantıklı olabilir: müşteri iletisinden anahtar bilgiyi çıkarır, ilgili kayıtları bulur ve yanıt üretir. Ancak sistem çalışmaya başladıktan sonra, daha önce akla gelmeyen türden kalite sorunları ortaya çıkabilir.</p>
+<p>Örneğin bazı yanıtlar, gereksiz biçimde rakip şirketlerden söz edebilir. Bir işletme için bu durum çoğu zaman istenmeyen ve rahatsız edici bir çıktıdır. Bu hatayı baştan tahmin etmek zor olabilir; fakat çıktıları dikkatle okuyunca sorun görünür hale gelir. Değerlendirme süreci tam burada başlar: “bu çıktıyı beğenmedim” duygusu, “rakip adı geçiyor mu?” gibi ölçülebilir bir kritere dönüştürülür.</p>
+<div class="diagram">
+<p class="diagram-title">Düşük kaliteli çıktıyı bulma akışı</p>
+<p class="diagram-sub">Önce iş akışı kurulur, sonra gerçek yanıtlar okunarak beklenmeyen hata örüntüleri çıkarılır.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-input">Müşteri sorusu</div><div class="node-cap">Girdi</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Bilgiyi çıkar</div><div class="node-cap">LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Kaydı bul</div><div class="node-cap">Veritabanı sorgusu</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Yanıt yaz</div><div class="node-cap">LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-output">Yanıtı incele</div><div class="node-cap">Hata örüntüsü ara</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-model"></span>Model adımı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Araç veya sorgu</span>
+<span class="legend-item"><span class="legend-swatch sw-output"></span>İncelenen çıktı</span>
+</div>
+</div>
+
+<h3 id="objektif-eval-sayilabilir-bir-hatayi-izlemek">Objektif eval: sayılabilir bir hatayı izlemek</h3>
+<p>Rakip adından söz etme problemi iyi bir objektif eval örneğidir. Eğer sistemin rakiplerden bahsetmesi hata kabul ediliyorsa, belirli rakip adlarının yanıt içinde geçip geçmediği doğrudan kontrol edilebilir. Bu kontrol her yanıt için yapılır ve hata oranı toplam yanıt sayısına göre hesaplanır.</p>
+<div class="metric-panel">
+<p><strong>Örnek ölçüm mantığı:</strong> Yanıtların içinde rakip listesinde bulunan bir ad geçiyorsa bu, sayılabilir bir hata olarak işaretlenir. Amaç, iyileştirmelerden sonra bu oranı aşağı çekmektir.</p>
+<div class="metric-row"><span class="metric-label">İlk sürüm</span><span class="metric-track"><span class="metric-fill" style="width:42%"></span></span><span class="metric-value">%42</span></div>
+<div class="metric-row"><span class="metric-label">İyileştirme 1</span><span class="metric-track"><span class="metric-fill" style="width:18%"></span></span><span class="metric-value">%18</span></div>
+<div class="metric-row"><span class="metric-label">İyileştirme 2</span><span class="metric-track"><span class="metric-fill" style="width:5%"></span></span><span class="metric-value">%5</span></div>
+</div>
+<p>Bu oranlar burada kavramı göstermek için görselleştirilmiştir; asıl ders, böyle bir ölçütün neden güçlü olduğudur. Kriter nettir: rakip adı geçti mi, geçmedi mi? Bu tür net koşullarda kodla denetim yapmak genellikle daha güvenilirdir.</p>
+
+<h3 id="oznel-eval-llm-as-judge-yaklasimi">Öznel eval: LLM-as-judge yaklaşımı</h3>
+<p>LLM çıktıları serbest metin olduğundan, tüm kalite sorunları objektif biçimde yakalanamaz. Bir araştırma ajanının yazdığı raporun “kalitesi” gibi ölçütlerde, tek bir kelime aramak yeterli değildir. Bu durumda başka bir LLM’den yargıç gibi davranması ve çıktıyı okuması istenebilir.</p>
+<div class="diagram">
+<p class="diagram-title">Yargıç modelle değerlendirme akışı</p>
+<p class="diagram-sub">Araştırma ajanı rapor üretir; ayrı bir model, raporu kalite ölçütüne göre değerlendirir.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-input">Kullanıcı sorusu</div><div class="node-cap">Araştırma isteği</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Web araması</div><div class="node-cap">Bilgi toplama</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Rapor taslağı</div><div class="node-cap">Üreten LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Kalite puanı</div><div class="node-cap">Yargıç LLM</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-model"></span>Model adımı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Bilgi getirme aracı</span>
+</div>
+</div>
+<div class="judge-grid">
+<div class="judge-card">
+<h4>Kara delikler üzerine rapor</h4>
+<p>Yargıç model, raporun kalite düzeyini beşli ölçek üzerinden orta düzeyde görebilir.</p>
+<div class="score-strip"><span class="score-dot">1</span><span class="score-dot">2</span><span class="score-dot is-active">3</span><span class="score-dot">4</span><span class="score-dot">5</span></div>
+</div>
+<div class="judge-card">
+<h4>Meyve hasadı yapan robotlar</h4>
+<p>Başka bir rapor, aynı yargıç ölçütünde daha yüksek bir puan alabilir.</p>
+<div class="score-strip"><span class="score-dot">1</span><span class="score-dot">2</span><span class="score-dot">3</span><span class="score-dot is-active">4</span><span class="score-dot">5</span></div>
+</div>
+</div>
+<div class="warn-card"><h3 id="besli-olcek-neden-sinirlidir">Beşli ölçek neden sınırlıdır?</h3><p>Bir modele yalnızca “1 ile 5 arasında kalite puanı ver” demek başlangıç için kullanılabilir; ancak modeller bu tür basit puan ölçeklerinde her zaman yeterince tutarlı değildir. Daha ileri değerlendirme yaklaşımlarında, yargıç modele daha net ölçütler, karşılaştırmalar veya yapılandırılmış karar kuralları vermek gerekir.</p></div>
+</section>
+
+<section><h2 id="eval-turleri-uctan-uca-ve-bilesen-duzeyi">Eval Türleri: Uçtan Uca ve Bileşen Düzeyi</h2>
+<p>Agentic iş akışlarında iki büyük eval düzeyi vardır. İlki, tüm sistemin nihai çıktısını ölçen uçtan uca evaldir. İkincisi, iş akışındaki tek bir adımın çıktısını ölçen bileşen düzeyi evaldir. Bu iki düzey farklı sorulara yanıt verir ve geliştirme sürecinin farklı aşamalarında kullanışlıdır.</p>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Uçtan uca eval</h4>
+<ul>
+<li>Tüm agentic sistemin nihai yanıtını değerlendirir.</li>
+<li>Kullanıcıya görünen genel kaliteyi ölçer.</li>
+<li>“Son yanıt doğru, yararlı ve güvenli mi?” sorusunu cevaplar.</li>
+<li>Hatanın hangi adımda oluştuğunu tek başına söylemeyebilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Bileşen düzeyi eval</h4>
+<ul>
+<li>İş akışındaki tek bir adımı ayrı ölçer.</li>
+<li>Örneğin bilgi çıkarma, kayıt bulma veya rapor taslağı adımına odaklanır.</li>
+<li>Hatanın nerede başladığını bulmayı kolaylaştırır.</li>
+<li>Genel kullanıcı deneyimini tek başına temsil etmeyebilir.</li>
+</ul>
+</div>
+</div>
+<div class="table-wrap"><table class="eval-table">
+<colgroup><col class="kind-col"><col><col></colgroup>
+<thead><tr><th>Eval düzeyi</th><th>Ne zaman kullanılır?</th><th>Geliştirme açısından yararı</th></tr></thead>
+<tbody>
+<tr><td class="kind">Uçtan uca</td><td>Sistemin kullanıcıya verdiği nihai sonucu ölçmek istediğinizde.</td><td>Gerçek ürün kalitesine en yakın sinyali verir.</td></tr>
+<tr><td class="kind">Bileşen düzeyi</td><td>Hangi adımın kaliteyi düşürdüğünü anlamak istediğinizde.</td><td>Prompt, araç veya alt akış değişikliğini daha hedefli yapmayı sağlar.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="trace-inceleme-ve-hata-analizi">Trace İnceleme ve Hata Analizi</h2>
+<p>Agentic iş akışlarında nihai çıktıya bakmak önemlidir; fakat çoğu zaman yetmez. Sistemin neden yanlış davrandığını anlamak için ara adımlara, yani trace’lere bakmak gerekir. Trace inceleme, modelin her adımda ne ürettiğini, hangi aracı çağırdığını ve hangi ara sonucu sonraki adıma taşıdığını okumaktır.</p>
+<div class="trace-panel">
+<p><strong>Hata analizi döngüsü:</strong> Ara çıktıları okuyarak beklentiden sapmanın ilk nerede oluştuğunu bulur, sonra o adımı iyileştirirsiniz.</p>
+<div class="trace-list">
+<div class="trace-item"><strong>1. Girdi</strong><span>Kullanıcı isteği veya müşteri iletisi gerçekten ne söylüyor?</span></div>
+<div class="trace-item"><strong>2. Ara karar</strong><span>Model doğru bilgi çıkarma veya arama kararını verdi mi?</span></div>
+<div class="trace-item"><strong>3. Ara sonuç</strong><span>Araçtan gelen bilgi yeterli ve doğru biçimde kullanıldı mı?</span></div>
+<div class="trace-item"><strong>4. Nihai yanıt</strong><span>Son çıktı, ara sonuçlara tutarlı biçimde dayanıyor mu?</span></div>
+</div>
+</div>
+<p>Bu okuma biçimine hata analizi denir. Amaç, sadece “çıktı kötü” demek değil, çıktının neden kötü olduğunu bulmaktır. Hata bilgi çıkarma adımında mı başladı, yanlış kayıt mı bulundu, yargıç ölçütü mü zayıf kaldı, yoksa nihai yanıtta ton mu bozuldu? Trace inceleme, bu soruları sistematik hale getirir.</p>
+</section>
+
+<section><h2 id="pratik-degerlendirme-cercevesi">Pratik Değerlendirme Çerçevesi</h2>
+<p>Bu derste anlatılan yaklaşım, küçük bir pratik çerçeveye indirgenebilir. Önce agentic iş akışını kurarsınız; sonra gerçek çıktıları okuyarak memnun olmadığınız durumları bulursunuz. Her sorun için “bu objektif biçimde ölçülebilir mi?” sorusunu sorarsınız. Ölçülebiliyorsa kod tabanlı eval; ölçülemiyorsa yargıç model veya daha yapılandırılmış bir öznel eval tasarlarsınız.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Gerçek örnekler üret</strong><span>Sistemi çeşitli müşteri soruları veya araştırma istekleriyle dene.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Memnuniyetsizliği adlandır</strong><span>Yanlış rakip anma, zayıf rapor kalitesi veya tutarsız ara karar gibi sorunu netleştir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Ölçüm tipini seç</strong><span>Objektif hata için kod; öznel kalite için yargıç model kullan.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Trace ile kök nedeni bul</strong><span>Hatanın hangi adımda başladığını ara çıktılardan oku.</span></div>
+</div></div>
+<div class="note-card"><h3 id="gelistirme-disiplini">Geliştirme disiplini</h3><p>Eval ve hata analizi, agentic sistem geliştirmede yalnızca kalite kontrol değildir. Aynı zamanda hangi değişikliği yapmanız gerektiğini söyleyen pusuladır: prompt mu değişmeli, araç mı iyileşmeli, alt adım mı ayrıştırılmalı, yoksa yargıç ölçütü mü yeniden tasarlanmalı?</p></div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>“Eval’leri en baştan eksiksiz tasarlamalıyım.”</strong> Birçok hata önceden bilinmez; önce sistem çıktıları okunmalı, sonra sorunlar ölçüte çevrilmelidir.</li>
+<li><strong>“Bir çıktı kötü görünüyorsa ölçüm gerekmez.”</strong> Ölçüm olmadan iyileştirmenin gerçekten işe yarayıp yaramadığını takip etmek zordur.</li>
+<li><strong>“Her eval için LLM yargıcı gerekir.”</strong> Hayır. Objektif kriterlerde kod tabanlı kontrol daha basit ve daha güvenilir olabilir.</li>
+<li><strong>“Beşli puan ölçeği yeterince hassastır.”</strong> Basit puanlama başlangıç olabilir; ancak yargıç modelden tutarlı sonuç almak için daha iyi yapılandırılmış ölçütler gerekir.</li>
+<li><strong>“Nihai yanıta bakmak yeterlidir.”</strong> Agentic sistemlerde ara adımlar hatanın kökenini gösterir; trace inceleme bu yüzden önemlidir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Agentic yapay zekâ sistemlerini etkili geliştirmek için eval sürecini merkeze almak gerekir. Önce sistemin gerçek çıktıları incelenir; beklenmeyen hata örüntüleri bulunur; bu hata örüntüleri objektif veya öznel değerlendirme ölçütlerine dönüştürülür. Böylece gelişim, sezgisel izlenimlerle değil, izlenebilir metriklerle yönetilir.</p>
+<p>Objektif eval’lerde, rakip adının yanlış biçimde geçmesi gibi sayılabilir koşullar kodla kontrol edilebilir. Öznel eval’lerde, rapor kalitesi gibi daha açık uçlu özellikleri değerlendirmek için LLM-as-judge yaklaşımı kullanılabilir; ancak basit 1-5 puanlarının sınırlı olduğu unutulmamalıdır.</p>
+<p>Son olarak, sadece nihai çıktıyı değil, ara adımları da incelemek gerekir. Uçtan uca eval genel kaliteyi, bileşen düzeyi eval belirli adımı, trace inceleme ise hatanın nerede başladığını gösterir. Bu üç yaklaşım birlikte kullanıldığında, agentic iş akışlarını sistematik olarak iyileştirmek mümkün hale gelir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#agentic-yapay-zekayi-degerlendirme" class="toc-h1">Agentic Yapay Zekâyı Değerlendirme</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#neden-eval-sureci-gerekir" class="toc-h3">Neden eval süreci gerekir?</a>
+<a href="#objektif-eval-sayilabilir-bir-hatayi-izlemek" class="toc-h3">Objektif eval: sayılabilir bir hatayı izlemek</a>
+<a href="#oznel-eval-llm-as-judge-yaklasimi" class="toc-h3">Öznel eval: LLM-as-judge yaklaşımı</a>
+<a href="#besli-olcek-neden-sinirlidir" class="toc-h3">Beşli ölçek neden sınırlıdır?</a>
+<a href="#eval-turleri-uctan-uca-ve-bilesen-duzeyi" class="toc-h2">Eval Türleri: Uçtan Uca ve Bileşen Düzeyi</a>
+<a href="#trace-inceleme-ve-hata-analizi" class="toc-h2">Trace İnceleme ve Hata Analizi</a>
+<a href="#pratik-degerlendirme-cercevesi" class="toc-h2">Pratik Değerlendirme Çerçevesi</a>
+<a href="#gelistirme-disiplini" class="toc-h3">Geliştirme disiplini</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

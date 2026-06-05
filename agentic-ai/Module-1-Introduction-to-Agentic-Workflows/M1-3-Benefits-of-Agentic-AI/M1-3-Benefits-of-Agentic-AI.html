@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Yapay Zekânın Faydaları</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+/* node notation (diagram content colors only) */
+--node-user-bg:#fde2e6; --node-user-border:#e96b7d; --node-user-text:#7a2230;
+--node-llm-bg:#e8eaee; --node-llm-border:#9aa1ad; --node-llm-text:#27303b;
+--node-tool-bg:#e9f7ec; --node-tool-border:#43a047; --node-tool-text:#1b5e20;
+--node-swap-bg:#fff3e0; --node-swap-border:#ef8c2e; --node-swap-text:#8a4b06;
+/* benchmark chart category colors (data series only) */
+--cat-nonag:#6cae3e; --cat-reflect:#d23f3f; --cat-tool:#5b9bd5; --cat-plan:#ed7d31; --cat-multi:#2f5597;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.65rem;margin:0.4rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* generic diagram wrapper + node flow */
+.diagram{margin:1.2rem 0;padding:1.1rem 1.1rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram-title{margin:0 0 0.2rem;font-weight:700;color:var(--lesson-text);font-size:1rem;}
+.diagram-sub{margin:0 0 0.9rem;color:var(--lesson-muted);font-size:0.9rem;}
+.legend{display:flex;flex-wrap:wrap;gap:0.7rem 1.3rem;margin:0.4rem 0 0;padding-top:0.85rem;border-top:1px dashed var(--lesson-border);}
+.legend-item{display:flex;align-items:center;gap:0.45rem;font-size:0.84rem;color:var(--lesson-muted);}
+.legend-swatch{width:1.05rem;height:1.05rem;border-radius:0.25rem;border:1.5px solid var(--lesson-border-strong);flex:none;}
+.legend-dot{width:0.95rem;height:0.95rem;border-radius:50%;flex:none;}
+.sw-user{background:var(--node-user-bg);border-color:var(--node-user-border);}
+.sw-llm{background:var(--node-llm-bg);border-color:var(--node-llm-border);}
+.sw-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);}
+.sw-swap{background:var(--node-swap-bg);border-color:var(--node-swap-border);}
+/* parallel fan diagram */
+.fan{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.55rem 0.7rem;}
+.fan-row{display:flex;align-items:center;justify-content:flex-start;gap:0.5rem;flex-wrap:nowrap;}
+.fan-row>.node:nth-child(1){min-width:3.6rem;} .fan-row>.node:nth-child(2){min-width:6.6rem;}
+.node{display:flex;align-items:center;justify-content:center;padding:0.42rem 0.55rem;border:1.5px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;font-size:0.82rem;font-weight:600;line-height:1.2;min-width:4.6rem;}
+.node-user{background:var(--node-user-bg);border-color:var(--node-user-border);color:var(--node-user-text);}
+.node-llm{background:var(--node-llm-bg);border-color:var(--node-llm-border);color:var(--node-llm-text);}
+.node-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);color:var(--node-tool-text);}
+.node-swap{background:var(--node-swap-bg);border-color:var(--node-swap-border);color:var(--node-swap-text);}
+.fan-col{display:flex;flex-direction:column;gap:0.45rem;}
+.fan-arrow{color:var(--lesson-muted);font-weight:700;text-align:center;}
+.fan-cap{font-size:0.8rem;color:var(--lesson-muted);font-weight:600;text-align:center;margin-bottom:0.2rem;}
+.swap-chips{display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.8rem 0 0.2rem;}
+.swap-chip{padding:0.3rem 0.65rem;border:1.5px solid var(--node-swap-border);border-radius:0.45rem;background:var(--node-swap-bg);color:var(--node-swap-text);font-size:0.84rem;font-weight:600;}
+/* benchmark chart */
+.chart{margin:1.2rem 0;padding:1.1rem 1.15rem 0.6rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.chart-row{display:grid;grid-template-columns:4.6rem 1fr;align-items:center;gap:0.6rem;margin:0.2rem 0;}
+.chart-row-label{font-weight:700;color:var(--lesson-text);font-size:0.92rem;}
+.chart-track{position:relative;height:3rem;border-left:1px solid var(--lesson-border-strong);background:repeating-linear-gradient(90deg,transparent,transparent calc(100%/6 - 1px),var(--lesson-border) calc(100%/6 - 1px),var(--lesson-border) calc(100%/6));}
+.chart-track .baseline{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--lesson-border);}
+.dot{position:absolute;top:50%;width:0.95rem;height:0.95rem;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(0,0,0,0.18);}
+.dot-nonag{background:var(--cat-nonag);} .dot-tool{background:var(--cat-tool);} .dot-reflect{background:var(--cat-reflect);} .dot-plan{background:var(--cat-plan);} .dot-multi{background:var(--cat-multi);}
+.dot-label{position:absolute;top:calc(50% + 0.85rem);transform:translateX(-50%);font-size:0.74rem;color:var(--lesson-muted);white-space:nowrap;font-weight:600;}
+.chart-axis{display:grid;grid-template-columns:4.6rem 1fr;gap:0.6rem;margin-top:0.2rem;}
+.chart-ticks{position:relative;height:1.2rem;}
+.chart-ticks span{position:absolute;transform:translateX(-50%);font-size:0.74rem;color:var(--lesson-muted);}
+.chart-band{position:absolute;top:0;bottom:0;background:var(--dlai-coral-muted);border-left:1px dashed var(--dlai-coral);border-right:1px dashed var(--dlai-coral);}
+@media (max-width:860px){
+.bp-flow,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.fan{grid-template-columns:1fr;}
+.fan-arrow{display:none;}
+}
+@media (max-width:560px){.lesson-page{padding:1rem;line-height:1.7;}.fan-row{flex-wrap:wrap;justify-content:center;}.fan-row>.node:nth-child(1),.fan-row>.node:nth-child(2){min-width:0;}}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-3-Benefits-of-Agentic-AI/M1-3-Benefits-of-Agentic-AI.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Agentic Yapay Zekânın Faydaları</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="agentic-yapay-zekanin-faydalari">Agentic Yapay Zekânın Faydaları</h1>
+<p class="lead-text">Bir görevi adımlara bölen agentic iş akışları neden değerlidir? Üç somut kazanç &mdash; daha yüksek başarım, paralelleştirmeyle hız ve modüler tasarım &mdash; üzerinden bu sorunun yanıtı.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Önceki bölümlerde bir agentic iş akışının ne olduğunu ve otonomluğun bir derece meselesi olduğunu gördük. Bu derste soru değişir: <strong>neden bu kadar zahmete girelim?</strong> Bir görevi tek bir istemle çözmek varken, onu adımlara bölmenin getirisi nedir?</p>
+<p>Yanıt üç başlık altında toplanır. Birincisi, agentic akışlar daha önce mümkün olmayan işleri yapılabilir kılar ve mevcut modellerden <strong>çok daha yüksek başarım</strong> elde eder. İkincisi, bazı adımları <strong>paralelleştirerek</strong> bir insanın sıralı yapacağı işi çok daha hızlı tamamlar. Üçüncüsü, <strong>modüler</strong> yapısı sayesinde bileşenler tek tek eklenip değiştirilebilir. Bu üç faydayı somut bir kodlama başarım ölçümü ve bir araştırma akışı örneği üzerinden inceleyeceğiz.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Agentic iş akışlarının üç temel faydasını &mdash; başarım, hız, modülerlik &mdash; açıklayabilmek.</li>
+<li>Bir kodlama başarım ölçümünde, zayıf bir modeli agentic akışa sarmanın, model neslini yükseltmekten daha büyük bir sıçrama sağlayabileceğini yorumlayabilmek.</li>
+<li>Bir araştırma akışında hangi adımların paralelleştirilebileceğini ve bunun hızı nasıl artırdığını açıklayabilmek.</li>
+<li>Modüler tasarımın neden değerli olduğunu ve hangi bileşenlerin değiştirilebileceğini sıralayabilmek.</li>
+<li>&ldquo;Daha uzun sürmek&rdquo; ile &ldquo;daha yavaş olmak&rdquo;ın neden aynı şey olmadığını ayırt edebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir agentic iş akışının &ldquo;çok adımlı süreç&rdquo; tanımına aşinalık.</li>
+<li>Web araması, sayfa indirme ve metin üretme adımlarının genel kavranışı.</li>
+<li>Yüzde ve basit bir dağılım grafiğini okuyabilme.</li>
+<li>Paralel ve sıralı (ardışık) işlem arasındaki temel fark.</li>
+</ul>
+<p>Bu ders kavramsaldır; kod yazımı veya çalıştırma gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Başarım ölçümü</td><td>Modellerin bir görevdeki başarısını ölçen standart bir test.</td><td>Burada kod yazma yeteneğini ölçen bir test kullanılır.</td></tr>
+<tr><td class="term">Doğrudan üretim</td><td>Görevi tek bir istemle, agentic olmayan biçimde çözme.</td><td>Grafikte &ldquo;agentic olmayan&rdquo; noktalar bu yöntemi temsil eder.</td></tr>
+<tr><td class="term">Paralelleştirme</td><td>Birbirinden bağımsız adımları aynı anda yürütme.</td><td>Toplam iş azalmaz; ama duvar saati süresi kısalır.</td></tr>
+<tr><td class="term">Modülerlik</td><td>Akışın bileşenlerinin tek tek eklenip değiştirilebilmesi.</td><td>Arama motoru veya model, akışı yıkmadan değiştirilebilir.</td></tr>
+<tr><td class="term">Bileşen</td><td>Akıştaki tek bir parça: model çağrısı, arama, indirme vb.</td><td>Her biri ayrı ayrı iyileştirilebilir veya değiştirilebilir.</td></tr>
+<tr><td class="term">Yansıma</td><td>Modelin kendi çıktısını gözden geçirip iyileştirmesi.</td><td>Zayıf bir modelin başarımını yükselten agentic tekniklerden biridir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Agentic iş akışlarını tercih etmenin üç somut nedeni vardır. Bu üç fayda, dersin geri kalanında tek tek örneklenecektir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Daha yüksek başarım</strong><span>Aynı modeli agentic akışa sarmak, başarımı belirgin biçimde artırır.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Paralelleştirmeyle hız</strong><span>Bağımsız adımlar aynı anda çalışır; insanın sıralı yapacağı iş hızlanır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Modüler tasarım</strong><span>Araçlar ve modeller, akış bozulmadan eklenip değiştirilebilir.</span></div>
+</div></div>
+<p>En büyük fayda birincisidir: agentic akışlar, daha önce etkili biçimde yapılamayan birçok görevi mümkün kılar. Diğer ikisi bu temel faydayı pratik ve esnek hâle getirir.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="birinci-fayda-daha-yuksek-basarim">Birinci fayda: daha yüksek başarım</h3>
+<p>Bir kodlama başarım ölçümü düşünün; bu test, farklı dil modellerinin belirli görevleri yerine getiren kod yazma becerisini ölçer. Sonuçlar çarpıcıdır. İlk yaygın sohbet modelinin dayandığı bir önceki nesil model, kodu <strong>doğrudan</strong> yazması istendiğinde testin yaklaşık <strong>%48</strong>&rsquo;ini doğru çözer. Onun yerine geçen, çok daha güçlü bir sonraki nesil model ise yine agentic olmayan biçimde <strong>%67</strong>&rsquo;ye sıçrar. Nesil atlamak gerçekten büyük bir kazançtır.</p>
+<p>Ama asıl sürpriz şudur: bu nesil atlamasının sağladığı iyileşme bile, <strong>zayıf modeli bir agentic akışa sarmanın</strong> sağladığı kazancın yanında küçük kalır. Önceki nesil modele kod yazdırıp ardından kendi kodunu gözden geçirip iyileştirmesini sağlamak gibi tekniklerle, aynı zayıf model çok daha yüksek başarım düzeylerine ulaşabilir. Aşağıdaki dağılım, agentic olmayan iki başlangıç noktasını ve agentic sistemlerin onları nasıl çok daha ileriye taşıdığını gösterir.</p>
+
+<div class="chart">
+<p class="diagram-title">Kodlama başarımı: agentic olmayan başlangıç noktaları ve agentic sistemler</p>
+<p class="diagram-sub">Yatay eksen, testin başarıyla geçilen oranını gösterir. Renkler, başarımı artıran agentic tekniğin türünü belirtir.</p>
+<div class="chart-row">
+<span class="chart-row-label">Önceki nesil</span>
+<div class="chart-track">
+<span class="chart-band" style="left:55%;right:0;"></span>
+<span class="baseline"></span>
+<span class="dot dot-nonag" style="left:13.3%"></span><span class="dot-label" style="left:13.3%">%48 · agentic değil</span>
+<span class="dot dot-tool" style="left:55%"></span>
+<span class="dot dot-plan" style="left:71.7%"></span>
+<span class="dot dot-tool" style="left:91.7%"></span>
+</div>
+</div>
+<div class="chart-row">
+<span class="chart-row-label">Sonraki nesil</span>
+<div class="chart-track">
+<span class="chart-band" style="left:68.3%;right:0;"></span>
+<span class="baseline"></span>
+<span class="dot dot-nonag" style="left:45%"></span><span class="dot-label" style="left:45%">%67 · agentic değil</span>
+<span class="dot dot-tool" style="left:68.3%"></span>
+<span class="dot dot-tool" style="left:71.7%"></span>
+<span class="dot dot-reflect" style="left:83.3%"></span>
+<span class="dot dot-plan" style="left:88.3%"></span>
+<span class="dot dot-tool" style="left:91.7%"></span>
+</div>
+</div>
+<div class="chart-axis">
+<span></span>
+<div class="chart-ticks">
+<span style="left:0%">%40</span><span style="left:16.7%">%50</span><span style="left:33.3%">%60</span><span style="left:50%">%70</span><span style="left:66.7%">%80</span><span style="left:83.3%">%90</span><span style="left:100%">%100</span>
+</div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-dot" style="background:var(--cat-nonag)"></span>Agentic değil</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--cat-reflect)"></span>Yansıma</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--cat-tool)"></span>Araç kullanımı</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--cat-plan)"></span>Planlama</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--cat-multi)"></span>Çoklu ajan</span>
+</div>
+</div>
+
+<div class="note-card">
+<h3 id="buradaki-kritik-gozlem">Buradaki kritik gözlem</h3>
+<p>Önceki nesil modelin <strong>agentic sürümü</strong>, sonraki nesil modelin <strong>agentic olmayan</strong> sürümünü geçebilir. Yani çoğu zaman &ldquo;daha iyi bir model beklemek&rdquo; yerine, elinizdeki modeli iyi tasarlanmış bir agentic akışa sarmak daha hızlı ve daha büyük bir kazanç getirir. Renkli noktalar, bu sıçramayı sağlayan farklı agentic tekniklerin &mdash; yansıma, araç kullanımı, planlama, çoklu ajan &mdash; izlerini gösterir.</p>
+</div>
+
+<h3 id="ikinci-fayda-paralellestirmeyle-hiz">İkinci fayda: paralelleştirmeyle hız</h3>
+<p>Agentic akışlar bazı adımları paralelleştirebilir ve böylece belirli işleri bir insandan çok daha hızlı yapabilir. &ldquo;Kara delikler hakkında bir deneme yaz&rdquo; isteğini ele alalım. Burada üç dil modeli çağrısı <strong>aynı anda</strong> çalışıp web araması için farklı arama terimleri üretebilir. Her arama kendi en iyi sonuçlarını işaret eder; örneğin her aramadan üçer sayfa olmak üzere toplam dokuz web sayfası belirlenir.</p>
+<p>Bir insan bu araştırmayı yapsaydı, dokuz sayfayı <strong>tek tek, sırayla</strong> okumak zorunda kalırdı. Agentic akışta ise dokuz sayfanın indirilmesi <strong>aynı anda</strong> yürütülür; sonra hepsi birden bir modele verilip deneme yazdırılır.</p>
+
+<div class="diagram">
+<p class="diagram-title">Paralel araştırma akışı</p>
+<p class="diagram-sub">Üç arama dalı aynı anda çalışır; her dal kendi sayfalarını paralel indirir. Dokuz indirme ardışık değil, eşzamanlıdır.</p>
+<div class="fan">
+<div class="node node-user">Kara delikler hakkında deneme yaz</div>
+<div class="fan-arrow">&rarr;</div>
+<div>
+<div class="fan-cap">3 paralel arama dalı &mdash; her biri 3 sayfa indirir (toplam 9 eşzamanlı indirme)</div>
+<div class="fan-col">
+<div class="fan-row"><span class="node node-llm">LLM</span><span class="node node-tool">web araması</span><span class="fan-arrow">&rarr;</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span></div>
+<div class="fan-row"><span class="node node-llm">LLM</span><span class="node node-tool">web araması</span><span class="fan-arrow">&rarr;</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span></div>
+<div class="fan-row"><span class="node node-llm">LLM</span><span class="node node-tool">web araması</span><span class="fan-arrow">&rarr;</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span></div>
+</div>
+</div>
+<div class="fan-arrow">&rarr;</div>
+<div class="fan-col"><span class="node node-llm">LLM</span><span class="fan-cap" style="margin:0;">Denemeyi yaz</span></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Dış yazılım / araç</span>
+</div>
+</div>
+
+<div class="warn-card">
+<h3 id="daha-uzun-ile-daha-yavas-ayni-sey-degil">&ldquo;Daha uzun&rdquo; ile &ldquo;daha yavaş&rdquo; aynı şey değil</h3>
+<p>Agentic akışlar, tek seferlik doğrudan üretime kıyasla <strong>daha uzun sürer</strong>; çünkü daha fazla adım yürütürler. Ancak aynı işi yapan bir <strong>insanla</strong> kıyaslandığında, çok sayıda web sayfasını paralel indirebilmek, tek bir kişinin sıralı çalışmasından çok daha hızlı sonuç verebilir. Yani &ldquo;modele göre daha uzun&rdquo; ile &ldquo;insana göre daha yavaş&rdquo; karıştırılmamalıdır.</p>
+</div>
+
+<h3 id="ucuncu-fayda-moduler-tasarim">Üçüncü fayda: modüler tasarım</h3>
+<p>Agentic akışlar kurarken sık yapılan işlerden biri, tek tek bileşenlere bakıp onları <strong>eklemek veya değiştirmektir</strong>. Akışın iskeleti aynı kalırken içindeki bir parça sökülüp yerine bir başkası takılabilir. Üç tipik değişiklik vardır.</p>
+<p>Birincisi, kullanılan web arama motoru değiştirilebilir. Dil modellerinin kullanması için tasarlanmış birçok seçenek vardır:</p>
+<div class="swap-chips">
+<span class="swap-chip">Google</span><span class="swap-chip">Bing</span><span class="swap-chip">DuckDuckGo</span><span class="swap-chip">Tavily</span><span class="swap-chip">you.com</span>
+</div>
+<p>İkincisi, bir adımdaki aracın <strong>türü</strong> değiştirilebilir; örneğin üç web araması yapmak yerine bir dalda bir <strong>haber arama</strong> aracı kullanılarak kara delik bilimindeki son gelişmeler bulunabilir. Üçüncüsü, tüm adımlarda aynı modeli kullanmak yerine, farklı adımlar için farklı modeller ve farklı sağlayıcılar denenerek her adımda en iyi sonucu veren seçilebilir.</p>
+
+<div class="diagram">
+<p class="diagram-title">Modüler değişiklik: bir bileşeni söküp yerine başkasını takmak</p>
+<p class="diagram-sub">Akışın yapısı korunur; yalnızca bir dalın arama aracı, web aramasından haber aramasına çevrilmiştir.</p>
+<div class="fan">
+<div class="node node-user">Kara delikler hakkında deneme yaz</div>
+<div class="fan-arrow">&rarr;</div>
+<div>
+<div class="fan-cap">Bir dalın aracı değiştirildi; diğerleri aynı kaldı</div>
+<div class="fan-col">
+<div class="fan-row"><span class="node node-llm">LLM</span><span class="node node-tool">web araması</span><span class="fan-arrow">&rarr;</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span></div>
+<div class="fan-row"><span class="node node-llm">LLM</span><span class="node node-swap">haber araması</span><span class="fan-arrow">&rarr;</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span></div>
+<div class="fan-row"><span class="node node-llm">LLM</span><span class="node node-tool">web araması</span><span class="fan-arrow">&rarr;</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span><span class="node node-tool">indir</span></div>
+</div>
+</div>
+<div class="fan-arrow">&rarr;</div>
+<div class="fan-col"><span class="node node-llm">LLM</span><span class="fan-cap" style="margin:0;">Denemeyi yaz</span></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Mevcut araç</span>
+<span class="legend-item"><span class="legend-swatch sw-swap"></span>Değiştirilen araç</span>
+</div>
+</div>
+<p>Modülerliğin değeri burada açıkça görülür: en iyi bileşenleri farklı yerlerden alıp tek bir etkili akışta birleştirebilirsiniz. Bir parçayı iyileştirmek, tüm sistemi yeniden kurmayı gerektirmez.</p>
+</section>
+
+<section><h2 id="uc-faydanin-ozeti">Üç Faydanın Özeti</h2>
+<div class="insight-grid">
+<div class="insight-card"><strong>Çok daha iyi başarım</strong><span>Aynı modeli agentic akışa sarmak, çoğu uygulamada doğrudan üretimi belirgin biçimde geçer.</span></div>
+<div class="insight-card"><strong>Paralelleştirmeyle hız</strong><span>Bağımsız indirmeler eşzamanlı yürütülerek insanın sıralı çalışmasından hızlı sonuç alınır.</span></div>
+<div class="insight-card"><strong>Modüler tasarım</strong><span>Araçlar güncellenebilir, eklenebilir; modeller akış bozulmadan değiştirilebilir.</span></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Başarım için yeni nesil modeli beklemek gerekir.&rdquo;</strong> Çoğu zaman mevcut modeli agentic akışa sarmak, nesil atlamaktan daha büyük bir kazanç sağlar.</li>
+<li><strong>&ldquo;Agentic akış her zaman daha yavaştır.&rdquo;</strong> Tek istemli üretime göre daha uzun sürer; ama paralelleştirme sayesinde insana göre çok daha hızlı olabilir.</li>
+<li><strong>&ldquo;Paralelleştirmek toplam işi azaltır.&rdquo;</strong> Yapılan iş aynıdır; yalnızca bağımsız adımlar aynı anda yürütüldüğü için geçen süre kısalır.</li>
+<li><strong>&ldquo;Modülerlik küçük bir kolaylıktır.&rdquo;</strong> Aksine, en iyi bileşenleri farklı kaynaklardan birleştirip tek tek iyileştirebilmek agentic akışların temel gücüdür.</li>
+<li><strong>&ldquo;Tüm adımlarda tek bir model kullanılmalı.&rdquo;</strong> Farklı adımlar için farklı modeller ve sağlayıcılar denemek genellikle daha iyi sonuç verir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Agentic iş akışlarını kullanmanın başlıca nedeni, birçok farklı uygulamada <strong>çok daha iyi başarım</strong> sağlamasıdır. Bir kodlama başarım ölçümünde gördüğümüz gibi, zayıf bir modeli iyi bir agentic akışa sarmak, çoğu zaman bir sonraki nesil modele geçmekten daha büyük bir sıçrama getirir.</p>
+<p>Buna ek olarak, agentic akışlar bir insanın sıralı yapmak zorunda kalacağı bazı işleri <strong>paralelleştirir</strong>; çok sayıda web sayfasını aynı anda indirmek bunun tipik örneğidir. Son olarak, akışların <strong>modüler</strong> tasarımı araçların eklenip güncellenmesine ve modellerin değiştirilmesine olanak tanır. Bu üç fayda birlikte, bir görevi adımlara bölmenin neden çoğu zaman zahmete değdiğini açıklar.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#agentic-yapay-zekanin-faydalari" class="toc-h1">Agentic Yapay Zekânın Faydaları</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#birinci-fayda-daha-yuksek-basarim" class="toc-h3">Birinci fayda: daha yüksek başarım</a>
+<a href="#buradaki-kritik-gozlem" class="toc-h3">Buradaki kritik gözlem</a>
+<a href="#ikinci-fayda-paralellestirmeyle-hiz" class="toc-h3">İkinci fayda: paralelleştirmeyle hız</a>
+<a href="#daha-uzun-ile-daha-yavas-ayni-sey-degil" class="toc-h3">“Daha uzun” ile “daha yavaş” aynı şey değil</a>
+<a href="#ucuncu-fayda-moduler-tasarim" class="toc-h3">Üçüncü fayda: modüler tasarım</a>
+<a href="#uc-faydanin-ozeti" class="toc-h2">Üç Faydanın Özeti</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

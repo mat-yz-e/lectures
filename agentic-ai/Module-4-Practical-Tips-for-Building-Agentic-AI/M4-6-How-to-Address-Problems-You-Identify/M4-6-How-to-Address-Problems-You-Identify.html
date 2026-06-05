@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belirlediğiniz Problemleri Nasıl Ele Alırsınız?</title>
+<style>
+:root{
+--dlai-coral:#fe4a61;
+--dlai-coral-dark:#e63f55;
+--dlai-coral-soft:#ffe8ec;
+--dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff;
+--lesson-text:#111827;
+--lesson-muted:#4b5563;
+--lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6;
+--lesson-border:#e5e7eb;
+--lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff;
+--lesson-card-muted:#fff8f9;
+--accent:#fe4a61;
+--accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);}
+*,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.8rem,3.2vw,2.5rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,770px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:680px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;}
+.term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.decision-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.decision-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.decision-card p{margin:0.35rem 0 0.65rem;color:var(--lesson-muted);font-size:0.94rem;}
+.decision-card ul{margin:0;padding-left:1.15rem;}
+.decision-card li{font-size:0.93rem;color:var(--lesson-muted);}
+.fix-panel{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:var(--lesson-soft);}
+.fix-row{display:grid;grid-template-columns:12rem minmax(0,1fr);gap:0.85rem;padding:0.75rem 0;border-top:1px solid var(--lesson-border);}
+.fix-row:first-child{border-top:0;padding-top:0;}
+.fix-row:last-child{padding-bottom:0;}
+.fix-label{display:flex;align-items:center;justify-content:center;padding:0.55rem 0.7rem;border:1px solid var(--lesson-border-strong);border-radius:0.55rem;background:#fff;font-weight:700;text-align:center;color:var(--lesson-text);}
+.fix-body{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.55rem;}
+.fix-chip{padding:0.62rem 0.7rem;border:1px solid var(--lesson-border);border-left:3px solid var(--dlai-coral);border-radius:0.5rem;background:#fff;color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.fix-chip strong{display:block;margin-bottom:0.18rem;color:var(--lesson-text);font-size:0.92rem;}
+.compare-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.compare-card{padding:1rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;}
+.compare-card.is-weak{border-top:3px solid var(--lesson-border-strong);}
+.compare-card.is-strong{border-top:3px solid var(--dlai-coral);background:var(--dlai-coral-muted);}
+.compare-card h4{color:var(--accent-dark);}
+.compare-card ul{padding-left:1.15rem;}
+.compare-card li{color:var(--lesson-muted);font-size:0.94rem;}
+.ladder{display:grid;gap:0.65rem;margin:1.1rem 0;}
+.ladder-step{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:0.75rem;align-items:start;padding:0.8rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.ladder-step .num{display:flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-weight:700;font-size:0.88rem;}
+.ladder-step strong{display:block;margin-bottom:0.14rem;color:var(--lesson-text);}
+.ladder-step span{display:block;color:var(--lesson-muted);font-size:0.94rem;line-height:1.52;}
+.prompt-box{margin:1rem 0;padding:1rem 1.05rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.65rem;background:#fff;}
+.prompt-box h4{color:var(--accent-dark);}
+.prompt-text{margin:0.55rem 0 0;padding:0.8rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.4rem;background:var(--lesson-soft);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.86rem;line-height:1.55;white-space:pre-wrap;color:#111;}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:900px){
+.bp-flow,.decision-grid,.compare-panel,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.fix-row{grid-template-columns:1fr;}
+.fix-body{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+table{min-width:640px;}
+.term-table td.term{white-space:normal;}
+.ladder-step{grid-template-columns:1fr;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-6-How-to-Address-Problems-You-Identify/M4-6-How-to-Address-Problems-You-Identify.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Belirlediğiniz Problemleri Nasıl Ele Alırsınız?</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="belirlediginiz-problemleri-nasil-ele-alirsiniz">Belirlediğiniz Problemleri Nasıl Ele Alırsınız?</h1>
+<p class="lead-text">Bir agentic iş akışında hata veya kalite düşüşü bulduğunuzda, doğru müdahale önce hangi bileşenin sorun çıkardığını anlamaktan geçer: arama, getirme, algılama ve kod yürütme gibi LLM dışı bileşenler ile LLM tabanlı adımlar aynı araçlarla iyileştirilmez.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Agentic sistemlerde değerlendirme yalnızca “çıktı iyi mi?” sorusuna cevap vermek için kullanılmaz; aynı zamanda <strong>iyileştirme kararını nereye yönelteceğimizi</strong> belirler. Bir iş akışında web araması, metin getirme, kod yürütme, ayrı eğitilmiş bir makine öğrenmesi modeli ve bir veya daha fazla LLM çağrısı birlikte yer alabilir. Bu bileşenlerin her biri farklı biçimde başarısız olur ve farklı biçimde onarılır.</p>
+<p>Bu derste amaç, problem belirlendikten sonra hangi müdahale ailesinin seçileceğini sistematik hâle getirmektir. LLM dışı bir bileşende çoğu zaman parametre ayarı veya bileşeni değiştirme öne çıkar. LLM tabanlı bir bileşende ise istemi iyileştirme, daha uygun bir model deneme, görevi daha küçük adımlara bölme veya son seçenek olarak ince ayar yapma gündeme gelir.</p>
+<div class="definition-card"><h3 id="dersin-ana-tezi">Dersin Ana Tezi</h3><p>İyileştirme stratejisi, hatanın görüldüğü bileşenin doğasına bağlıdır. Aynı eval sonucu, web araması için arama parametrelerini değiştirmeyi, bir LLM adımı için ise daha açık talimatlar veya daha güçlü bir model denemeyi gerektirebilir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Agentic iş akışındaki LLM dışı ve LLM tabanlı bileşenleri ayırt edebilmek.</li>
+<li>LLM dışı bileşenlerde parametre ayarı ve bileşen değiştirmenin ne zaman uygun olduğunu açıklayabilmek.</li>
+<li>LLM bileşenlerinde istem iyileştirme, az örnekli istem, model deneme, görev ayrıştırma ve ince ayar seçeneklerini sıralayabilmek.</li>
+<li>Talimat izleme örneği üzerinden model kapasitesi ile çıktı kalitesi arasındaki ilişkiyi yorumlayabilmek.</li>
+<li>Farklı modeller için sezgi geliştirmenin pratik yollarını tanımlayabilmek.</li>
+<li>Kalite yeterli hâle geldikten sonra gecikme ve maliyet optimizasyonunun neden önem kazandığını gerekçelendirebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir agentic iş akışının birden çok adımdan ve araçtan oluşabileceğine dair temel anlayış.</li>
+<li>Eval kavramının, model veya bileşen davranışını ölçmek için kullanıldığını bilmek.</li>
+<li>Prompt, model seçimi, RAG ve tool calling gibi temel LLM uygulama terimlerine aşinalık.</li>
+<li>Yanlış pozitif, yanlış negatif, eşik değeri, gecikme ve maliyet gibi mühendislik metriklerinin genel anlamını bilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Bileşen</td><td>İş akışında belirli bir görevi yapan bağımsız adım: arama, getirme, kod yürütme, model çağrısı gibi.</td><td>Problem çözümü, önce hangi bileşenin ölçüldüğünü netleştirmeyi gerektirir.</td></tr>
+<tr><td class="term">Parametre ayarı</td><td>Bir bileşenin davranışını yöneten değerleri değiştirme.</td><td>Arama sonuç sayısı, tarih aralığı, benzerlik eşiği ve tespit eşiği tipik örneklerdir.</td></tr>
+<tr><td class="term">RAG getirme</td><td>Metni parçalara ayırıp sorguyla benzer bölümleri seçen bilgi getirme adımı.</td><td>Parça boyutu ve benzerlik eşiği kaliteyi doğrudan etkileyebilir.</td></tr>
+<tr><td class="term">İstem iyileştirme</td><td>LLM adımına daha açık, daha sınırlandırılmış veya örnekli talimat verme.</td><td>Çoğu zaman ilk denenmesi gereken düşük maliyetli müdahaledir.</td></tr>
+<tr><td class="term">Az örnekli istem</td><td>Modele beklenen girdi-çıktı biçimini bir veya daha çok somut örnekle gösterme.</td><td>Modelin çıktı biçimini ve karar ölçütünü daha iyi kavramasını sağlar.</td></tr>
+<tr><td class="term">Görev ayrıştırma</td><td>Tek karmaşık LLM çağrısını daha küçük ardışık adımlara bölme.</td><td>Bir adımda çok fazla talimat olduğunda hataları azaltabilir.</td></tr>
+<tr><td class="term">İnce ayar</td><td>Bir modeli uygulamaya özgü verilerle ayrıca eğitme.</td><td>Güçlü olabilir; fakat geliştirici zamanı ve operasyonel maliyeti yüksektir.</td></tr>
+<tr><td class="term">Model sezgisi</td><td>Hangi modelin hangi görev türünde daha iyi çalışacağını deneyimle kestirebilme.</td><td>Eval sonuçları, izler ve model denemeleriyle gelişir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin omurgası, hatayı bulduktan sonra düzeltme biçimini bileşen türüne göre seçmektir. Aşağıdaki akış, iyi bir iyileştirme döngüsünün pratik sırasını gösterir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Problemi yerelleştir</strong><span>Eval veya izlerden hangi adımın kaliteyi düşürdüğünü belirle.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Bileşen türünü ayır</strong><span>Adım LLM dışı mı, yoksa LLM tabanlı mı?</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Müdahale ailesini seç</strong><span>Parametre, değiştirme, istem, model, ayrıştırma veya ince ayar.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Eval ile karşılaştır</strong><span>Her değişikliğin kaliteye etkisini ölçerek karar ver.</span></div>
+<div class="bp-step"><span class="bp-num">5</span><strong>Üretim dengesini kur</strong><span>Kalite yeterliyse hız ve maliyet üzerinde çalış.</span></div>
+</div></div>
+<div class="fix-panel">
+<div class="fix-row">
+<div class="fix-label">LLM dışı bileşen</div>
+<div class="fix-body">
+<div class="fix-chip"><strong>Parametre ayarı</strong>Sonuç sayısı, tarih aralığı, benzerlik eşiği veya tespit eşiği değiştirilebilir.</div>
+<div class="fix-chip"><strong>Bileşen değişimi</strong>Başka arama motoru, RAG sağlayıcısı veya model dışı servis denenebilir.</div>
+<div class="fix-chip"><strong>Trade-off kontrolü</strong>Duyarlılık arttıkça yanlış pozitif ve yanlış negatif dengesi değişebilir.</div>
+</div>
+</div>
+<div class="fix-row">
+<div class="fix-label">LLM bileşeni</div>
+<div class="fix-body">
+<div class="fix-chip"><strong>İstemi netleştir</strong>Daha açık talimatlar ve somut örnekler eklenebilir.</div>
+<div class="fix-chip"><strong>Model veya akış değiştir</strong>Farklı model denenebilir ya da karmaşık adım bölünebilir.</div>
+<div class="fix-chip"><strong>İnce ayarı ertele</strong>Diğer yollar tükendiğinde ve uygulama olgunlaştığında düşünülmelidir.</div>
+</div>
+</div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="farkli-bilesenler-farkli-duzeltmeler-ister">Farklı bileşenler farklı düzeltmeler ister</h3>
+<p>Bir agentic iş akışında hata gördüğünüzde ilk refleks, tüm sistemi tek parça gibi ele almak olmamalıdır. Çünkü web araması, RAG getirme, kod yürütme veya ayrı eğitilmiş bir algılama modeli, LLM çağrısından farklı biçimde ayarlanır. Örneğin web aramasında kaç sonuç istediğiniz veya hangi tarih aralığını kapsadığınız kaliteyi değiştirebilir. RAG tarafında benzerlik eşiği ve parça boyutu, getirilen metnin alaka düzeyini belirleyebilir. Görüntüde kişi tespit eden ayrı bir modelde ise tespit eşiği, yanlış pozitif ve yanlış negatif dengesini doğrudan etkileyebilir.</p>
+<p>Bu ayrım önemlidir, çünkü bazı problemler daha iyi istemle çözülmez. Eğer sorun arama motorunun yeterince güncel sonuç getirmemesi ise çözüm, LLM talimatını uzatmak yerine tarih aralığını değiştirmek veya farklı bir arama bileşeni denemek olabilir.</p>
+
+<h3 id="llm-disi-bilesenlerde-iki-temel-yol">LLM dışı bileşenlerde iki temel yol</h3>
+<div class="decision-grid">
+<div class="decision-card"><h4>Parametreleri ayarlamak</h4><p>Bileşenin zaten verdiği davranışı daha uygun hâle getirmek için ayarları değiştirirsiniz.</p><ul><li>Web aramasında sonuç sayısı ve tarih aralığı.</li><li>RAG getirmede benzerlik eşiği ve parça boyutu.</li><li>Algılama modellerinde tespit eşiği.</li></ul></div>
+<div class="decision-card"><h4>Bileşeni değiştirmek</h4><p>Mevcut bileşen yapısal olarak yetersiz kalıyorsa başka bir sağlayıcı veya yaklaşım denenir.</p><ul><li>Farklı web arama motoru.</li><li>Farklı RAG sağlayıcısı.</li><li>Aynı görevi daha iyi yapan ayrı bir servis.</li></ul></div>
+</div>
+<p>Bu yaklaşımda kritik nokta, değişikliği sezgiyle değil eval ile sınamaktır. Bir arama motorunu veya eşik değerini değiştirdiğinizde, bunun gerçekten daha iyi sonuç verip vermediğini aynı ölçümle karşılaştırmak gerekir.</p>
+
+<h3 id="llm-bilesenlerinde-iyilestirme-merdiveni">LLM bileşenlerinde iyileştirme merdiveni</h3>
+<p>LLM tabanlı adımlarda müdahale seçenekleri daha çok modelin talimatı anlama, görevi planlama ve biçim kısıtlarına uyma kapasitesiyle ilgilidir. Aşağıdaki sıra pratik bir karar merdiveni sunar: önce ucuz ve hızlı denemeler, sonra daha pahalı veya karmaşık hamleler.</p>
+<div class="ladder">
+<div class="ladder-step"><span class="num">1</span><div><strong>İstemi daha açık hâle getir</strong><span>Modelden ne beklendiğini, hangi biçime uyması gerektiğini ve hangi ayrıntıların önemli olduğunu daha açık yazın.</span></div></div>
+<div class="ladder-step"><span class="num">2</span><div><strong>Somut örnekler ekle</strong><span>Bir veya daha fazla girdi-çıktı örneği, modelin beklenen davranışı yalnızca açıklamadan değil örnekten de öğrenmesini sağlar.</span></div></div>
+<div class="ladder-step"><span class="num">3</span><div><strong>Farklı modelleri deneyin</strong><span>Aynı istem farklı modellerde aynı kaliteyi vermez; eval kullanarak uygulama için en iyi modeli seçin.</span></div></div>
+<div class="ladder-step"><span class="num">4</span><div><strong>Adımı daha küçük parçalara bölün</strong><span>Tek LLM çağrısı çok fazla talimat taşıyorsa görevi birkaç ardışık adıma veya üretim ve yansıma ayrımına bölmek daha güvenilir olabilir.</span></div></div>
+<div class="ladder-step"><span class="num">5</span><div><strong>İnce ayarı son seçenek olarak düşünün</strong><span>Uygulama olgun, veri mevcut ve diğer yöntemler yetersizse özel veriyle eğitim son birkaç kalite puanını kazandırabilir.</span></div></div>
+</div>
+<div class="warn-card"><h3 id="ince-ayar-neden-en-sonda">İnce ayar neden en sonda?</h3><p>İnce ayar güçlü bir tekniktir, fakat uygulama maliyeti ve geliştirici zamanı açısından daha ağırdır. Bu nedenle istem, model seçimi ve görev ayrıştırma denenmeden doğrudan ince ayara geçmek çoğu erken aşama uygulamada gereksiz karmaşıklık oluşturur.</p></div>
+</section>
+
+<section><h2 id="talimat-izleme-ve-model-kapasitesi">Talimat İzleme ve Model Kapasitesi</h2>
+<p>Model seçimi yalnızca “genel olarak daha iyi model” arayışı değildir; modelin hangi tür talimatları ne kadar güvenilir izlediğini anlamaktır. Bunun tipik bir örneği, müşteri görüşmesi özetinden kişisel bilgileri tespit edip maskeleme görevidir. Görev basit görünür, fakat iki ayrı beceri ister: önce tüm hassas öğeleri bulmak, sonra istenen çıktı biçimine tam uymak.</p>
+<div class="prompt-box">
+<h4>Görevin soyut biçimi</h4>
+<p>Bir metindeki kişisel bilgileri türlerine göre belirle; ardından aynı metni bu öğeleri maskeleyerek döndür. Liste ile maskelenmiş metin, açıkça belirtilen ayırıcıdan sonra gelmelidir.</p>
+<div class="prompt-text">Girdi metni: [tarih], [kişi adı], [kimlik numarası], [adres] ve destek talebi bilgileri içeren kısa bir müşteri özeti.
+Beklenen davranış: tüm kişisel öğeleri sınıflandır, sonra her birini yıldızlarla maskele.</div>
+</div>
+<div class="compare-panel">
+<div class="compare-card is-weak"><h4>Daha küçük modelde görülebilecek hata türleri</h4><ul><li>İstenen çıktı biçimine tam uymamak.</li><li>Bazı kişisel öğeleri hiç yakalamamak.</li><li>Adres veya kimlik bilgisinin bir bölümünü açık bırakmak.</li><li>Gereksiz ek liste veya açıklama üretmek.</li></ul></div>
+<div class="compare-card is-strong"><h4>Daha güçlü modelden beklenen davranış</h4><ul><li>Tüm kişisel öğeleri sınıflandırmak.</li><li>Maskelenmiş metni istenen sırayla vermek.</li><li>Biçim talimatını bozmamak.</li><li>Gizlilik açısından açıkta bilgi bırakmamak.</li></ul></div>
+</div>
+<p>Buradan çıkarılacak ders, küçük modellerin basit bilgi sorularında yeterli olabileceği, fakat karmaşık talimat izleme ve hassas biçim kısıtlarında daha güçlü modellere ihtiyaç duyulabileceğidir. Bu farkı soyut olarak bilmek yetmez; kendi uygulamanızdaki eval sonuçlarıyla görmek gerekir.</p>
+</section>
+
+<section><h2 id="model-sezgisini-gelistirme">Model Sezgisini Geliştirme</h2>
+<p>Model seçimi zamanla gelişen bir mühendislik sezgisi gerektirir. Farklı sağlayıcılar ve farklı model aileleri; kodlama, talimat izleme, olgusal cevaplama veya belirli alan bilgisi gibi görevlerde farklı güçlü yönler gösterebilir. Bu sezgi, yalnızca model listesi okuyarak değil, modelleri düzenli denemek ve sonuçları karşılaştırmakla gelişir.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Modellerle sık oynayın</strong><span>Yeni modeller çıktığında aynı görevleri farklı modellerde deneyerek davranış farklarını gözlemleyin.</span></div>
+<div class="insight-card"><strong>Kişisel eval seti tutun</strong><span>Sık kullandığınız görevleri küçük bir karşılaştırma seti hâline getirerek modelleri tutarlı biçimde kalibre edin.</span></div>
+<div class="insight-card"><strong>İstem örüntülerini inceleyin</strong><span>İyi tasarlanmış istemleri okumak, hangi talimat biçimlerinin hangi modellerde daha iyi çalıştığını öğretir.</span></div>
+</div>
+<p>Agentic iş akışlarında farklı modelleri denemek de bu sezgiyi güçlendirir. İzlere bakarak hangi adımın hangi modelle daha iyi çalıştığını görebilir, bileşen düzeyi veya uçtan uca eval sonuçlarıyla bu gözlemi ölçülebilir hâle getirebilirsiniz. Modelleri hızlı değiştirmeyi kolaylaştıran araçlar, kalite, fiyat ve hız dengesini sistematik biçimde denemenizi sağlar.</p>
+</section>
+
+<section><h2 id="kalite-gecikme-ve-maliyet-dengesi">Kalite, Gecikme ve Maliyet Dengesi</h2>
+<p>Geliştirme sürecinin başında en önemli soru genellikle kalite sorusudur: sistem yeterince doğru, yararlı ve güvenilir çıktı üretiyor mu? Bu aşamada gereğinden erken maliyet optimizasyonu yapmak yanıltıcı olabilir; çünkü hızlı ama düşük kaliteli bir sistem üretim için hazır değildir.</p>
+<p>Sistem yeterli kaliteye ulaştığında ikinci bir mühendislik sorusu öne çıkar: aynı kaliteyi daha hızlı ve daha düşük maliyetle sağlayabilir miyiz? Bu noktada daha küçük model denemek, bazı adımları ayırmak, gereksiz çağrıları azaltmak veya pahalı modeli yalnızca zor örneklerde kullanmak düşünülebilir. Böylece kalite kazanımı korunurken üretim performansı iyileştirilir.</p>
+<div class="note-card"><h3 id="pratik-sira">Pratik Sıra</h3><p>Önce kaliteyi ölçün ve iyileştirin; sistem istenen düzeye yaklaştıktan sonra gecikme ve maliyet üzerinde çalışın. Bu sıra, erken optimizasyonun asıl kalite problemini gizlemesini önler.</p></div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="decision-grid">
+<div class="decision-card"><h4>Yanlış bileşeni düzeltmeye çalışmak</h4><p>Arama veya getirme kalitesi düşükken LLM istemini uzatmak gerçek problemi çözmeyebilir.</p></div>
+<div class="decision-card"><h4>Her sorunu model büyüklüğüyle çözmek</h4><p>Bazen daha güçlü model yerine daha açık talimat, daha iyi örnek veya daha doğru bileşen ayarı yeterlidir.</p></div>
+<div class="decision-card"><h4>İnce ayara erken geçmek</h4><p>Veri, olgun uygulama ve net eval olmadan ince ayar pahalı bir belirsizlik yaratabilir.</p></div>
+<div class="decision-card"><h4>Eval olmadan karar vermek</h4><p>Model veya bileşen değişikliğinin gerçekten iyileştirme sağladığını ancak karşılaştırmalı ölçüm gösterebilir.</p></div>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Problem çözme, önce hatanın hangi bileşende ortaya çıktığını bulmakla başlar.</li>
+<li>LLM dışı bileşenlerde parametre ayarı ve bileşen değişimi ana müdahale yollarıdır.</li>
+<li>LLM bileşenlerinde istem iyileştirme, örnek ekleme, model deneme ve görev ayrıştırma ince ayardan önce denenmelidir.</li>
+<li>Model kapasitesi özellikle talimat izleme, hassas bilgi maskeleme ve biçim kısıtlarında belirgin fark yaratabilir.</li>
+<li>Model sezgisi, sık model denemesi, kişisel eval setleri, iz inceleme ve iyi istem örüntülerini okuma ile gelişir.</li>
+<li>Kalite kabul edilebilir düzeye geldikten sonra gecikme ve maliyet optimizasyonu üretim sistemleri için önemli hâle gelir.</li>
+</ul>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#belirlediginiz-problemleri-nasil-ele-alirsiniz" class="toc-h1">Belirlediğiniz Problemleri Nasıl Ele Alırsınız?</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#dersin-ana-tezi" class="toc-h3">Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#farkli-bilesenler-farkli-duzeltmeler-ister" class="toc-h3">Farklı bileşenler farklı düzeltmeler ister</a>
+<a href="#llm-disi-bilesenlerde-iki-temel-yol" class="toc-h3">LLM dışı bileşenlerde iki temel yol</a>
+<a href="#llm-bilesenlerinde-iyilestirme-merdiveni" class="toc-h3">LLM bileşenlerinde iyileştirme merdiveni</a>
+<a href="#ince-ayar-neden-en-sonda" class="toc-h3">İnce ayar neden en sonda?</a>
+<a href="#talimat-izleme-ve-model-kapasitesi" class="toc-h2">Talimat İzleme ve Model Kapasitesi</a>
+<a href="#model-sezgisini-gelistirme" class="toc-h2">Model Sezgisini Geliştirme</a>
+<a href="#kalite-gecikme-ve-maliyet-dengesi" class="toc-h2">Kalite, Gecikme ve Maliyet Dengesi</a>
+<a href="#pratik-sira" class="toc-h3">Pratik Sıra</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add('js-ready');
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

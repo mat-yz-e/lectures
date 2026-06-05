@@ -1,0 +1,342 @@
+/* ============================================================================
+   DeepLearning.AI — Agentic AI Kursu
+   Ortak navigasyon + düzen (layout) stilleri — mercan tema
+   Bu dosya yalnızca navigasyon/yerleşim arayüzünü biçimlendirir; mevcut
+   notebook (ders) içeriğinin kendi inline stillerine müdahale etmez.
+   ============================================================================ */
+
+:root {
+  --dlai-coral: #fe4a61;
+  --dlai-coral-dark: #e63f55;
+  --dlai-coral-deep: #c2384a;
+  --dlai-coral-soft: #ffe8ec;
+  --dlai-coral-muted: #fff3f5;
+
+  --nav-accent: #fe4a61;
+  --nav-accent-dark: #c2384a;
+  --nav-bg: #ffffff;
+  --nav-soft: #fff3f5;
+  --nav-border: #e5e7eb;
+  --nav-text: #111827;
+  --nav-muted: #4b5563;
+
+  --nav-width: 300px;
+  --toc-width: 300px;
+  --mobile-bar-h: 54px;
+}
+
+/* ---- Skip link (erişilebilirlik) -------------------------------------- */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 200;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--nav-accent);
+  color: #fff;
+  font: 600 0.92rem/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus { top: 12px; outline: 2px solid var(--nav-accent-dark); outline-offset: 2px; }
+
+/* ---- Mobil üst çubuk (yalnızca dar ekranlarda) ------------------------ */
+.mobile-bar {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  height: var(--mobile-bar-h);
+  padding: 0 0.8rem;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: saturate(160%) blur(6px);
+  border-bottom: 1px solid var(--nav-border);
+}
+.mobile-bar-title {
+  font: 700 0.95rem/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--nav-accent-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--nav-border);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--nav-text);
+  font: 600 0.85rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nav-toggle:hover { border-color: var(--nav-accent); color: var(--nav-accent-dark); }
+.nav-toggle[aria-expanded="true"] { background: var(--nav-soft); border-color: var(--nav-accent); color: var(--nav-accent-dark); }
+
+/* ---- Backdrop (off-canvas açıkken) ------------------------------------ */
+.nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(17, 24, 39, 0.42);
+}
+.nav-backdrop.is-active { display: block; }
+
+/* ---- Shell grid yapıları ---------------------------------------------- */
+.notebook-shell {
+  display: grid;
+  grid-template-columns: var(--nav-width) minmax(0, 1fr) var(--toc-width);
+  min-height: 100vh;
+  align-items: start;
+}
+.index-shell {
+  display: grid;
+  grid-template-columns: var(--nav-width) minmax(0, 1fr);
+  min-height: 100vh;
+  align-items: start;
+}
+
+/* ---- Sol sidebar (kurs navigasyonu) ----------------------------------- */
+.course-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--nav-bg);
+  border-right: 1px solid var(--nav-border);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  scrollbar-width: thin;
+}
+
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.25rem 1rem 1rem;
+  border-bottom: 1px solid var(--nav-border);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(180deg, var(--dlai-coral-muted), #ffffff 72%);
+}
+/* Sol sidebar marka logosu — yalnızca kurum / küratör logosu (kullanıcı tercihi) */
+.sidebar-brand-secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.65rem;
+  text-decoration: none;
+  color: inherit;
+}
+.sidebar-brand-secondary:hover { background: rgba(254, 74, 97, 0.07); }
+.sidebar-brand-secondary img {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+}
+.sidebar-brand-caption {
+  font-size: 0.68rem;
+  line-height: 1.3;
+  color: var(--nav-muted);
+  max-width: 92%;
+}
+.sidebar-brand-caption strong { display: block; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--nav-accent); }
+
+.course-nav-inner { padding: 0.4rem 0.6rem 2rem; }
+
+.nav-home {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.15rem 0 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid transparent;
+  border-radius: 0.35rem;
+  color: var(--nav-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.nav-home::before { content: "\2302"; font-size: 1rem; line-height: 1; }
+.nav-home:hover { background: var(--nav-soft); color: var(--nav-accent-dark); }
+.nav-home.is-current {
+  color: var(--nav-accent-dark);
+  border-left-color: var(--nav-accent);
+  background: var(--nav-soft);
+  font-weight: 700;
+}
+
+.nav-module { border-top: 1px solid #f1f3f5; }
+.nav-module > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--nav-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.nav-module > summary::-webkit-details-marker { display: none; }
+.nav-module > summary::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.18s ease;
+  opacity: 0.7;
+  flex: 0 0 auto;
+}
+.nav-module[open] > summary::after { transform: rotate(45deg); }
+.nav-module > summary:hover { color: var(--nav-accent-dark); }
+.nav-module.is-active-module > summary { color: var(--nav-accent-dark); }
+
+.nav-lessons { display: flex; flex-direction: column; padding: 0.15rem 0 0.5rem; }
+.nav-lesson {
+  display: block;
+  padding: 0.42rem 0.7rem 0.42rem 1.05rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 0.35rem 0.35rem 0;
+  color: var(--nav-text);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-decoration: none;
+}
+.nav-lesson:hover { background: var(--nav-soft); color: var(--nav-accent-dark); }
+.nav-lesson.is-active {
+  color: var(--nav-accent-dark);
+  border-left-color: var(--nav-accent);
+  background: var(--nav-soft);
+  font-weight: 700;
+}
+.nav-lesson.is-active::before { content: "\25B8\00a0"; color: var(--nav-accent); }
+
+/* ---- Orta içerik ------------------------------------------------------- */
+.notebook-main { min-width: 0; padding: 1.4rem 1.1rem 3rem; }
+.landing-main { min-width: 0; }
+
+/* Notebook'un kendi .lesson-page genişliği korunur; sadece taşma güvenliği */
+.notebook-main > .lesson-page { max-width: 100%; }
+
+/* Çapa (anchor) hedeflerinde sticky çubuk altına gizlenmeyi engelle */
+.notebook-main :is(h1, h2, h3, h4) { scroll-margin-top: calc(var(--mobile-bar-h) + 12px); }
+
+/* ---- Sağ sidebar (içindekiler / TOC) ---------------------------------- */
+.toc-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.25rem 0.9rem 2rem;
+  background: var(--nav-bg);
+  border-left: 1px solid var(--nav-border);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  scrollbar-width: thin;
+}
+.toc-head {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--nav-muted);
+  padding: 0 0.55rem 0.5rem;
+  border-bottom: 1px solid var(--nav-border);
+  margin-bottom: 0.5rem;
+}
+.toc-list { display: flex; flex-direction: column; }
+.toc-list a {
+  display: block;
+  padding: 0.3rem 0.55rem;
+  border-left: 2px solid transparent;
+  border-radius: 0 0.3rem 0.3rem 0;
+  color: var(--nav-muted);
+  font-size: 0.84rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.toc-list a:hover { background: var(--nav-soft); color: var(--nav-accent-dark); }
+.toc-list a.is-active {
+  color: var(--nav-accent-dark);
+  border-left-color: var(--nav-accent);
+  background: var(--nav-soft);
+  font-weight: 700;
+}
+.toc-list a.toc-h1 { font-size: 0.9rem; font-weight: 700; color: var(--nav-text); padding-left: 0.55rem; margin-bottom: 0.15rem; }
+.toc-list a.toc-h2 { padding-left: 0.85rem; }
+.toc-list a.toc-h3 { padding-left: 1.45rem; font-size: 0.8rem; color: #6b7280; }
+
+/* ---- Focus görünürlüğü ------------------------------------------------- */
+.course-sidebar a:focus-visible,
+.toc-sidebar a:focus-visible,
+.nav-module > summary:focus-visible,
+.nav-toggle:focus-visible,
+.skip-link:focus-visible,
+.btn-primary:focus-visible {
+  outline: 2px solid var(--nav-accent);
+  outline-offset: 2px;
+  border-radius: 0.3rem;
+}
+
+/* ============================================================================
+   Responsive — geniş ekranda 3/2 kolon; dar ekranda off-canvas çekmeceler
+   ============================================================================ */
+@media (max-width: 1099px) {
+  .notebook-shell,
+  .index-shell { display: block; }
+
+  .mobile-bar { display: flex; }
+
+  .course-sidebar,
+  .toc-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    width: min(300px, 86vw);
+    z-index: 60;
+    transition: transform 0.25s ease;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  }
+  .course-sidebar { left: 0; transform: translateX(-110%); }
+  .toc-sidebar { right: 0; left: auto; transform: translateX(110%); border-left: 1px solid var(--nav-border); }
+  .course-sidebar.is-open,
+  .toc-sidebar.is-open { transform: translateX(0); }
+
+  .notebook-main,
+  .landing-main { padding-left: 0.9rem; padding-right: 0.9rem; }
+}
+
+@media (min-width: 1100px) {
+  /* TOC olmayan sayfalarda (index) sağ sütun zaten yok */
+  .mobile-bar { display: none !important; }
+  .course-sidebar,
+  .toc-sidebar { transform: none !important; }
+}
+
+/* Çok dar ekranlarda içerik kenar boşluğunu küçült */
+@media (max-width: 480px) {
+  .notebook-main,
+  .landing-main { padding-left: 0.7rem; padding-right: 0.7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-sidebar,
+  .toc-sidebar,
+  .skip-link { transition: none; }
+}

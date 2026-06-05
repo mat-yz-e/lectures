@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çıktıları İyileştirmek için Yansıma</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* email reflection cards */
+.mail-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0.85rem;align-items:stretch;margin:1.1rem 0;}
+.mail-card{border:1px solid var(--lesson-border-strong);border-radius:0.6rem;background:#fff;padding:0;overflow:hidden;display:flex;flex-direction:column;}
+.mail-card .mail-tag{padding:0.4rem 0.8rem;font-size:0.82rem;font-weight:700;color:var(--lesson-muted);background:var(--lesson-soft);border-bottom:1px solid var(--lesson-border);}
+.mail-card.is-final .mail-tag{color:var(--accent-dark);background:var(--dlai-coral-soft);}
+.mail-body{padding:0.85rem 0.95rem;font-size:0.94rem;line-height:1.6;color:var(--lesson-text);}
+.mail-body .mark-bad{background:#ffe1e6;border-bottom:2px solid var(--dlai-coral);border-radius:2px;padding:0 2px;}
+.mail-body .mark-good{background:var(--dlai-coral-soft);border-radius:2px;padding:0 2px;font-weight:600;}
+.mail-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.35rem;color:var(--dlai-coral);font-weight:700;font-size:0.85rem;text-align:center;}
+.mail-arrow .arr{font-size:1.4rem;line-height:1;}
+.fix-list{display:flex;flex-direction:column;justify-content:center;gap:0.5rem;}
+.fix-item{display:flex;gap:0.5rem;align-items:flex-start;font-size:0.9rem;color:var(--lesson-muted);}
+.fix-item .fix-dot{flex:0 0 auto;width:1.15rem;height:1.15rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:0.12rem;}
+/* horizontal process flow (concept, not code) */
+.flow-rail{display:flex;flex-wrap:wrap;align-items:stretch;gap:0.5rem;margin:1.1rem 0;padding:1.1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.flow-box{flex:1 1 130px;min-width:120px;display:flex;flex-direction:column;justify-content:center;padding:0.7rem 0.75rem;border:1px solid var(--lesson-border-strong);border-radius:0.55rem;background:#fff;text-align:center;font-size:0.9rem;color:var(--lesson-text);}
+.flow-box.is-input{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);font-weight:600;}
+.flow-box.is-llm{background:var(--lesson-soft-2);font-weight:600;}
+.flow-box.is-reflect{border:1px dashed var(--dlai-coral);background:var(--dlai-coral-muted);color:var(--accent-dark);font-weight:600;}
+.flow-box small{display:block;margin-top:0.2rem;font-size:0.78rem;font-weight:400;color:var(--lesson-muted);}
+.flow-box .snippet{display:block;margin-top:0.4rem;padding:0.3rem 0.4rem;border-radius:0.3rem;background:var(--code-bg);border:1px solid var(--code-border);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.74rem;color:var(--code-text);text-align:left;white-space:pre;overflow-x:auto;}
+.flow-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-weight:700;font-size:1.3rem;flex:0 0 auto;}
+.err-box{flex:1 1 150px;min-width:140px;display:flex;align-items:center;padding:0.6rem 0.7rem;border:1px solid var(--code-border);border-radius:0.45rem;background:var(--code-bg);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.78rem;color:var(--code-string);white-space:pre-wrap;line-height:1.45;}
+.snip-tok-kw{color:var(--code-keyword);font-weight:700;}
+.snip-tok-fn{color:var(--code-function);}
+/* small inline code snippet block (conceptual illustration, not a runnable cell) */
+.snippet-block{margin:0.9rem 0;padding:0.75rem 0.9rem;border:1px solid var(--code-border);border-radius:0.35rem;background:var(--code-bg);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.86rem;line-height:1.55;color:var(--code-text);white-space:pre;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.snippet-block::-webkit-scrollbar{height:10px;}
+.snippet-block::-webkit-scrollbar-track{background:#f2f2f2;}
+.snippet-block::-webkit-scrollbar-thumb{background:#c4c4c4;border:2px solid #f2f2f2;border-radius:6px;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.mail-grid{grid-template-columns:1fr;}
+.mail-arrow{flex-direction:row;}.mail-arrow .arr{transform:rotate(90deg);}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.flow-box,.err-box{flex-basis:100%;}
+.flow-arrow{transform:rotate(90deg);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-2-Reflection-Design-Pattern/M2-1-Reflection-to-Improve-Outputs-of-a-Task/M2-1-Reflection-to-Improve-Outputs-of-a-Task.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Çıktıları İyileştirmek için Yansıma</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="ciktilari-iyilestirmek-icin-yansima">Çıktıları İyileştirmek için Yansıma</h1>
+<p class="lead-text">Bir dil modelinin ilk çıktısını son söz olarak kabul etmek yerine; o çıktıyı tekrar okuyup eleştiren ve daha iyi bir ikinci sürüm üreten basit ama güçlü bir tasarım deseni.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, agentik iş akışlarının en kolay uygulanan ve en sık işe yarayan tasarım desenlerinden birini tanıtır: <strong>yansıma (reflection)</strong> deseni. Temel fikir tek cümleyle özetlenebilir: bir dil modeli, tıpkı bir insan gibi, kendi ürettiği çıktıya geri dönüp bakabilir, eksiklerini görebilir ve onu iyileştiren bir sonraki sürümü üretebilir.</p>
+<p>Anlatım üç tanıdık senaryo üzerinden ilerler. Önce bir insanın aceleyle yazdığı bir e-postayı gözden geçirip düzeltmesine bakacağız; bu, desenin sezgisel karşılığıdır. Ardından aynı mantığın bir dil modeline nasıl uygulandığını göreceğiz: ilk taslağı yazdır, sonra farklı bir istemle aynı (veya başka) modele bu taslağı eleştirtip ikinci sürümü ürettir. Son olarak desenin gerçekten güçlendiği noktaya geleceğiz: modelin yalnızca kendi kafasından değil, <strong>dışarıdan gelen yeni bilgiyle</strong> (örneğin kodu çalıştırıp hata mesajını okuyarak) yansıma yapması. Dersin sonunda, bu deseni neden, nasıl ve hangi sınırlar içinde kullanacağınızı kavramsal olarak anlamış olacaksınız.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Yansıma deseninin temel fikrini &mdash; bir çıktıyı ikinci bir adımda eleştirip iyileştirmek &mdash; kendi cümlelerinizle açıklayabilmek.</li>
+<li>İnsan yansıması ile dil modeli yansıması arasındaki paralelliği kurabilmek.</li>
+<li>Bir &ldquo;ilk taslak &rarr; eleştir &rarr; iyileştirilmiş ikinci taslak&rdquo; akışını adım adım tarif edebilmek.</li>
+<li>Üreten model ile eleştiren modelin neden farklı seçilebileceğini ve akıl yürütme (reasoning) modellerinin neden hata bulmada güçlü olduğunu gerekçelendirebilmek.</li>
+<li>Dış geri bildirimin (kod çıktısı, hata mesajı) yansımayı neden belirgin biçimde güçlendirdiğini açıklayabilmek.</li>
+<li>Desenin sınırlarını &mdash; sihir olmadığını, yalnızca ölçülü bir iyileşme sağladığını &mdash; doğru biçimde çerçeveleyebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline metin biçiminde bir istem (prompt) verip yanıt almanın ne demek olduğuna dair temel bir fikir.</li>
+<li>Aynı modele farklı istemler vererek farklı görevler yaptırılabileceği kavrayışı.</li>
+<li>&ldquo;İlk taslak&rdquo; ve &ldquo;gözden geçirilmiş sürüm&rdquo; ayrımına dair gündelik bir aşinalık.</li>
+</ul>
+<p>Bu ders kavramsaldır; herhangi bir programlama deneyimi veya kod yazımı gerektirmez. Akış içinde geçen küçük kod parçaları yalnızca fikri görselleştirmek içindir.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Yansıma deseni</td><td>Üretilen bir çıktıyı ikinci bir adımda eleştirip iyileştirilmiş bir sürümünü üretme yaklaşımı.</td><td>Uygulaması şaşırtıcı derecede kolaydır; çoğu işe basitçe eklenebilir.</td></tr>
+<tr><td class="term">İlk taslak (V1)</td><td>Modelin görevi tek seferde ürettiği ilk sürüm.</td><td>İyi olabilir, ama gözden geçirilmemiş ham çıktıdır.</td></tr>
+<tr><td class="term">İkinci sürüm (V2)</td><td>Eleştiri adımının ardından üretilen iyileştirilmiş çıktı.</td><td>Her zaman V1&rsquo;in eleştirisine dayanır; bağımsız değildir.</td></tr>
+<tr><td class="term">Eleştiri adımı</td><td>Aynı veya farklı modele, çıktıyı değerlendirip düzeltme isteyen ikinci istem.</td><td>Üretimden farklı bir istem kullanır; rol değişir.</td></tr>
+<tr><td class="term">Akıl yürütme modeli</td><td>Adım adım &ldquo;düşünen&rdquo;, hata bulmada güçlü olabilen model türü.</td><td>Genellikle eleştiri/hata-arama adımı için tercih edilir.</td></tr>
+<tr><td class="term">Dış geri bildirim</td><td>Modelin dışından gelen yeni bilgi (örn. kodu çalıştırınca çıkan hata).</td><td>Yansımayı en çok güçlendiren tek etmendir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin merkezinde tek bir fikir var: <strong>iyi çıktı tek hamlede değil, üret &rarr; geri bak &rarr; düzelt döngüsüyle ortaya çıkar.</strong> Aşağıdaki dört adım, yansıma deseninin iskeletidir; dersin geri kalanı bu iskeleti e-posta, kod ve dış geri bildirim örnekleriyle besler.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>İlk taslağı üret</strong><span>Modele görevi verip ilk sürümü (V1) yazdırırsınız.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Geri bak</strong><span>Farklı bir istemle çıktı eleştirilir; eksikler ve hatalar saptanır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Dış bilgi kat</strong><span>Mümkünse dışarıdan yeni bilgi (örn. hata mesajı) eklenir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>İyileştir (V2)</strong><span>Eleştiri ve ek bilgiyle gelişmiş ikinci sürüm üretilir.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: üçüncü adım her zaman zorunlu değildir, ama deseni en çok güçlendiren halkadır. Modeli yalnızca kendi içine bakmaya bırakmak yerine, ona <strong>dışarıdan doğrulanmış yeni bir bilgi</strong> verdiğinizde yansıma çok daha derin ve isabetli hale gelir.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="insanlarda-yansima-aceleyle-yazilan-e-posta">İnsanlarda yansıma: aceleyle yazılan e-posta</h3>
+<p>Deseni en iyi tanıdık bir deneyim anlatır. Hızlıca bir e-posta yazdığınızı düşünün. İlk taslak çoğu zaman pek iyi olmaz. Ama metni bir kez okuduğunuzda eksikleri hemen görürsünüz: &ldquo;gelecek ay&rdquo; ifadesi hangi tarihler için uygun olduğunuzu net söylemiyor, bir de yazım hatası kalmış, üstelik adınızı imzalamayı unutmuşsunuz. Bu kısa <em>geri bakma</em> anı, taslağı çok daha açık bir ikinci sürüme dönüştürmenizi sağlar.</p>
+<p>İşte yansıma deseninin sezgisi tam olarak budur. Aşağıda soldaki ilk taslakta saptanan üç sorun, sağdaki gözden geçirilmiş sürümde giderilmiştir.</p>
+
+<div class="mail-grid">
+<div class="mail-card">
+<div class="mail-tag">E-posta &mdash; ilk taslak (V1)</div>
+<div class="mail-body">Merhaba Tommy,<br><br>Önümüzdeki ay New York&rsquo;ta olacağım, <span class="mark-bad">gelecek ay</span> bir akşam yemeğe müsait misin haber ver. (Ayrıca: <span class="mark-bad">yzım hatası</span> ve <span class="mark-bad">eksik imza</span>.)</div>
+</div>
+<div class="mail-arrow"><span class="arr">&rarr;</span><span>geri bak<br>&amp; düzelt</span></div>
+<div class="mail-card is-final">
+<div class="mail-tag">E-posta &mdash; gözden geçirilmiş (V2)</div>
+<div class="mail-body">Merhaba Tommy,<br><br>Önümüzdeki ay New York&rsquo;ta <span class="mark-good">ayın 5&rsquo;i ile 7&rsquo;si arasında</span> olacağım. Bir akşam yemeğe müsait misin, haber ver.<br><br><span class="mark-good">Andrew</span></div>
+</div>
+</div>
+
+<div class="fix-list">
+<div class="fix-item"><span class="fix-dot">1</span><span><strong>Belirsiz tarih.</strong> &ldquo;Gelecek ay&rdquo; yerine somut bir tarih aralığı (5&ndash;7) verilir.</span></div>
+<div class="fix-item"><span class="fix-dot">2</span><span><strong>Yazım hatası.</strong> İlk taslaktaki dikkatsizlik düzeltilir.</span></div>
+<div class="fix-item"><span class="fix-dot">3</span><span><strong>Eksik imza.</strong> Mesajın sonuna imza eklenir.</span></div>
+</div>
+
+<h3 id="ayni-mantik-dil-modeline-nasil-tasinir">Aynı mantık dil modeline nasıl taşınır?</h3>
+<p>Bir dil modeline de tıpatıp aynı süreci uygulayabilirsiniz. Önce modele &ldquo;şu e-postayı yaz&rdquo; dersiniz ve ilk sürümü (e-posta V1) alırsınız. Sonra bu çıktıyı, <strong>farklı bir istemle</strong> aynı modele (veya başka bir modele) geri verirsiniz ve ondan metni gözden geçirip iyileştirilmiş bir ikinci taslak (e-posta V2) yazmasını istersiniz. Burada akış elle, sabit biçimde kurulur: modeli bir kez çağırırsınız, sonra bir kez daha &mdash; bu sefer eleştirip iyileştirmesi için &mdash; ve sonuçta V2&rsquo;yi elde edersiniz.</p>
+
+<div class="flow-rail">
+<div class="flow-box is-input">Görev<small>&ldquo;Bir e-posta yaz&rdquo;</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-llm">Dil modeli<small>ilk taslağı yazar</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box">E-posta V1<small>ham ilk sürüm</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-reflect">Dil modeli<small>(farklı istem) yansıt &amp; iyileştir</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-input">E-posta V2<small>iyileştirilmiş sürüm</small></div>
+</div>
+
+<div class="definition-card">
+<h3 id="tanim">Tanım</h3>
+<p><strong>Yansıma deseni</strong>, bir dil modelinin ürettiği çıktıyı, ikinci bir adımda &mdash; çoğunlukla farklı bir istemle &mdash; eleştirip iyileştirilmiş bir sürümünü ürettiği bir iş akışıdır. Aynı modeli iki kez, ama iki farklı rolde çalıştırırsınız: önce <em>üretici</em>, sonra <em>eleştirmen</em>.</p>
+</div>
+
+<h3 id="ayni-desen-kodu-iyilestirmek-icin">Aynı desen kodu iyileştirmek için</h3>
+<p>İlginç olan şu: aynı süreç başka çıktı türleri için de işe yarar. Bir dil modeline kod yazdırdığınızı düşünün. Modelden belirli bir görevi yapan kodu istersiniz ve size kodun ilk sürümünü (code V1) verir. Ardından bunu aynı modele veya <strong>farklı bir modele</strong> geri verip hata kontrolü yapmasını ve iyileştirilmiş bir ikinci sürüm yazmasını istersiniz. Burada üreten kutu küçük bir taslak fonksiyon (<code>do_task</code>) çıkarır; eleştiren kutu ise onu gözden geçirip düzeltilmiş halini (<code>do_task_v2</code>) üretir.</p>
+
+<div class="flow-rail">
+<div class="flow-box is-input">Görev<small>&ldquo;X görevi için kod yaz&rdquo;</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-llm">Dil modeli<small>ilk taslağı yazar</small><span class="snippet"><span class="snip-tok-kw">def</span> <span class="snip-tok-fn">do_task</span>(args):
+    ...</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box">code V1</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-reflect">Dil modeli 2<small>hata ara &amp; ikinci taslağı yaz</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-input">Dil modeli 2&rsquo;nin çıktısı<small>iyileştirilmiş sürüm</small><span class="snippet"><span class="snip-tok-kw">def</span> <span class="snip-tok-fn">do_task_v2</span>(args):
+    ...</span></div>
+</div>
+
+<p>Burada altı çizilmesi gereken bir tasarım fırsatı var: farklı modellerin farklı güçlü yanları vardır. Bu yüzden bazen ilk taslağı doğrudan üretimle (hızlı bir modelle) yazar, ardından hata kontrolü için bir <strong>akıl yürütme (reasoning) modeli</strong> &mdash; bazen &ldquo;düşünen model&rdquo; de denir &mdash; kullanırsınız. Akıl yürütme modelleri adım adım ilerledikleri için hataları yakalamada genellikle daha başarılıdır; dolayısıyla &ldquo;üret&rdquo; ve &ldquo;eleştir&rdquo; rollerine farklı modeller atamak yaygın ve mantıklı bir stratejidir.</p>
+
+<div class="note-card">
+<h3 id="ureten-ve-elestiren-rolleri-neden-ayirmali">Üreten ve eleştiren rolleri neden ayırmalı?</h3>
+<p>Bir sistemin kendi çıktısına tarafsız bakması zordur. İkinci adımı &mdash; özellikle hata bulmada güçlü bir akıl yürütme modeliyle &mdash; ayrı bir rol olarak kurmak, ilk taslakta gözden kaçan sorunların yakalanma olasılığını artırır. &ldquo;Üreten&rdquo; hızlı olabilir; &ldquo;eleştiren&rdquo; ise dikkatli olmalıdır.</p>
+</div>
+
+<h3 id="dis-geri-bildirim-yansimayi-guclendirir">Dış geri bildirim yansımayı güçlendirir</h3>
+<p>Şimdi desenin gerçekten parladığı noktaya geliyoruz. Modelin yalnızca kendi kafasından koda yeniden bakması faydalıdır; ama <strong>dışarıdan yeni bilgi</strong> alabilirse yansıma çok daha güçlü hale gelir. Kod örneğinde yapabileceğiniz en doğal şey, kodu <em>çalıştırmaktır</em>. Çalıştırınca ne olduğunu &mdash; çıktıyı ve varsa hata mesajlarını &mdash; gözlemlersiniz. Bu bilgi, modelin neyin yanlış gittiğini anlaması için fazlasıyla değerlidir.</p>
+<p>Diyelim ki model kodun ilk taslağını üretti, ama siz çalıştırdığınızda bir sözdizimi hatası verdi. Bu çıktıyı ve hata kayıtlarını modele geri verip &ldquo;bu geri bildirime göre yansıt ve yeni bir taslak yaz&rdquo; dediğinizde, model artık çok daha iyi bir ikinci sürüm üretmek için somut bir ipucuna sahip olur.</p>
+
+<div class="flow-rail">
+<div class="flow-box is-input">Görev<small>&ldquo;X görevi için kod yaz&rdquo;</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-llm">Dil modeli<small>ilk taslak (code V1)</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-reflect">Kodu çalıştır<small>gerçek davranışı gözlemle</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="err-box">SyntaxError: unterminated string literal (detected at line 1)</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-llm">Dil modeli<small>çıktı/hatayı yansıt &amp; iyileştir</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-input">code V2<small>düzeltilmiş sürüm</small></div>
+</div>
+
+<p>Buradaki kritik fark, çalıştırma adımının ürettiği <strong>somut hata mesajıdır</strong>. Model artık &ldquo;belki bir sorun vardır&rdquo; diye tahmin yürütmek zorunda değildir; hatanın türünü ve nerede oluştuğunu doğrudan görür. Bu dış bilgi olmadan yapılan yansımaya kıyasla, sonuç belirgin biçimde daha iyi bir ikinci sürümdür.</p>
+
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Yalnızca iç yansıma</h4>
+<ul>
+<li>Model sadece kendi çıktısına yeniden bakar.</li>
+<li>Yeni bilgi yoktur; çıkarımlar tahmine dayanır.</li>
+<li>Yine de faydalıdır, ama kazanç sınırlıdır.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Dış geri bildirimli yansıma</h4>
+<ul>
+<li>Kod çalıştırılır; gerçek çıktı ve hatalar elde edilir.</li>
+<li>Modele dışarıdan doğrulanmış yeni bilgi girer.</li>
+<li>Yansıma çok daha derin; ikinci sürüm çok daha iyi olur.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section><h2 id="akis-ve-surec-yapisi">Akış ve Süreç Yapısı</h2>
+<p>Üç örnek de aynı omurgayı paylaşır: bir ilk çıktı üretilir, bu çıktı bir değerlendirme adımına sokulur ve değerlendirmenin sonucuyla iyileştirilmiş bir sürüm üretilir. Aralarındaki tek ama belirleyici fark, eleştiri adımının <em>nereden beslendiğidir</em>.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>İnsan / e-posta</strong><span>Değerlendirme, yazarın metni yeniden okumasından gelir; eksikler gözle saptanır.</span></div>
+<div class="insight-card"><strong>Kod / ikinci model</strong><span>Değerlendirme, ayrı bir modelin (örn. akıl yürütme modeli) hata aramasından gelir.</span></div>
+<div class="insight-card"><strong>Kod / dış geri bildirim</strong><span>Değerlendirme, kodun gerçekten çalıştırılıp çıktısının ve hatalarının okunmasından gelir.</span></div>
+</div>
+<p>Bu üçlüyü soldan sağa okuduğunuzda, yansımanın gücünün giderek arttığını görürsünüz: en zayıf halka saf iç gözlemdir, en güçlü halka ise dışarıdan doğrulanmış bilgiyle beslenen gözlemdir.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Yansıma sihirdir, her şeyi %100 doğru yapar.&rdquo;</strong> Değildir. Yansıma deseni modeli her seferinde kusursuz hale getirmez; çoğunlukla yalnızca <em>ölçülü</em> bir performans artışı sağlar.</li>
+<li><strong>&ldquo;Tek bir istem yeterli.&rdquo;</strong> Üretim ve eleştiri farklı rollerdir ve genellikle farklı istemler gerektirir. Eleştiri adımını atlamak deseni boşa çıkarır.</li>
+<li><strong>&ldquo;Üreten ve eleştiren aynı model olmak zorunda.&rdquo;</strong> Değil. Hatta ilk taslağı hızlı bir modelle yazıp eleştiriyi güçlü bir akıl yürütme modeline bırakmak çoğu zaman daha iyidir.</li>
+<li><strong>&ldquo;İç yansıma ile dış geri bildirimli yansıma aynı şeydir.&rdquo;</strong> Değil. Dışarıdan yeni bilgi (örn. çalıştırma çıktısı, hata mesajı) eklenebildiğinde yansıma belirgin biçimde güçlenir.</li>
+<li><strong>&ldquo;Dış bilgi her zaman vardır.&rdquo;</strong> Her görevde kodu çalıştırmak gibi bir doğrulama imkânı olmayabilir. Fırsat olduğunda bu bilgiyi sürece katmak önemlidir; çünkü deseni en çok güçlendiren etmen budur.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Yansıma deseni, uygulaması şaşırtıcı derecede kolay olduğu hâlde çok çeşitli işlerde değer üreten bir tasarım fikridir. Özü tek cümlede toplanır: bir çıktıyı son söz olarak kabul etmeyin; onu ikinci bir adımda eleştirin ve iyileştirin. Bu, ister bir e-posta ister bir kod parçası olsun, ilk taslaktan daha iyi bir ikinci sürüme giden güvenilir bir yoldur.</p>
+<p>İki tasarım kararını akılda tutmak gerekir. Birincisi, <strong>üreten ile eleştiren rolleri ayırmak</strong> &mdash; ve gerektiğinde eleştiri için hata bulmada güçlü bir akıl yürütme modeli seçmek &mdash; sonucu iyileştirir. İkincisi ve daha önemlisi, yansımaya <strong>dışarıdan yeni bilgi</strong> katabildiğinizde (örneğin kodu çalıştırıp hata mesajını okuyarak) desen çok daha güçlü çalışır.</p>
+<p>Son olarak beklentiyi doğru kurun: yansıma sihir değildir. Modeli her zaman kusursuz yapmaz; ama doğru kurulduğunda, özellikle dış geri bildirimle beslendiğinde, çıktının kalitesini gözle görülür biçimde yükseltir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#ciktilari-iyilestirmek-icin-yansima" class="toc-h1">Çıktıları İyileştirmek için Yansıma</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#insanlarda-yansima-aceleyle-yazilan-e-posta" class="toc-h3">İnsanlarda yansıma: aceleyle yazılan e-posta</a>
+<a href="#ayni-mantik-dil-modeline-nasil-tasinir" class="toc-h3">Aynı mantık dil modeline nasıl taşınır?</a>
+<a href="#tanim" class="toc-h3">Tanım</a>
+<a href="#ayni-desen-kodu-iyilestirmek-icin" class="toc-h3">Aynı desen kodu iyileştirmek için</a>
+<a href="#ureten-ve-elestiren-rolleri-neden-ayirmali" class="toc-h3">Üreten ve eleştiren rolleri neden ayırmalı?</a>
+<a href="#dis-geri-bildirim-yansimayi-guclendirir" class="toc-h3">Dış geri bildirim yansımayı güçlendirir</a>
+<a href="#akis-ve-surec-yapisi" class="toc-h2">Akış ve Süreç Yapısı</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

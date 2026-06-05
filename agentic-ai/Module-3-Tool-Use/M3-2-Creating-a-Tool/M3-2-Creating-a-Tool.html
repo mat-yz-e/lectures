@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bir Araç Oluşturmak</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--code-bg:#f7f7f7; --code-surface:#f7f7f7; --code-text:#000000; --code-muted:#4b5563; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-class:#000000; --code-builtin:#008000; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel,.output-comment{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4,.output-comment h4{display:block;margin:0 0 0.4rem;counter-increment:none;}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:25%;} .term-table td.term{white-space:nowrap;font-weight:600;}
+code:not(.code-body code):not(.output-body code){padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* prompt block (system prompt text, not runnable code) */
+.prompt-block{margin:1rem 0;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;overflow:hidden;}
+.prompt-block .prompt-label{display:block;padding:0.5rem 0.85rem;background:var(--dlai-coral-muted);color:var(--accent-dark);font-size:0.8rem;font-weight:700;letter-spacing:0.02em;text-transform:uppercase;border-bottom:1px solid var(--lesson-border);}
+.prompt-block pre{margin:0;padding:0.85rem 1rem;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.86rem;line-height:1.55;color:#111;}
+.prompt-block .fn-token{color:var(--accent-dark);font-weight:700;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.6rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;padding:0.95rem 0.8rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.95rem;}
+.bp-step span:not(.bp-num){color:var(--lesson-muted);font-size:0.88rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);z-index:1;}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* tool-flow diagram (HTML/CSS reconstruction) */
+.flow-wrap{margin:1.2rem 0;padding:1.1rem 1.05rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:var(--lesson-soft);}
+.flow-wrap .flow-title{display:block;margin:0 0 0.85rem;font-weight:700;color:var(--lesson-text);font-size:0.98rem;}
+.flow-chain{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:0.45rem;}
+.flow-node{display:flex;flex-direction:column;justify-content:center;min-width:7rem;max-width:18rem;padding:0.65rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.6rem;background:#fff;font-size:0.85rem;line-height:1.4;color:var(--lesson-text);overflow-wrap:anywhere;word-break:break-word;box-shadow:0 1px 2px rgba(17,24,39,0.04);}
+.flow-node.is-prompt{background:var(--dlai-coral-soft);border-color:var(--dlai-coral);}
+.flow-node.is-llm{background:var(--lesson-soft-2);border-color:var(--lesson-border-strong);text-align:center;align-items:center;font-weight:700;min-width:4.4rem;}
+.flow-node.is-tool{background:#fff;border:1.5px solid var(--dlai-coral);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.78rem;color:var(--accent-dark);max-width:none;flex-shrink:0;}
+.flow-node.is-tool small{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;}
+.flow-node.is-data{background:var(--dlai-coral-muted);border-style:dashed;border-color:var(--dlai-coral);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.8rem;color:#111;}
+.flow-node.is-check{background:#fff;border-color:var(--lesson-border-strong);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.8rem;color:#111;}
+.flow-node.is-output{background:var(--lesson-soft-2);border-color:var(--lesson-border-strong);}
+.flow-node small{display:block;margin-top:0.28rem;color:var(--lesson-muted);font-size:0.74rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-weight:400;}
+.flow-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-size:1.1rem;font-weight:700;padding:0 0.05rem;}
+.toolbox{align-self:center;padding:0.55rem 0.7rem 0.6rem;border:1.5px dashed var(--lesson-border-strong);border-radius:0.55rem;background:#fff;text-align:center;}
+.toolbox .toolbox-label{display:block;margin-bottom:0.35rem;font-size:0.74rem;font-weight:700;color:var(--lesson-muted);letter-spacing:0.02em;text-transform:uppercase;}
+.toolbox .tool-chip{display:inline-block;margin:0.12rem;padding:0.22rem 0.5rem;border:1.5px solid var(--dlai-coral);border-radius:0.4rem;background:var(--dlai-coral-muted);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.76rem;color:var(--accent-dark);}
+.toolbox .tool-chip.is-picked{background:var(--dlai-coral);color:#fff;}
+.flow-stack{display:flex;flex-direction:column;align-items:center;gap:0.35rem;}
+.flow-stack .flow-connector{width:2px;height:0.85rem;background:var(--dlai-coral);}
+.flow-caption{margin:0.75rem 0 0;color:var(--lesson-muted);font-size:0.9rem;line-height:1.5;}
+/* code cells */
+.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1.05rem 0;background:transparent;}
+.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#c2384a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.code-head{position:absolute;top:0.35rem;right:0.45rem;z-index:2;display:flex;justify-content:flex-end;}
+.copy-btn{border:1px solid #c4c8cf;border-radius:0.35rem;background:rgba(255,255,255,0.92);color:#374151;cursor:pointer;font-size:0.78rem;padding:0.22rem 0.5rem;}
+.copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.code-body,.output-body{margin:0;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.55;tab-size:4;}
+.code-body{grid-column:2;padding:0.72rem 5.2rem 0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0.2rem;background:var(--code-bg);white-space:pre;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.code-body::-webkit-scrollbar{height:10px;}
+.code-body::-webkit-scrollbar-track{background:#f2f2f2;border-top:1px solid #e3e3e3;}
+.code-body::-webkit-scrollbar-thumb{background:#c4c4c4;border:2px solid #f2f2f2;border-radius:6px;}
+.code-body::-webkit-scrollbar-thumb:hover{background:#9ca3af;}
+.code-body code{font-family:inherit;display:block;width:max-content;min-width:100%;}
+.code-line{display:block;width:max-content;min-width:100%;padding:0 0.25rem;border-radius:0.18rem;white-space:pre;}
+.code-line:empty::before{content:"\00a0";}
+.code-line[data-note]{cursor:help;}
+.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:0;}
+.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid var(--dlai-coral);border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease;}
+.line-tooltip.is-visible{opacity:1;transform:translateY(0);}
+.line-tooltip .tooltip-section{display:block;font-weight:400;}
+.line-tooltip .tooltip-section + .tooltip-section{margin-top:0.55rem;padding-top:0.55rem;border-top:1px solid #eaeef2;}
+.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,monospace;font-size:12.5px;}
+.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1rem 0;background:transparent;}
+.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.output-head{grid-column:2;padding:0.42rem 0.55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:0.2rem 0.2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-size:0.78rem;}
+.output-body{grid-column:2;padding:0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0 0 0.2rem 0.2rem;background:var(--code-bg);}
+.output-body pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.5;color:#000;}
+.output-body:not(.output-visual){max-height:30rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;}
+.output-body:not(.output-visual)::-webkit-scrollbar{width:11px;height:11px;}
+.output-body:not(.output-visual)::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d9d9d9;}
+.output-body:not(.output-visual)::-webkit-scrollbar-thumb{background:#b8b8b8;border:2px solid #f2f2f2;border-radius:6px;}
+.output-comment{margin:0.6rem 0 1rem 4.95rem;background:#fff;}
+.output-comment p{margin:0;color:var(--lesson-muted);font-size:0.97rem;line-height:1.6;}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin:0.9rem 0 0.9rem 4.95rem;}
+.mini-panel{margin:0;background:var(--lesson-soft);}
+.mini-panel p{margin:0;color:var(--lesson-muted);font-size:0.95rem;}
+.mini-panel h4{color:var(--accent-dark);}
+.tok-keyword{color:var(--code-keyword);font-weight:700;} .tok-string{color:var(--code-string);}
+.tok-comment{color:var(--code-comment);font-style:italic;} .tok-function{color:var(--code-function);}
+.tok-attribute{color:var(--code-function);} .tok-number{color:var(--code-number);}
+.tok-class{color:var(--code-function);} .tok-name{color:var(--code-class);}
+.tok-builtin{color:var(--code-builtin);} .tok-operator{color:var(--code-operator);}
+@media (max-width:920px){.bp-flow{grid-template-columns:repeat(2,minmax(0,1fr));} .bp-step::after{display:none;}}
+@media (max-width:860px){.comparison-grid,.insight-grid,.explain-grid{grid-template-columns:1fr;}}
+@media (max-width:680px){
+.flow-chain{flex-direction:column;align-items:stretch;}
+.flow-node,.flow-node.is-llm{max-width:none;width:100%;text-align:left;}
+.flow-arrow{transform:rotate(90deg);}
+.toolbox{align-self:stretch;}
+.bp-flow{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.code-card,.output-card{grid-template-columns:minmax(0,1fr);}
+.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 0.25rem;text-align:left;}
+.code-body,.output-head,.output-body{grid-column:1;}
+.code-head{top:1.7rem;} .code-body{padding:0.85rem 4.85rem 0.85rem 0.85rem;font-size:0.84rem;}
+.output-comment,.explain-grid{margin-left:0;}
+.line-tooltip{max-width:calc(100vw - 32px);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-3-Tool-Use/M3-2-Creating-a-Tool/M3-2-Creating-a-Tool.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Bir Araç Oluşturmak</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="bir-arac-olusturmak">Bir Araç Oluşturmak</h1>
+<p class="lead-text">Bir dil modeli yalnızca metin üretmek üzere eğitilmişken, bir işlevin çağrılmasını “talep etmeyi” nasıl başarır? Bu derste, bir aracın perde arkasındaki çalışma mekanizmasını sıfırdan, adım adım söküp inceliyoruz.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bir dil modelinin bir işlevi çağırmaya “karar vermesi” ilk bakışta biraz gizemli görünür; çünkü model temelde yalnızca metin (daha doğrusu metin parçacıkları) üretmek üzere eğitilmiştir. Bu durumda bir işlev çağrısı nasıl gerçekleşir? Bu ders tam olarak bu soruyu yanıtlar: bir aracı modele tanıtmaktan, modelin çağrı talebini üretmesine, talebin koddan yakalanmasına ve sonucun modele geri beslenmesine kadar tüm süreci açar.</p>
+<p>Araçlar, özünde modelin çalıştırılmasını talep edebileceği kod parçaları ya da işlevlerdir. Önceki bölümde tanıştığımız güncel saat işlevi bunun en yalın örneğiydi. Bugünün önde gelen modelleri araç kullanmak üzere doğrudan eğitilmiştir; ancak mekanizmayı gerçekten kavramak için, modellerin bu yetenekle eğitilmediği daha erken bir dönemde geliştiricilerin <em>elle</em> nasıl istem yazdığını adım adım izlemek son derece öğreticidir. Artık tam olarak böyle yapmasak da, bu “elle” yaklaşım sürecin iç işleyişini şeffaf biçimde gösterir; ardından modern söz dizimine geçeriz.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-fikri">Bu Dersin Ana Fikri</h3><p>Bir model bir işlevi <strong>doğrudan çalıştırmaz</strong>. Bunun yerine, belirli bir biçimde bir metin üreterek “şu işlevi benim için çağır” sinyalini verir. İşlevi gerçekte çalıştıran, çıktısını alıp modele geri besleyen taraf geliştiricinin yazdığı koddur. Araç kullanımının tüm mekanizması bu basit ama kritik ayrımın üzerine kuruludur.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2><ul>
+<li>Bir dil modelinin yalnızca metin üretmesine rağmen bir işlev çağrısını nasıl “talep ettiğini” açıklayabilmek.</li>
+<li>Elle istem yazarak araç kullanımı kurulan klasik yaklaşımın tüm adımlarını sırasıyla izleyebilmek.</li>
+<li>Bir sistem istemiyle modele bir aracın nasıl tanıtıldığını ve belirli bir çıktı biçiminin neden dayatıldığını kavramak.</li>
+<li>Modelin ürettiği özel biçimli çıktının koddan nasıl yakalanıp işlevin nasıl çağrıldığını anlamak.</li>
+<li>Argüman alan bir aracın (örneğin zaman dilimine göre saat) nasıl tasarlandığını ve çağrıldığını izleyebilmek.</li>
+<li>Klasik “BÜYÜK HARF işlev” yönteminin neden hantal olduğunu ve modern modellerin neden yerleşik bir söz dizimiyle eğitildiğini açıklayabilmek.</li>
+</ul></section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2><ul>
+<li>Bir dil modeline araç sunma ve modelin aracı çağırmayı talep etmesi kavramına temel aşinalık.</li>
+<li>Python’da bir işlev tanımını, argümanları ve <code>return</code> ifadesini okuyabilecek düzeyde temel sözdizimi.</li>
+<li>Bir metin içinde belirli bir kalıbın aranması (örneğin “şu ifade çıktıda var mı?”) fikri.</li>
+<li>Sistem istemi (system prompt) ve konuşma geçmişi kavramlarına genel aşinalık.</li>
+</ul></section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table"><colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Araç</td><td>Modelin çalıştırılmasını talep edebileceği bir kod parçası ya da işlev.</td><td>Modelin parçası değildir; geliştirici uygular ve modele tanıtır.</td></tr>
+<tr><td class="term">Sistem istemi</td><td>Modele aracın varlığını ve onu çağırmak için üreteceği biçimi anlatan yönerge.</td><td>Çıktı biçimi olabildiğince kesin tarif edilir.</td></tr>
+<tr><td class="term">Çağrı sinyali</td><td>Modelin ürettiği, “şu işlevi çağır” anlamına gelen özel biçimli metin.</td><td>Klasik yöntemde <code>FUNCTION:</code> kalıbıyla işaretlenir.</td></tr>
+<tr><td class="term">Ayrıştırma</td><td>Model çıktısında çağrı sinyalini arayıp işlev adını/argümanları çıkaran kod.</td><td>Bu işi geliştiricinin kodu yapar, model değil.</td></tr>
+<tr><td class="term">Argüman</td><td>İşleve geçirilen girdi değeri (örneğin bir zaman dilimi adı).</td><td>Argümanı da model üretir; kod onu işleve aktarır.</td></tr>
+<tr><td class="term">Konuşma geçmişi</td><td>İlk istem, çağrı talebi ve işlev sonucunun birlikte tutulduğu bağlam.</td><td>Model nihai yanıtı bu birikmiş geçmişe bakarak üretir.</td></tr>
+</tbody></table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Elle kurulan araç kullanımı, baştan sona beş ana adımdan oluşan kapalı bir döngüdür. Aşağıdaki akış dersin omurgasını tek bakışta gösterir: model bir çağrı sinyali üretir, kod bu sinyali yakalar, işlevi çalıştırır, sonucu modele geri besler ve model nihai yanıtını verir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Aracı tanıt</strong><span>İşlev uygulanır ve sistem istemiyle modele varlığı bildirilir.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Sinyali üret</strong><span>Model, aracı çağırmak istediğinde özel biçimli bir metin üretir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Sinyali yakala</strong><span>Geliştirici kodu çıktıyı tarar, işlev adını ve argümanları çıkarır.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Çalıştır ve geri besle</strong><span>İşlev çalıştırılır; sonucu konuşma geçmişine eklenir.</span></div>
+<div class="bp-step"><span class="bp-num">5</span><strong>Yanıtı üret</strong><span>Model, biriken bağlama bakarak son yanıtını oluşturur.</span></div>
+</div></div>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Modelin yaptığı</h4><ul><li>Çağrı sinyalini ve gerekiyorsa argümanı üretir.</li><li>İşlevi çalıştırmaz, yalnızca talep eder.</li><li>Sonuç geri beslendiğinde nihai yanıtı verir.</li></ul></div>
+<div class="cmp-card"><h4>Geliştirici kodunun yaptığı</h4><ul><li>Çıktıdaki çağrı sinyalini tespit eder.</li><li>İşlevi gerçekten çalıştırıp sonucu alır.</li><li>Sonucu konuşma geçmişine ekleyip modele döndürür.</li></ul></div>
+</div>
+<p>Bu döngünün ince ama belirleyici noktası, dördüncü adımdan sonra sürecin her zaman bitmek zorunda olmamasıdır: model, geri beslenen sonuca bakıp <em>başka bir aracı</em> çağırmaya da karar verebilir; bu durumda döngü yeni baştan işler.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="kodunuz-bir-araca-donusuyor">Kodunuz bir araca dönüşüyor</h3>
+<p>Bir araç, aslında modelin çalıştırılmasını isteyebileceği sıradan bir koddur. İşe en yalın örnekle başlayalım: argüman almayan, çağrıldığında güncel saati okunabilir bir metin olarak döndüren bir işlev. Bu işlevin kendisi son derece basittir; onu “araç” yapan şey, modele tanıtılması ve modelin gerektiğinde çağrılmasını talep edebilmesidir.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` modülünün `datetime` sınıfını içe aktarır; güncel zamanı bu sınıfla okuyacağız." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Argüman almayan bir işlev tanımlar; modele araç olarak sunulacak olan budur." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>()<span class="tok-operator">:</span></span><span class="code-line" data-note="Tek satırlık docstring: işlevin ne döndürdüğünü açıklar; modele aracın amacını anlatmaya yardımcı olur." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns the current time as a string&quot;&quot;&quot;</span></span><span class="code-line" data-note="`datetime.now()` o anki zamanı verir; `strftime` ile saat:dakika:saniye biçiminde bir metne çevrilip döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>()<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+
+<h3 id="modeli-araci-kullanmaya-yonlendirmek">Modeli aracı kullanmaya yönlendirmek</h3>
+<p>İşlevi uyguladıktan sonra modele onun varlığını bildirmemiz gerekir. Klasik yaklaşımda bunu bir sistem istemiyle yaparız: modele, hangi araca erişimi olduğunu ve onu çağırmak istediğinde <em>tam olarak</em> hangi metni üretmesi gerektiğini söyleriz. Buradaki anahtar fikir, çağrı talebini açıkça işaretleyen, kolayca aranabilir bir kalıp belirlemektir; bu örnekte büyük harfli <code>FUNCTION:</code> etiketi bu işi görür.</p>
+<div class="prompt-block"><span class="prompt-label">Sistem istemi</span><pre>get_current_time adında bir araca erişimin var.
+Kullanmak için tam olarak şunu döndür:
+
+<span class="fn-token">FUNCTION:</span>
+get_current_time()</pre></div>
+<p>Kullanıcı “saat kaç?” diye sorduğunda model, bu aracı çağırması gerektiğini anlar ve kendisine söylenen kalıbı üretir: <code>FUNCTION: get_current_time()</code>. Artık iş, model çıktısını izleyen koda düşer. Bu kod, çıktıda çağrı sinyalinin geçip geçmediğini denetler:</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Model çıktısı içinde `FUNCTION` kalıbı aranır; varsa modelin bir araç çağırmak istediği anlaşılır ve ilgili işlev çalıştırılır." tabindex="0"><span class="tok-keyword">if</span> <span class="tok-string">&quot;FUNCTION&quot;</span> <span class="tok-keyword">in</span> <span class="tok-name">output</span><span class="tok-operator">:</span></span></code></pre></div>
+<p>Sinyal yakalandığında geliştirici kodu işlevi gerçekten çalıştırır, çıktısını (örneğin <code>08:00:00</code>) alır ve bu sonucu konuşma geçmişine ekleyerek modele geri besler. Konuşma geçmişi; ilk kullanıcı istemini, çağrının bir işlev talebi olduğunu ve dönen sonucu birlikte taşır. Son adımda model, tüm bu birikmiş bağlama bakarak nihai yanıtını üretir: “saat 08.00”.</p>
+<div class="flow-wrap">
+<span class="flow-title">Akış &mdash; Elle kurulan araç çağrısının tam döngüsü</span>
+<div class="flow-stack">
+<div class="toolbox"><span class="toolbox-label">Araçlar</span><span class="tool-chip is-picked">get_current_time</span></div>
+<div class="flow-connector"></div>
+<div class="flow-chain">
+<div class="flow-node is-prompt">Saat kaç?<small>kullanıcı istemi</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM<small>FUNCTION: get_current_time() üretir</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-check">if "FUNCTION" in output:<small>sinyal yakalanır</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-tool">get_current_time<small>işlev çalıştırılır</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-data">08:00:00<small>dönen değer</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-check">saat + konuşma geçmişi<small>bağlam birikir</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-output">Saat 08.00.<small>son yanıt</small></div>
+</div>
+</div>
+<p class="flow-caption">Modelin tek yaptığı, çağrı sinyalini üretmektir. Sinyali yakalamak, işlevi çalıştırmak, sonucu geri beslemek ve döngüyü kapatmak geliştirici kodunun görevidir.</p>
+</div>
+<div class="note-card"><h3 id="neden-dogrudan-cagirmiyor-diyoruz">Neden “doğrudan çağırmıyor” diyoruz?</h3><p>Model işlevi kendisi çalıştıramaz; yapabildiği tek şey metin üretmektir. Bu yüzden çağrıyı, kodun tanıyabileceği özel bir biçimde <em>metin olarak</em> ifade eder. Çağrının fiilen gerçekleşmesi ve sonucun geri dönmesi tamamen geliştirici kodunun sorumluluğundadır.</p></div>
+</section>
+
+<section><h2 id="arguman-alan-araclar">Argüman Alan Araçlar</h2>
+<p>İlk örnekte modele tek ve argümansız bir işlev vermiştik. Oysa araçlar çoğu zaman girdi alır. Modele üç-dört işlev sunabilir ve çağrı sinyalinin yanında çağrılacak işlevin adını ve hatta argümanlarını da üretmesini isteyebiliriz. Bunu somutlaştırmak için saat işlevini, belirli bir zaman dilimine göre çalışacak biçimde genişletelim. Böylece “Yeni Zelanda’da saat kaç?” gibi sorular yanıtlanabilir hâle gelir.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` modülünün `datetime` sınıfını içe aktarır; zamanı bu sınıfla okuyacağız." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line" data-note="`ZoneInfo`: bir zaman dilimi adını (örneğin Pacific/Auckland) gerçek bir zaman dilimi nesnesine çevirir." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">zoneinfo</span> <span class="tok-keyword">import</span> <span class="tok-name">ZoneInfo</span></span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Bu kez işlev bir `timezone` argümanı alır; argümanı modelin kendisi üretip aktaracaktır." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>(<span class="tok-name">timezone</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Tek satırlık docstring: işlevin verilen zaman dilimine göre saati döndürdüğünü açıklar." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns current time for the given time zone &quot;&quot;&quot;</span></span><span class="code-line" data-note="Gelen zaman dilimi metni, `ZoneInfo` ile kullanılabilir bir zaman dilimi nesnesine dönüştürülür." tabindex="0">    <span class="tok-name">timezone</span> <span class="tok-operator">=</span> <span class="tok-function">ZoneInfo</span>(<span class="tok-name">timezone</span>)</span><span class="code-line" data-note="`datetime.now(timezone)` o zaman dilimindeki anlık saati verir; `strftime` ile biçimlendirilip döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>(<span class="tok-name">timezone</span>)<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+<p>Sistem istemi de buna uygun biçimde güncellenir: modele, belirli bir zaman dilimi için aracı nasıl çağıracağı ve argümanı nereye yazacağı söylenir. Aşağıdaki kısaltılmış istem fikri verir; pratikte işlevin ne olduğu ve nasıl kullanılacağı çok daha ayrıntılı tarif edilebilir.</p>
+<div class="prompt-block"><span class="prompt-label">Sistem istemi</span><pre>Belirli bir zaman dilimi için get_current_time adında bir araca erişimin var.
+Kullanmak için tam olarak şunu döndür:
+
+<span class="fn-token">FUNCTION:</span>
+get_current_time("timezone")</pre></div>
+<p>Kullanıcı “Yeni Zelanda’da saat kaç?” diye sorduğunda model, oranın saatini getirmesi gerektiğini anlar ve argümanı kendisi seçerek çağrı sinyalini üretir: <code>FUNCTION: get_current_time("Pacific/Auckland")</code>. Buradaki Pacific/Auckland, Yeni Zelanda’nın bir zaman dilimi adıdır; çünkü Auckland ülkenin önemli bir şehridir. Kod sinyali yakalar, işlevi modelin ürettiği argümanla çalıştırır (sonuç örneğin <code>04:00:00</code>), bu sonucu geri besler ve model “Yeni Zelanda’da saat 04.00” yanıtını üretir.</p>
+<div class="flow-wrap">
+<span class="flow-title">Akış &mdash; Argümanı modelin ürettiği araç çağrısı</span>
+<div class="flow-stack">
+<div class="toolbox"><span class="toolbox-label">Araçlar</span><span class="tool-chip is-picked">get_current_time</span></div>
+<div class="flow-connector"></div>
+<div class="flow-chain">
+<div class="flow-node is-prompt">Yeni Zelanda’da saat kaç?<small>kullanıcı istemi</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM<small>FUNCTION: get_current_time("Pacific/Auckland")</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-check">if "FUNCTION" in output:<small>sinyal yakalanır</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-tool">get_current_time("Pacific/Auckland")<small>argümanla çalıştırılır</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-data">04:00:00<small>dönen değer</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-check">saat + konuşma geçmişi<small>bağlam birikir</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-output">Yeni Zelanda’da saat 04.00.<small>son yanıt</small></div>
+</div>
+</div>
+<p class="flow-caption">Tek yeni şey, argümanın da modelce üretilmesidir: model hem hangi işlevi çağıracağını hem de ona hangi değeri (Pacific/Auckland) geçireceğini belirler; gerisi aynı döngüdür.</p>
+</div>
+<div class="definition-card"><h3 id="sureci-ozetlersek">Süreci özetlersek</h3><p>Önce aracı sağlarsınız: işlevi uygular ve modele varlığını bildirirsiniz. Model bir aracı çağırmaya karar verdiğinde, sizi haberdar eden özel bir çıktı üretir. Siz işlevi çalıştırır, çıktısını alır ve modele geri verirsiniz. Model bu sonuca bakarak ya nihai yanıtı üretir ya da bir sonraki adımda başka bir aracı çağırmaya karar verir; döngü böyle sürebilir.</p></div>
+</section>
+
+<section><h2 id="modern-arac-cagirma-soz-dizimi">Modern Araç Çağırma Söz Dizimi</h2>
+<p>Buraya kadar anlatılan büyük harfli <code>FUNCTION:</code> yöntemi işe yarar; ama biraz hantaldır. Modele bu kalıbı ürettirip sonra çıktıda elle aramak, biçim hatalarına ve kırılgan ayrıştırmaya açıktır. Bu yaklaşım, modeller araç çağırmayı kendiliğinden bilecek şekilde eğitilmeden önceki dönemin çözümüydü.</p>
+<p>Modern dil modelleriyle artık modele “büyük harfli FUNCTION üret, sonra ben onu arayayım” demeniz gerekmez. Bugünün modelleri, bir aracın çağrılmasını istediğini çok net biçimde belirten <strong>özel ve yerleşik bir söz dizimiyle</strong> eğitilmiştir. Mekanizmanın özü aynıdır &mdash; model talep eder, kod çalıştırır, sonuç geri beslenir &mdash; fakat çağrı sinyali artık elle tarif edilen kırılgan bir metin kalıbı yerine, modelin doğrudan ürettiği standart bir biçimdir.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Klasik yöntem</h4><ul><li>Çağrı biçimi sistem isteminde elle tarif edilir.</li><li>Çıktı düz metinde <code>FUNCTION</code> kalıbı aranarak ayrıştırılır.</li><li>Biçim sapmalarına karşı kırılgandır.</li></ul></div>
+<div class="cmp-card"><h4>Modern yöntem</h4><ul><li>Model, araç çağrısını yerleşik bir söz dizimiyle üretir.</li><li>Çağrının başladığı ve bittiği nettir; ayrıştırma güvenilirdir.</li><li>Geliştiricinin elle kalıp tarif etmesi gerekmez.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card"><h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>Modelin işlevi çalıştırdığını sanmak.</strong> Model yalnızca çağrı sinyalini metin olarak üretir; işlevi çalıştıran ve sonucu geri besleyen taraf geliştirici kodudur.</li>
+<li><strong>Sonucu geri beslemeyi atlamak.</strong> İşlev sonucu konuşma geçmişine eklenip modele döndürülmezse, model nihai yanıtı üretecek bağlama sahip olmaz.</li>
+<li><strong>Argümanın kaynağını karıştırmak.</strong> Argümanı da model üretir; kod onu yalnızca işleve aktarır.</li>
+<li><strong>Klasik kalıbı kural sanmak.</strong> Büyük harfli <code>FUNCTION:</code> biçimi zorunlu bir standart değil, modern söz diziminden önceki kırılgan bir çözümdür.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Bir aracın çalışma mekanizması, göründüğünden çok daha sade bir fikre dayanır: model bir işlevi çalıştıramaz, yalnızca onu çağırmak istediğini özel biçimli bir metinle bildirebilir. Geliştirici kodu bu sinyali yakalar, işlevi gerçekten çalıştırır, sonucu konuşma geçmişine ekler ve modele geri verir; model de bu birikmiş bağlama bakarak nihai yanıtını üretir.</p>
+<p>Argümansız bir saat işlevinden, zaman dilimini argüman olarak alan bir sürüme geçtiğimizde mekanizma değişmez; yalnızca model artık hangi işlevi çağıracağına ek olarak ona hangi değeri geçireceğine de karar verir. Klasik “BÜYÜK HARF işlev” yöntemi bu döngüyü şeffaf biçimde gösterse de hantaldır; bu yüzden modern modeller, araç çağrısını güvenilir biçimde üretmek üzere yerleşik bir söz dizimiyle eğitilir. Asıl kavranması gereken şey söz diziminin ayrıntısı değil, talep–çalıştır–geri besle döngüsünün kendisidir.</p>
+</section>
+
+<section><h2 id="dersin-kod-akisi">Dersin Kod Akışı</h2>
+<p>Bu derste karşımıza çıkan çalıştırılabilir parçalar aşağıda, materyaldeki sırayla ve kopyalanabilir biçimde toplanmıştır: önce argümansız saat işlevi, ardından çağrı sinyalini yakalayan denetim, son olarak zaman dilimi argümanı alan genişletilmiş sürüm.</p>
+<h3 id="argumansiz-arac-islevi">Argümansız araç işlevi</h3>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` sınıfını içe aktarır." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Argüman almayan saat işlevini tanımlar." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>()<span class="tok-operator">:</span></span><span class="code-line" data-note="Tek satırlık docstring: işlevin ne döndürdüğünü açıklar." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns the current time as a string&quot;&quot;&quot;</span></span><span class="code-line" data-note="O anki saati biçimlendirip metin olarak döndürür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>()<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+<h3 id="cagri-sinyalini-yakalayan-denetim">Çağrı sinyalini yakalayan denetim</h3>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Model çıktısında `FUNCTION` kalıbı aranır; varsa modelin bir araç çağırmak istediği anlaşılır." tabindex="0"><span class="tok-keyword">if</span> <span class="tok-string">&quot;FUNCTION&quot;</span> <span class="tok-keyword">in</span> <span class="tok-name">output</span><span class="tok-operator">:</span></span></code></pre></div>
+<h3 id="zaman-dilimi-argumani-alan-surum">Zaman dilimi argümanı alan sürüm</h3>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` sınıfını içe aktarır." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line" data-note="`ZoneInfo`: zaman dilimi adını kullanılabilir bir nesneye çevirir." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">zoneinfo</span> <span class="tok-keyword">import</span> <span class="tok-name">ZoneInfo</span></span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Bir `timezone` argümanı alan saat işlevini tanımlar." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>(<span class="tok-name">timezone</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Tek satırlık docstring: verilen zaman dilimine göre saati döndürür." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns current time for the given time zone &quot;&quot;&quot;</span></span><span class="code-line" data-note="Gelen metin, `ZoneInfo` ile bir zaman dilimi nesnesine dönüştürülür." tabindex="0">    <span class="tok-name">timezone</span> <span class="tok-operator">=</span> <span class="tok-function">ZoneInfo</span>(<span class="tok-name">timezone</span>)</span><span class="code-line" data-note="O zaman dilimindeki anlık saat biçimlendirilip döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>(<span class="tok-name">timezone</span>)<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#bir-arac-olusturmak" class="toc-h1">Bir Araç Oluşturmak</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-fikri" class="toc-h3">Bu Dersin Ana Fikri</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#kodunuz-bir-araca-donusuyor" class="toc-h3">Kodunuz bir araca dönüşüyor</a>
+<a href="#modeli-araci-kullanmaya-yonlendirmek" class="toc-h3">Modeli aracı kullanmaya yönlendirmek</a>
+<a href="#neden-dogrudan-cagirmiyor-diyoruz" class="toc-h3">Neden “doğrudan çağırmıyor” diyoruz?</a>
+<a href="#arguman-alan-araclar" class="toc-h2">Argüman Alan Araçlar</a>
+<a href="#sureci-ozetlersek" class="toc-h3">Süreci özetlersek</a>
+<a href="#modern-arac-cagirma-soz-dizimi" class="toc-h2">Modern Araç Çağırma Söz Dizimi</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+<a href="#dersin-kod-akisi" class="toc-h2">Dersin Kod Akışı</a>
+<a href="#argumansiz-arac-islevi" class="toc-h3">Argümansız araç işlevi</a>
+<a href="#cagri-sinyalini-yakalayan-denetim" class="toc-h3">Çağrı sinyalini yakalayan denetim</a>
+<a href="#zaman-dilimi-argumani-alan-surum" class="toc-h3">Zaman dilimi argümanı alan sürüm</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+  function formatTooltipText(note){
+    return String(note==null?'':note).split(/\n{2,}/).map(function(part){
+      var safe=escapeHtml(part).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+      return '<span class="tooltip-section">'+safe+'</span>';
+    }).join('');
+  }
+  var tooltip=document.createElement('div');
+  tooltip.className='line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine=null;
+  function positionTooltip(){
+    if(!activeLine)return;
+    var rect=activeLine.getBoundingClientRect();
+    tooltip.style.left='0px';tooltip.style.top='0px';
+    var tipW=tooltip.offsetWidth;var tipH=tooltip.offsetHeight;
+    var left=rect.right+12;
+    var top=rect.top;
+    if(left+tipW>window.innerWidth-16){left=rect.left;top=rect.bottom+8;}
+    if(top+tipH>window.innerHeight-16){top=Math.max(16,rect.top-tipH-8);}
+    left=Math.max(16,Math.min(left,window.innerWidth-tipW-16));
+    top=Math.max(16,Math.min(top,window.innerHeight-tipH-16));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  function showTooltip(line){
+    activeLine=line;
+    tooltip.innerHTML=formatTooltipText(line.getAttribute('data-note')||'');
+    tooltip.classList.add('is-visible');
+    positionTooltip();
+  }
+  function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+  document.addEventListener('mouseover',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('mouseout',function(event){
+    if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();
+  });
+  document.addEventListener('focusin',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('focusout',function(event){
+    if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();
+  });
+  window.addEventListener('scroll',function(){if(activeLine)hideTooltip();},true);
+  window.addEventListener('resize',function(){if(activeLine)hideTooltip();});
+  function copyText(text){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve,reject){
+      var area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');
+      area.style.position='fixed';area.style.left='-9999px';document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');resolve();}catch(err){reject(err);}finally{document.body.removeChild(area);}
+    });
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(button){
+    button.addEventListener('click',function(){
+      var card=button.closest('.code-card');
+      var lines=card?[].slice.call(card.querySelectorAll('.code-line')):[];
+      var text=lines.map(function(l){return l.textContent;}).join('\n');
+      copyText(text).then(function(){
+        var original=button.textContent;button.textContent='Kopyaland\u0131!';
+        setTimeout(function(){button.textContent=original;},1500);
+      });
+    });
+  });
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body></html>

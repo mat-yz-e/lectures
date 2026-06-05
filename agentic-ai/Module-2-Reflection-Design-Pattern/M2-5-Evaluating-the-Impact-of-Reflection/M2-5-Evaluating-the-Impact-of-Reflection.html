@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yansımanın Etkisini Değerlendirme</title>
+<style>
+:root{
+--dlai-coral:#fe4a61;--dlai-coral-dark:#e63f55;--dlai-coral-soft:#ffe8ec;--dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff;--lesson-text:#111827;--lesson-muted:#4b5563;--lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6;--lesson-border:#e5e7eb;--lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff;--lesson-card-muted:#fff8f9;--accent:#fe4a61;--accent-dark:#c2384a;
+--ink-soft:#374151;--blue-gray:#526172;--amber-soft:#fff7ed;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);}
+*,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:700px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:24%;}
+.term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.eval-table col.question-col{width:38%;}
+.eval-table td.score{font-weight:700;font-variant-numeric:tabular-nums;text-align:center;}
+.eval-table .miss{color:#7f1d1d;background:#fff7f7;}
+.eval-table .hit{color:#111827;background:#fafafa;}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;}
+.cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.metric-card{padding:1rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;text-align:center;}
+.metric-card .metric-label{display:block;margin-bottom:0.25rem;color:var(--lesson-muted);font-size:0.92rem;}
+.metric-card .metric-value{display:block;color:var(--accent-dark);font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1;}
+.metric-card .metric-note{display:block;margin-top:0.35rem;color:var(--lesson-muted);font-size:0.9rem;}
+.workflow-map{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:#fff;}
+.workflow-row{display:grid;grid-template-columns:1.15fr 0.25fr 1.05fr 0.25fr 1.05fr;gap:0.65rem;align-items:stretch;margin:0.75rem 0;}
+.wf-node{display:flex;flex-direction:column;justify-content:center;min-height:5.2rem;padding:0.85rem;border:1px solid var(--lesson-border-strong);border-radius:0.6rem;background:var(--lesson-soft);}
+.wf-node strong{display:block;margin-bottom:0.3rem;color:var(--lesson-text);}
+.wf-node span{display:block;color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.wf-node.is-prompt{background:var(--dlai-coral-muted);border-color:var(--dlai-coral-soft);}
+.wf-node.is-model{background:#fff;border-top:3px solid var(--dlai-coral);}
+.wf-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-weight:800;font-size:1.3rem;}
+.wf-band{margin:0.95rem 0 0.4rem;padding:0.65rem 0.8rem;border-radius:0.55rem;background:var(--lesson-soft-2);color:var(--ink-soft);font-weight:700;text-align:center;}
+.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.05rem 0;}
+.figure-card{margin:0;padding:0.85rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.figure-card img{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid var(--lesson-border);border-radius:4px;}
+.figure-card figcaption{margin-top:0.65rem;color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+.figure-label{display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:0.7rem;padding:0.18rem 0.55rem;border:1px solid var(--dlai-coral-soft);border-radius:999px;background:var(--dlai-coral-muted);color:var(--accent-dark);font-weight:700;font-size:0.84rem;}
+.judge-panel{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.judge-options{display:grid;grid-template-columns:1fr auto 1fr;gap:0.8rem;align-items:center;margin:1rem 0;}
+.judge-option{padding:0.9rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-soft);text-align:center;}
+.judge-option .letter{display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;margin:0 auto 0.5rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-weight:800;}
+.judge-question{padding:0.8rem;border-radius:0.6rem;background:var(--dlai-coral-muted);color:var(--accent-dark);font-weight:700;text-align:center;}
+.bias-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.bias-item{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.bias-item strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.bias-item span{display:block;color:var(--lesson-muted);font-size:0.92rem;}
+.rubric-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.7rem;margin:1rem 0;}
+.rubric-item{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0.85rem 0.7rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.rubric-item .rubric-num{display:flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;margin:0 auto 0.5rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.86rem;font-weight:800;}
+.rubric-item strong{display:block;margin-bottom:0.2rem;color:var(--lesson-text);font-size:0.92rem;}
+.rubric-item span{display:block;color:var(--lesson-muted);font-size:0.84rem;line-height:1.4;}
+.score-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:1rem 0;}
+.score-cell{padding:0.8rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);text-align:center;}
+.score-cell strong{display:block;color:var(--accent-dark);font-size:1.4rem;line-height:1.1;}
+.score-cell span{display:block;color:var(--lesson-muted);font-size:0.86rem;margin-top:0.25rem;}
+.callout-strip{display:flex;flex-wrap:wrap;gap:0.65rem;margin:1rem 0;}
+.pill{display:inline-flex;align-items:center;padding:0.32rem 0.62rem;border:1px solid var(--lesson-border);border-radius:999px;background:#fff;color:var(--ink-soft);font-size:0.9rem;font-weight:600;}
+.pill.is-coral{border-color:var(--dlai-coral-soft);background:var(--dlai-coral-muted);color:var(--accent-dark);}
+@media (max-width:920px){
+.rubric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.metric-grid,.chart-grid,.bias-list,.score-strip{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.workflow-row,.judge-options{grid-template-columns:1fr;}
+.wf-arrow{transform:rotate(90deg);min-height:1.2rem;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+table{min-width:680px;}
+.rubric-grid{grid-template-columns:1fr;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-2-Reflection-Design-Pattern/M2-5-Evaluating-the-Impact-of-Reflection/M2-5-Evaluating-the-Impact-of-Reflection.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Yansımanın Etkisini Değerlendirme</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="yansimanin-etkisini-degerlendirme">Yansımanın Etkisini Değerlendirme</h1>
+<p class="lead-text">Yansıma adımını sisteme eklemenin gerçekten değer üretip üretmediğini; nesnel doğru cevaplar, öznel görsel kalite ölçütleri ve rubric tabanlı değerlendirme ile sistematik biçimde ölçme.</p>
+</header>
+
+<section>
+<h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Yansıma çoğu zaman çıktıyı iyileştirir; fakat bu iyileştirme bedelsiz değildir. Sistem ek bir model çağrısı yapar, daha fazla zaman harcar ve bazen daha karmaşık bir akış gerektirir. Bu nedenle bir uygulamada yansıma desenini kalıcı hale getirmeden önce şu soru sorulmalıdır: <strong>Bu ek adım gerçekten ölçülebilir kalite artışı sağlıyor mu?</strong></p>
+<p>Bu ders, bu soruya iki farklı değerlendirme türüyle cevap verir. Birinci türde doğru cevap bellidir: örneğin bir mağazada belirli ayda kaç ürün satıldığı veya en pahalı ürünün hangisi olduğu ölçülebilir. İkinci türde ise kalite daha özneldir: iki grafikten hangisi daha okunabilir, daha açık ve daha uygun tasarlanmıştır? Dersin ana amacı, bu iki durumda değerlendirme stratejisinin neden farklı olması gerektiğini göstermektir.</p>
+<div class="definition-card">
+<h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3>
+<p>Yansımanın değeri sezgiyle değil, değerlendirmeyle belirlenmelidir. Doğru cevabın bilindiği görevlerde kod tabanlı ölçüm daha kolaydır; görsel kalite gibi öznel görevlerde ise rubric tabanlı LLM yargısı daha tutarlı bir değerlendirme zemini sağlar.</p>
+</div>
+</section>
+
+<section>
+<h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Yansıma adımının neden ölçülmesi gerektiğini ve bu adımın sisteme getirdiği maliyeti açıklayabilmek.</li>
+<li>Nesnel değerlendirme ile öznel değerlendirme arasındaki farkı örnekler üzerinden ayırt edebilmek.</li>
+<li>Doğru cevap veri kümesi kurarak yansımasız ve yansımalı akışları karşılaştırabilmek.</li>
+<li>Yansıma istemi değiştiğinde değerlendirmeyi yeniden çalıştırmanın neden önemli olduğunu kavrayabilmek.</li>
+<li>LLM yargıcına iki seçenek karşılaştırması yaptırmanın zayıf yönlerini tanımlayabilmek.</li>
+<li>Rubric tabanlı, ikili ölçütlerden oluşan puanlamanın neden daha tutarlı sonuç verdiğini açıklayabilmek.</li>
+</ul>
+</section>
+
+<section>
+<h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Yansıma deseninin ilk çıktıyı eleştirip ikinci bir sürüm üretme fikrine dayandığını bilmek.</li>
+<li>Bir dil modelinin veritabanı sorgusu veya grafik üretim kodu yazabileceğini kavramak.</li>
+<li>Doğru cevaplı bir test kümesi ile yüzde doğruluk ölçümü fikrine aşina olmak.</li>
+<li>Grafik kalitesinin bazen sayısal doğruluktan daha öznel ölçütlere bağlı olduğunu fark edebilmek.</li>
+</ul>
+<p>Bu ders kavramsal değerlendirme tasarımına odaklanır. Materyal tam çalıştırılabilir uygulama akışı içermediği için sahte kod hücresi veya yapay çıktı oluşturulmamıştır.</p>
+</section>
+
+<section>
+<h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Değerlendirme</td><td>Sistemin çıktısını belirli ölçütlere göre ölçme süreci.</td><td>Yansımanın faydası ancak karşılaştırmalı ölçümle netleşir.</td></tr>
+<tr><td class="term">Doğru cevap</td><td>Bir soru için önceden bilinen ve karşılaştırmada referans kabul edilen yanıt.</td><td>Nesnel görevlerde sistem cevabı buna göre doğru/yanlış sayılır.</td></tr>
+<tr><td class="term">Yansımasız akış</td><td>İlk modelin ürettiği sorgu veya çıktı doğrudan kullanılır.</td><td>Daha hızlıdır; fakat ilk üretim hataları taşınabilir.</td></tr>
+<tr><td class="term">Yansımalı akış</td><td>İlk sorgu veya çıktı ikinci bir değerlendirme adımıyla iyileştirilir.</td><td>Ek maliyet getirir; bu maliyet ölçülen kalite artışıyla dengelenmelidir.</td></tr>
+<tr><td class="term">LLM yargıcı</td><td>Bir çıktıyı değerlendirmek için kullanılan dil modeli.</td><td>Doğrudan ikili kıyaslamada önyargı ve tutarsızlık gösterebilir.</td></tr>
+<tr><td class="term">Rubric</td><td>Kaliteyi küçük, açık ve puanlanabilir ölçütlere ayıran değerlendirme çerçevesi.</td><td>İkili ölçütler, geniş puan ölçeklerinden daha tutarlı olabilir.</td></tr>
+<tr><td class="term">Konum önyargısı</td><td>Modelin iki seçenekten birini, özellikle sunum sırası nedeniyle daha sık seçmesi.</td><td>İkili karşılaştırmalarda sonuçların güvenilirliğini azaltır.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section>
+<h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Yansıma değerlendirmesi, tek bir ölçüm türüne indirgenemez. Önce görevde nesnel doğru cevap olup olmadığına bakılır. Varsa doğru/yanlış ölçümüyle yüzde doğruluk hesaplanır. Yoksa, kalite ölçütleri rubric haline getirilir ve model yargısı daha kontrollü bir forma sokulur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Görevi sınıflandır</strong><span>Yanıt doğru/yanlış mı, yoksa kalite yargısı mı gerektiriyor?</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Karşılaştırma kur</strong><span>Yansımasız ve yansımalı akışları aynı sorular üzerinde çalıştır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Ölçüt seç</strong><span>Nesnel görevde doğruluk; öznel görevde rubric puanı kullan.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>İstemi ayarla</strong><span>Üretim veya yansıma istemi değiştikçe değerlendirmeyi yeniden çalıştır.</span></div>
+</div></div>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Nesnel değerlendirme</h4>
+<p>Doğru cevap bellidir; sistem cevabı doğrudan karşılaştırılır.</p>
+<ul>
+<li>Veritabanı sorgusu sonucunda tek sayı veya belirli ürün adı beklenebilir.</li>
+<li>Doğruluk yüzdesi hesaplamak kolaydır.</li>
+<li>Kod tabanlı ölçüm genellikle yönetilebilir olur.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Öznel değerlendirme</h4>
+<p>Kalite yargısı daha yoruma açıktır; ölçütleri açıklaştırmak gerekir.</p>
+<ul>
+<li>Grafiklerin okunabilirliği veya estetiği doğrudan doğru/yanlış değildir.</li>
+<li>LLM yargıcı kullanılabilir, fakat dikkatli tasarlanmalıdır.</li>
+<li>Rubric, öznel kaliteyi daha kararlı ölçülebilir parçalara böler.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2 id="nesnel-degerlendirme-dogru-cevapli-gorevler">Nesnel Değerlendirme: Doğru Cevaplı Görevler</h2>
+<h3 id="test-kumesi-kurmak">Test kümesi kurmak</h3>
+<p>Nesnel değerlendirmede önce küçük bir soru kümesi ve her sorunun doğru cevabı hazırlanır. Bu sorular, sistemin üretmesi gereken veritabanı sorgularını temsil eder. Aynı sorular yansımasız akışta ve yansımalı akışta çalıştırılır; sonra elde edilen cevaplar doğru cevaplarla karşılaştırılır.</p>
+<div class="workflow-map">
+<div class="wf-band">Yansımalı veritabanı sorgusu değerlendirmesi</div>
+<div class="workflow-row">
+<div class="wf-node is-prompt"><strong>Kullanıcı sorusu</strong><span>Perakende mağazası verisi hakkında ölçülebilir bir soru sorulur.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>İlk sorgu</strong><span>Model, soruyu yanıtlamak için bir sorgu üretir.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node"><strong>Yansıma</strong><span>İkinci adım sorguyu gözden geçirir ve daha iyi bir sürüm yazar.</span></div>
+</div>
+<div class="workflow-row">
+<div class="wf-node"><strong>Çalıştırma</strong><span>Yansımasız akışta ilk sorgu, yansımalı akışta iyileştirilmiş sorgu çalışır.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>Yanıt üretimi</strong><span>Sorgu sonucu son kullanıcı cevabına dönüştürülür.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-prompt"><strong>Doğru cevapla kıyas</strong><span>Son cevap, önceden yazılmış doğru cevapla karşılaştırılır.</span></div>
+</div>
+</div>
+
+<h3 id="ornek-sonuclari-okumak">Örnek sonuçları okumak</h3>
+<p>Aşağıdaki tablo, doğru cevabı bilinen üç örnekte yansımasız ve yansımalı akışın nasıl karşılaştırıldığını gösterir. Amaç tek tek örnekleri ezberlemek değil, değerlendirme mantığını anlamaktır: aynı soru, iki farklı akış, aynı doğru cevap ölçütü.</p>
+<div class="table-wrap"><table class="eval-table">
+<colgroup><col class="question-col"><col><col><col></colgroup>
+<thead><tr><th>Soru</th><th>Doğru cevap</th><th>Yansımasız yanıt</th><th>Yansımalı yanıt</th></tr></thead>
+<tbody>
+<tr><td>Mayıs 2025'te kaç ürün satıldı?</td><td>1201</td><td class="miss">980</td><td class="hit">1201</td></tr>
+<tr><td>En pahalı ürün hangisi?</td><td>Airflow sneaker</td><td class="hit">Airflow sneaker</td><td class="hit">Airflow sneaker</td></tr>
+<tr><td>Mağazada kaç farklı stil taşınıyor?</td><td>14</td><td class="hit">14</td><td class="hit">14</td></tr>
+</tbody>
+</table></div>
+<div class="metric-grid">
+<div class="metric-card"><span class="metric-label">Yansımasız akış</span><span class="metric-value">87%</span><span class="metric-note">Doğru cevap oranı</span></div>
+<div class="metric-card"><span class="metric-label">Yansımalı akış</span><span class="metric-value">95%</span><span class="metric-note">Doğru cevap oranı</span></div>
+</div>
+<p>Bu sonuç, yansımanın sorgu kalitesini anlamlı biçimde artırdığını düşündürür. Fakat asıl değer yalnızca tek ölçümde değildir: üretim istemi veya yansıma istemi değiştirildiğinde aynı değerlendirme tekrar çalıştırılabilir. Böylece istem tasarımı sezgiyle değil, ölçülen performansla yönlendirilir.</p>
+</section>
+
+<section>
+<h2 id="oznel-degerlendirme-grafik-kalitesi">Öznel Değerlendirme: Grafik Kalitesi</h2>
+<p>Her görevde doğru cevap siyah-beyaz biçimde tanımlanamaz. Grafik üretimi buna iyi bir örnektir. İlk görsel de veriyi gösterir, yansıma sonrası görsel de veriyi gösterir; fakat hangisinin daha iyi olduğu okunabilirlik, açıklık ve uygun grafik türü gibi daha öznel ölçütlere bağlıdır.</p>
+<div class="chart-grid">
+<figure class="figure-card">
+<span class="figure-label">Yansıma öncesi</span>
+<img src="images/chart-01.jpg" alt="Yansıma öncesi grafik: iki yılın birinci çeyrek kahve satışlarını yığılmış çubuklarla gösteren görsel">
+<figcaption>Yığılmış çubuk yaklaşımı toplam hacmi gösterir; ancak içecek türlerini ve iki yıl arasındaki kategori farklarını okumak zorlaşır.</figcaption>
+</figure>
+<figure class="figure-card">
+<span class="figure-label">Yansıma sonrası</span>
+<img src="images/chart-02.jpg" alt="Yansıma sonrası grafik: iki yılın birinci çeyrek kahve satışlarını içecek türlerine göre daha ayrık çubuklarla gösteren görsel">
+<figcaption>İyileştirilmiş grafik, içecek türlerini daha ayrık hale getirir ve yıllar arasındaki farkı daha doğrudan okunabilir kılar.</figcaption>
+</figure>
+</div>
+<div class="note-card">
+<h3 id="buradaki-olcum-sorusu">Buradaki Ölçüm Sorusu</h3>
+<p>Bu iki grafikten hangisi daha iyidir? Bir insan gözüyle ikinci grafik daha açık görünebilir; ancak sistem geliştirme için bu izlenimi düzenli ve tekrar edilebilir bir değerlendirme yöntemine dönüştürmek gerekir.</p>
+</div>
+</section>
+
+<section>
+<h2 id="llm-yargicinda-ikili-karsilastirma-sorunu">LLM Yargıcında İkili Karşılaştırma Sorunu</h2>
+<p>Öznel görevlerde ilk akla gelen yöntem, iki çıktıyı bir LLM yargıcına verip hangisinin daha iyi olduğunu sormaktır. Çok kipli bir model iki grafiği de görebilir ve bir seçim yapabilir. Ancak bu yaklaşım tek başına yeterince güvenilir değildir.</p>
+<div class="judge-panel">
+<div class="judge-question">"Hangi görsel daha iyi?"</div>
+<div class="judge-options">
+<div class="judge-option"><span class="letter">A</span><strong>Birinci seçenek</strong><p>Modelin ilk gördüğü çıktı.</p></div>
+<div class="wf-arrow">↔</div>
+<div class="judge-option"><span class="letter">B</span><strong>İkinci seçenek</strong><p>Modelin ikinci gördüğü çıktı.</p></div>
+</div>
+</div>
+<div class="bias-list">
+<div class="bias-item"><strong>Yanıt kalitesi zayıflayabilir</strong><span>Modelin seçimi her zaman uzman insan yargısıyla uyumlu olmayabilir.</span></div>
+<div class="bias-item"><strong>İstem duyarlılığı oluşabilir</strong><span>Yargı, sorunun tam kelimelendirilmesine beklenenden fazla bağlı olabilir.</span></div>
+<div class="bias-item"><strong>Konum önyargısı görülebilir</strong><span>Bazı modeller, hangi çıktı önce sunulursa onu daha sık seçme eğilimi gösterebilir.</span></div>
+</div>
+<p>Bu nedenle iki çıktıyı doğrudan karşılaştırmak yerine, her çıktıyı aynı açık ölçütlere göre tek tek puanlamak daha tutarlı bir değerlendirme sağlar.</p>
+</section>
+
+<section>
+<h2 id="rubric-tabanli-puanlama">Rubric Tabanlı Puanlama</h2>
+<p>Daha kararlı yaklaşım, grafiği bir kalite rubric'ine göre değerlendirmektir. Modelden geniş ve belirsiz bir 1-5 puan istemek yerine, birkaç küçük ölçüt için 0 veya 1 puan vermesi istenir. Sonra bu ikili puanlar toplanarak toplam kalite skoru elde edilir.</p>
+<div class="rubric-grid">
+<div class="rubric-item"><span class="rubric-num">1</span><strong>Net başlık</strong><span>Grafiğin neyi anlattığı başlıktan anlaşılır.</span></div>
+<div class="rubric-item"><span class="rubric-num">2</span><strong>Eksen etiketleri</strong><span>Eksenlerin neyi ölçtüğü açıkça görünür.</span></div>
+<div class="rubric-item"><span class="rubric-num">3</span><strong>Uygun grafik türü</strong><span>Seçilen grafik, karşılaştırma görevine hizmet eder.</span></div>
+<div class="rubric-item"><span class="rubric-num">4</span><strong>Sayısal aralık</strong><span>Eksen ölçeği değerleri yanıltmadan gösterir.</span></div>
+<div class="rubric-item"><span class="rubric-num">5</span><strong>Görev uyumu</strong><span>Grafik, kullanıcının sorusunu eksiksiz yanıtlar.</span></div>
+</div>
+<div class="score-strip">
+<div class="score-cell"><strong>0/1</strong><span>Net başlık</span></div>
+<div class="score-cell"><strong>0/1</strong><span>Eksenler</span></div>
+<div class="score-cell"><strong>0/1</strong><span>Grafik türü</span></div>
+<div class="score-cell"><strong>Toplam</strong><span>Rubric puanı</span></div>
+</div>
+<p>Bu yapı, öznel kaliteyi daha küçük ve denetlenebilir kararlara böler. Model tek bir genel izlenim yerine, her kalite bileşeni için ayrı karar verir. Böylece yansımasız ve yansımalı görseller, aynı rubric üzerinden daha tutarlı biçimde karşılaştırılabilir.</p>
+</section>
+
+<section>
+<h2 id="istemleri-ayarlamak-icin-degerlendirme-dongusu">İstemleri Ayarlamak İçin Değerlendirme Döngüsü</h2>
+<p>Değerlendirme bir defalık rapor değildir; istem geliştirme döngüsünün merkezidir. Üretim istemine veya yansıma istemine yeni bir talimat eklendiğinde, aynı eval kümesi yeniden çalıştırılır. Bu sayede geliştirici, değişikliğin gerçekten performans kazancı sağlayıp sağlamadığını hızlıca görebilir.</p>
+<div class="workflow-map">
+<div class="workflow-row">
+<div class="wf-node is-prompt"><strong>İstem fikri</strong><span>Daha hızlı sorgu, daha açık grafik veya daha eksiksiz yanıt gibi yeni bir talimat denenir.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>Sistem çıktısı</strong><span>Yansımasız ve yansımalı akışlar aynı test kümesi üzerinde çalışır.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node"><strong>Eval sonucu</strong><span>Doğruluk yüzdesi veya rubric puanı önceki sürümle karşılaştırılır.</span></div>
+</div>
+</div>
+<div class="callout-strip">
+<span class="pill is-coral">İstem yaz</span>
+<span class="pill">Eval çalıştır</span>
+<span class="pill">Sonucu karşılaştır</span>
+<span class="pill">İstemi ayarla</span>
+<span class="pill is-coral">Tekrar ölç</span>
+</div>
+<p>Bu yaklaşım, yansıma desenini sistematik mühendislik pratiğine dönüştürür. Amaç yalnızca daha sofistike bir agentik akış kurmak değil, bu akışın gerçekten daha iyi çalıştığını kanıtlayabilmektir.</p>
+</section>
+
+<section>
+<h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Yansımanın her zaman değerli olduğunu varsaymak</h4>
+<p>Yansıma ek gecikme ve karmaşıklık getirir. Kazanç küçükse, bazı uygulamalarda bu maliyet gereksiz olabilir.</p>
+<ul>
+<li>Her uygulama için ayrı ölçüm gerekir.</li>
+<li>Tek bir örnek, kalıcı karar vermek için yeterli değildir.</li>
+<li>Performans, istem tasarımına göre değişebilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Öznel görevi nesnelmiş gibi ölçmek</h4>
+<p>Grafik kalitesi gibi konularda tek bir doğru cevap yoktur. Bu nedenle değerlendirme ölçütleri açıkça tanımlanmalıdır.</p>
+<ul>
+<li>Doğrudan ikili karşılaştırma önyargılı olabilir.</li>
+<li>Rubric yoksa modelin kararı belirsiz kalır.</li>
+<li>Geniş puan ölçekleri tutarsız sonuç verebilir.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Yansıma, sistemi yavaşlatan ek bir adım olduğundan, kalıcı hale getirilmeden önce ölçülmelidir.</li>
+<li>Doğru cevaplı görevlerde yansımasız ve yansımalı akışlar, aynı test kümesi üzerinde yüzde doğrulukla karşılaştırılabilir.</li>
+<li>Örnek ölçümde yansımasız akış %87, yansımalı akış %95 doğruluk verir; bu, sorgu kalitesinde anlamlı iyileşmeye işaret eder.</li>
+<li>Grafik kalitesi gibi öznel görevlerde iki çıktıyı doğrudan LLM yargıcına kıyaslatmak güvenilir olmayabilir.</li>
+<li>Rubric tabanlı, ikili ölçütlerle puanlama, öznel değerlendirmeyi daha tutarlı ve tekrar edilebilir hale getirir.</li>
+<li>Eval kümesi kurulduktan sonra üretim ve yansıma istemleri ölçülebilir biçimde ayarlanabilir.</li>
+</ul>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#yansimanin-etkisini-degerlendirme" class="toc-h1">Yansımanın Etkisini Değerlendirme</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#nesnel-degerlendirme-dogru-cevapli-gorevler" class="toc-h2">Nesnel Değerlendirme: Doğru Cevaplı Görevler</a>
+<a href="#test-kumesi-kurmak" class="toc-h3">Test kümesi kurmak</a>
+<a href="#ornek-sonuclari-okumak" class="toc-h3">Örnek sonuçları okumak</a>
+<a href="#oznel-degerlendirme-grafik-kalitesi" class="toc-h2">Öznel Değerlendirme: Grafik Kalitesi</a>
+<a href="#buradaki-olcum-sorusu" class="toc-h3">Buradaki Ölçüm Sorusu</a>
+<a href="#llm-yargicinda-ikili-karsilastirma-sorunu" class="toc-h2">LLM Yargıcında İkili Karşılaştırma Sorunu</a>
+<a href="#rubric-tabanli-puanlama" class="toc-h2">Rubric Tabanlı Puanlama</a>
+<a href="#istemleri-ayarlamak-icin-degerlendirme-dongusu" class="toc-h2">İstemleri Ayarlamak İçin Değerlendirme Döngüsü</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add('js-ready');
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

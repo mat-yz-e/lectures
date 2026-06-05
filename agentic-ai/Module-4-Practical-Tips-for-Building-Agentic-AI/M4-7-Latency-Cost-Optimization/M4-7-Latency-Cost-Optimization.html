@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gecikme ve Maliyet Optimizasyonu</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.metric-table td.metric{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:var(--accent-dark);white-space:nowrap;}
+.metric-table tr.total-row td{border-top:2px solid var(--lesson-border-strong);background:var(--lesson-soft);font-weight:700;}
+.metric-table tr.total-row td.metric{color:var(--accent-dark);}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.55rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.93rem;color:var(--lesson-muted);}
+/* latency/cost pipeline */
+.flowline{margin:1.2rem 0;padding:1.1rem 1.15rem 1.2rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);overflow-x:auto;}
+.flow-row{display:flex;align-items:stretch;gap:0.4rem;min-width:680px;}
+.flow-node{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.4rem;}
+.flow-box{width:100%;padding:0.55rem 0.5rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.86rem;line-height:1.25;color:var(--lesson-text);min-height:3.2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.flow-box.is-llm{background:#eef0f4;}
+.flow-box.is-tool{background:var(--lesson-soft);}
+.flow-box.is-input{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.flow-box small{display:block;color:var(--lesson-muted);font-size:0.72rem;margin-top:0.15rem;}
+.flow-badge{padding:0.2rem 0.5rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.82rem;font-weight:700;font-variant-numeric:tabular-nums;}
+.flow-badge.cost{background:#fff;border:1px solid var(--dlai-coral);color:var(--accent-dark);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:0.76rem;}
+.flow-badge.muted{background:var(--lesson-soft-2);color:var(--lesson-muted);}
+.flow-axis{display:flex;align-items:center;gap:0.5rem;margin-top:0.7rem;color:var(--accent-dark);font-size:0.85rem;font-weight:600;min-width:680px;}
+.flow-axis .axis-line{flex:1;height:0;border-top:2px solid var(--dlai-coral);}
+.flow-arrow{align-self:center;color:var(--dlai-coral);font-weight:700;padding-top:0.4rem;}
+/* numbered process steps */
+.step-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-line{display:grid;grid-template-columns:1.9rem minmax(0,1fr);align-items:start;gap:0.7rem;padding:0.75rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.step-line .step-n{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.88rem;font-weight:700;}
+.step-line strong{display:block;color:var(--lesson-text);font-size:0.97rem;margin-bottom:0.12rem;}
+.step-line span{color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);border-top:3px solid var(--dlai-coral);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-7-Latency-Cost-Optimization/M4-7-Latency-Cost-Optimization.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Gecikme ve Maliyet Optimizasyonu</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="gecikme-ve-maliyet-optimizasyonu">Gecikme ve Maliyet Optimizasyonu</h1>
+<p class="lead-text">Bir agentik iş akışında önce çıktı kalitesini yükseltip; gecikme (latency) ve maliyet sorun hâline geldiğinde her adımı tek tek ölçerek, çabanızı en çok kazanç sağlayacak bileşene yönlendiren ölçüm temelli bir optimizasyon yaklaşımı.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Agentik iş akışları kurarken sık verilen bir tavsiye şudur: önce <strong>yüksek kaliteli çıktılar</strong> elde etmeye odaklanın; gecikme ve maliyeti ancak <strong>sonra</strong> optimize edin. Bunun nedeni maliyet ve gecikmenin önemsiz olması değil; çoğu zaman en zor kısmın çıktı kalitesini yeterince yükseltmek olmasıdır. Sistem gerçekten çalışmaya başladığında, o noktada diğer şeylere yönelmek daha verimlidir.</p>
+<p>Üstelik maliyetin sorun hâline gelmesi çoğu zaman <strong>iyi bir problemdir</strong>: bir akış kullanıcılara sunulduğunda o kadar çok kişi tarafından kullanılır ki maliyet kullanıcı başına düşürülmesi gereken bir konu olur. Bu ders, o noktaya geldiğinizde gecikme ve maliyeti optimize etmek için kullanılan pratik araçları anlatır: her adımı <strong>ölçmek (benchmark)</strong> ve bu ölçümlere bakarak hangi bileşene odaklanmanın en büyük kazancı getireceğine karar vermek. Anlatımın merkezinde, adımlarının süreleri ve maliyetleri ölçülen tanıdık bir araştırma ajanı vardır.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Gecikme ve maliyeti sezgiyle değil, <em>ölçerek</em> optimize edin. Her adımın süresini ve maliyetini tek tek çıkarmak, hangi bileşenlerin gerçekten önemli olduğunu ve hangilerinin uğraşmaya değmeyecek kadar küçük olduğunu netleştirir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Gecikme ve maliyet optimizasyonunun neden çıktı kalitesinden <strong>sonraya</strong> bırakıldığını açıklayabilmek.</li>
+<li>Bir agentik akışın her adımını süreleyerek (benchmark) bir gecikme zaman çizelgesi çıkarabilmek.</li>
+<li>Zaman çizelgesine bakarak hızlandırmaya en çok yer olan bileşenleri belirleyebilmek.</li>
+<li>Gecikmeyi azaltmak için paralellik, daha küçük model ve daha hızlı sağlayıcı seçeneklerini değerlendirebilmek.</li>
+<li>Bir akışın maliyetini adım türlerine (jeton, API çağrısı, hesaplama) göre ayırıp ölçebilmek.</li>
+<li>Ölçümleri kullanarak hangi bileşeni optimize edeceğinize öncelik verebilmek ve önemsiz bileşenleri elemeyi kavramak.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Çok adımlı bir agentik akışın &mdash; web araması, kaynak getirme, taslak yazma &mdash; genel mantığına aşinalık.</li>
+<li>Bir dil modeline istem gönderip yanıt almanın ve bunun zaman ile para maliyeti olduğunun farkındalığı.</li>
+<li>&ldquo;Jeton (token)&rdquo;, &ldquo;API çağrısı&rdquo; ve &ldquo;paralellik&rdquo; kavramlarına dair temel bir fikir.</li>
+<li>Bir zaman çizelgesini ve basit bir maliyet toplamını okuyabilme.</li>
+</ul>
+<p>Ders tümüyle kavramsaldır; herhangi bir kod yazımı veya çalıştırması gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Gecikme (latency)</td><td>Bir adımın ya da tüm akışın tamamlanması için geçen süre.</td><td>Kullanıcının beklediği süredir; adım adım ölçülür.</td></tr>
+<tr><td class="term">Maliyet (cost)</td><td>Bir adımın para cinsinden tükettiği kaynak.</td><td>Jeton, API çağrısı ve hesaplama olarak farklı türlerde olur.</td></tr>
+<tr><td class="term">Benchmark</td><td>Her adımın süresini/maliyetini sistematik olarak ölçme.</td><td>Optimizasyonun temelini oluşturan veriyi sağlar.</td></tr>
+<tr><td class="term">Jeton (token)</td><td>Dil modellerinin metni işlerken saydığı birim.</td><td>Birçok sağlayıcı girdi+çıktı jetonu başına ücret alır.</td></tr>
+<tr><td class="term">Paralellik</td><td>Bağımsız adımları sırayla değil, aynı anda çalıştırma.</td><td>Toplam gecikmeyi düşürebilir; her adım paralelleştirilemez.</td></tr>
+<tr><td class="term">Sağlayıcı (provider)</td><td>Bir dil modelini sunan servis.</td><td>Bazıları özel donanımla jetonları çok daha hızlı döndürür.</td></tr>
+<tr><td class="term">Önceliklendirme</td><td>Ölçümlere göre hangi bileşeni optimize edeceğine karar verme.</td><td>Küçük/önemsiz bileşenler bilinçli olarak elenir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir merkezi fikri var: <strong>önce kaliteyi kur, sonra ölçerek optimize et.</strong> Aşağıdaki dört adım, gecikme ve maliyet optimizasyonunun iskeletidir ve dersin geri kalanı bu iskeletin üzerine kurulur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Önce kalite</strong><span>Çıktı kalitesi yeterince yüksek olana kadar gecikme/maliyet ikinci planda kalır.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Her adımı ölç</strong><span>Akışın her adımının süresi ve maliyeti tek tek çıkarılır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Fırsatı bul</strong><span>Zaman çizelgesi ve maliyet tablosu, en çok yer olan bileşeni gösterir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Optimize et &amp; ele</strong><span>Büyük bileşenler iyileştirilir; küçük/önemsiz olanlar bir kenara bırakılır.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: optimizasyon bir &ldquo;her şeyi hızlandır/ucuzlat&rdquo; çabası değil, bir <strong>önceliklendirme</strong> kararıdır. Ölçüm çoğu zaman bazı bileşenlerin maliyet veya gecikmeye anlamlı katkı yapmadığını ve uğraşmaya değmediğini açıkça söyler.</p>
+</section>
+
+<section><h2 id="ne-zaman-optimize-etmeli">Ne Zaman Optimize Etmeli?</h2>
+<p>Sıralama önemlidir: önce çıktı kalitesini yükseltin, gecikme ve maliyeti sonraya bırakın. Maliyet ve gecikme önemsiz değildir; ama genellikle en zor kısım çıktı kalitesini yeterince iyi hâle getirmektir. Sistem gerçekten çalışmaya başladığında diğer şeylere yönelmek hem daha kolay hem daha verimlidir.</p>
+<p>Pratikte maliyet, akış kullanıcılara sunulduktan ve <strong>çok sayıda kullanıcı</strong> tarafından kullanılmaya başlandıktan sonra bir konu hâline gelir &mdash; ki bu aslında sahip olunabilecek iyi bir problemdir. Bu yüzden maliyet, kaygı listesinde genellikle daha aşağıdadır; gecikme biraz daha öncedir ama yine çıktı kalitesinin gerisindedir. Asıl mesele, o noktaya geldiğinizde elinizde optimize etmeyi sağlayacak <strong>ölçüm araçlarının</strong> olmasıdır.</p>
+<div class="note-card"><h3 id="oncelik-sirasi">Öncelik sırası</h3><p>1) Çıktı kalitesini yükselt. 2) Gecikme sorun olursa ölç ve azalt. 3) Maliyet (çoğu zaman yüksek kullanım yüzünden) sorun olursa ölç ve düşür. Maliyetin sorun olması, sisteminizin tutulduğunun işaretidir.</p></div>
+</section>
+
+<section><h2 id="gecikmeyi-olcme">Gecikmeyi Ölçme</h2>
+<p>Bir agentik akışın gecikmesini optimize etmek için sık yapılan ilk şey, akışı <strong>süreleme (benchmark/timing)</strong> &mdash; yani her adımın ne kadar sürdüğünü ölçmektir. Araştırma ajanı birkaç adımdan oluşur; her adımı sürelediğinizde ortaya bir zaman çizelgesi çıkar.</p>
+<div class="flowline">
+<div class="flow-row">
+<div class="flow-node"><div class="flow-box is-input">Kullanıcı isteği</div><span class="flow-badge muted">&mdash;</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node"><div class="flow-box is-llm">Dil modeli<small>web&apos;de ara</small></div><span class="flow-badge">7 sn</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node"><div class="flow-box is-tool">Web araması</div><span class="flow-badge">5 sn</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node"><div class="flow-box is-llm">Dil modeli<small>en iyi 5 kaynağı seç</small></div><span class="flow-badge">3 sn</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node"><div class="flow-box is-tool">Web&apos;den getir</div><span class="flow-badge">11 sn</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node"><div class="flow-box is-llm">Dil modeli<small>deneme taslağı yaz</small></div><span class="flow-badge">18 sn</span></div>
+</div>
+<div class="flow-axis"><span class="axis-line"></span><span>Çalışma süresi (run time) &rarr;</span></div>
+</div>
+<p>Bu zaman çizelgesine bakarak hangi bileşenlerin hızlandırmaya en çok yer bıraktığını görebilirsiniz. Süreler tek bir tabloda toplandığında resim netleşir: deneme yazma (18 sn) ve web&apos;den getirme (11 sn), toplam gecikmenin büyük kısmını oluşturur.</p>
+<div class="table-wrap"><table class="metric-table">
+<colgroup><col style="width:46%"><col><col></colgroup>
+<thead><tr><th>Adım</th><th>Tür</th><th>Süre</th></tr></thead>
+<tbody>
+<tr><td>Arama terimlerini üret</td><td>Dil modeli</td><td class="metric">7 sn</td></tr>
+<tr><td>Web araması</td><td>Araç (API)</td><td class="metric">5 sn</td></tr>
+<tr><td>En iyi 5 kaynağı seç</td><td>Dil modeli</td><td class="metric">3 sn</td></tr>
+<tr><td>Web&apos;den getir</td><td>Araç (API)</td><td class="metric">11 sn</td></tr>
+<tr><td>Deneme taslağını yaz</td><td>Dil modeli</td><td class="metric">18 sn</td></tr>
+<tr class="total-row"><td>Toplam</td><td></td><td class="metric">44 sn</td></tr>
+</tbody>
+</table></div>
+<h3 id="gecikmeyi-azaltmak-icin-ne-denenebilir">Gecikmeyi azaltmak için ne denenebilir?</h3>
+<p>Bu örnekte denenebilecek birden çok yön vardır. Bağımsız adımlar henüz paralelleştirilmediyse &mdash; örneğin birden çok sayfayı aynı anda getirmek &mdash; bunları paralel çalıştırmak değerlendirilebilir. Bazı dil modeli adımları çok uzun sürüyorsa (ilk adım 7 sn, son adım 18 sn), daha küçük ve belki biraz daha az yetenekli bir model o iş için yeterince iyi çalışıyor mu diye denenebilir; ya da daha hızlı bir sağlayıcı aranabilir.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Paralellik</strong><span>Bağımsız işlemleri (ör. birden çok sayfayı getirme) sırayla değil aynı anda çalıştırarak toplam süreyi kısaltın.</span></div>
+<div class="insight-card"><strong>Daha küçük model</strong><span>Uzun süren bir dil modeli adımı için daha küçük/biraz daha az yetenekli bir model yeterli olabilir.</span></div>
+<div class="insight-card"><strong>Daha hızlı sağlayıcı</strong><span>Bazı sağlayıcılar özel donanımla aynı modeli çok daha hızlı sunar; jetonları en hızlı döndüreni denemeye değer.</span></div>
+</div>
+<p>Bu tür bir süreleme analizi, en azından gecikmeyi azaltmak için hangi bileşene odaklanacağınıza dair net bir his verir.</p>
+</section>
+
+<section><h2 id="maliyeti-hesaplama">Maliyeti Hesaplama</h2>
+<p>Maliyet için de benzer bir hesap yapılır: her adımın maliyetini çıkarmak, hangi adımlara odaklanacağınızı belirlemenizi sağlar. Maliyet, adım türüne göre farklı biçimlerde oluşur.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Dil modeli adımları</strong><span>Jeton başına ödenir; girdi ve çıktı uzunluğuna göre ücretlenir.</span></div>
+<div class="insight-card"><strong>API çağıran araçlar</strong><span>Çağrı başına ödenir (örneğin web araması, web&apos;den getirme).</span></div>
+<div class="insight-card"><strong>Hesaplama adımları</strong><span>Sunucu kapasitesi/servis maliyetine göre değişir (örneğin metne dönüştürme).</span></div>
+</div>
+<p>Araştırma ajanının adımları bu kalemlere göre maliyetlendirildiğinde, hangi bileşenin en büyük maliyet fırsatı olduğu netleşir. Bu örnekte tek başına en pahalı kalem, getirilen sayfaların metne dönüştürülmesidir.</p>
+<div class="table-wrap"><table class="metric-table">
+<colgroup><col style="width:40%"><col><col></colgroup>
+<thead><tr><th>Adım</th><th>Maliyet türü</th><th>Maliyet</th></tr></thead>
+<tbody>
+<tr><td>Arama terimlerini üret</td><td>Jeton</td><td class="metric">$0.0004</td></tr>
+<tr><td>Web araması</td><td>API çağrısı</td><td class="metric">$0.016</td></tr>
+<tr><td>En iyi 5 kaynağı seç</td><td>Jeton</td><td class="metric">$0.0004</td></tr>
+<tr><td>Web&apos;den getir</td><td>API çağrısı</td><td class="metric">$0.002</td></tr>
+<tr><td>Getirileni metne dönüştür</td><td>Hesaplama</td><td class="metric">$0.03</td></tr>
+<tr><td>Deneme taslağını yaz</td><td>Jeton</td><td class="metric">$0.009</td></tr>
+<tr class="total-row"><td>Toplam (çağrı başına)</td><td></td><td class="metric">$0.0578</td></tr>
+</tbody>
+</table></div>
+<div class="note-card"><h3 id="tablo-neyi-gosteriyor">Tablo neyi gösteriyor?</h3><p>İki dil modeli adımının jeton maliyeti (her biri $0.0004) neredeyse ihmal edilebilirken, metne dönüştürme ($0.03) ve web araması ($0.016) toplam maliyetin büyük kısmını oluşturuyor. Yani daha ucuz bir bileşen ya da daha ucuz bir model aramak için en mantıklı yer, en küçük kalemler değil; bu büyük kalemlerdir.</p></div>
+</section>
+
+<section><h2 id="olcumlerle-onceliklendirme">Ölçümlerle Önceliklendirme</h2>
+<p>Bu ölçüm alıştırmaları çoğu zaman çok aydınlatıcıdır. Bazen size açıkça, belirli bileşenlerin ne maliyet ne de gecikme açısından <strong>önemli bir katkı yapmadığını</strong> ve uğraşmaya değmediğini söylerler. Maliyet ya da gecikme bir sorun hâline geldiğinde, her adımın maliyetini ve/veya süresini ölçmek, hangi bileşenleri optimize etmeye odaklanacağınıza dair sağlam bir temel verir.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Odaklanmaya değer</h4><ul><li>Gecikmede: deneme yazma (18 sn), web&apos;den getirme (11 sn).</li><li>Maliyette: metne dönüştürme ($0.03), web araması ($0.016).</li><li>Toplam üzerinde belirgin etkisi olan büyük kalemler.</li></ul></div>
+<div class="cmp-card"><h4>Bir kenara bırakılabilir</h4><ul><li>Çok küçük jeton maliyetleri ($0.0004 gibi).</li><li>Kısa süren adımlar (3 sn gibi).</li><li>Toplamı anlamlı biçimde değiştirmeyen kalemler.</li></ul></div>
+</div>
+<p>Böylece optimizasyon, &ldquo;her şeyi iyileştirme&rdquo; telaşı olmaktan çıkıp, ölçüme dayanan bir önceliklendirmeye dönüşür: en büyük kazancı nerede elde edebileceğinizi sayılar gösterir.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;En baştan gecikme ve maliyeti optimize etmeliyim.&rdquo;</strong> Önce çıktı kalitesini yükseltin; en zor kısım odur. Optimizasyon, sistem gerçekten çalıştıktan sonra gelir.</li>
+<li><strong>&ldquo;Maliyetin artması kötü bir işarettir.&rdquo;</strong> Çoğu zaman tam tersi: maliyet, çok sayıda kullanıcı yüzünden artar &mdash; bu sahip olunabilecek iyi bir problemdir.</li>
+<li><strong>&ldquo;Hangi adımı hızlandıracağımı sezerim.&rdquo;</strong> Sezgi yanıltır; her adımı sürelemek hangi bileşenin baskın olduğunu kesin gösterir.</li>
+<li><strong>&ldquo;Her bileşeni optimize etmeliyim.&rdquo;</strong> Bazı bileşenler maliyet/gecikmeye o kadar az katkı yapar ki uğraşmaya değmez; ölçüm bunları eler.</li>
+<li><strong>&ldquo;Daha büyük/akıllı model her zaman daha iyidir.&rdquo;</strong> Uzun süren bir adım için daha küçük bir model yeterli olabilir; denemeden varsaymayın.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Gecikme ve maliyet önemlidir; ama bir agentik akışta önce gelen, <strong>çıktı kalitesidir</strong>. Sistem gerçekten çalışmaya başladığında &mdash; ve özellikle çok sayıda kullanıcıya ulaştığında &mdash; gecikme ve maliyet optimize edilmeye değer konular hâline gelir.</p>
+<p>O noktada en güçlü araç ölçümdür: her adımın süresini ve maliyetini tek tek çıkarmak, hangi bileşenlerin baskın olduğunu gösterir. Bu örnekte gecikmeyi deneme yazma ve web&apos;den getirme; maliyeti ise metne dönüştürme ve web araması yönlendiriyordu &mdash; küçük jeton maliyetleri değil.</p>
+<p>Bu ölçüm alışkanlığı, optimizasyonu bir tahmin oyunundan çıkarıp <strong>önceliklendirmeye dayalı bir karara</strong> dönüştürür. Bazı bileşenleri rahatça bir kenara bırakır, emeğinizi en büyük kazancı sağlayacak yere yoğunlaştırırsınız.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#gecikme-ve-maliyet-optimizasyonu" class="toc-h1">Gecikme ve Maliyet Optimizasyonu</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ne-zaman-optimize-etmeli" class="toc-h2">Ne Zaman Optimize Etmeli?</a>
+<a href="#oncelik-sirasi" class="toc-h3">Öncelik sırası</a>
+<a href="#gecikmeyi-olcme" class="toc-h2">Gecikmeyi Ölçme</a>
+<a href="#gecikmeyi-azaltmak-icin-ne-denenebilir" class="toc-h3">Gecikmeyi azaltmak için ne denenebilir?</a>
+<a href="#maliyeti-hesaplama" class="toc-h2">Maliyeti Hesaplama</a>
+<a href="#tablo-neyi-gosteriyor" class="toc-h3">Tablo neyi gösteriyor?</a>
+<a href="#olcumlerle-onceliklendirme" class="toc-h2">Ölçümlerle Önceliklendirme</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

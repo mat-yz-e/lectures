@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çok Ajanlı Sistemlerde İletişim Desenleri</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5; --ink-soft:#374151;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.example-card{border-left:4px solid var(--dlai-coral);background:var(--lesson-soft);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.cmp-table col.c1{width:22%;}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* diagram panel */
+.diagram{margin:1.1rem 0;padding:1.1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram svg{display:block;width:100%;height:auto;}
+.diagram figcaption{margin-top:0.6rem;color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;text-align:center;}
+.svg-node{fill:#fff;stroke:var(--lesson-border-strong);stroke-width:1.5;}
+.svg-node-mgr{fill:var(--dlai-coral-soft);stroke:var(--dlai-coral);stroke-width:1.8;}
+.svg-label{fill:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:15px;font-weight:600;text-anchor:middle;}
+.svg-edge{stroke:var(--dlai-coral);stroke-width:2;fill:none;}
+/* message-flow chips */
+.msgflow{display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.msg-chip{padding:0.45rem 0.75rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.9rem;color:var(--lesson-text);}
+.msg-arrow{color:var(--dlai-coral);font-weight:700;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+.bp-flow,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:560px){.lesson-page{padding:1rem;line-height:1.7;}}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-5-Patterns-for-Highly-Autonomous-Agents/M5-7-Communication-Patterns-for-Multi-Agent-Systems/M5-7-Communication-Patterns-for-Multi-Agent-Systems.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Çok Ajanlı Sistemlerde İletişim Desenleri</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="cok-ajanli-sistemlerde-iletisim-desenleri">Çok Ajanlı Sistemlerde İletişim Desenleri</h1>
+<p class="lead-text">Birden çok ajanın bir görevi birlikte çözdüğü sistemlerde, ajanların kiminle, ne zaman ve hangi yönde haberleştiğini belirleyen tasarım kalıpları: doğrusal, yönetici-çalışan, derin hiyerarşi ve herkesle-herkes.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bir ekip birlikte çalışırken, insanların birbirleriyle haberleşme biçimleri oldukça karmaşık olabilir. Bir organizasyon şeması tasarlamak &mdash; yani kimin kiminle, nasıl iletişim kurup işbirliği yapacağına karar vermek &mdash; başlı başına zor bir iştir. Aynı durum çok ajanlı yapay zekâ sistemleri için de geçerlidir: ajanların aralarındaki <strong>iletişim desenini</strong> tasarlamak da en az o kadar karmaşıktır.</p>
+<p>Bu derste, bugün farklı ekiplerin en sık kullandığı iletişim desenlerini ele alıyoruz. Tanıdık bir örnek üzerinden ilerleyeceğiz: bir yaz güneş gözlüğü kampanyası hazırlayan, araştırmacı, grafik tasarımcı ve yazardan oluşan bir pazarlama ekibi. Aynı ekibin aynı işi, bilgiyi farklı yollarla akıttığında nasıl farklı biçimlerde organize olabileceğini göreceğiz. Dersin sonunda dört temel deseni &mdash; ne zaman hangisinin uygun olduğunu ve her birinin kontrol ile esneklik açısından getirilerini &mdash; kavramış olacaksınız.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Çok ajanlı bir sistemde &ldquo;iletişim deseni&rdquo; kavramının ne anlama geldiğini açıklayabilmek.</li>
+<li>Dört temel deseni &mdash; doğrusal, yönetici-çalışan (hiyerarşik), derin hiyerarşi ve herkesle-herkes &mdash; ayırt edebilmek.</li>
+<li>Her desende bilginin hangi ajanlar arasında, hangi yönde aktığını izleyebilmek.</li>
+<li>Bir desenin kontrol edilebilirlik ile esneklik arasında nasıl bir denge kurduğunu değerlendirebilmek.</li>
+<li>Belirli bir uygulama için uygun iletişim deseninin neye göre seçildiğini gerekçelendirebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir &ldquo;ajan&rdquo;ın belirli bir rolü olan, model tabanlı bir görev birimi olduğuna dair temel fikir.</li>
+<li>Çok ajanlı bir sistemde bir ajanın çıktısının bir başkasının girdisi olabileceği kavramına aşinalık.</li>
+<li>Bir görevi rollere bölme ve bu rolleri koordine etme gibi gündelik bir ekip-organizasyonu sezgisi.</li>
+</ul>
+<p>Bu ders kavramsaldır; herhangi bir programlama deneyimi veya kod yazımı gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">İletişim deseni</td><td>Ajanların kiminle, ne zaman ve hangi yönde haberleştiğini belirleyen yapı.</td><td>Bir organizasyon şeması gibi; sistemin davranışını biçimlendirir.</td></tr>
+<tr><td class="term">Doğrusal desen</td><td>Çıktının bir ajandan diğerine sırayla aktığı zincir.</td><td>En yaygın iki desenden biridir; basit ve öngörülebilir.</td></tr>
+<tr><td class="term">Yönetici-çalışan</td><td>Bir yöneticinin çalışan ajanları çağırıp işlerini koordine ettiği yapı.</td><td>Hiyerarşik desen olarak da anılır; raporlar yöneticide toplanır.</td></tr>
+<tr><td class="term">Derin hiyerarşi</td><td>Bazı ajanların kendi alt ajanlarını çağırdığı çok katmanlı yapı.</td><td>Güçlüdür ama tek katmanlı hiyerarşiden daha karmaşıktır.</td></tr>
+<tr><td class="term">Herkesle-herkes</td><td>Her ajanın herhangi bir ajanla istediği zaman konuşabildiği yapı.</td><td>Esnektir ama sonuçları öngörmek zordur.</td></tr>
+<tr><td class="term">Çerçeve (framework)</td><td>Çok ajanlı sistemleri ve bu desenleri kurmayı kolaylaştıran yazılım katmanı.</td><td>Desen seçimini uygulamada pratikleştirir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir merkezi fikri var: <strong>aynı ekip, aynı işi, bilgiyi farklı yollarla akıtarak farklı biçimlerde organize olabilir.</strong> Aşağıdaki dört desen, en sık görülenden en deneysele doğru sıralanmış temel iletişim kalıplarıdır; ders bunların üzerine kuruludur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Doğrusal</strong><span>Çıktı bir ajandan diğerine sırayla, zincir gibi akar.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Yönetici-Çalışan</strong><span>Bir yönetici çalışanları çağırır ve işlerini koordine eder.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Derin Hiyerarşi</strong><span>Bazı çalışanların kendi alt ajanları vardır.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Herkesle-Herkes</strong><span>Her ajan herhangi bir ajanla, istediği zaman konuşabilir.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: bu desenler arasında bir <strong>kontrol&ndash;esneklik dengesi</strong> vardır. Doğrusal ve yönetici-çalışan desenleri öngörülebilir ve denetlenebilirken, herkesle-herkes deseni esnek ama tahmini zordur. Doğru desen, çözülmeye çalışılan göreve göre değişir.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="dogrusal-iletisim">Doğrusal iletişim</h3>
+<p>İlk desen, en yaygın iki kalıptan biridir. Doğrusal bir planda çalışan bir pazarlama ekibinde önce araştırmacı çalışır, sonra grafik tasarımcı, sonra yazar. İletişim de aynı sırayı izler: araştırmacı çıktısını grafik tasarımcıya iletir; hem araştırmanın hem de grafik tasarımın çıktıları yazara aktarılarak nihai rapor oluşturulur. Akış tek yönlü ve zincir biçimindedir.</p>
+<figure class="diagram">
+<svg viewBox="0 0 760 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Doğrusal iletişim: araştırmacı, grafik tasarımcı ve yazarın bir zincir oluşturduğu, araştırmacının çıktısının ayrıca yazara da aktığı akış">
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fe4a61"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fe4a61"/></marker>
+</defs>
+<rect class="svg-node" x="40" y="46" width="180" height="56" rx="10"/>
+<text class="svg-label" x="130" y="80">araştırmacı</text>
+<rect class="svg-node" x="290" y="46" width="180" height="56" rx="10"/>
+<text class="svg-label" x="380" y="73">grafik</text><text class="svg-label" x="380" y="92">tasarımcı</text>
+<rect class="svg-node" x="540" y="46" width="180" height="56" rx="10"/>
+<text class="svg-label" x="630" y="80">yazar</text>
+<line class="svg-edge" x1="222" y1="74" x2="286" y2="74" marker-end="url(#ar)"/>
+<line class="svg-edge" x1="472" y1="74" x2="536" y2="74" marker-end="url(#ar)"/>
+<path class="svg-edge" d="M130,104 L130,144 L630,144 L630,106" marker-end="url(#ar)"/>
+</svg>
+<figcaption>Doğrusal desen: çıktı araştırmacıdan grafik tasarımcıya, oradan yazara akar; araştırmacının çıktısı ayrıca doğrudan yazara da iletilir.</figcaption>
+</figure>
+<p>Bu örnekte gerçek mesajlar şöyle akar: ekibe &ldquo;güneş gözlüğü için bir yaz kampanyası oluştur&rdquo; isteği verilir; araştırmacı güncel trendleri ve rakip ürünleri çıkarır; grafik tasarımcı bunlardan veri görselleştirmeleri ve görsel seçenekler üretir; yazar tüm bu parçaları birleştirerek nihai raporu yazar.</p>
+<div class="msgflow">
+<span class="msg-chip">Kampanya isteği</span><span class="msg-arrow">&rarr;</span>
+<span class="msg-chip">Araştırmacı: trendler &amp; rakipler</span><span class="msg-arrow">&rarr;</span>
+<span class="msg-chip">Tasarımcı: görseller &amp; grafikler</span><span class="msg-arrow">&rarr;</span>
+<span class="msg-chip">Yazar: nihai rapor</span>
+</div>
+
+<h3 id="yonetici-calisan-hiyerarsik-iletisim">Yönetici-çalışan (hiyerarşik) iletişim</h3>
+<p>En yaygın ikinci desen, planlama dersindeki çok ajanlı örneğe benzer: bir <strong>yönetici</strong>, birden çok ekip üyesiyle haberleşir ve işlerini koordine eder. Pazarlama yöneticisi önce araştırmacıyı bir iş için çağırır; raporu geri alır; sonra grafik tasarımcıya gönderir, raporu geri alır; ardından yazara gönderir. İletişim yönetici üzerinden döner.</p>
+<figure class="diagram">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yönetici-çalışan iletişim: üstte pazarlama yöneticisi, altta araştırmacı, grafik tasarımcı ve yazar; her biri yöneticiyle çift yönlü haberleşir">
+<rect class="svg-node-mgr" x="290" y="20" width="180" height="56" rx="10"/>
+<text class="svg-label" x="380" y="44">pazarlama</text><text class="svg-label" x="380" y="63">yöneticisi</text>
+<rect class="svg-node" x="40" y="170" width="180" height="56" rx="10"/>
+<text class="svg-label" x="130" y="204">araştırmacı</text>
+<rect class="svg-node" x="290" y="170" width="180" height="56" rx="10"/>
+<text class="svg-label" x="380" y="197">grafik</text><text class="svg-label" x="380" y="216">tasarımcı</text>
+<rect class="svg-node" x="540" y="170" width="180" height="56" rx="10"/>
+<text class="svg-label" x="630" y="204">yazar</text>
+<line class="svg-edge" x1="330" y1="78" x2="160" y2="168" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="380" y1="78" x2="380" y2="168" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="430" y1="78" x2="600" y2="168" marker-end="url(#arb)" marker-start="url(#arb)"/>
+</svg>
+<figcaption>Yönetici-çalışan deseni: pazarlama yöneticisi her çalışanı ayrı ayrı çağırır ve raporları geri alır; çift yönlü oklar bu git-gel akışını gösterir.</figcaption>
+</figure>
+<div class="note-card"><h3 id="raporlar-neden-yoneticide-toplanir">Raporlar neden yöneticide toplanır?</h3><p>Hiyerarşik bir deseni uygularken, araştırmacının sonucunu doğrudan grafik tasarımcıya ve yazara iletmesi yerine, raporu <strong>yöneticiye geri vermesi</strong> genellikle daha basittir. Böylece koordinasyon tek bir noktada toplanır ve akış daha kolay denetlenir.</p></div>
+
+<h3 id="derin-hiyerarsi">Derin hiyerarşi</h3>
+<p>Daha ileri ve daha az sık kullanılan bir desen, çok katmanlı hiyerarşidir. Yine bir pazarlama yöneticisi araştırmacıya, grafik tasarımcıya ve yazara görev gönderir; ancak bu kez bazı çalışanların kendi alt ajanları vardır. Örneğin araştırmacı bir web araştırmacısı ile bir doğruluk denetçisini çağırabilir; yazar bir stil yazarı ile bir kaynak denetçisini çağırabilir; grafik tasarımcı ise tek başına çalışır. Yani bazı ajanlar kendileri de başka alt ajanları çağırır.</p>
+<figure class="diagram">
+<svg viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Derin hiyerarşi: pazarlama yöneticisi altında araştırmacı, grafik tasarımcı ve yazar; araştırmacının altında web araştırmacısı ve doğruluk denetçisi; yazarın altında stil yazarı ve kaynak denetçisi">
+<rect class="svg-node-mgr" x="330" y="20" width="170" height="54" rx="10"/>
+<text class="svg-label" x="415" y="43">pazarlama</text><text class="svg-label" x="415" y="62">yöneticisi</text>
+<rect class="svg-node" x="70" y="150" width="170" height="54" rx="10"/>
+<text class="svg-label" x="155" y="183">araştırmacı</text>
+<rect class="svg-node" x="330" y="150" width="170" height="54" rx="10"/>
+<text class="svg-label" x="415" y="173">grafik</text><text class="svg-label" x="415" y="192">tasarımcı</text>
+<rect class="svg-node" x="585" y="150" width="170" height="54" rx="10"/>
+<text class="svg-label" x="670" y="183">yazar</text>
+<rect class="svg-node" x="10" y="285" width="170" height="56" rx="10"/>
+<text class="svg-label" x="95" y="308">web</text><text class="svg-label" x="95" y="327">araştırmacısı</text>
+<rect class="svg-node" x="200" y="285" width="170" height="56" rx="10"/>
+<text class="svg-label" x="285" y="308">doğruluk</text><text class="svg-label" x="285" y="327">denetçisi</text>
+<rect class="svg-node" x="470" y="285" width="160" height="56" rx="10"/>
+<text class="svg-label" x="550" y="318">stil yazarı</text>
+<rect class="svg-node" x="650" y="285" width="160" height="56" rx="10"/>
+<text class="svg-label" x="730" y="308">kaynak</text><text class="svg-label" x="730" y="327">denetçisi</text>
+<line class="svg-edge" x1="370" y1="76" x2="180" y2="148" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="415" y1="76" x2="415" y2="148" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="460" y1="76" x2="650" y2="148" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="120" y1="206" x2="95" y2="283" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="190" y1="206" x2="285" y2="283" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="640" y1="206" x2="555" y2="283" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="700" y1="206" x2="725" y2="283" marker-end="url(#arb)" marker-start="url(#arb)"/>
+</svg>
+<figcaption>Derin hiyerarşi: araştırmacı ve yazar kendi alt ajanlarını çağırır; grafik tasarımcı tek başına çalışır. Katman sayısı arttıkça güç artar, ama karmaşıklık da artar.</figcaption>
+</figure>
+<p>Bu yapı uygulamada görülür, ancak tek katmanlı hiyerarşiden belirgin biçimde daha karmaşık olduğu için bugün daha seyrek kullanılır.</p>
+
+<h3 id="herkesle-herkes-iletisimi">Herkesle-herkes iletişimi</h3>
+<p>Uygulaması en zorlu ve yalnızca birkaç deneysel projede görülen son desen, herkesle-herkes (all-to-all) kalıbıdır. Burada herkes, istediği zaman herhangi biriyle konuşabilir. Uygulama yöntemi şudur: dört ajanın hepsine, çağırabilecekleri üç başka ajan olduğu söylenir. Bir ajan başka bir ajana mesaj göndermeye karar verdiğinde, bu mesaj alıcı ajanın gelen kutusuna eklenir.</p>
+<figure class="diagram">
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Herkesle-herkes iletişim: pazarlama yöneticisi, araştırmacı, grafik tasarımcı ve yazarın tamamı birbirine çift yönlü oklarla bağlı">
+<rect class="svg-node-mgr" x="50" y="40" width="180" height="56" rx="10"/>
+<text class="svg-label" x="140" y="64">pazarlama</text><text class="svg-label" x="140" y="83">yöneticisi</text>
+<rect class="svg-node" x="410" y="40" width="180" height="56" rx="10"/>
+<text class="svg-label" x="500" y="74">araştırmacı</text>
+<rect class="svg-node" x="50" y="200" width="180" height="56" rx="10"/>
+<text class="svg-label" x="140" y="223">grafik</text><text class="svg-label" x="140" y="242">tasarımcı</text>
+<rect class="svg-node" x="410" y="200" width="180" height="56" rx="10"/>
+<text class="svg-label" x="500" y="234">yazar</text>
+<line class="svg-edge" x1="232" y1="68" x2="408" y2="68" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="140" y1="98" x2="140" y2="198" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="500" y1="98" x2="500" y2="198" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="232" y1="228" x2="408" y2="228" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="232" y1="86" x2="408" y2="210" marker-end="url(#arb)" marker-start="url(#arb)"/>
+<line class="svg-edge" x1="232" y1="210" x2="408" y2="86" marker-end="url(#arb)" marker-start="url(#arb)"/>
+</svg>
+<figcaption>Herkesle-herkes: dört ajanın tamamı birbirine bağlıdır. Bir ajan mesaj gönderdiğinde, mesaj alıcının gelen kutusuna düşer ve alıcı uygun gördüğünde yanıt verir.</figcaption>
+</figure>
+<p>Alıcı ajan bir süre &ldquo;düşünüp&rdquo; ilk ajana ne zaman döneceğine kendisi karar verir. Ajanlar bir kalabalık içinde bir süre birbirleriyle konuşur; her biri görevini bitirdiğini ilan edene kadar &mdash; ya da örneğin yazar sonucu &ldquo;yeterince iyi&rdquo; bulana kadar &mdash; süreç devam eder ve o noktada nihai çıktı üretilir. Bu desenin sonuçlarını önceden kestirmek pratikte zordur.</p>
+<div class="note-card"><h3 id="kontrolu-dusuk-uygulamalar">Kontrolü düşük uygulamalar</h3><p>Bazı uygulamalar yüksek kontrol gerektirmez: sistemi çalıştırıp ne çıktığına bakabilirsiniz. Üretilen kampanya broşürü iyi değilse, sorun olmayabilir &mdash; yeniden çalıştırıp farklı bir sonuç alıp alamadığınıza bakarsınız. Bir miktar kaosa ve öngörülemezliğe tahammül edebilen uygulamalarda bazı geliştiriciler bu deseni kullanır.</p></div>
+</section>
+
+<section><h2 id="desenleri-karsilastirmak">Desenleri Karşılaştırmak</h2>
+<p>Dört desen, temelde aynı eksen üzerinde konumlanır: bir uçta yüksek kontrol ve öngörülebilirlik, diğer uçta yüksek esneklik ve öngörülemezlik. Aşağıdaki tablo bu dengeyi özetler.</p>
+<div class="table-wrap"><table class="cmp-table">
+<colgroup><col class="c1"><col><col></colgroup>
+<thead><tr><th>Desen</th><th>Bilgi akışı</th><th>Denge</th></tr></thead>
+<tbody>
+<tr><td class="term">Doğrusal</td><td>Tek yönlü zincir: ajandan ajana sırayla.</td><td>Yüksek kontrol, en basit; sınırlı esneklik.</td></tr>
+<tr><td class="term">Yönetici-çalışan</td><td>Yönetici merkezli git-gel; raporlar yöneticide toplanır.</td><td>İyi kontrol; koordinasyon tek noktada.</td></tr>
+<tr><td class="term">Derin hiyerarşi</td><td>Çok katmanlı; bazı ajanlar alt ajan çağırır.</td><td>Güçlü ama karmaşık; kurması ve izlemesi zor.</td></tr>
+<tr><td class="term">Herkesle-herkes</td><td>Serbest; herkes herkese, istediği zaman.</td><td>En esnek; sonuçları öngörmek en zor.</td></tr>
+</tbody>
+</table></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Çıktının bir sonrakine akması</strong><span>Tüm desenlerde temel ilke aynıdır: bir ajanın çıktısı bir başkasının girdisi olur.</span></div>
+<div class="insight-card"><strong>Doğru desen göreve bağlıdır</strong><span>Kontrolün kritik olduğu işlerde doğrusal/hiyerarşik; biraz kaosa tahammül edilen işlerde herkesle-herkes uygun olabilir.</span></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Daha karmaşık desen her zaman daha iyidir.&rdquo;</strong> Tam tersine; derin hiyerarşi ve herkesle-herkes kurması ve denetlemesi zor olduğundan, çoğu iş için doğrusal ya da yönetici-çalışan yeterlidir.</li>
+<li><strong>&ldquo;Hiyerarşide çalışanlar birbirine doğrudan iletmeli.&rdquo;</strong> Genellikle her çalışanın raporu yöneticiye geri vermesi daha basit ve daha denetlenebilirdir.</li>
+<li><strong>&ldquo;Herkesle-herkes sonucu garanti eder.&rdquo;</strong> Bu desenin sonuçları öngörülemez; gerektiğinde yeniden çalıştırmaya açık, kontrolü düşük uygulamalar için uygundur.</li>
+<li><strong>&ldquo;İletişim deseni önemsiz bir ayrıntıdır.&rdquo;</strong> Tıpkı bir organizasyon şeması gibi, desen sistemin davranışını ve kontrol edilebilirliğini doğrudan biçimlendirir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Çok ajanlı sistemlerde gücün önemli bir kısmı, ajanların <strong>nasıl haberleştiğinden</strong> gelir. Aynı ekip; doğrusal bir zincir, yönetici merkezli bir hiyerarşi, çok katmanlı derin bir hiyerarşi ya da serbest bir herkesle-herkes ağı olarak organize edilebilir. Her biri aynı temel ilkeye dayanır &mdash; bir ajanın çıktısı bir sonrakinin girdisi olur &mdash; ama kontrol ve öngörülebilirlik açısından farklı bir noktada durur.</p>
+<p>Doğru deseni seçmek, çözmeye çalıştığınız göreve bağlıdır: kontrolün kritik olduğu yerde basit ve öngörülebilir desenler, bir miktar kaosa tahammül edilebilen yerde ise daha serbest desenler işe yarar. Bugün çok ajanlı sistemleri ve bu iletişim desenlerini kurmayı kolaylaştıran pek çok yazılım çerçevesi bulunur; kendi çok ajanlı sisteminizi tasarlarken bu çerçeveler farklı desenleri denemeyi oldukça kolaylaştırabilir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#cok-ajanli-sistemlerde-iletisim-desenleri" class="toc-h1">Çok Ajanlı Sistemlerde İletişim Desenleri</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#dogrusal-iletisim" class="toc-h3">Doğrusal iletişim</a>
+<a href="#yonetici-calisan-hiyerarsik-iletisim" class="toc-h3">Yönetici-çalışan (hiyerarşik) iletişim</a>
+<a href="#raporlar-neden-yoneticide-toplanir" class="toc-h3">Raporlar neden yöneticide toplanır?</a>
+<a href="#derin-hiyerarsi" class="toc-h3">Derin hiyerarşi</a>
+<a href="#herkesle-herkes-iletisimi" class="toc-h3">Herkesle-herkes iletişimi</a>
+<a href="#kontrolu-dusuk-uygulamalar" class="toc-h3">Kontrolü düşük uygulamalar</a>
+<a href="#desenleri-karsilastirmak" class="toc-h2">Desenleri Karşılaştırmak</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

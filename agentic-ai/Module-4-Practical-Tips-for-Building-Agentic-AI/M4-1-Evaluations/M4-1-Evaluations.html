@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Değerlendirmeler (Eval'ler)</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+--code-bg:#f7f7f7; --code-surface:#f7f7f7; --code-text:#000000; --code-muted:#4b5563; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-class:#000000; --code-builtin:#008000; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel,.output-comment{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4,.output-comment h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code:not(.code-body code):not(.output-body code){padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.55rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.93rem;color:var(--lesson-muted);}
+/* pipeline chips */
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.45rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.pipe-chip{padding:0.45rem 0.75rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.9rem;color:var(--lesson-text);}
+.pipe-chip.is-llm{background:#eef0f4;color:#1f2937;}
+.pipe-chip.is-tool{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-arrow{color:var(--dlai-coral);font-weight:700;}
+/* numbered process steps */
+.step-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-line{display:grid;grid-template-columns:1.9rem minmax(0,1fr);align-items:start;gap:0.7rem;padding:0.75rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.step-line .step-n{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.88rem;font-weight:700;}
+.step-line strong{display:block;color:var(--lesson-text);font-size:0.97rem;margin-bottom:0.12rem;}
+.step-line span{color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* 2x2 matrix */
+.matrix{display:grid;grid-template-columns:8.5rem 1fr 1fr;gap:0.55rem;margin:1.2rem 0;}
+.matrix-cell{padding:0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.55rem;}
+.matrix-corner{background:transparent;border:0;}
+.matrix-colhead,.matrix-rowhead{background:var(--lesson-soft-2);font-weight:700;color:var(--lesson-text);display:flex;align-items:center;justify-content:center;text-align:center;font-size:0.95rem;}
+.matrix-rowhead{flex-direction:column;}
+.matrix-rowhead small{display:block;margin-top:0.2rem;font-weight:400;color:var(--lesson-muted);font-size:0.82rem;}
+.matrix-q{background:#fff;border-top:3px solid var(--dlai-coral);}
+.matrix-q h4{margin:0 0 0.4rem;color:var(--accent-dark);font-size:0.97rem;}
+.matrix-q p{margin:0;color:var(--lesson-muted);font-size:0.9rem;line-height:1.5;}
+.matrix-q .mq-code{display:block;margin-top:0.5rem;padding:0.45rem 0.55rem;border:1px solid var(--code-border);border-radius:0.3rem;background:var(--code-bg);color:#000;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.8rem;white-space:pre-wrap;line-height:1.45;}
+/* code cells */
+.walk-card{margin:1.9rem 0 2.1rem;}
+.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1.05rem 0;background:transparent;}
+.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#c2384a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.code-head{position:absolute;top:0.35rem;right:0.45rem;z-index:2;display:flex;justify-content:flex-end;}
+.copy-btn{border:1px solid #c4c8cf;border-radius:0.35rem;background:rgba(255,255,255,0.92);color:#374151;cursor:pointer;font-size:0.78rem;padding:0.22rem 0.5rem;}
+.copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.code-body,.output-body{margin:0;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.55;tab-size:4;}
+.code-body{grid-column:2;padding:0.72rem 5.2rem 0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0.2rem;background:var(--code-bg);white-space:pre;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.code-body::-webkit-scrollbar{height:10px;}
+.code-body::-webkit-scrollbar-track{background:#f2f2f2;border-top:1px solid #e3e3e3;}
+.code-body::-webkit-scrollbar-thumb{background:#c4c4c4;border:2px solid #f2f2f2;border-radius:6px;}
+.code-body::-webkit-scrollbar-thumb:hover{background:#9ca3af;}
+.code-body code{font-family:inherit;display:block;width:max-content;min-width:100%;}
+.code-line{display:block;width:max-content;min-width:100%;padding:0 0.25rem;border-radius:0.18rem;white-space:pre;}
+.code-line:empty::before{content:"\00a0";}
+.code-line[data-note]{cursor:help;}
+.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:0;}
+.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid var(--dlai-coral);border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease;}
+.line-tooltip.is-visible{opacity:1;transform:translateY(0);}
+.line-tooltip .tooltip-section{display:block;font-weight:400;}
+.line-tooltip .tooltip-section + .tooltip-section{margin-top:0.55rem;padding-top:0.55rem;border-top:1px solid #eaeef2;}
+.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,monospace;font-size:12.5px;}
+.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1rem 0;background:transparent;}
+.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.output-head{grid-column:2;padding:0.42rem 0.55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:0.2rem 0.2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-size:0.78rem;}
+.output-body{grid-column:2;padding:0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0 0 0.2rem 0.2rem;background:var(--code-bg);max-height:30rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;}
+.output-body::-webkit-scrollbar{width:11px;height:11px;}
+.output-body::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d9d9d9;}
+.output-body::-webkit-scrollbar-thumb{background:#b8b8b8;border:2px solid #f2f2f2;border-radius:6px;}
+.output-body pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.5;color:#000;}
+.output-comment{margin:0.6rem 0 1rem 4.95rem;background:#fff;}
+.output-comment p{margin:0;color:var(--lesson-muted);font-size:0.97rem;line-height:1.6;}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin:0.9rem 0 0.9rem 4.95rem;}
+.mini-panel{margin:0;background:var(--lesson-soft);}
+.mini-panel p{margin:0;color:var(--lesson-muted);font-size:0.95rem;}
+.mini-panel h4{color:var(--accent-dark);}
+.tok-keyword{color:var(--code-keyword);font-weight:700;} .tok-string{color:var(--code-string);}
+.tok-comment{color:var(--code-comment);font-style:italic;} .tok-function{color:var(--code-function);}
+.tok-attribute{color:var(--code-function);} .tok-number{color:var(--code-number);}
+.tok-class{color:var(--code-function);} .tok-name{color:var(--code-class);}
+.tok-builtin{color:var(--code-builtin);} .tok-operator{color:var(--code-operator);}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.explain-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.matrix{grid-template-columns:1fr;}
+.matrix-corner,.matrix-colhead{display:none;}
+.matrix-rowhead{flex-direction:row;gap:0.4rem;justify-content:flex-start;}
+.matrix-rowhead small{margin-top:0;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.code-card,.output-card{grid-template-columns:minmax(0,1fr);}
+.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 0.25rem;text-align:left;}
+.code-body,.output-head,.output-body{grid-column:1;}
+.code-head{top:1.7rem;} .code-body{padding:0.85rem 4.85rem 0.85rem 0.85rem;font-size:0.84rem;}
+.output-comment,.explain-grid{margin-left:0;}
+.line-tooltip{max-width:calc(100vw - 32px);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-1-Evaluations/M4-1-Evaluations.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Değerlendirmeler (Eval'ler)</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="degerlendirmeler-eval-ler">Değerlendirmeler (Eval'ler)</h1>
+<p class="lead-text">Bir agentik yapay zekâ sistemini geliştirirken çabanızı nereye yoğunlaştıracağınızı; çıktılara bakarak hataları keşfetmeyi ve bu hataları küçük, ölçülebilir değerlendirmelerle (eval) sistematik biçimde iyileştirmeyi öğreten pratik bir çerçeve.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Agentik bir yapay zekâ sistemi geliştirirken en zor sorulardan biri şudur: sistem nerede iyi çalışacak, nerede tökezleyecek ve dolayısıyla emeğinizi nereye yoğunlaştırmalısınız? Bunu önceden, masa başında kestirmek çoğu zaman mümkün değildir. Bu yüzden çok yararlı bir yaklaşım, veriyi sızdırmayan ve sorumlu bir biçimde &mdash; ama <strong>hızlıca</strong> &mdash; çalışan basit bir ilk sürüm kurmak, ardından onun çıktılarına bakarak nerede zayıf kaldığını görmektir.</p>
+<p>Bu ders, o ilk prototipten sonra gelen kritik adımı ele alır: çıktılara bakıp bir <strong>hata kalıbı</strong> fark ettiğinizde, o sorunu izlemek ve düzeltmek için nasıl küçük bir <strong>değerlendirme (eval)</strong> kurarsınız? Anlatımın merkezinde üç somut örnek vardır &mdash; fatura işleme, pazarlama metni üretimi ve bir araştırma ajanı &mdash; ve bu örnekler bizi değerlendirmeleri sınıflandıran iki temel eksene ve uçtan uca eval tasarımının pratik ilkelerine götürür. Buradaki amaç yalnızca &ldquo;metrik üretmek&rdquo; değil; metriği <strong>geliştirme sürecini yönlendiren bir pusula</strong> hâline getirmektir.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>İyi bir agentik sistem, baştan kusursuz tasarlanarak değil; <em>kur &rarr; çıktıya bak &rarr; hata kalıbını gör &rarr; küçük bir eval ile ölç &rarr; iyileştir</em> döngüsüyle ortaya çıkar. Değerlendirme, bu döngüde insan gözünü tamamlayan ve giderek ona güveni devralan bir ölçüm aracıdır.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Hızlı bir prototip kurup çıktılarını incelemenin, neyi değerlendirmeye değer olduğunu belirlemede neden bu kadar yararlı olduğunu açıklayabilmek.</li>
+<li>Bir hata kalıbını (örneğin yanlış çıkarılan tarihler) izlemek için küçük bir eval kümesinin nasıl kurulduğunu adım adım tarif edebilmek.</li>
+<li>Değerlendirmeyi <strong>kodla (nesnel)</strong> mi yoksa <strong>LLM-as-a-judge ile (öznel)</strong> mi yapacağınıza karar verebilmek.</li>
+<li>Bir değerlendirmenin <strong>örnek başına doğru cevabı (ground truth)</strong> gerektirip gerektirmediğini ayırt edebilmek.</li>
+<li>Bu iki ayrımı, değerlendirme türlerini düzenleyen bir 2×2 çerçevesinde birleştirebilmek.</li>
+<li>Uçtan uca (end-to-end) bir değerlendirmenin ne anlama geldiğini ve eval'lerin zamanla nasıl olgunlaştırılacağını kavramak.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline bir istem (prompt) verip metin yanıtı almanın ne demek olduğuna dair temel bir fikir.</li>
+<li>Çok adımlı bir agentik iş akışının (örneğin araç çağıran bir araştırma ajanının) genel mantığına aşinalık.</li>
+<li>Bir doğruluk (accuracy) metriğinin &mdash; &ldquo;kaç örnekte doğru sonuç alındı&rdquo; &mdash; ne ifade ettiğine dair temel kavrayış.</li>
+<li>Düzenli ifadelerin (regular expression) ve basit bir kelime sayımının ne işe yaradığına dair genel bir fikir.</li>
+</ul>
+<p>Ders kavramsaldır; içindeki kısa kod parçaları fikirleri somutlaştırmak içindir ve ileri düzey programlama gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Eval</td><td>Sistemin belirli bir çıktısını ölçen küçük, tekrarlanabilir değerlendirme.</td><td>Amaç kusursuzluk değil; ilerlemeyi izleyen bir metrik üretmektir.</td></tr>
+<tr><td class="term">Eval kümesi</td><td>Üzerinde sistemin sınandığı, tipik olarak 10&ndash;20 örnekten oluşan test seti.</td><td>Küçük başlar; zamanla büyütülüp iyileştirilir.</td></tr>
+<tr><td class="term">Ground truth</td><td>Bir örnek için elle yazılmış &ldquo;doğru cevap&rdquo; (referans etiket).</td><td>Her problemde gerekmez; bazı eval'lerde tek bir sabit hedef yeterlidir.</td></tr>
+<tr><td class="term">Nesnel eval</td><td>Doğruluğun kodla kesin biçimde ölçüldüğü değerlendirme.</td><td>Net &ldquo;doğru/yanlış&rdquo; tanımı olduğunda en güvenilir yoldur.</td></tr>
+<tr><td class="term">LLM-as-a-judge</td><td>Çıktıyı bir başka dil modelinin puanladığı öznel değerlendirme.</td><td>Cevabın çok farklı ifade edilebildiği durumlarda kullanılır.</td></tr>
+<tr><td class="term">Hata kalıbı</td><td>Çıktıları incelerken tekrar tekrar karşılaşılan ortak yanlış türü.</td><td>Neyi eval'leyeceğinize bu kalıp karar verir.</td></tr>
+<tr><td class="term">Uçtan uca eval</td><td>Girdi (kullanıcı isteği) ile son çıktı arasındaki tüm sistemi ölçen değerlendirme.</td><td>Tek bir bileşeni değil, sistemin bütününü sınar.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir merkezi fikri var: <strong>agentik bir sistemi iyileştirmek, baştan mükemmel tasarlamaya çalışmak değil; çalışan bir sürümü gözlemleyip ölçerek tekrarlı biçimde düzeltmektir.</strong> Aşağıdaki dört adım, eval temelli geliştirme döngüsünün iskeletidir ve dersin geri kalanı bu iskeletin üzerine kurulur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Hızlıca kur</strong><span>Sorumlu ve güvenli ama hızlı bir ilk sürüm yapılır; teoriyle haftalar harcanmaz.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Çıktıya bak</strong><span>Bir avuç örnek elle incelenir; tekrar eden hata kalıpları not edilir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Eval kur</strong><span>Önemli çıktı için ~20 örneklik küçük bir değerlendirme oluşturulur.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>İyileştir &amp; tekrarla</strong><span>İstem ve algoritmalar değiştirildikçe metriğin yükselip yükselmediği izlenir.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: dördüncü adım bir son değil, bir <strong>dönüş noktasıdır</strong>. Hem sistemi hem de değerlendirmeyi zamanla birlikte olgunlaştırırsınız; metrik yargınızla çeliştiğinde düzeltilecek olan bazen sistem, bazen de eval'in kendisidir. İşte bu tekrarlı ölçüm, gelişigüzel denemeyi disiplinli bir geliştirme sürecinden ayıran şeydir.</p>
+</section>
+
+<section><h2 id="gelistirmeyi-eval-lerle-yonlendirmek">Geliştirmeyi Eval'lerle Yönlendirmek</h2>
+<h3 id="neden-once-hizli-bir-surum-kurmali">Neden önce hızlı bir sürüm kurmalı?</h3>
+<p>Agentik bir sistemin nerede iyi, nerede zayıf çalışacağını önceden bilmek zordur. Bu yüzden haftalarca &ldquo;nasıl kurmalıyım&rdquo; diye teori üretmek yerine, makul ve güvenli &mdash; veriyi sızdırmayan, sorumlu &mdash; ama hızlı bir prototip kurmak çoğu zaman daha verimlidir. Çalışan bir sürüm elinizdeyken ona <strong>bakabilir</strong>, hangi noktaların istediğiniz kadar iyi çalışmadığını görebilir ve emeğinizi oraya odaklayabilirsiniz.</p>
+<p>Bu &ldquo;çıktıya bakma&rdquo; alışkanlığının sürpriz bir yan faydası vardır: yalnızca neyi düzelteceğinizi değil, <strong>neyi değerlendirmeye değer bulduğunuzu</strong> da belirlemenize yardım eder. Aynı sistemde tarih çıkarımı zayıfsa eval'iniz tarihe; fatura kesen tarafın adı sorunluysa eval'iniz o alana yönelir. Yani eval'in konusunu, gözlemlediğiniz gerçek hata kalıbı tayin eder.</p>
+<div class="note-card"><h3 id="temel-ritim">Temel ritim</h3><p>Çıktıya bak &rarr; neyin yanlış olduğunu gör &rarr; düzeltmeyi biliyorsan hemen düzelt; daha uzun bir iyileştirme süreci gerekiyorsa bir eval kur ve ilerlemeyi onunla izle. Bu basit ritim, dersin geri kalanında üç farklı örnekte tekrar tekrar karşımıza çıkacak.</p></div>
+</section>
+
+<section><h2 id="birinci-ornek-fatura-isleme-ve-tarih-cikarimi">Birinci Örnek &mdash; Fatura İşleme ve Tarih Çıkarımı</h2>
+<p>İlk örnek, daha önce de görülen bir fatura işleme akışıdır: bir PDF faturadan dört zorunlu alan (fatura kesen taraf, adres, ödenecek tutar ve <strong>vade tarihi</strong>) çıkarılır ve bir veritabanı kaydına yazılır. Akış, faturayı metne çevirir, bir dil modeline verir ve model çıkardığı bilgiyi bir araç aracılığıyla veritabanına işler.</p>
+<div class="pipeline">
+<span class="pipe-chip">PDF fatura</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">PDF&rarr;metin</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli (4 alanı çıkarır)</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Veritabanını güncelle</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Kayıt oluşturuldu</span>
+</div>
+<h3 id="ciktilara-bakip-hata-kalibini-bulmak">Çıktılara bakıp hata kalıbını bulmak</h3>
+<p>Sistemi kurduktan sonra elinize 10&ndash;20 fatura alıp çıktılarını tek tek incelersiniz. Diyelim ki 20 faturaya baktınız: birincinin çıktısı doğru; ikincide model faturanın <strong>düzenlenme tarihi</strong> ile <strong>vade tarihini</strong> karıştırmış &mdash; oysa ödemeleri zamanında yapabilmek için bizim istediğimiz vade tarihiydi. Bunu bir not olarak kaydedersiniz. Üçüncü ve dördüncü doğru, derken örneklerin epeyce büyük bölümünde aynı hatanın tekrarlandığını görürsünüz. İşte bu, izlenmeye değer bir <strong>hata kalıbıdır</strong>: sistem tarihlerde zorlanıyor.</p>
+<div class="table-wrap"><table>
+<colgroup><col style="width:30%"><col></colgroup>
+<thead><tr><th>İncelenen fatura</th><th>Gözlenen durum</th></tr></thead>
+<tbody>
+<tr><td>Fatura 1</td><td>Çıktı doğru görünüyor.</td></tr>
+<tr><td>Fatura 2</td><td>Tarihler karışmış (vade ile düzenlenme tarihi).</td></tr>
+<tr><td>Fatura 3</td><td>Çıktı doğru.</td></tr>
+<tr><td>&hellip;</td><td>&hellip;</td></tr>
+<tr><td>Fatura 19</td><td>Tarihler karışmış.</td></tr>
+<tr><td>Fatura 20</td><td>Tarihler karışmış.</td></tr>
+</tbody>
+</table></div>
+<p>Karşılaştırma için: eğer sorun tarih değil de fatura kesen tarafın adresi olsaydı &mdash; örneğin alışılmadık adlara sahip ya da İngilizce harf bile içermeyen uluslararası satıcılarınız varsa &mdash; bu kez eval'inizi adres çıkarımı için kurardınız. Hangi alanı değerlendireceğinize, gerçekte hangi alanın tökezlediği karar verir.</p>
+
+<h3 id="tarih-cikarimi-icin-bir-eval-kurmak">Tarih çıkarımı için bir eval kurmak</h3>
+<p>Vade tarihi çıkarımını iyileştirmeye karar verdiyseniz, ilerlemeyi izlemek için doğruluğunu ölçen bir değerlendirme kurmak iyi bir fikirdir. Bunun birden çok yolu vardır; burada pratik ve doğrudan bir yöntem izlenir. Süreç dört adımdan oluşur.</p>
+<div class="step-list">
+<div class="step-line"><span class="step-n">1</span><div><strong>Vade tarihlerini elle çıkar</strong><span>10&ndash;20 fatura alınır ve her birinin gerçek vade tarihi standart bir biçimde (yıl/ay/gün) elle yazılır. Bu, örnek başına ground truth&apos;tur.</span></div></div>
+<div class="step-line"><span class="step-n">2</span><div><strong>Çıktı biçimini istemde sabitle</strong><span>Modele, vade tarihini her zaman aynı <code>YYYY/MM/DD</code> biçiminde döndürmesi söylenir. Bu, sonradan kodla karşılaştırmayı kolaylaştırır.</span></div></div>
+<div class="step-line"><span class="step-n">3</span><div><strong>Tarihi koddan çıkar</strong><span>Model yanıtı içinden ilgilendiğimiz tek tarih, basit bir düzenli ifadeyle (dört rakam yıl, iki ay, iki gün) yakalanır.</span></div></div>
+<div class="step-line"><span class="step-n">4</span><div><strong>Ground truth ile karşılaştır</strong><span>Çıkarılan tarih, elle yazdığımız gerçek tarihe eşitse doğru sayılır; doğru sayısı artırılır.</span></div></div>
+</div>
+<p>Örneğin bir test faturasında metinde &ldquo;August 20, 2025&rdquo; yazıyorsa, ground truth olarak bunu <code>2025/08/20</code> biçiminde not ederiz. Aşağıdaki kısa kod, üçüncü ve dördüncü adımı &mdash; tarihi çıkarıp ground truth ile karşılaştırmayı &mdash; gösterir.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Bir düzenli ifade kalıbı tanımlar: dört rakam (yıl), bölü, iki rakam (ay), bölü, iki rakam (gün). Yani `YYYY/MM/DD` biçimindeki tarihi yakalar." tabindex="0"><span class="tok-name">date_pattern</span> <span class="tok-operator">=</span> <span class="tok-string">r'\d{4}/\d{2}/\d{2}'</span></span><span class="code-line" data-note="`re.findall`, model yanıtı (`llm_response`) içinde kalıba uyan tüm tarihleri bulur. Biçim istemde sabitlendiği için tek bir tarih beklenir; ilgilendiğimiz vade tarihi budur." tabindex="0"><span class="tok-name">extracted_date</span> <span class="tok-operator">=</span> <span class="tok-name">re</span><span class="tok-attribute">.findall</span>(<span class="tok-name">date_pattern</span>, <span class="tok-name">llm_response</span>)</span><span class="code-line" data-note="Çıkarılan tarihi, elle yazdığımız gerçek tarihe (`actual_date`, yani ground truth) karşı kontrol eder. Bu, nesnel bir eşitlik testidir." tabindex="0"><span class="tok-keyword">if</span> (<span class="tok-name">extracted_date</span> <span class="tok-operator">==</span> <span class="tok-name">actual_date</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Eşleşme varsa doğru sayacı bir artırılır. Tüm eval kümesinin sonunda bu sayı, toplam örnek sayısına bölünerek doğruluk yüzdesi elde edilir." tabindex="0">    <span class="tok-name">num_correct</span> <span class="tok-operator">+=</span> <span class="tok-number">1</span></span></code></pre></div>
+<div class="explain-grid">
+<div class="mini-panel"><h4>Örnek başına ground truth</h4><p>Her faturanın gerçek vade tarihi farklıdır; bu yüzden burada örnek başına ayrı bir doğru cevap (ground truth) yazmak zorundayız.</p></div>
+<div class="mini-panel"><h4>Neden biçimi sabitliyoruz?</h4><p>Çıktı her zaman aynı biçimde gelirse, tarihi yakalayan düzenli ifade basit ve güvenilir kalır; karşılaştırma koda indirgenir.</p></div>
+</div>
+<p>Bu eval ile, diyelim 20 faturalık bir küme üzerinde, istemleri ya da sistemin başka parçalarını değiştirdikçe doğru çıkarılan tarih yüzdesinin yükselip yükselmediğini izleyebilirsiniz. Özetle: sistemi kurarız, çıktıya bakıp tatmin edici olmayan davranışı (yanlış vade tarihleri) keşfederiz, bu önemli çıktıyı iyileştirmek için ~20 örneklik küçük bir eval koyar ve istemleri/algoritmaları değiştirerek bu metriği yukarı çekmeye çalışırız. Başlangıçtaki 20 örnek yetersiz gelirse, eval kümesini zamanla büyütüp kendi yargınızı daha iyi yansıtır hâle getirebilirsiniz.</p>
+</section>
+
+<section><h2 id="ikinci-ornek-pazarlama-metni-uzunlugu">İkinci Örnek &mdash; Pazarlama Metni Uzunluğu</h2>
+<p>İkinci örnekte bir pazarlama metni yardımcısı vardır. Girdi olarak bir ürün görseli &mdash; örneğin satmak istediğiniz bir güneş gözlüğü &mdash; ve bir kullanıcı isteği (&ldquo;bu gözlüğü satacak bir başlık yaz&rdquo;) verilir; çok kipli bir model görseli ve isteği analiz edip bir tanıtım metni üretir.</p>
+<div class="pipeline">
+<span class="pipe-chip">Ürün görseli</span>
+<span class="pipe-arrow">+</span>
+<span class="pipe-chip is-tool">Kullanıcı isteği</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Pazarlama metni</span>
+</div>
+<h3 id="hata-kalibi-metin-cok-uzun">Hata kalıbı: metin çok uzun</h3>
+<p>Bir pazarlama yardımcısının yanlış gidebileceği çok yön vardır; ama diyelim ki çıktılara baktığınızda metinler genelde iyi, yalnızca <strong>bazen fazla uzun</strong> oluyor. Örneğin Instagram başlığı için 10 kelimelik bir sınır varken, gözlük için 17 kelime, gömlek için 14, blender için 11 kelime üretiliyor; kahve makinesi ve şapka örnekleri ise sınır içinde kalıyor. Demek ki model uzunluk kuralına uymakta zorlanıyor.</p>
+<div class="table-wrap"><table>
+<colgroup><col style="width:38%"><col><col></colgroup>
+<thead><tr><th>Örnek istek</th><th>Üretilen uzunluk</th><th>Durum (sınır: 10 kelime)</th></tr></thead>
+<tbody>
+<tr><td>Güneş gözlüğü için başlık</td><td>17 kelime</td><td>Sınırı aşıyor</td></tr>
+<tr><td>Kahve makinesi için başlık</td><td>Sınır içinde</td><td>Uygun</td></tr>
+<tr><td>Şapka için başlık</td><td>Sınır içinde</td><td>Uygun</td></tr>
+<tr><td>Gömlek için başlık</td><td>14 kelime</td><td>Sınırı aşıyor</td></tr>
+<tr><td>Blender için başlık</td><td>11 kelime</td><td>Sınırı aşıyor</td></tr>
+</tbody>
+</table></div>
+<h3 id="uzunlugu-olcen-bir-eval-kurmak">Uzunluğu ölçen bir eval kurmak</h3>
+<p>Çıktının uzunluğunu izleyen bir eval kurmak için 10&ndash;20 test görevi (güneş gözlüğü, kahve makinesi pazarlamak vb.) oluşturur, her birini sistemden geçirir ve çıktının kelime sayısını ölçen bir kod yazarsınız. Ardından bu uzunluğu 10 kelimelik hedef sınırla karşılaştırırsınız.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Metni `split()` ile boşluklardan parçalara ayırır ve `len` ile parça sayısını alır; bu, kabaca metindeki kelime sayısını verir." tabindex="0"><span class="tok-name">word_count</span> <span class="tok-operator">=</span> <span class="tok-builtin">len</span>(<span class="tok-name">text</span><span class="tok-attribute">.split</span>())</span><span class="code-line" data-note="Kelime sayısı 10 veya daha azsa örnek hedefe uygun sayılır. Burada hedef her örnek için aynıdır (sabit 10), yani örnek başına ayrı bir doğru cevap yoktur." tabindex="0"><span class="tok-keyword">if</span> (<span class="tok-name">word_count</span> <span class="tok-operator">&lt;=</span> <span class="tok-number">10</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Koşul sağlanırsa doğru sayacı bir artırılır; tüm küme bittiğinde bu sayı, uzunluk kuralına uyma oranını verir." tabindex="0">    <span class="tok-name">num_correct</span> <span class="tok-operator">+=</span> <span class="tok-number">1</span></span></code></pre></div>
+<div class="note-card"><h3 id="onceki-ornekten-kritik-fark">Önceki örnekten kritik fark</h3><p>Fatura örneğinde her faturanın kendine ait bir doğru tarihi (örnek başına ground truth) vardı. Burada ise hedef herkes için aynıdır: 10 kelime. Yani bu eval, <strong>örnek başına ground truth gerektirmez</strong> &mdash; tek bir sabit ölçüt tüm örneklere uygulanır. Bu basit görev kasıtlı seçilmiştir; aynı mantık çok daha karmaşık üretim akışlarına da uygulanabilir.</p></div>
+</section>
+
+<section><h2 id="ucuncu-ornek-arastirma-ajani-ve-llm-as-a-judge">Üçüncü Örnek &mdash; Araştırma Ajanı ve LLM-as-a-judge</h2>
+<p>Son örnek, daha önce incelenen araştırma ajanına geri döner. Bu ajan bir kullanıcı isteği alır, web&apos;de arama yapar, en iyi kaynakları getirir ve bir deneme taslağı yazar. Akış şöyle ilerler: model arama terimine karar verir, web araması yapılır, en iyi beş kaynak indirilir ve metne çevrilir, ardından model nihai denemeyi yazar.</p>
+<div class="pipeline">
+<span class="pipe-chip is-tool">Kullanıcı isteği</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Web&apos;de ara</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">En iyi 5 kaynağı getir</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Deneme taslağı yaz</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Rapor</span>
+</div>
+<h3 id="hata-kalibi-onemli-noktalarin-atlanmasi">Hata kalıbı: önemli noktaların atlanması</h3>
+<p>Ajanın çıktısına farklı isteklerle baktığınızda bir kalıp görürsünüz. Kara delik bilimindeki son gelişmeler istendiğinde, çok haber yapılmış yüksek profilli bir sonucu atlamış olabilir; Seattle&apos;da ev kiralamak mı satın almak mı sorusunda iyi iş çıkarmış; meyve hasadı robotiği konusunda ise sektörün önde gelen bir ekipman şirketinden hiç söz etmemiş. Yani ajan, bazen bir uzman insan yazarın yakalayacağı gerçekten önemli bir noktayı kaçırıyor.</p>
+<div class="table-wrap"><table>
+<colgroup><col style="width:42%"><col></colgroup>
+<thead><tr><th>İstek</th><th>Gözlenen sorun</th></tr></thead>
+<tbody>
+<tr><td>Kara delik biliminde son gelişmeler</td><td>Çok haber yapılmış yüksek profilli bir sonucu atladı.</td></tr>
+<tr><td>Seattle&apos;da kiralamak mı satın almak mı?</td><td>İyi iş çıkardı.</td></tr>
+<tr><td>Meyve hasadı için robotik</td><td>Önde gelen bir ekipman şirketinden söz etmedi.</td></tr>
+</tbody>
+</table></div>
+<h3 id="performansi-olcen-bir-eval-kurmak">Performansı ölçen bir eval kurmak</h3>
+<p>Bu durumda, ajanın en önemli noktaları ne sıklıkla yakaladığını ölçen bir eval kurarsınız. Birkaç örnek istek (kara delikler, robotik hasat vb.) belirler ve her biri için üç ila beş <strong>altın standart tartışma noktası</strong> yazarsınız. Bu noktalar her örnek için farklı olduğundan, burada yine <strong>örnek başına ground truth</strong> söz konusudur.</p>
+<div class="step-list">
+<div class="step-line"><span class="step-n">1</span><div><strong>Altın standart noktaları seç</strong><span>Her konu için en önemli 3&ndash;5 tartışma noktası elle belirlenir (ground truth annotasyonları).</span></div></div>
+<div class="step-line"><span class="step-n">2</span><div><strong>LLM-as-a-judge ile say</strong><span>Bir dil modeli, üretilen denemede bu noktalardan kaçının yer aldığını sayar.</span></div></div>
+<div class="step-line"><span class="step-n">3</span><div><strong>Her istek için puan al</strong><span>Değerlendirme kümesindeki her istek için bir puan elde edilir.</span></div></div>
+</div>
+<p>Burada neden basit bir düzenli ifade değil de bir dil modeli değerlendirici kullanılır? Çünkü aynı noktadan (örneğin &ldquo;olay ufku&rdquo;ndan) söz etmenin sayısız farklı yolu vardır; basit metin eşleştirmesi bunu güvenilir biçimde yakalayamaz. Bu yüzden değerlendirici modele denemeyi okutup, altın standart noktaların yeterince işlenip işlenmediğine dair daha öznel bir yargı verdirilir. Aşağıda bu değerlendiriciye verilen istemin çatısı yer alır.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="text"><span class="code-line" data-note="Değerlendiriciye verilen görev: sağlanan denemede beş altın standart tartışma noktasından kaçının bulunduğunu belirle." tabindex="0">Determine how many of the 5 gold-standard talking</span><span class="code-line" data-note="Görev tanımının devamı; değerlendirilecek metin aşağıda alanlar hâlinde verilir." tabindex="0">points are present in the provided essay.</span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Kullanıcının özgün isteği; değerlendiricinin bağlamı anlaması için sağlanır." tabindex="0">Original Prompt</span><span class="code-line" data-note="Çalışma anında bu yer tutucu, gerçek istem metniyle doldurulur." tabindex="0">{original_prompt}</span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Puanlanacak deneme metninin başlığı." tabindex="0">Essay to Evaluate</span><span class="code-line" data-note="Çalışma anında bu yer tutucu, ajanın ürettiği deneme metniyle doldurulur." tabindex="0">{essay_text}</span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Bu örnek için elle belirlenmiş altın standart noktaların başlığı (ground truth)." tabindex="0">Gold Standard Talking Points</span><span class="code-line" data-note="Çalışma anında bu yer tutucu, o konuya ait altın standart noktalarla doldurulur." tabindex="0">{gold_standard_points}</span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Çıktının biçimi dayatılır: yalnızca iki anahtarlı bir JSON nesnesi beklenir." tabindex="0">Output Format</span><span class="code-line" data-note="`score`: 0&ndash;5 arası tek bir sayı; `explanation`: hangi noktaların bulunduğunu listeleyen bir metin." tabindex="0">Return a json object with two keys: score (0&ndash;5),</span><span class="code-line" data-note="JSON çıktısının programla işlenebilmesi için kesin ve sabit bir yapı istenir." tabindex="0">and explanation (talking points present).</span></code></pre></div>
+<div class="output-comment"><p>Bu istem her istek için bir puan üretir (örneğin 5 üzerinden). Puan, ajanın o konudaki en önemli noktaları ne ölçüde yakaladığını sayısallaştırır; açıklama alanı ise hangi noktaların geçtiğini insanın da denetleyebilmesi için listeler.</p></div>
+<div class="note-card"><h3 id="uc-ornegin-ortak-dersi">Üç örneğin ortak dersi</h3><p>Uygulamanız için kuracağınız eval&apos;ler, çoğu zaman uygulamanızda <strong>gözlemlediğiniz veya endişelendiğiniz</strong> hatayı yansıtır. Tarih karışıyorsa tarihi, metin uzunsa uzunluğu, önemli noktalar atlanıyorsa kapsanan noktaları ölçersiniz. Eval&apos;in konusunu kuram değil, gerçek hata kalıbı belirler.</p></div>
+</section>
+
+<section><h2 id="iki-degerlendirme-ekseni">İki Değerlendirme Ekseni</h2>
+<p>Üç örnek bizi genel bir çerçeveye götürür. Eval&apos;ler kabaca <strong>iki eksen</strong> üzerinde konumlanır. Birinci eksen, çıktıyı nasıl değerlendirdiğinizdir: bazen kod yazarak <strong>nesnel</strong> ölçersiniz, bazen daha öznel durumlarda bir <strong>LLM-as-a-judge</strong> kullanırsınız. İkinci eksen ise <strong>örnek başına bir ground truth</strong> olup olmadığıdır. Bu iki eksen dört kareli bir ızgara oluşturur ve gördüğümüz örneklerin her biri bu karelerden birine düşer.</p>
+<div class="matrix">
+<div class="matrix-cell matrix-corner"></div>
+<div class="matrix-cell matrix-colhead">Kodla değerlendirme<br><small style="font-weight:400;color:var(--lesson-muted)">(nesnel)</small></div>
+<div class="matrix-cell matrix-colhead">LLM-as-a-judge<br><small style="font-weight:400;color:var(--lesson-muted)">(öznel)</small></div>
+
+<div class="matrix-cell matrix-rowhead">Örnek başına ground truth <small>var</small></div>
+<div class="matrix-cell matrix-q"><h4>Fatura tarihi çıkarımı</h4><p>Her faturanın gerçek tarihi farklıdır; çıkarılan tarih kodla bu referansa karşı kontrol edilir.</p><span class="mq-code">if (extracted_date == actual_date):
+    num_correct += 1</span></div>
+<div class="matrix-cell matrix-q"><h4>Altın standart noktaları sayma</h4><p>Her makalenin önemli noktaları farklıdır; ama noktanın çok çeşitli ifade edilebilmesi yüzünden sayımı bir dil modeli yapar.</p><span class="mq-code">Aşağıdaki metinde geçen altın
+standart nokta sayısını say…</span></div>
+
+<div class="matrix-cell matrix-rowhead">Örnek başına ground truth <small>yok</small></div>
+<div class="matrix-cell matrix-q"><h4>Pazarlama metni uzunluğu</h4><p>Hedef her örnek için aynıdır (10 kelime); ground truth&apos;a gerek yoktur, ölçüm yine kodla yapılır.</p><span class="mq-code">if len(text) &lt;= 10:
+    num_correct += 1</span></div>
+<div class="matrix-cell matrix-q"><h4>Grafiği bir ölçütle puanlama</h4><p>Aynı ölçüt (örneğin net eksen etiketleri) her grafiğe uygulanır; öznel yargı için bir dil modeli değerlendirici kullanılır.</p><span class="mq-code">Bu grafiği şu ölçüte göre puanla:
+(i) net eksen etiketleri, (ii) …</span></div>
+</div>
+<p>Dördüncü kare &mdash; ground truth&apos;suz LLM-as-a-judge &mdash; bir grafiği bir ölçütle (rubric) puanlamaya karşılık gelir: kahve makinesi satışlarını görselleştiren bir grafiğin net eksen etiketlerine sahip olup olmadığı gibi. Aynı ölçüt her grafiğe uygulandığı için örnek başına ayrı bir doğru cevap yoktur, ama değerlendirme yine de öznel olduğundan bir dil modeli değerlendirici devreye girer. Bu 2×2 ızgara, uygulamanız için kurabileceğiniz farklı eval türlerini düşünmek için yararlı bir haritadır.</p>
+</section>
+
+<section><h2 id="uctan-uca-eval-tasarimi">Uçtan Uca Eval Tasarımı</h2>
+<p>Bu değerlendirmelerin hepsine <strong>uçtan uca (end-to-end) eval</strong> de denir: bir uç girdi tarafıdır (kullanıcı isteği/istemi), diğer uç ise son çıktıdır. Yani hepsi, sistemin bütününün performansını tek bir akışta ölçer. Birkaç pratik ilke, bu tür eval&apos;leri tasarlamayı kolaylaştırır.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Hızlı ve kaba başlamak normaldir</strong><span>Eval kurmayı haftalarca süren dev bir iş gibi görüp felç olmayın; 10&ndash;20 örnekle başlayıp ilk metriği üretin.</span></div>
+<div class="insight-card"><strong>Eval&apos;i de iyileştirin</strong><span>Eval sizin yargınızı yakalayamadığında &mdash; iyi bildiğiniz bir sürüm daha yüksek puan almıyorsa &mdash; kümeyi büyütün ya da ölçme biçimini değiştirin.</span></div>
+<div class="insight-card"><strong>İnsandan zayıf yerlere bakın</strong><span>Performansın bir uzman insandan daha kötü olduğu noktalar, çabanızı nereye yoğunlaştıracağınıza dair ilham verir.</span></div>
+</div>
+<p>Tıpkı agentik bir akışı zamanla iyileştirdiğiniz gibi, eval&apos;lerinizi de iyileştirmeyi planlayın. İlk turda 10&ndash;15&ndash;20 örnek koyup biraz kod ya da bir LLM-as-a-judge istemi yazmanız, insan gözünü tamamlayacak metrikler üretmek için yeterlidir. Eval&apos;ler olgunlaştıkça, her istem değişikliğinde yüzlerce çıktıyı tekrar okumak yerine giderek metrik temelli değerlendirmelere güvenebilirsiniz. Eğer iyileştirdiğiniz bir sistemin daha iyi olduğunu düşünüp eval bunu göstermiyorsa, bu çoğu zaman daha büyük bir küme toplamak ya da ölçme biçimini yargınıza daha iyi karşılık gelecek şekilde değiştirmek için bir fırsattır.</p>
+<div class="note-card"><h3 id="ipucu-insani-gectiginiz-yeri-arayin">İpucu: insanı geçtiğiniz yeri arayın</h3><p>Agentik akışlar sıklıkla insanların yapabildiği görevleri otomatikleştirir. Performansın bir uzman insandan daha düşük olduğu yerleri aramak, hem nereye odaklanacağınızı hem de hangi örneklerde akışı daha iyi çalışır hâle getirebileceğinizi gösterir. Aynı zamanda eval, tüm agentik sistemin <strong>hangi bileşenine</strong> zaman ayırmanın en verimli olacağını seçmenize de yardım eder &mdash; ki agentik sistemler çoğu zaman birçok parçadan oluştuğu için bu, verimli geliştirmenin kritik bir becerisidir.</p></div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Eval kurmak haftalar süren dev bir iştir.&rdquo;</strong> Bu inanç birçok ekibi felç eder; oysa 10&ndash;20 örnekle hızlı ve kaba bir başlangıç yeterlidir ve zamanla olgunlaştırılır.</li>
+<li><strong>&ldquo;Önce eval&apos;i mükemmelleştirip sonra sisteme bakarım.&rdquo;</strong> Tam tersi: önce çıktıya bakıp gerçek hata kalıbını görmek, hangi eval&apos;in kurulacağını belirler.</li>
+<li><strong>&ldquo;Her eval örnek başına doğru cevap gerektirir.&rdquo;</strong> Bazı problemlerde (örneğin uzunluk sınırı) tek bir sabit hedef tüm örneklere uygulanır; ground truth gerekmez.</li>
+<li><strong>&ldquo;Her şey kodla kesin ölçülebilir.&rdquo;</strong> Cevabın çok farklı ifade edilebildiği durumlarda basit eşleştirme yetmez; bir LLM-as-a-judge daha uygundur.</li>
+<li><strong>&ldquo;Metrik yükselmiyorsa sistem kötüdür.&rdquo;</strong> Bazen kusur eval&apos;dedir: yargınızı yakalayamayan bir metrik, sistemi değil ölçme biçimini gözden geçirmeniz için bir işarettir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Agentik bir sistemi geliştirmenin en verimli yolu, baştan kusursuzu hedeflemek değil; hızlıca çalışan bir sürüm kurup <strong>çıktılarına bakmak</strong>, tekrar eden hata kalıplarını görmek ve bu kalıpları izlemek için küçük değerlendirmeler koymaktır. Düzeltmeyi biliyorsanız hemen düzeltirsiniz; daha uzun bir süreç gerekiyorsa eval&apos;i bir pusula gibi kullanırsınız.</p>
+<p>Kurduğunuz eval&apos;in türü, gözlemlediğiniz soruna göre değişir ve iki eksende konumlanır: çıktıyı <strong>kodla mı yoksa bir dil modeli değerlendirici ile mi</strong> ölçersiniz ve <strong>örnek başına bir doğru cevaba</strong> ihtiyaç var mı? Bu 2×2 harita, fatura tarihi, metin uzunluğu, altın standart noktalar ve ölçütle grafik puanlama gibi farklı durumları tek bir çerçevede toplar.</p>
+<p>Son olarak, eval&apos;ler statik değildir. Tıpkı sistemi olgunlaştırdığınız gibi onları da olgunlaştırır; güveninizi yavaş yavaş insan gözünden metriklere kaydırırsınız. İyi kurulmuş bir değerlendirme yalnızca ilerlemeyi izlemez; agentik sistemin hangi bileşenine emek vermenin en kârlı olacağını da gösterir &mdash; ki bu, verimli geliştirmenin belki de en önemli becerisidir.</p>
+</section>
+
+<section><h2 id="dersin-kod-akisi">Dersin Kod Akışı</h2>
+<p>Aşağıda, ders boyunca geçen üç çalıştırılabilir değerlendirme parçası mantıksal sırayla toplanmıştır. Her bloğu kopyalayıp kendi eval kurgunuzda bir başlangıç noktası olarak kullanabilirsiniz. Bloklar, bütün bir programın yerine geçmez; bir eval döngüsünün ölçüm çekirdeğini gösterir.</p>
+<h4>Tarih çıkarımı doğruluğu (nesnel, örnek başına ground truth)</h4>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`YYYY/MM/DD` biçimindeki tarihi yakalayan düzenli ifade kalıbı." tabindex="0"><span class="tok-name">date_pattern</span> <span class="tok-operator">=</span> <span class="tok-string">r'\d{4}/\d{2}/\d{2}'</span></span><span class="code-line" data-note="Model yanıtı içinden kalıba uyan tarih(ler)i çıkarır." tabindex="0"><span class="tok-name">extracted_date</span> <span class="tok-operator">=</span> <span class="tok-name">re</span><span class="tok-attribute">.findall</span>(<span class="tok-name">date_pattern</span>, <span class="tok-name">llm_response</span>)</span><span class="code-line" data-note="Çıkarılan tarihi, elle yazılmış gerçek tarihe (ground truth) karşı sınar." tabindex="0"><span class="tok-keyword">if</span> (<span class="tok-name">extracted_date</span> <span class="tok-operator">==</span> <span class="tok-name">actual_date</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Eşleşme varsa doğru sayacı bir artar." tabindex="0">    <span class="tok-name">num_correct</span> <span class="tok-operator">+=</span> <span class="tok-number">1</span></span></code></pre></div>
+<h4>Metin uzunluğu uygunluğu (nesnel, sabit hedef)</h4>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Metni boşluklardan bölüp parça sayısını alarak kelime sayısını hesaplar." tabindex="0"><span class="tok-name">word_count</span> <span class="tok-operator">=</span> <span class="tok-builtin">len</span>(<span class="tok-name">text</span><span class="tok-attribute">.split</span>())</span><span class="code-line" data-note="Tüm örnekler için aynı olan 10 kelimelik hedefe karşı kontrol eder." tabindex="0"><span class="tok-keyword">if</span> (<span class="tok-name">word_count</span> <span class="tok-operator">&lt;=</span> <span class="tok-number">10</span>)<span class="tok-operator">:</span></span><span class="code-line" data-note="Sınır içinde kalan örnekler için doğru sayacı bir artar." tabindex="0">    <span class="tok-name">num_correct</span> <span class="tok-operator">+=</span> <span class="tok-number">1</span></span></code></pre></div>
+<h4>Altın standart noktaları sayma (LLM-as-a-judge istemi)</h4>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="text"><span class="code-line" data-note="Değerlendiriciye verilen ana görev: denemede kaç altın standart noktanın bulunduğunu belirle." tabindex="0">Determine how many of the 5 gold-standard talking</span><span class="code-line" data-note="Görev cümlesinin devamı." tabindex="0">points are present in the provided essay.</span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Kullanıcının özgün isteği için alan." tabindex="0">Original Prompt</span><span class="code-line" data-note="Çalışma anında gerçek istemle doldurulur." tabindex="0">{original_prompt}</span><span class="code-line" data-note="Puanlanacak deneme metni için alan." tabindex="0">Essay to Evaluate</span><span class="code-line" data-note="Çalışma anında ajanın denemesiyle doldurulur." tabindex="0">{essay_text}</span><span class="code-line" data-note="Bu örneğe ait altın standart noktalar (ground truth) için alan." tabindex="0">Gold Standard Talking Points</span><span class="code-line" data-note="Çalışma anında o konunun noktalarıyla doldurulur." tabindex="0">{gold_standard_points}</span><span class="code-line" data-note="Çıktı biçimi: iki anahtarlı JSON istenir." tabindex="0">Output Format</span><span class="code-line" data-note="`score` 0&ndash;5 arası bir sayı, `explanation` ise bulunan noktaların listesidir." tabindex="0">Return a json object with two keys: score (0&ndash;5),</span><span class="code-line" data-note="Sabit JSON yapısı, sonucun programla işlenmesini sağlar." tabindex="0">and explanation (talking points present).</span></code></pre></div>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#degerlendirmeler-eval-ler" class="toc-h1">Değerlendirmeler (Eval'ler)</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#gelistirmeyi-eval-lerle-yonlendirmek" class="toc-h2">Geliştirmeyi Eval'lerle Yönlendirmek</a>
+<a href="#neden-once-hizli-bir-surum-kurmali" class="toc-h3">Neden önce hızlı bir sürüm kurmalı?</a>
+<a href="#temel-ritim" class="toc-h3">Temel ritim</a>
+<a href="#birinci-ornek-fatura-isleme-ve-tarih-cikarimi" class="toc-h2">Birinci Örnek — Fatura İşleme ve Tarih Çıkarımı</a>
+<a href="#ciktilara-bakip-hata-kalibini-bulmak" class="toc-h3">Çıktılara bakıp hata kalıbını bulmak</a>
+<a href="#tarih-cikarimi-icin-bir-eval-kurmak" class="toc-h3">Tarih çıkarımı için bir eval kurmak</a>
+<a href="#ikinci-ornek-pazarlama-metni-uzunlugu" class="toc-h2">İkinci Örnek — Pazarlama Metni Uzunluğu</a>
+<a href="#hata-kalibi-metin-cok-uzun" class="toc-h3">Hata kalıbı: metin çok uzun</a>
+<a href="#uzunlugu-olcen-bir-eval-kurmak" class="toc-h3">Uzunluğu ölçen bir eval kurmak</a>
+<a href="#onceki-ornekten-kritik-fark" class="toc-h3">Önceki örnekten kritik fark</a>
+<a href="#ucuncu-ornek-arastirma-ajani-ve-llm-as-a-judge" class="toc-h2">Üçüncü Örnek — Araştırma Ajanı ve LLM-as-a-judge</a>
+<a href="#hata-kalibi-onemli-noktalarin-atlanmasi" class="toc-h3">Hata kalıbı: önemli noktaların atlanması</a>
+<a href="#performansi-olcen-bir-eval-kurmak" class="toc-h3">Performansı ölçen bir eval kurmak</a>
+<a href="#uc-ornegin-ortak-dersi" class="toc-h3">Üç örneğin ortak dersi</a>
+<a href="#iki-degerlendirme-ekseni" class="toc-h2">İki Değerlendirme Ekseni</a>
+<a href="#uctan-uca-eval-tasarimi" class="toc-h2">Uçtan Uca Eval Tasarımı</a>
+<a href="#ipucu-insani-gectiginiz-yeri-arayin" class="toc-h3">İpucu: insanı geçtiğiniz yeri arayın</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+<a href="#dersin-kod-akisi" class="toc-h2">Dersin Kod Akışı</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+  function formatTooltipText(note){
+    return String(note==null?'':note).split(/\n{2,}/).map(function(part){
+      var safe=escapeHtml(part).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+      return '<span class="tooltip-section">'+safe+'</span>';
+    }).join('');
+  }
+  var tooltip=document.createElement('div');
+  tooltip.className='line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine=null;
+  function positionTooltip(){
+    if(!activeLine)return;
+    var rect=activeLine.getBoundingClientRect();
+    tooltip.style.left='0px';tooltip.style.top='0px';
+    var tipW=tooltip.offsetWidth;var tipH=tooltip.offsetHeight;
+    var left=rect.right+12;
+    var top=rect.top;
+    if(left+tipW>window.innerWidth-16){left=rect.left;top=rect.bottom+8;}
+    if(top+tipH>window.innerHeight-16){top=Math.max(16,rect.top-tipH-8);}
+    left=Math.max(16,Math.min(left,window.innerWidth-tipW-16));
+    top=Math.max(16,Math.min(top,window.innerHeight-tipH-16));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  function showTooltip(line){
+    activeLine=line;
+    tooltip.innerHTML=formatTooltipText(line.getAttribute('data-note')||'');
+    tooltip.classList.add('is-visible');
+    positionTooltip();
+  }
+  function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+  document.addEventListener('mouseover',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('mouseout',function(event){
+    if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();
+  });
+  document.addEventListener('focusin',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('focusout',function(event){
+    if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();
+  });
+  window.addEventListener('scroll',function(){if(activeLine)hideTooltip();},true);
+  window.addEventListener('resize',function(){if(activeLine)hideTooltip();});
+  function copyText(text){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve,reject){
+      var area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');
+      area.style.position='fixed';area.style.left='-9999px';document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');resolve();}catch(err){reject(err);}finally{document.body.removeChild(area);}
+    });
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(button){
+    button.addEventListener('click',function(){
+      var card=button.closest('.code-card');
+      var lines=card?[].slice.call(card.querySelectorAll('.code-line')):[];
+      var text=lines.map(function(l){return l.textContent;}).join('\n');
+      copyText(text).then(function(){
+        var original=button.textContent;button.textContent='Kopyaland\u0131!';
+        setTimeout(function(){button.textContent=original;},1500);
+      });
+    });
+  });
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Yapay Zekâ Uygulamaları</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+/* node notation (diagram content colors only) */
+--node-user-bg:#fde2e6; --node-user-border:#e96b7d; --node-user-text:#7a2230;
+--node-llm-bg:#e8eaee; --node-llm-border:#9aa1ad; --node-llm-text:#27303b;
+--node-tool-bg:#e9f7ec; --node-tool-border:#43a047; --node-tool-text:#1b5e20;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.4rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* diagram + node flow */
+.diagram{margin:1.2rem 0;padding:1.1rem 1.1rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram-title{margin:0 0 0.2rem;font-weight:700;color:var(--lesson-text);font-size:1rem;}
+.diagram-sub{margin:0 0 0.9rem;color:var(--lesson-muted);font-size:0.9rem;}
+.node-flow{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:0.3rem;}
+.node-col{display:flex;flex-direction:column;align-items:center;width:7rem;}
+.node{display:flex;align-items:center;justify-content:center;width:100%;min-height:3rem;padding:0.42rem 0.5rem;border:1.5px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;font-size:0.84rem;font-weight:600;line-height:1.2;}
+.node-user{background:var(--node-user-bg);border-color:var(--node-user-border);color:var(--node-user-text);}
+.node-llm{background:var(--node-llm-bg);border-color:var(--node-llm-border);color:var(--node-llm-text);}
+.node-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);color:var(--node-tool-text);}
+.node-out{border-color:#111;color:#111;}
+.node-cap{margin-top:0.35rem;color:var(--lesson-muted);font-size:0.8rem;line-height:1.3;text-align:center;}
+.node-arrow{align-self:flex-start;padding-top:1rem;color:var(--lesson-muted);font-weight:700;font-size:1.05rem;}
+.toolpool-row{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;margin-bottom:0.6rem;}
+.tool-pool{display:inline-flex;flex-direction:column;gap:0.4rem;padding:0.55rem 0.7rem;border:1.5px dashed var(--node-tool-border);border-radius:0.55rem;background:#f5fbf6;}
+.tool-pool-label{font-size:0.8rem;font-weight:700;color:var(--node-tool-text);text-align:center;}
+.tool-chip{padding:0.26rem 0.55rem;border:1.5px solid var(--node-tool-border);border-radius:0.45rem;background:var(--node-tool-bg);color:var(--node-tool-text);font-size:0.8rem;font-weight:600;text-align:center;}
+.legend{display:flex;flex-wrap:wrap;gap:0.7rem 1.3rem;margin:0.4rem 0 0;padding-top:0.85rem;border-top:1px dashed var(--lesson-border);}
+.legend-item{display:flex;align-items:center;gap:0.45rem;font-size:0.84rem;color:var(--lesson-muted);}
+.legend-swatch{width:1.05rem;height:1.05rem;border-radius:0.25rem;border:1.5px solid var(--lesson-border-strong);flex:none;}
+.sw-user{background:var(--node-user-bg);border-color:var(--node-user-border);}
+.sw-llm{background:var(--node-llm-bg);border-color:var(--node-llm-border);}
+.sw-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);}
+/* request/scenario cards */
+.scenario{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:var(--lesson-soft);}
+.scenario .ask{margin:0 0 0.55rem;font-style:italic;color:var(--lesson-text);}
+.scenario ol{margin:0;padding-left:1.3rem;} .scenario li{color:var(--lesson-muted);font-size:0.95rem;}
+.scenario .sub{margin:0.2rem 0 0 0.2rem;padding-left:1.1rem;list-style:lower-alpha;}
+/* suitability spectrum */
+.spectrum{margin:1.2rem 0;border:1px solid var(--lesson-border);border-radius:0.7rem;overflow:hidden;}
+.spectrum-head{display:grid;grid-template-columns:1fr 1fr;}
+.spectrum-head div{padding:0.7rem 1rem;font-weight:700;font-size:0.98rem;}
+.spectrum-head .easy{background:var(--lesson-soft-2);color:var(--lesson-text);}
+.spectrum-head .hard{background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.spectrum-row{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--lesson-border);}
+.spectrum-row div{padding:0.8rem 1rem;font-size:0.94rem;}
+.spectrum-row .easy{color:var(--lesson-muted);}
+.spectrum-row .hard{color:var(--lesson-muted);background:var(--dlai-coral-muted);border-left:1px solid var(--lesson-border);}
+@media (max-width:860px){
+.bp-flow,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.node-col{width:6rem;}
+.spectrum-head,.spectrum-row{grid-template-columns:1fr;}
+.spectrum-row .hard{border-left:0;border-top:1px solid var(--lesson-border);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-4-Agentic-AI-Applications/M1-4-Agentic-AI-Applications.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Agentic Yapay Zekâ Uygulamaları</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="agentic-yapay-zeka-uygulamalari">Agentic Yapay Zekâ Uygulamaları</h1>
+<p class="lead-text">Agentic iş akışlarıyla hangi gerçek görevler çözülür? Net süreçli kolay işlerden, adımların önceden bilinmediği ve hatta bilgisayar ekranını kullanan zor işlere uzanan bir örnek yelpazesi.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Önceki bölümlerde agentic iş akışlarının ne olduğunu, otonomluğun bir derece olduğunu ve bu akışların neden değerli olduğunu gördük. Bu derste soru pratiğe iner: <strong>agentic yapay zekâ hangi gerçek görevlere uygundur?</strong></p>
+<p>Bunu dört somut örnek üzerinden inceleyeceğiz. En kolaydan başlayıp giderek zorlaşan bu örnekler &mdash; fatura işleme, müşteri e-postalarını yanıtlama, açık uçlu müşteri hizmetleri ve bilgisayar ekranını görerek kullanma &mdash; bir görevi agentic akışa uygun kılan veya zorlaştıran etkenleri ortaya koyar. Dersin sonunda, elinizdeki bir görevin bu yelpazenin neresine düştüğünü ve bunun ne anlama geldiğini değerlendirebileceksiniz.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Net, adım adım bir sürece sahip görevlerin neden agentic akışlar için daha kolay olduğunu açıklayabilmek.</li>
+<li>Bir fatura işleme ve bir müşteri e-postası akışını, girdi, model çağrısı ve araç adımları üzerinden tarif edebilmek.</li>
+<li>Adımları önceden belli olmayan açık uçlu görevlerin neden daha zor olduğunu, somut örneklerle gösterebilmek.</li>
+<li>Bir görevin agentic AI&rsquo;ye uygunluğunu belirleyen üç ekseni &mdash; süreç netliği, prosedür, kiplik &mdash; sıralayabilmek.</li>
+<li>Bir iş akışını alt adımlara ayırmanın, uygulamanın temel becerisi olduğunu kavramak.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Agentic iş akışı, araç kullanımı ve adım ayrıştırma kavramlarına temel aşinalık.</li>
+<li>Bir veritabanına kayıt yazma/okuma ve API çağrısı fikrinin genel kavranışı.</li>
+<li>Bir akış şemasındaki girdi, model ve araç adımlarını ayırt edebilme.</li>
+</ul>
+<p>Bu ders kavramsaldır; kod yazımı veya çalıştırma gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Net süreç</td><td>Adımları baştan belli, sabit bir sırayla izlenebilen görev.</td><td>Agentic akışlar için en kolay ve en güvenilir durumdur.</td></tr>
+<tr><td class="term">Araç (tool)</td><td>Bir eylemi yürüten dış yazılım: veritabanı sorgusu, inceleme isteği vb.</td><td>Şemalarda yeşil kutularla gösterilir; modele yetenek ekler.</td></tr>
+<tr><td class="term">İnsan onayı</td><td>Taslağın gönderilmeden önce bir insana inceletilmesi.</td><td>Müşteriye gidecek yanıtlarda güven için sık kullanılır.</td></tr>
+<tr><td class="term">Açık uçlu görev</td><td>Gerekli adımların önceden bilinmediği, planlama gerektiren istek.</td><td>Model adımları kendisi belirlemek zorundadır; daha az öngörülebilir.</td></tr>
+<tr><td class="term">Çok kiplilik</td><td>Metin dışında ses, görüntü gibi girdilerin işlenmesi.</td><td>Yalnızca metne göre daha zordur ve daha az güvenilirdir.</td></tr>
+<tr><td class="term">Bilgisayar kullanımı</td><td>Ajanın bir web tarayıcısını görüp tıklayarak görev yapması.</td><td>Heyecan verici ama henüz güvenilirliği sınırlı bir alandır.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersteki dört örnek rastgele değildir; bir <strong>kolaydan zora doğru yelpaze</strong> oluşturur. Bir görevin bu yelpazenin neresine düştüğü, agentic akışla ne kadar güvenilir çözülebileceğini büyük ölçüde belirler.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Fatura işleme</strong><span>Net süreç, sabit alanlar. En kolay uç.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>E-posta yanıtı</strong><span>Yine net süreç; insan onayı eklenir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Açık uçlu hizmet</strong><span>Adımlar baştan belli değil; planlama gerekir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Bilgisayar kullanımı</strong><span>Ekranı görüp kullanma. En zor uç.</span></div>
+</div></div>
+<p>Yelpazenin kolay ucunda <strong>net süreç, standart prosedür ve yalnızca metin</strong> bulunur. Zor uca doğru ilerledikçe adımlar belirsizleşir, planlama gerekir ve görüntü/ses gibi çok kipli girdiler devreye girer.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="kolay-uc-fatura-isleme">Kolay uç: fatura işleme</h3>
+<p>Birçok işletmenin yürüttüğü tipik bir görev fatura işlemedir. Bir faturadan en önemli alanları çıkarmak isteriz: kimden geldiği (fatura kesen), fatura adresi, ödenecek tutar ve son ödeme tarihi. Birçok finans biriminde bir insan faturalara bakıp &ldquo;kime, ne zamana kadar ödeyeceğiz?&rdquo; sorusunu yanıtlar ve ödemenin zamanında yapılması için bu alanları bir veritabanına kaydeder.</p>
+<div class="note-card">
+<h3 id="cikarilacak-dort-alan">Çıkarılacak dört alan</h3>
+<p>Fatura kesen &middot; fatura adresi &middot; ödenecek tutar &middot; son ödeme tarihi. Bu sabit alan kümesi, görevi öngörülebilir ve adım adım kılan şeydir.</p>
+</div>
+<p>Bu görev agentic bir akışla şöyle kurulur: önce fatura girdi olarak alınır, bir <strong>PDF&rsquo;den metne</strong> dönüştürme aracıyla modelin işleyebileceği biçimli metne çevrilir. Ardından model belgeyi inceler ve önce &ldquo;bu gerçekten bir fatura mı, yoksa yok sayılması gereken başka bir belge mi?&rdquo; sorusunu yanıtlar. Fatura ise gerekli alanları çıkarır ve bir araç çağırarak bunları <strong>veritabanına kaydeder</strong>.</p>
+<div class="diagram">
+<p class="diagram-title">Fatura işleme akışı</p>
+<p class="diagram-sub">Net, adım adım bir süreç: belirli alanları belirle ve veritabanına kaydet.</p>
+<div class="toolpool-row">
+<div class="tool-pool"><span class="tool-pool-label">Araçlar</span><span class="tool-chip">veritabanını güncelle</span></div>
+</div>
+<div class="node-flow">
+<div class="node-col"><div class="node node-user">Fatura</div><div class="node-cap">Girdi</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">PDF&rsquo;den metne</div><div class="node-cap">Metne çevir</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Fatura mı? Alanları çıkar</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">veritabanını güncelle</div><div class="node-cap">Alanları kaydet</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-out">Kayıt oluşturuldu</div><div class="node-cap">Sonuç</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Dış yazılım / araç</span>
+</div>
+</div>
+<p>Bu akışın belirleyici özelliği, <strong>izlenecek net bir sürecin</strong> olmasıdır: gerekli alanları belirle, veritabanına kaydet. İzlenmesini istediğiniz net bir süreci olan görevler, agentic akışların güvenilir biçimde yürütmesi açısından genellikle daha kolaydır.</p>
+
+<h3 id="biraz-daha-zor-musteri-e-postasini-yanitlama">Biraz daha zor: müşteri e-postasını yanıtlama</h3>
+<p>Temel müşteri sipariş sorularını yanıtlayan bir ajan düşünün. Adımlar yine nettir: önce anahtar bilgiyi çıkar (müşteri tam olarak ne sipariş etmiş, adı ne?), ardından ilgili müşteri kayıtlarını bul ve son olarak, e-posta gönderilmeden önce bir <strong>insanın inceleyeceği</strong> bir yanıt taslağı hazırla.</p>
+<div class="scenario">
+<p class="ask">&ldquo;Mavi bir blender sipariş ettim ama kırmızı bir tost makinesi geldi. Yardım eder misiniz?&rdquo;</p>
+<ol>
+<li>Anahtar bilgiyi çıkar (hangi sipariş, hangi ürün).</li>
+<li>İlgili müşteri kayıtlarını bul.</li>
+<li>İnsan incelemesi için yanıt taslağı hazırla.</li>
+</ol>
+</div>
+<p>Bu süreç adım adım uygulanır: e-posta modele verilir, model sipariş ayrıntılarını doğrular; e-posta bir siparişle ilgiliyse model bir <strong>sipariş veritabanı sorgusu</strong> aracı çağırarak bilgiyi çeker. Bu bilgi tekrar modele gider, model bir yanıt taslağı yazar ve bir <strong>inceleme isteği</strong> aracı kullanarak taslağı insanların onaylaması için bir kuyruğa koyar; onaydan sonra yanıt gönderilir.</p>
+<div class="diagram">
+<p class="diagram-title">Müşteri e-postasını yanıtlama akışı</p>
+<p class="diagram-sub">Net süreç; ama bir &ldquo;insan onayı&rdquo; adımıyla biter. Araçlar ilgili model adımının yanında bir havuzdan seçilir.</p>
+<div class="toolpool-row">
+<div class="tool-pool"><span class="tool-pool-label">Araçlar</span><span class="tool-chip">sipariş veritabanı sorgusu</span></div>
+<div class="tool-pool"><span class="tool-pool-label">Araçlar</span><span class="tool-chip">inceleme isteği</span></div>
+</div>
+<div class="node-flow">
+<div class="node-col"><div class="node node-user">E-posta</div><div class="node-cap">Girdi</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Sipariş ayrıntılarını doğrula</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">sipariş veritabanı sorgusu</div><div class="node-cap">Kaydı çek</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Yanıt taslağı, inceleme iste</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">inceleme isteği</div><div class="node-cap">Kuyruğa al</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-out">İnsan onayı</div><div class="node-cap">Gönderim</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Dış yazılım / araç</span>
+</div>
+</div>
+<p>Bu tür sipariş sorgu ajanları bugün birçok işletmede kurulup kullanılmaktadır. Önceki örnekten tek farkı, sürecin sonuna eklenen <strong>insan onayı</strong> adımıdır; ama temel mantık aynı kalır: net bir süreci adım adım yürütmek.</p>
+
+<h3 id="daha-zorlu-acik-uclu-musteri-hizmetleri">Daha zorlu: açık uçlu müşteri hizmetleri</h3>
+<p>Şimdi yalnızca bir siparişle ilgili değil, müşterinin sorabileceği <strong>her türlü soruya</strong> yanıt veren bir müşteri hizmetleri ajanı düşünün. İşte burada zorluk başlar: gerekli adımlar artık baştan belli değildir; modelin bunları kendisi planlaması gerekir.</p>
+<div class="scenario">
+<p class="ask">&ldquo;Siyah kot veya mavi kot var mı?&rdquo;</p>
+<ol>
+<li>Stokta siyah kot olup olmadığını kontrol et.</li>
+<li>Stokta mavi kot olup olmadığını kontrol et.</li>
+<li>Müşteriye yanıt ver.</li>
+</ol>
+</div>
+<p>Bu soruyu yanıtlamak için veritabanına <strong>birden çok</strong> sorgu yapmak gerekir; üstelik bu sorguların sırasını model planlamak zorundadır. Daha da açık uçlu bir örnek, bir iade talebidir:</p>
+<div class="scenario">
+<p class="ask">&ldquo;Satın aldığım plaj havlusunu iade etmek istiyorum.&rdquo;</p>
+<ol>
+<li>Müşterinin gerçekten o havluyu satın aldığını doğrula.</li>
+<li>İade politikalarını kontrol et (örneğin yalnızca 30 gün içinde ve kullanılmamışsa).</li>
+<li>İadeye izin veriliyorsa:
+<ol class="sub">
+<li>Bir iade kargo fişi düzenle.</li>
+<li>Veritabanı kaydını &ldquo;iade bekliyor&rdquo; olarak ayarla.</li>
+</ol>
+</li>
+</ol>
+</div>
+<div class="warn-card">
+<h3 id="buradaki-kritik-ayrim">Buradaki kritik ayrım</h3>
+<p>Bu örneklerde <strong>gerekli adımlar önceden bilinmez</strong>. Modelin, talebe uygun yanıt verebilmek için &ldquo;şu üç adım gerekiyor&rdquo; kararını kendisinin vermesi gerekir. Adımları çalışma anında planlamak zorunda olmak, süreci daha zor, daha az öngörülebilir ve daha az güvenilir kılar.</p>
+</div>
+
+<h3 id="en-zor-uc-gorsel-bilgisayar-kullanimi">En zor uç: görsel bilgisayar kullanımı</h3>
+<p>Kurulması özellikle güç bir ajan türü, <strong>bilgisayar kullanımı</strong> yapan ajanlardır. Bu ajanlar bir web tarayıcısını kullanmaya ve bir web sayfasını &ldquo;okuyarak&rdquo; karmaşık bir görevi nasıl yapacağına karar vermeye çalışır. Örneğin bir ajandan, iki belirli uçuşta boş koltuk olup olmadığını kontrol etmesi istenebilir; ajanın bunu yapmak için bir web tarayıcısına erişimi vardır.</p>
+<p>Böyle bir ajan, bir havayolu sitesinde bağımsız biçimde gezinir, sayfa ögelerine tıklar ve metin alanlarını doldurarak istenen aramayı yapar. Çalışırken, sonraki adımını belirlemek için sayfanın içeriği üzerinde akıl yürütür. Bir sitede sorun yaşarsa, başka bir uçuş arama sitesine geçip uygun uçuşları orada bulabilir, sonra geri dönerek sorulan uçuşlarda koltuk olup olmadığını belirleyebilir.</p>
+<div class="note-card">
+<h3 id="neden-bu-kadar-zor">Neden bu kadar zor?</h3>
+<p>Bilgisayar kullanımı heyecan verici ve önemli bir araştırma alanıdır; ancak henüz kritik uygulamalarda güvenilir değildir. Örneğin bir sayfa yavaş yüklenirse ajan ne olduğunu anlamayabilir; birçok web sayfası hâlâ ajanların doğru okumakta zorlandığı yapıdadır. Yani bu uç, gelecekteki gelişmeler için umut verici olsa da bugün en kırılgan olandır.</p>
+</div>
+</section>
+
+<section><h2 id="hangi-gorevler-agentic-yapay-zekaya-uygundur">Hangi Görevler Agentic Yapay Zekâya Uygundur?</h2>
+<p>Dört örnekten çıkan dersi tek bir çerçevede toplayabiliriz. Bir görevi agentic akış için <strong>daha kolay</strong> ya da <strong>daha zor</strong> kılan üç eksen vardır.</p>
+<div class="spectrum">
+<div class="spectrum-head"><div class="easy">Daha kolay</div><div class="hard">Daha zor</div></div>
+<div class="spectrum-row"><div class="easy">Net, adım adım bir süreç</div><div class="hard">Adımlar baştan belli değil</div></div>
+<div class="spectrum-row"><div class="easy">İzlenecek standart prosedürler</div><div class="hard">İlerledikçe planla / çöz</div></div>
+<div class="spectrum-row"><div class="easy">Yalnızca metin temelli içerik</div><div class="hard">Çok kipli (ses, görüntü)</div></div>
+</div>
+<p>Kolay uçta, görevin net bir adım adım süreci vardır veya işletmenin zaten izlediği standart bir prosedür bulunur; bu prosedürü bir ajana kodlamak epey iş olsa da sonuç genellikle daha kolay ve güvenilir bir uygulamadır. Bir başka kolaylaştırıcı etken, yalnızca <strong>metin</strong> temelli içerikle çalışmaktır; çünkü dil modelleri esas olarak metin işleyerek gelişmiştir. Zor uçta ise adımlar baştan bilinmez (model ilerledikçe planlamak zorundadır) ve ses, görüntü gibi <strong>çok kipli</strong> girdiler işin güvenilirliğini düşürür.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Agentic AI her görevi aynı güvenilirlikte yapar.&rdquo;</strong> Hayır; görevin uygunluğu süreç netliğine, prosedüre ve kipliğe göre belirgin biçimde değişir.</li>
+<li><strong>&ldquo;Net süreçli görevler önemsizdir.&rdquo;</strong> Tam tersine, fatura işleme gibi net süreçli işler bugün en güvenilir ve yaygın uygulamalardır.</li>
+<li><strong>&ldquo;İnsan onayı, otomasyonun başarısızlığıdır.&rdquo;</strong> Aksine, müşteriye gidecek yanıtlarda insan onayı bilinçli ve değerli bir tasarım adımıdır.</li>
+<li><strong>&ldquo;Adımları model planlasın, daha akıllıca olur.&rdquo;</strong> Adımların baştan belli olmaması esneklik katar ama güvenilirliği düşürür; mümkünse net süreç tercih edilir.</li>
+<li><strong>&ldquo;Bilgisayar kullanan ajanlar artık hazır.&rdquo;</strong> Umut verici olsa da bu alan henüz kritik uygulamalar için yeterince güvenilir değildir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Agentic iş akışlarıyla kurulabilecek uygulamalar geniş bir yelpazeye yayılır. Kolay uçta, fatura işleme ve sipariş e-postalarını yanıtlama gibi <strong>net süreçli</strong> görevler bulunur; bunlar adım adım, güvenilir biçimde uygulanır ve bugün birçok işletmede çalışmaktadır. Bu örneklere bir <strong>insan onayı</strong> adımı eklemek, müşteriye gidecek çıktılarda güveni artırır.</p>
+<p>Yelpazenin zor ucuna doğru gittikçe işler belirsizleşir: açık uçlu müşteri hizmetlerinde model gerekli adımları <strong>kendisi planlamak</strong> zorundadır; bilgisayar kullanımında ise ajan bir ekranı görüp yorumlayarak hareket eder. Bu uç heyecan verici olsa da bugün en az güvenilir olandır. Bir görevi agentic akış için kolay ya da zor kılan üç eksen &mdash; süreç netliği, standart prosedür ve metin/çok kiplilik &mdash; akılda tutulduğunda, hangi işin nereden başlanmaya değer olduğu daha kolay görülür.</p>
+<p>Tüm bu örneklerde değişmeyen tek beceri şudur: karmaşık bir iş akışına bakıp onu <strong>tek tek adımlara ayırabilmek</strong> ve her adımı sırayla yürütecek bir akış kurabilmek.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#agentic-yapay-zeka-uygulamalari" class="toc-h1">Agentic Yapay Zekâ Uygulamaları</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#kolay-uc-fatura-isleme" class="toc-h3">Kolay uç: fatura işleme</a>
+<a href="#cikarilacak-dort-alan" class="toc-h3">Çıkarılacak dört alan</a>
+<a href="#biraz-daha-zor-musteri-e-postasini-yanitlama" class="toc-h3">Biraz daha zor: müşteri e-postasını yanıtlama</a>
+<a href="#daha-zorlu-acik-uclu-musteri-hizmetleri" class="toc-h3">Daha zorlu: açık uçlu müşteri hizmetleri</a>
+<a href="#buradaki-kritik-ayrim" class="toc-h3">Buradaki kritik ayrım</a>
+<a href="#en-zor-uc-gorsel-bilgisayar-kullanimi" class="toc-h3">En zor uç: görsel bilgisayar kullanımı</a>
+<a href="#neden-bu-kadar-zor" class="toc-h3">Neden bu kadar zor?</a>
+<a href="#hangi-gorevler-agentic-yapay-zekaya-uygundur" class="toc-h2">Hangi Görevler Agentic Yapay Zekâya Uygundur?</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Araç Kullanımı Nedir?</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--code-bg:#f7f7f7; --code-surface:#f7f7f7; --code-text:#000000; --code-muted:#4b5563; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-class:#000000; --code-builtin:#008000; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel,.output-comment{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4,.output-comment h4{display:block;margin:0 0 0.4rem;counter-increment:none;}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:25%;} .term-table td.term{white-space:nowrap;font-weight:600;}
+.ex-table{min-width:720px;} .ex-table col.ex-prompt{width:32%;} .ex-table col.ex-tool{width:38%;} .ex-table col.ex-out{width:30%;}
+.ex-table td.mono,.ex-table td .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.86rem;white-space:pre-wrap;overflow-wrap:anywhere;color:#111;}
+.ex-table .ex-sep{display:inline-block;margin:0.15rem 0;color:var(--lesson-muted);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-style:italic;font-size:0.82rem;}
+code:not(.code-body code):not(.output-body code){padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span:not(.bp-num){color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-0.5rem;width:0.55rem;height:2px;background:var(--dlai-coral);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* tool-flow diagram (HTML/CSS reconstruction) */
+.flow-wrap{margin:1.2rem 0;padding:1.1rem 1.05rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:var(--lesson-soft);}
+.flow-wrap .flow-title{display:block;margin:0 0 0.85rem;font-weight:700;color:var(--lesson-text);font-size:0.98rem;}
+.flow-chain{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:0.45rem;}
+.flow-node{display:flex;flex-direction:column;justify-content:center;min-width:7rem;max-width:18rem;padding:0.65rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.6rem;background:#fff;font-size:0.85rem;line-height:1.4;color:var(--lesson-text);overflow-wrap:anywhere;word-break:break-word;box-shadow:0 1px 2px rgba(17,24,39,0.04);}
+.flow-node.is-prompt{background:var(--dlai-coral-soft);border-color:var(--dlai-coral);}
+.flow-node.is-llm{background:var(--lesson-soft-2);border-color:var(--lesson-border-strong);text-align:center;align-items:center;font-weight:700;min-width:4.4rem;}
+.flow-node.is-tool{background:#fff;border:1.5px solid var(--dlai-coral);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.78rem;color:var(--accent-dark);max-width:none;flex-shrink:0;}
+.flow-node.is-tool small{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;}
+.flow-node.is-data{background:var(--dlai-coral-muted);border-style:dashed;border-color:var(--dlai-coral);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.8rem;color:#111;}
+.flow-node.is-output{background:var(--lesson-soft-2);border-color:var(--lesson-border-strong);}
+.flow-node small{display:block;margin-top:0.28rem;color:var(--lesson-muted);font-size:0.74rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-weight:400;}
+.flow-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-size:1.1rem;font-weight:700;padding:0 0.05rem;}
+.toolbox{position:relative;align-self:center;padding:0.55rem 0.7rem 0.6rem;border:1.5px dashed var(--lesson-border-strong);border-radius:0.55rem;background:#fff;text-align:center;}
+.toolbox .toolbox-label{display:block;margin-bottom:0.35rem;font-size:0.74rem;font-weight:700;color:var(--lesson-muted);letter-spacing:0.02em;text-transform:uppercase;}
+.toolbox .tool-chip{display:inline-block;margin:0.12rem;padding:0.22rem 0.5rem;border:1.5px solid var(--dlai-coral);border-radius:0.4rem;background:var(--dlai-coral-muted);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.76rem;color:var(--accent-dark);}
+.toolbox .tool-chip.is-picked{background:var(--dlai-coral);color:#fff;}
+.flow-stack{display:flex;flex-direction:column;align-items:center;gap:0.35rem;}
+.flow-stack .flow-connector{width:2px;height:0.85rem;background:var(--dlai-coral);}
+.flow-caption{margin:0.75rem 0 0;color:var(--lesson-muted);font-size:0.9rem;line-height:1.5;}
+/* code cells */
+.walk-card{margin:1.9rem 0 2.1rem;}
+.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1.05rem 0;background:transparent;}
+.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#c2384a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.code-head{position:absolute;top:0.35rem;right:0.45rem;z-index:2;display:flex;justify-content:flex-end;}
+.copy-btn{border:1px solid #c4c8cf;border-radius:0.35rem;background:rgba(255,255,255,0.92);color:#374151;cursor:pointer;font-size:0.78rem;padding:0.22rem 0.5rem;}
+.copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.code-body,.output-body{margin:0;color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.55;tab-size:4;}
+.code-body{grid-column:2;padding:0.72rem 5.2rem 0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0.2rem;background:var(--code-bg);white-space:pre;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.code-body::-webkit-scrollbar{height:10px;}
+.code-body::-webkit-scrollbar-track{background:#f2f2f2;border-top:1px solid #e3e3e3;}
+.code-body::-webkit-scrollbar-thumb{background:#c4c4c4;border:2px solid #f2f2f2;border-radius:6px;}
+.code-body::-webkit-scrollbar-thumb:hover{background:#9ca3af;}
+.code-body code{font-family:inherit;display:block;width:max-content;min-width:100%;}
+.code-line{display:block;width:max-content;min-width:100%;padding:0 0.25rem;border-radius:0.18rem;white-space:pre;}
+.code-line:empty::before{content:"\00a0";}
+.code-line[data-note]{cursor:help;}
+.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff7d6;outline:0;}
+.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid var(--dlai-coral);border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease;}
+.line-tooltip.is-visible{opacity:1;transform:translateY(0);}
+.line-tooltip .tooltip-section{display:block;font-weight:400;}
+.line-tooltip .tooltip-section + .tooltip-section{margin-top:0.55rem;padding-top:0.55rem;border-top:1px solid #eaeef2;}
+.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,monospace;font-size:12.5px;}
+.output-card{display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1rem 0;background:transparent;}
+.output-card::before{content:"Out [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#9f1239;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.output-head{grid-column:2;padding:0.42rem 0.55rem;border:1px solid var(--code-border);border-bottom:0;border-radius:0.2rem 0.2rem 0 0;background:var(--code-surface);color:var(--code-muted);font-size:0.78rem;}
+.output-body{grid-column:2;padding:0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0 0 0.2rem 0.2rem;background:var(--code-bg);}
+.output-body pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.5;color:#000;}
+.output-body:not(.output-visual){max-height:30rem;overflow:auto;scrollbar-gutter:stable;scrollbar-color:#b8b8b8 #f2f2f2;}
+.output-body:not(.output-visual)::-webkit-scrollbar{width:11px;height:11px;}
+.output-body:not(.output-visual)::-webkit-scrollbar-track{background:#f2f2f2;border-left:1px solid #d9d9d9;}
+.output-body:not(.output-visual)::-webkit-scrollbar-thumb{background:#b8b8b8;border:2px solid #f2f2f2;border-radius:6px;}
+.output-comment{margin:0.6rem 0 1rem 4.95rem;background:#fff;}
+.output-comment p{margin:0;color:var(--lesson-muted);font-size:0.97rem;line-height:1.6;}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin:0.9rem 0 0.9rem 4.95rem;}
+.mini-panel{margin:0;background:var(--lesson-soft);}
+.mini-panel p{margin:0;color:var(--lesson-muted);font-size:0.95rem;}
+.mini-panel h4{color:var(--accent-dark);}
+.tok-keyword{color:var(--code-keyword);font-weight:700;} .tok-string{color:var(--code-string);}
+.tok-comment{color:var(--code-comment);font-style:italic;} .tok-function{color:var(--code-function);}
+.tok-attribute{color:var(--code-function);} .tok-number{color:var(--code-number);}
+.tok-class{color:var(--code-function);} .tok-name{color:var(--code-class);}
+.tok-builtin{color:var(--code-builtin);} .tok-operator{color:var(--code-operator);}
+@media (max-width:860px){.bp-flow,.comparison-grid,.insight-grid,.explain-grid{grid-template-columns:1fr;} .bp-step:not(:last-child)::after{display:none;}}
+@media (max-width:680px){
+.flow-chain{flex-direction:column;align-items:stretch;}
+.flow-node,.flow-node.is-llm{max-width:none;width:100%;text-align:left;}
+.flow-arrow{transform:rotate(90deg);}
+.toolbox{align-self:stretch;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.code-card,.output-card{grid-template-columns:minmax(0,1fr);}
+.code-card::before,.output-card::before{grid-column:1;grid-row:auto;padding:0 0 0.25rem;text-align:left;}
+.code-body,.output-head,.output-body{grid-column:1;}
+.code-head{top:1.7rem;} .code-body{padding:0.85rem 4.85rem 0.85rem 0.85rem;font-size:0.84rem;}
+.output-comment,.explain-grid{margin-left:0;}
+.line-tooltip{max-width:calc(100vw - 32px);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-3-Tool-Use/M3-1-What-Are-Tools/M3-1-What-Are-Tools.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Araç Kullanımı Nedir?</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="arac-kullanimi-nedir">Araç Kullanımı Nedir?</h1>
+<p class="lead-text">Bir dil modeline işlev (fonksiyon) verip, modelin <em>ne zaman</em> bu işlevi çağırmak istediğine kendisinin karar vermesini sağlamak: tıpkı bir insanın çıplak elinden çok daha fazlasını aletlerle başarması gibi, bir dil modeli de araçlarla çok daha yetenekli hâle gelir.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu derste, dil modellerinin <strong>araç kullanımı (tool use)</strong> dediğimiz yeteneği ele alınır. Araç kullanımı, kısaca, dil modeline bir dizi işlev (fonksiyon) sunmak ve modele şu yetkiyi vermektir: <em>uygun gördüğü anda</em> bu işlevlerden birini çağırmayı talep etmek. Bu işlev bir eylem gerçekleştirebilir, bir bilgi toplayabilir ya da başka bir görevi yerine getirebilir.</p>
+<p>Buradaki kritik nokta, modelin işlevi <strong>doğrudan kendisinin çalıştırmaması</strong>, yalnızca çağrılmasını <em>talep etmesi</em>dir. Yani model, “şu işlevi şu argümanlarla çağırmak istiyorum” der; işlevi gerçekte çalıştırıp sonucu modele geri besleyen taraf, uygulamayı kuran geliştiricidir. Bu ince ayrım, dersin tamamında tekrar tekrar karşımıza çıkacaktır.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-fikri">Bu Dersin Ana Fikri</h3><p>Eğitimi aylar önce tamamlanmış bir dil modeline “şu an saat kaç?” diye sorarsanız, model güncel saati bilemez. Ona bir saat işlevi verirseniz ise model, gerektiğinde bu işlevi çağırmayı talep ederek çok daha kullanışlı bir yanıt üretebilir. Araç kullanımı, modelin kendi eğitildiği bilgiyle sınırlı kalmasını engelleyip onu dış dünyaya ve canlı verilere bağlayan köprüdür.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2><ul>
+<li>Bir dil modeli bağlamında “araç” ve “araç kullanımı” kavramlarını tanımlayabilmek.</li>
+<li>Modelin bir işlevi <em>çalıştırmak</em> ile çağrılmasını <em>talep etmek</em> arasındaki farkı açıklayabilmek.</li>
+<li>Tek bir aracın baştan sona çalışma sırasını (istem → model → araç çağrısı → sonuç → model → çıktı) adım adım izleyebilmek.</li>
+<li>Modelin bir aracı <em>kullanmama</em> kararını da neden verebileceğini ve bunun neden önemli olduğunu açıklayabilmek.</li>
+<li>Geliştiricinin sabit kodladığı (hard-coded) bir adım ile modele bırakılan araç seçimi arasındaki ayrımı kavramak.</li>
+<li>Tek araçlı durumlardan, modelin birden çok araç arasından seçim yaptığı çok adımlı akışlara geçişi izleyebilmek.</li>
+</ul></section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2><ul>
+<li>Bir işlevin (fonksiyon) ne olduğu, argüman aldığı ve bir değer döndürdüğüne dair temel fikir.</li>
+<li>Bir dil modeline istem (prompt) gönderip metin yanıtı alma kavramı.</li>
+<li>Python’da basit bir işlev tanımını okuyabilecek düzeyde temel sözdizimi aşinalığı.</li>
+<li>Bir uygulamanın bir veritabanını sorgulayabileceği ya da web’de arama yapabileceği gibi genel kavramlara aşinalık.</li>
+</ul></section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table"><colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Araç (tool)</td><td>Dil modeline sunulan ve modelin çağrılmasını isteyebileceği bir işlev (fonksiyon).</td><td>Araç, modelin parçası değildir; geliştiricinin sağladığı dış bir yetenektir.</td></tr>
+<tr><td class="term">Araç kullanımı</td><td>Modelin uygun gördüğünde bir işlevin çağrılmasını talep etmesi.</td><td>Model işlevi çalıştırmaz; yalnızca çağrı <em>talebinde</em> bulunur.</td></tr>
+<tr><td class="term">Araç çağrısı talebi</td><td>Modelin “şu işlevi şu argümanlarla çağır” biçimindeki isteği.</td><td>Talep ile fiili çalıştırma birbirinden ayrıdır.</td></tr>
+<tr><td class="term">Araç kümesi</td><td>Modele aynı anda sunulan bir veya birden çok işlevin tamamı.</td><td>Kesik çizgili kutu, modele verilen bu kümeyi simgeler.</td></tr>
+<tr><td class="term">Sabit kodlama</td><td>Geliştiricinin bir adımı her zaman çalışacak biçimde önceden belirlemesi.</td><td>Araç kullanımının tersi; karar modele değil geliştiriciye aittir.</td></tr>
+<tr><td class="term">Konuşma geçmişi</td><td>Aracın döndürdüğü sonucun modele geri beslendiği bağlam.</td><td>Model nihai yanıtı bu geri beslenen sonuca dayanarak üretir.</td></tr>
+</tbody></table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Araç kullanımının özünü tek bir cümlede toplamak mümkündür: model, kendisine sunulan araçlara bakar, görevin gerektirip gerektirmediğine karar verir ve gerekiyorsa bir aracın çağrılmasını ister; dönen sonuç modele geri beslenir ve model nihai yanıtını buna göre oluşturur. Aşağıdaki dört adım, dersin omurgasını tek bakışta gösterir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>İstem gelir</strong><span>Kullanıcının sorusu modele iletilir; model sunulan araç kümesini de görür.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Model karar verir</strong><span>Yanıtı tek başına verebilir ya da bir aracın çağrılmasını talep edebilir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Araç çalışır</strong><span>İşlev çalıştırılır, bir değer döndürür ve bu değer modele geri beslenir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Model yanıtlar</strong><span>Geri beslenen sonuçla birlikte model son, kullanışlı yanıtını üretir.</span></div>
+</div></div>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Sabit kodlanmış adım</h4><ul><li>Karar geliştiriciye aittir.</li><li>Belirli noktada her zaman aynı eylem yapılır (örneğin “burada hep web araması yap”).</li><li>Önceki derslerdeki araştırma ajanı bu mantığa örnektir.</li></ul></div>
+<div class="cmp-card"><h4>Modele bırakılan araç seçimi</h4><ul><li>Karar modele aittir.</li><li>Model aracı çağırıp çağırmamayı duruma göre seçer.</li><li>Bu derste odaklandığımız esnek yaklaşım budur.</li></ul></div>
+</div>
+<p>Derste benimsenen <strong>kesik çizgili kutu</strong> gösterimi, modele bir araç kümesi sunulduğunu ve seçimin modele bırakıldığını simgeler. Bu, geliştiricinin bir eylemi sabit olarak gömdüğü duruma karşıt bir işarettir: kesik kutu varsa, “bu araçları sana veriyorum, gerekirse kullan” demektir.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="arac-kullanimi-tam-olarak-ne-demek">Araç kullanımı tam olarak ne demek?</h3>
+<p>İnsanlar çekiç, pense ve anahtar gibi aletlerle çıplak elden çok daha fazlasını başarır. Dil modelleri için de durum benzerdir; yalnızca aletlerin yerini <strong>işlevler</strong> alır. Bir dil modeline çağırabileceği işlevler sunduğunuzda, modelin tek başına metin üretmekten çok daha geniş bir yetenek alanı açılır. Araç kullanımı dediğimiz şey, modelin bu işlevlerden birini <em>uygun gördüğü anda</em> çağırmayı talep etmesidir; araçlar ise modele sunduğumuz, çağrılmasını isteyebileceği işlevlerden başka bir şey değildir.</p>
+<p>Klasik örnek, güncel saat sorusudur. Aylar önce eğitilmiş bir model şu an saatin kaç olduğunu bilemez; doğru davranış, “üzgünüm, güncel saate erişimim yok” demektir. Ona bir saat işlevi verdiğinizde ise model, gerektiğinde bu işlevi çağırarak gerçek saati öğrenip yanıtlayabilir.</p>
+
+<h3 id="basit-arac-calistirma-adim-adim">Basit araç çalıştırma: adım adım</h3>
+<p>Modele aşağıdaki <code>get_current_time</code> işlevini araç olarak sunduğumuzu düşünelim. Kullanıcı “saat kaç?” diye sorduğunda model bu işlevin çağrılmasına karar verebilir. İşlev güncel saati döndürür; bu değer konuşma geçmişine geri beslenir ve model nihayet “saat 15.20” gibi bir yanıt üretir. İşte bu derste karşımıza çıkan tek gerçek işlev:</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` modülünün `datetime` sınıfını içe aktarır; güncel zamanı bu sınıfla okuyacağız." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Argüman almayan bir işlev tanımlar; modele &ldquo;araç&rdquo; olarak sunulacak olan budur." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>()<span class="tok-operator">:</span></span><span class="code-line" data-note="Tek satırlık docstring: işlevin ne döndürdüğünü kısaca açıklar; model bu açıklamayı aracın amacını anlamak için kullanabilir." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns the current time as a string&quot;&quot;&quot;</span></span><span class="code-line" data-note="`datetime.now()` o anki zamanı verir; `strftime` ile saat:dakika:saniye biçiminde bir metne çevrilip döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>()<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+<div class="explain-grid">
+<div class="mini-panel"><h4>İşlev neden bu kadar küçük?</h4><p>Bir araç, modelin kendi başına yapamadığı tek bir işi yapacak kadar yalın olabilir. Burada tek iş, sistemden güncel saati alıp okunabilir bir metin olarak döndürmektir.</p></div>
+<div class="mini-panel"><h4>Modelin rolü ne?</h4><p>Model bu kodu çalıştırmaz; yalnızca “<code>get_current_time</code> çağrılsın” talebinde bulunur. İşlevi çalıştırıp sonucu modele geri besleyen taraf uygulamadır.</p></div>
+</div>
+
+<p>Araç kullanımının adımlarını bir akış olarak görmek, mantığı kalıcı kılar. Önce istem gelir; model eldeki araç kümesine bakar; bu örnekte saat işlevini çağırmaya karar verir; işlev bir değer (örneğin <code>15:20:45</code>) döndürür; bu değer modele geri beslenir; model de son yanıtını üretir.</p>
+<div class="flow-wrap">
+<span class="flow-title">Akış &mdash; “Saat kaç?” sorusunda araç çağrısı</span>
+<div class="flow-stack">
+<div class="toolbox"><span class="toolbox-label">Araçlar</span><span class="tool-chip is-picked">get_current_time</span></div>
+<div class="flow-connector"></div>
+<div class="flow-chain">
+<div class="flow-node is-prompt">Saat kaç?<small>kullanıcı istemi</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-tool">get_current_time<small>araç çağrısı talebi</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-data">15:20:45<small>dönen değer</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-output">Saat 15.20.<small>son yanıt</small></div>
+</div>
+</div>
+<p class="flow-caption">Kesik çizgili kutu, modele sunulan araç kümesini gösterir. Modelin işlevi çağırması, döndürülen değerin geri beslenmesi ve nihai yanıtın üretilmesi tek bir zincir hâlinde ilerler.</p>
+</div>
+
+<h3 id="model-araci-kullanmamayi-da-secebilir">Model aracı kullanmamayı da seçebilir</h3>
+<p>Araç kullanımının en önemli yönlerinden biri, kararın modele bırakılabilmesidir. Aynı araç kümesi eldeyken kullanıcı “yeşil çayda ne kadar kafein var?” diye sorarsa, model bu soruyu yanıtlamak için güncel saati bilmek zorunda değildir. Dolayısıyla saat işlevini hiç çağırmadan doğrudan yanıt üretir.</p>
+<div class="flow-wrap">
+<span class="flow-title">Akış &mdash; Aracın gereksiz olduğu durumda model onu çağırmaz</span>
+<div class="flow-stack">
+<div class="toolbox"><span class="toolbox-label">Araçlar</span><span class="tool-chip">get_current_time</span></div>
+<div class="flow-connector"></div>
+<div class="flow-chain">
+<div class="flow-node is-prompt">Yeşil çayda ne kadar kafein var?<small>kullanıcı istemi</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-output">Yeşil çay genellikle fincan başına 25&ndash;50 mg kafein içerir&hellip;<small>doğrudan yanıt, araç çağrısı yok</small></div>
+</div>
+</div>
+<p class="flow-caption">Saat işlevi hâlâ sunulu olsa da model onu çağırmaz; çünkü soru aracın bilgisini gerektirmez. Bu, aracı çağırıp çağırmama kararının modele ait olduğunu net biçimde gösterir.</p>
+</div>
+<div class="note-card"><h3 id="sabit-kodlama-ile-arac-seciminin-farki">Sabit kodlama ile araç seçiminin farkı</h3><p>Önceki bir örnekte geliştirici, araştırma ajanında belirli bir noktada <em>her zaman</em> web araması yapılacağını koda gömmüştü. Saat işlevi çağrısı ise bu şekilde sabit değildir: işlevi çağırıp çağırmamak modelin kararıdır. Kesik çizgili kutu gösterimi tam da bu “modele bir veya birden çok araç veriyorum, hangisini (varsa) kullanacağına kendisi karar versin” durumunu işaret eder.</p></div>
+</section>
+
+<section><h2 id="araclarin-ornekleri">Araçların Örnekleri</h2>
+<p>Bir geliştirici olarak göreviniz, uygulamanızın gerçekte hangi işleri yapmasını istediğinizi düşünmek ve bu işleri mümkün kılacak işlevleri (araçları) modele sunmaktır. Uygulamanın türüne göre sunacağınız araçlar değişir: bir restoran öneri uygulaması, bir perakende soru-yanıt sistemi ya da bir finans asistanı, birbirinden farklı araçlara ihtiyaç duyar. Aşağıdaki örnekler, doğru aracın sunulduğunda modelin nasıl daha iyi yanıtlar ürettiğini gösterir.</p>
+<div class="table-wrap"><table class="ex-table"><colgroup><col class="ex-prompt"><col class="ex-tool"><col class="ex-out"></colgroup>
+<thead><tr><th>İstem</th><th>Araç çağrısı</th><th>Çıktı</th></tr></thead>
+<tbody>
+<tr>
+<td>Mountain View, California yakınında İtalyan restoranları bulabilir misin?</td>
+<td class="mono"><span class="tok-function">web_search</span>(<span class="tok-name">query</span><span class="tok-operator">=</span><span class="tok-string">"restaurants near Mountain View, CA"</span>)</td>
+<td>Spaghetti City, Mountain View’da bir İtalyan restoranıdır&hellip;</td>
+</tr>
+<tr>
+<td>Bana beyaz güneş gözlüğü satın alan müşterileri göster.</td>
+<td class="mono"><span class="tok-function">query_database</span>(<span class="tok-name">table</span><span class="tok-operator">=</span><span class="tok-string">"sales"</span>, <span class="tok-name">product</span><span class="tok-operator">=</span><span class="tok-string">"sunglasses"</span>, <span class="tok-name">color</span><span class="tok-operator">=</span><span class="tok-string">"white"</span>)</td>
+<td>28 müşteri beyaz güneş gözlüğü satın aldı. İşte listeleri&hellip;</td>
+</tr>
+<tr>
+<td>%5 faizle 500 dolar yatırırsam 10 yıl sonra ne kadar param olur?</td>
+<td class="mono"><span class="tok-function">interest_calc</span>(<span class="tok-name">principal</span><span class="tok-operator">=</span><span class="tok-number">500</span>, <span class="tok-name">interest_rate</span><span class="tok-operator">=</span><span class="tok-number">5</span>, <span class="tok-name">years</span><span class="tok-operator">=</span><span class="tok-number">10</span>)
+<span class="ex-sep">&mdash; ya da &mdash;</span>
+<span class="tok-function">eval</span>(<span class="tok-string">"500 * (1 + 0.05) ** 10"</span>)</td>
+<td>$814.45</td>
+</tr>
+</tbody></table></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Web araması</strong><span>Modelin eğitim verisinde olmayan güncel, yerel bilgiyi getirir.</span></div>
+<div class="insight-card"><strong>Veritabanı sorgusu</strong><span>Kurumun kendi kayıtlarına dayanan kesin yanıtlar üretmeyi sağlar.</span></div>
+<div class="insight-card"><strong>Hesaplama</strong><span>Sayısal sonucu özel bir işlevle ya da bir ifadeyi değerlendirerek elde eder.</span></div>
+</div>
+<p>Üçüncü örnek ayrıca ilginç bir alternatif gösterir: modele özel bir faiz hesaplama işlevi vermek yerine, ona bir matematiksel ifade yazdırıp bu ifadeyi değerlendirmek de mümkündür. Bu, ileride göreceğimiz “modele kod yazdırıp çalıştırma” fikrinin küçük bir habercisidir.</p>
+</section>
+
+<section><h2 id="arac-agent-ve-etkilesim-mantigi">Araç, Agent ve Etkileşim Mantığı</h2>
+<p>Buraya kadarki örneklerin çoğunda modele yalnızca tek bir araç sunduk. Oysa pek çok kullanım durumunda, modele <strong>birden çok araç</strong> sunmak ve hangisini (varsa hangilerini) çağıracağına onun karar vermesini istemek gerekir. Bir takvim asistanı bunun tipik örneğidir.</p>
+<p>Diyelim ki kullanıcı şunu istiyor: “Perşembe günü takvimimde boş bir aralık bul ve Alice ile bir randevu oluştur.” Bu asistana üç araç sunabiliriz: takvimi kontrol etmek için <code>check_calendar</code>, randevu oluşturup davet göndermek için <code>make_appointment</code> ve gerekirse mevcut bir kaydı silmek için <code>delete_appointment</code>. Model, eldeki araçlar arasından önce takvimi kontrol etmeye karar verir; dönen boş aralıklara bakarak bir saat seçer; ardından randevu oluşturma işlevini çağırır ve sonunda kullanıcıya onay verir.</p>
+<div class="flow-wrap">
+<span class="flow-title">Akış &mdash; Çok araçlı takvim asistanı</span>
+<div class="flow-stack">
+<div class="toolbox"><span class="toolbox-label">Araçlar</span><span class="tool-chip is-picked">check_calendar</span><span class="tool-chip">make_appointment</span><span class="tool-chip">delete_appointment</span></div>
+<div class="flow-connector"></div>
+<div class="flow-chain">
+<div class="flow-node is-prompt">Perşembe takvimimde boş bir aralık bul ve Alice ile randevu oluştur.<small>kullanıcı istemi</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-tool">check_calendar<small>1. araç çağrısı</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-data">Perşembe 15.00
+Perşembe 16.00
+Perşembe 18.00 &hellip;<small>boş aralıklar</small></div>
+</div>
+<div class="flow-connector"></div>
+<div class="toolbox"><span class="toolbox-label">Araçlar</span><span class="tool-chip">check_calendar</span><span class="tool-chip is-picked">make_appointment</span><span class="tool-chip">delete_appointment</span></div>
+<div class="flow-connector"></div>
+<div class="flow-chain">
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-tool">make_appointment<small>2. araç çağrısı</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-data">Meeting created successfully!<small>işlevin döndürdüğü onay</small></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-llm">LLM</div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-node is-output">Randevun Perşembe 15.00’te Alice ile oluşturuldu.<small>son yanıt</small></div>
+</div>
+</div>
+<p class="flow-caption">Model, her adımda eldeki araçlardan birini seçer. Önce takvimi kontrol eder, dönen boş aralıklara göre bir saat belirler, sonra randevuyu oluşturur. Her aracın döndürdüğü sonuç modele geri beslenir ve bir sonraki kararı besler.</p>
+</div>
+<div class="definition-card"><h3 id="buradaki-kritik-fikir">Buradaki kritik fikir</h3><p>Çok araçlı bir kurulumda model, bir görevi birden çok adıma bölebilir ve her adımda hangi aracı çağıracağına ayrı ayrı karar verir. Bir aracın çıktısı bir sonraki aracın seçimini ve argümanlarını belirler. Modele araç erişimi vermek, uygulamalarınızı belirgin biçimde daha güçlü hâle getirir.</p></div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card"><h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>“Model işlevi kendisi çalıştırır” sanmak.</strong> Model işlevi çalıştırmaz; yalnızca çağrılmasını talep eder. Çalıştırma ve sonucu geri besleme işini uygulama yapar.</li>
+<li><strong>Aracın her zaman çağrılacağını varsaymak.</strong> Araç sunulu olsa bile model, soruyu aracı kullanmadan yanıtlayabileceğine karar verebilir; bu bir hata değil, beklenen davranıştır.</li>
+<li><strong>Araç seçimini sabit kodlamayla karıştırmak.</strong> Geliştiricinin gömdüğü “her zaman şunu yap” adımı ile modele bırakılan araç seçimi farklı şeylerdir.</li>
+<li><strong>Tek araçla sınırlı düşünmek.</strong> Birçok gerçek senaryoda modele birden çok araç sunulur ve model bunlar arasından duruma göre seçim yapar.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Araç kullanımı, bir dil modelinin yalnızca eğitildiği bilgiyle sınırlı kalmasını engelleyip onu canlı verilere, hesaplamalara ve dış sistemlere bağlayan temel bir yetenektir. Modele işlevler sunarsınız; model, görevin gerektirip gerektirmediğine kendisi karar vererek bu işlevlerin çağrılmasını talep eder; dönen sonuçlar modele geri beslenir ve model nihai yanıtını bunlara dayanarak üretir.</p>
+<p>Tek araçlı basit bir saat sorgusundan, birden çok aracı sırayla seçip kullanan bir takvim asistanına kadar aynı çekirdek döngü işler: <em>istem &rarr; karar &rarr; araç &rarr; geri besleme &rarr; yanıt</em>. Hangi araçları sunacağınızı belirlemek geliştiriciye; bunları ne zaman ve nasıl kullanacağına karar vermek ise büyük ölçüde modele aittir. Bu basit ayrım, sıradan bir metin üreticisini dış dünyada iş yapabilen güçlü bir uygulamaya dönüştürür.</p>
+</section>
+
+<section><h2 id="dersin-kod-akisi">Dersin Kod Akışı</h2>
+<p>Bu derste karşımıza çıkan tek çalıştırılabilir işlev, modele araç olarak sunulan güncel saat işlevidir. Aşağıda eksiksiz hâliyle, kopyalanabilir biçimde verilmiştir.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="`datetime` modülünün `datetime` sınıfını içe aktarır; güncel zamanı bu sınıfla okuyacağız." tabindex="0"><span class="tok-keyword">from</span> <span class="tok-name">datetime</span> <span class="tok-keyword">import</span> <span class="tok-name">datetime</span></span><span class="code-line">&nbsp;</span><span class="code-line" data-note="Argüman almayan bir işlev tanımlar; modele araç olarak sunulan budur." tabindex="0"><span class="tok-keyword">def</span> <span class="tok-class">get_current_time</span>()<span class="tok-operator">:</span></span><span class="code-line" data-note="Tek satırlık docstring: işlevin ne döndürdüğünü kısaca açıklar." tabindex="0"><span class="tok-string">    &quot;&quot;&quot;Returns the current time as a string&quot;&quot;&quot;</span></span><span class="code-line" data-note="`datetime.now()` o anki zamanı verir; `strftime` ile saat:dakika:saniye biçiminde bir metne çevrilip döndürülür." tabindex="0">    <span class="tok-keyword">return</span> <span class="tok-name">datetime</span><span class="tok-attribute">.now</span>()<span class="tok-attribute">.strftime</span>(<span class="tok-string">&quot;%H:%M:%S&quot;</span>)</span></code></pre></div>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#arac-kullanimi-nedir" class="toc-h1">Araç Kullanımı Nedir?</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-fikri" class="toc-h3">Bu Dersin Ana Fikri</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#arac-kullanimi-tam-olarak-ne-demek" class="toc-h3">Araç kullanımı tam olarak ne demek?</a>
+<a href="#basit-arac-calistirma-adim-adim" class="toc-h3">Basit araç çalıştırma: adım adım</a>
+<a href="#model-araci-kullanmamayi-da-secebilir" class="toc-h3">Model aracı kullanmamayı da seçebilir</a>
+<a href="#sabit-kodlama-ile-arac-seciminin-farki" class="toc-h3">Sabit kodlama ile araç seçiminin farkı</a>
+<a href="#araclarin-ornekleri" class="toc-h2">Araçların Örnekleri</a>
+<a href="#arac-agent-ve-etkilesim-mantigi" class="toc-h2">Araç, Agent ve Etkileşim Mantığı</a>
+<a href="#buradaki-kritik-fikir" class="toc-h3">Buradaki kritik fikir</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+<a href="#dersin-kod-akisi" class="toc-h2">Dersin Kod Akışı</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+  function formatTooltipText(note){
+    return String(note==null?'':note).split(/\n{2,}/).map(function(part){
+      var safe=escapeHtml(part).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+      return '<span class="tooltip-section">'+safe+'</span>';
+    }).join('');
+  }
+  var tooltip=document.createElement('div');
+  tooltip.className='line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine=null;
+  function positionTooltip(){
+    if(!activeLine)return;
+    var rect=activeLine.getBoundingClientRect();
+    tooltip.style.left='0px';tooltip.style.top='0px';
+    var tipW=tooltip.offsetWidth;var tipH=tooltip.offsetHeight;
+    var left=rect.right+12;
+    var top=rect.top;
+    if(left+tipW>window.innerWidth-16){left=rect.left;top=rect.bottom+8;}
+    if(top+tipH>window.innerHeight-16){top=Math.max(16,rect.top-tipH-8);}
+    left=Math.max(16,Math.min(left,window.innerWidth-tipW-16));
+    top=Math.max(16,Math.min(top,window.innerHeight-tipH-16));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  function showTooltip(line){
+    activeLine=line;
+    tooltip.innerHTML=formatTooltipText(line.getAttribute('data-note')||'');
+    tooltip.classList.add('is-visible');
+    positionTooltip();
+  }
+  function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+  document.addEventListener('mouseover',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('mouseout',function(event){
+    if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();
+  });
+  document.addEventListener('focusin',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('focusout',function(event){
+    if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();
+  });
+  window.addEventListener('scroll',function(){if(activeLine)hideTooltip();},true);
+  window.addEventListener('resize',function(){if(activeLine)hideTooltip();});
+  function copyText(text){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve,reject){
+      var area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');
+      area.style.position='fixed';area.style.left='-9999px';document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');resolve();}catch(err){reject(err);}finally{document.body.removeChild(area);}
+    });
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(button){
+    button.addEventListener('click',function(){
+      var card=button.closest('.code-card');
+      var lines=card?[].slice.call(card.querySelectorAll('.code-line')):[];
+      var text=lines.map(function(l){return l.textContent;}).join('\n');
+      copyText(text).then(function(){
+        var original=button.textContent;button.textContent='Kopyaland\u0131!';
+        setTimeout(function(){button.textContent=original;},1500);
+      });
+    });
+  });
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body></html>

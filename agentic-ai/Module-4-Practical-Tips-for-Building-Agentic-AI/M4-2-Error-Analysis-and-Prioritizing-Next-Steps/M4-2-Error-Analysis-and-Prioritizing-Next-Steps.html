@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hata Analizi ve Sonraki Adımları Önceliklendirme</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* error table */
+.err-table td.muted{color:var(--lesson-muted);} .err-table td:first-child{font-weight:600;color:var(--lesson-text);}
+.err-table tr.total-row td{border-top:2px solid var(--lesson-border-strong);background:var(--lesson-soft);font-weight:700;color:var(--accent-dark);text-align:center;}
+.err-table tr.total-row td:first-child{color:var(--lesson-muted);text-align:left;font-weight:600;}
+.err-cell{display:inline-block;padding:0.18rem 0.4rem;border-radius:0.3rem;background:var(--dlai-coral-soft);color:var(--accent-dark);font-size:0.86rem;}
+.ok-cell{color:#6b7280;font-style:italic;font-size:0.9rem;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.55rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.93rem;color:var(--lesson-muted);}
+/* pipeline chips */
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.45rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.pipe-chip{padding:0.5rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.9rem;color:var(--lesson-text);text-align:center;}
+.pipe-chip small{display:block;color:var(--lesson-muted);font-size:0.76rem;font-weight:400;margin-top:0.12rem;}
+.pipe-chip.is-llm{background:#eef0f4;color:#1f2937;}
+.pipe-chip.is-tool{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-chip.is-input{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-arrow{color:var(--dlai-coral);font-weight:700;}
+/* cause cards */
+.cause-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.75rem;margin:1rem 0;}
+.cause-card{position:relative;padding:0.9rem 0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;text-align:center;}
+.cause-card .cause-step{display:inline-block;margin-bottom:0.5rem;padding:0.2rem 0.55rem;border-radius:999px;background:var(--lesson-soft-2);color:var(--lesson-muted);font-size:0.78rem;font-weight:600;}
+.cause-card strong{display:block;color:var(--lesson-text);font-size:0.95rem;}
+/* trace / span illustration */
+.trace-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 55%);}
+.trace-query{margin:0 auto 0.9rem;max-width:520px;padding:0.7rem 0.9rem;border:1px solid var(--dlai-coral);border-radius:0.55rem;background:var(--dlai-coral-soft);color:var(--accent-dark);font-size:0.93rem;text-align:center;font-weight:600;}
+.trace-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;}
+.trace-col{display:flex;flex-direction:column;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;overflow:hidden;}
+.trace-col .span-head{padding:0.5rem 0.7rem;background:var(--lesson-soft-2);border-bottom:1px solid var(--lesson-border);font-size:0.83rem;font-weight:700;color:var(--lesson-text);}
+.trace-col .span-body{padding:0.7rem 0.8rem;font-size:0.85rem;color:var(--lesson-text);line-height:1.5;}
+.trace-col .span-body .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.8rem;color:var(--lesson-muted);word-break:break-all;}
+.trace-col .span-body ul{margin:0;padding-left:1.1rem;} .trace-col .span-body li{margin:0.18rem 0;font-size:0.84rem;}
+.trace-axis{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:0.9rem;color:var(--accent-dark);font-size:0.85rem;font-weight:600;}
+.trace-axis .axis-line{flex:1;height:0;border-top:2px solid var(--dlai-coral);max-width:160px;}
+/* numbered process steps */
+.step-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-line{display:grid;grid-template-columns:1.9rem minmax(0,1fr);align-items:start;gap:0.7rem;padding:0.75rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.step-line .step-n{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.88rem;font-weight:700;}
+.step-line strong{display:block;color:var(--lesson-text);font-size:0.97rem;margin-bottom:0.12rem;}
+.step-line span{color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.cause-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.trace-grid{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-2-Error-Analysis-and-Prioritizing-Next-Steps/M4-2-Error-Analysis-and-Prioritizing-Next-Steps.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Hata Analizi ve Sonraki Adımları Önceliklendirme</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="hata-analizi-ve-sonraki-adimlari-onceliklendirme">Hata Analizi ve Sonraki Adımları Önceliklendirme</h1>
+<p class="lead-text">Çok bileşenli bir agentik iş akışı istediğiniz kadar iyi çalışmadığında, sezgiyle değil; her adımın ara çıktılarını (izleri) inceleyip hataları bileşen bazında sayarak çabanızı en verimli noktaya yönlendiren disiplinli bir yöntem.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bir agentik iş akışı kurduğunuzda &mdash; özellikle hızlı ve kaba bir ilk sürüm &mdash; çoğu zaman istediğiniz kadar iyi çalışmaz. Asıl soru şudur: onu daha iyi yapmak için <strong>çabanızı nereye odaklarsınız?</strong> Bir agentik akış birçok farklı bileşenden oluşur ve bu bileşenlerin bazıları üzerinde çalışmak, diğerlerine göre çok daha verimli olabilir. Doğru bileşeni seçme beceriniz, sisteminizi iyileştirme hızınızı doğrudan belirler.</p>
+<p>Bu ders, o seçimi sezgiye bırakmamak için kullanılan disiplinli bir süreci anlatır: <strong>hata analizi (error analysis)</strong>. Bir ekibin ne kadar verimli ve iyi olduğunun en güçlü göstergelerinden biri, çabasını nereye yoğunlaştıracağını söyleyen disiplinli bir hata analizi sürecini yürütüp yürütemediğidir. Anlatımın merkezinde, daha önce de incelenen bir araştırma ajanı vardır; bu ajan bazen bir uzman insanın yakalayacağı önemli noktaları kaçırmaktadır ve biz bu sorunu kullanarak &ldquo;hangi adımı düzeltmeliyim?&rdquo; sorusunu sistematik biçimde yanıtlayacağız.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Karmaşık bir sistemde üzerinde çalışılabilecek o kadar çok şey vardır ki, birini seçip haftalarca emek vermek &mdash; sonra hiçbir iyileşme görmemek &mdash; çok kolaydır. Hata analizi, hangi bileşenin gerçekten kötü çalıştığını <em>ölçerek</em> gösterir ve emeğinizi en yüksek getirili yere yönlendirir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Çok bileşenli bir agentik akışta &ldquo;nereye odaklanmalı?&rdquo; sorusunun neden kritik bir verimlilik kararı olduğunu açıklayabilmek.</li>
+<li>Bir <strong>iz (trace)</strong> ile bir <strong>span</strong> arasındaki farkı tanımlayabilmek ve ara çıktıları okumayı bir alışkanlığa dönüştürmek.</li>
+<li>Nihai çıktının zayıf olduğu örneklere odaklanıp her adımın çıktısını bir uzman insanın vereceğiyle karşılaştırabilmek.</li>
+<li>Hataları bir çizelgede bileşen bazında sayarak hangi adımın en sık sorun ürettiğini belirleyebilmek.</li>
+<li>Bir hatayı doğru bileşene <strong>adil biçimde atfetmeyi</strong> &mdash; girdisi zaten kötü olan bir adımı suçlamamayı &mdash; kavramak.</li>
+<li>Hata sıklığını &ldquo;iyileştirme fikrim var mı?&rdquo; ölçütüyle birleştirerek hangi bileşene öncelik vereceğinize karar verebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Çok adımlı bir agentik iş akışının &mdash; araç çağıran, web&apos;de arama yapan bir araştırma ajanının &mdash; genel mantığına aşinalık.</li>
+<li>Bir dil modelinin bir adımı yürütüp çıktı ürettiği, akışın ise birden çok böyle adımdan oluştuğu fikrine aşinalık.</li>
+<li>Bir çıktının &ldquo;bir uzman insanın vereceğinden belirgin biçimde kötü&rdquo; olması gibi nitel bir kalite yargısının ne demek olduğuna dair temel kavrayış.</li>
+<li>Basit bir çizelgede (spreadsheet) gözlemleri satır/sütun olarak sayma alışkanlığı.</li>
+</ul>
+<p>Ders tümüyle kavramsaldır; herhangi bir kod yazımı veya çalıştırması gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Hata analizi</td><td>Hangi bileşenin kötü çalıştığını bulmak için yapılan disiplinli inceleme.</td><td>Amaç suçlu aramak değil, emeği doğru yere yönlendirmektir.</td></tr>
+<tr><td class="term">İz (trace)</td><td>Bir çalıştırmanın tüm ara adımlarının çıktılarının bütünü.</td><td>Sistemin baştan sona &ldquo;ne yaptığını&rdquo; görmenizi sağlar.</td></tr>
+<tr><td class="term">Span</td><td>Tek bir adımın çıktısı (iz&apos;in bir parçası).</td><td>Gözlemlenebilirlik literatüründen gelir; iz birçok span&apos;den oluşur.</td></tr>
+<tr><td class="term">Bileşen</td><td>Akıştaki tek bir adım (arama terimi üretme, web araması, kaynak seçme vb.).</td><td>Her bileşenin kalitesi ayrı ayrı değerlendirilebilir.</td></tr>
+<tr><td class="term">Hata</td><td>Bir adımın, aynı girdiyle bir uzmanın vereceğinden belirgin biçimde kötü çıktı vermesi.</td><td>Mutlak değil, &ldquo;insan ölçütüne göre&rdquo; tanımlı bir kavramdır.</td></tr>
+<tr><td class="term">Atıf (attribution)</td><td>Bir hatanın gerçekte hangi bileşenden kaynaklandığının belirlenmesi.</td><td>Girdisi kötü olan bir adım, o girdiyle yapabileceğinin en iyisini yaptıysa suçlanmaz.</td></tr>
+<tr><td class="term">Önceliklendirme</td><td>Hangi bileşen üzerinde çalışılacağına karar verme.</td><td>Hata sıklığı ile &ldquo;iyileştirme fikri olup olmaması&rdquo; birlikte değerlendirilir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir merkezi fikri var: <strong>hangi bileşeni iyileştireceğinize sezgiyle değil, ölçerek karar verin.</strong> Aşağıdaki dört adım, disiplinli bir hata analizi sürecinin iskeletidir ve dersin geri kalanı bu iskeletin üzerine kurulur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>İzlere bak</strong><span>Her adımdan sonraki ara çıktılar incelenerek sistemin gerçekte ne yaptığı hissedilir.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Hatalı örneklere odaklan</strong><span>İyi çalışan örnekler bir kenara konur; çıktının tatmin etmediği örneklere yoğunlaşılır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Bileşen başına say</strong><span>Bir çizelgede her adımın ne sıklıkla hata ürettiği açıkça sayılır.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Önceliklendir</strong><span>En çok hata üreten ve iyileştirme fikriniz olan bileşen öne alınır.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: bu süreç bir &ldquo;suçlu bulma&rdquo; alıştırması değil, bir <strong>yön bulma</strong> aracıdır. Karmaşık sistemlerde yanlış bileşeni seçip aylarca boşa emek vermek çok kolaydır; bu dört adım, o riski sayısal kanıta dayanarak ortadan kaldırır.</p>
+</section>
+
+<section><h2 id="sezgi-yerine-disiplinli-surec">Sezgi Yerine Disiplinli Süreç</h2>
+<p>Bir agentik akış istediğiniz kadar iyi çalışmadığında, ekiplerin sık düştüğü tuzak, üzerinde çalışılacak bileşeni <strong>içgüdüyle</strong> seçmektir. Bazen bu işe yarar; ama çoğu zaman aylarca süren çalışmaya ve sistemin genel performansında neredeyse hiç ilerleme olmamasına yol açar. Çünkü bir akışta birçok bileşen vardır ve gözlenen bir sorunun arkasında bunların herhangi biri yatıyor olabilir.</p>
+<p>Daha iyi yaklaşım, içgüdü yerine her adımı tek tek anlamaya çalışan bir hata analizidir. Özellikle <strong>izleri</strong> &mdash; yani her adımdan sonraki ara çıktıları &mdash; inceleyerek hangi bileşenin performansının düşük (bir uzman insanın yapacağından belirgin biçimde kötü) olduğunu anlarsınız. İşte bu, iyileştirme için yer olan yeri işaret eder.</p>
+
+<h3 id="calisan-ornek-arastirma-ajani">Çalışan örnek: araştırma ajanı</h3>
+<p>Araştırma ajanı bir kullanıcı isteği alır, web&apos;de arama yapar, en iyi kaynakları indirir ve bir deneme taslağı yazar. Gözlemlenen hata kalıbı şudur: ajan bazen bir uzman insan yazarın yakalayacağı önemli noktaları kaçırır. Akışın adımları aşağıdaki gibidir.</p>
+<div class="pipeline">
+<span class="pipe-chip is-input">Kullanıcı isteği</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>web&apos;de ara</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Web araması</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>en iyi 5 kaynağı seç</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Web&apos;den getir</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>deneme taslağı yaz</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Rapor</span>
+</div>
+<p>Farklı isteklerde gözlenen sonuçlar bir kalıba işaret eder: kara delik bilimindeki son gelişmeler istendiğinde çok haber yapılmış yüksek profilli bir sonuç atlanmış; Seattle&apos;da kiralamak mı satın almak mı sorusunda iyi iş çıkarılmış; meyve hasadı robotiğinde önde gelen bir ekipman şirketinden söz edilmemiştir.</p>
+<div class="table-wrap"><table>
+<colgroup><col style="width:42%"><col></colgroup>
+<thead><tr><th>İstek</th><th>Gözlenen sorun</th></tr></thead>
+<tbody>
+<tr><td>Kara delik biliminde son gelişmeler</td><td>Çok haber yapılmış yüksek profilli bir sonucu atladı.</td></tr>
+<tr><td>Seattle&apos;da kiralamak mı satın almak mı?</td><td>İyi iş çıkardı.</td></tr>
+<tr><td>Meyve hasadı için robotik</td><td>Önde gelen bir ekipman şirketinden söz etmedi.</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="sorun-hangi-adimdan-kaynaklaniyor-olabilir">Sorun hangi adımdan kaynaklanıyor olabilir?</h3>
+<p>&ldquo;Önemli noktaların kaçırılması&rdquo; sorununa akıştaki adımların neredeyse her biri katkıda bulunmuş olabilir. Bu yüzden tek tek her adımı sorgulamak gerekir: belki ilk model kötü arama terimleri üretti ve yanlış şeyleri aradı; belki web arama motoru yeterince iyi değildi; belki arama iyiydi ama model gelen sonuçlardan indirilecek en iyi birkaçını kötü seçti; belki de sayfalar modele verildikten sonra model belgelerdeki bazı noktaları görmezden geldi.</p>
+<div class="cause-grid">
+<div class="cause-card"><span class="cause-step">web&apos;de ara</span><strong>Arama terimleri kötü mü?</strong></div>
+<div class="cause-card"><span class="cause-step">web araması</span><strong>Arama sonuçları düşük kaliteli mi?</strong></div>
+<div class="cause-card"><span class="cause-step">en iyi 5 kaynak</span><strong>Kaynak seçimi kötü mü?</strong></div>
+<div class="cause-card"><span class="cause-step">deneme yaz</span><strong>Metinler üzerinde akıl yürütme kötü mü?</strong></div>
+</div>
+<p>Bu olası nedenleri ayırt etmenin yolu, her adımın ara çıktısına bakmaktır. Bir sonraki bölümde bunun için kullanılan kavramları &mdash; iz ve span &mdash; tanıtacağız.</p>
+</section>
+
+<section><h2 id="izler-ve-span-ler">İzler ve Span'ler</h2>
+<p>Her adımın ara çıktısına bakarak o adımın çıktısının kalitesi hakkında bir his edinirsiniz. Burada iki kavram işe yarar. Bir çalıştırmadaki <strong>tüm ara adımların çıktılarının bütününe</strong> o ajanın çalışmasının <strong>izi (trace)</strong> denir. Tek bir adımın çıktısı ise bazen <strong>span</strong> olarak adlandırılır. Bu terimler, bilgisayarların ne yaptığını anlamaya çalışan gözlemlenebilirlik (observability) literatüründen gelir.</p>
+<div class="definition-card"><h3 id="iki-anahtar-tanim">İki Anahtar Tanım</h3><p><strong>İz (trace):</strong> bir çalıştırmanın baştan sona tüm ara çıktılarının toplamı &mdash; sistemin yolculuğunun tamamı. <strong>Span:</strong> bu yolculuktaki tek bir adımın çıktısı. Bir iz, art arda gelen birçok span&apos;den oluşur.</p></div>
+<p>Kara delik bilimindeki son gelişmeler üzerine bir deneme isteğinde izi okuduğunuzu düşünün. Önce arama terimleri üretilir; bir uzman bunlara bakıp &ldquo;bunlar makul, benim de yazacaklarıma yakın&rdquo; diyebilir. Sonra web aramasının döndürdüğü sonuçlara ve URL&apos;lere bakarsınız &mdash; ve burada, örneğin bir ilkokul öğrencisinin 30 yıllık bir kara delik gizemini çözdüğünü iddia eden, hakemli olmayan popüler bir sayfa gibi zayıf kaynaklar görürsünüz. Son olarak modelin seçtiği &ldquo;en iyi beş kaynağa&rdquo; bakarsınız ve bunların da büyük ölçüde blog/popüler basın türü olduğunu fark edersiniz.</p>
+<div class="trace-panel">
+<div class="trace-query">İstek: &ldquo;Kara delik bilimindeki son gelişmeler üzerine bir deneme yaz&rdquo;</div>
+<div class="trace-grid">
+<div class="trace-col">
+<div class="span-head">Span &mdash; Üretilen arama terimleri</div>
+<div class="span-body"><ul>
+<li>Black hole theories Einstein</li>
+<li>Event horizon telescope radio</li>
+<li>New physics black holes</li>
+<li>Galaxies black holes origins</li>
+</ul></div>
+</div>
+<div class="trace-col">
+<div class="span-head">Span &mdash; Getirilen bir sayfa</div>
+<div class="span-body">&ldquo;Elementary school student cracks 30-year black hole mystery&rdquo;<br><span class="mono">astrokidnews.com</span><br><br>&ldquo;Bob Lee, in his yard, saw a bright light in the sky…&rdquo;</div>
+</div>
+<div class="trace-col">
+<div class="span-head">Span &mdash; Seçilen en iyi 5 kaynak</div>
+<div class="span-body"><span class="mono">astrokidnews.com<br>spaceblog2000.com<br>spacefunnews.com<br>astronautme.com</span></div>
+</div>
+</div>
+<div class="trace-axis"><span class="axis-line"></span><span>İz = bu span&apos;lerin tümü</span><span class="axis-line"></span></div>
+</div>
+<p>İzleri okuyarak en sorunlu bileşenlerin nerede olabileceğine dair gayriresmî bir his edinirsiniz. Bu örnekte arama terimleri makulken, aramanın döndürdüğü ve seçilen kaynakların bilimsel bir rapor için fazla &ldquo;popüler&rdquo; ve hakemsiz olması, sorunun arama terimlerinde değil, arama sonuçlarının kalitesinde olabileceğini düşündürür. Ancak bu his&apos;i daha sağlam bir sayıma dönüştürmek gerekir.</p>
+</section>
+
+<section><h2 id="hatalari-sayma-ve-onceliklendirme">Hataları Sayma ve Önceliklendirme</h2>
+<p>Gayriresmî bir izlenimi daha titiz hâle getirmek için, sistemin <strong>kötü çalıştığı örneklere</strong> odaklanırsınız. Bazı denemeler tümüyle tatmin edicidir; onları bir kenara koyup nihai çıktının yetersiz olduğu örneklerden bir küme oluşturursunuz ve yalnızca bunlara bakarsınız. Adı buradan gelir: <strong>hata analizi</strong>, sistemin hata yaptığı durumlara odaklanıp hangi bileşenlerin bu hatadan en çok sorumlu olduğunu bulmaktır.</p>
+<p>Bunu okuyup his&apos;le bırakmak yerine, bir <strong>çizelge</strong> kurup hataların nerede olduğunu açıkça sayabilirsiniz. Burada &ldquo;hata&rdquo;, bir adımın aynı girdiyle bir uzman insanın vereceğinden belirgin biçimde kötü bir çıktı üretmesi demektir. Her istek bir satır, her bileşen bir sütun olur; her hücreye o adımda gözlenen sorun yazılır.</p>
+<div class="table-wrap"><table class="err-table">
+<colgroup><col style="width:30%"><col><col><col></colgroup>
+<thead><tr><th>İstek</th><th>Arama terimleri</th><th>Arama sonuçları</th><th>En iyi 5 kaynağı seçme</th></tr></thead>
+<tbody>
+<tr><td>Kara delik biliminde son gelişmeler</td><td class="muted"><span class="ok-cell">&mdash;</span></td><td class="muted"><span class="err-cell">Çok fazla blog, yeterince makale yok</span></td><td class="muted"><span class="ok-cell">&mdash;</span></td></tr>
+<tr><td>Seattle&apos;da kiralamak mı satın almak mı</td><td class="muted"><span class="ok-cell">&mdash;</span></td><td class="muted"><span class="ok-cell">&mdash;</span></td><td class="muted"><span class="err-cell">Bilinen bir blog atlandı</span></td></tr>
+<tr><td>Meyve hasadı için robotik</td><td class="muted"><span class="err-cell">Terimler fazla genel</span></td><td class="muted"><span class="err-cell">İlkokul öğrencilerine yönelik site</span></td><td class="muted"><span class="ok-cell">&mdash;</span></td></tr>
+<tr><td>Elektrikli araçlar için bataryalar</td><td class="muted"><span class="ok-cell">&mdash;</span></td><td class="muted"><span class="err-cell">Yalnızca ABD merkezli şirketler</span></td><td class="muted"><span class="err-cell">Bir dergi atlandı</span></td></tr>
+<tr class="total-row"><td>Hata sıklığı</td><td>%5</td><td>%45</td><td>%10</td></tr>
+</tbody>
+</table></div>
+<p>Tabloyu birçok istek için doldurup her bileşende hatanın ne sıklıkla gözlendiğini sayarsınız. Bu örnekte arama terimlerinden zamanın yalnızca %5&apos;inde, arama sonuçlarından ise %45&apos;inde memnun değilsiniz. Bu, dikkatinizi açıkça <strong>arama sonuçlarına</strong> &mdash; kullandığınız web arama motoruna ve onu daha alakalı/yüksek kaliteli sonuç getirecek şekilde ayarlayabileceğiniz parametrelere &mdash; yöneltmeniz gerektiğini söyler.</p>
+
+<h3 id="hatayi-dogru-bilesene-atfetmek">Hatayı doğru bileşene atfetmek</h3>
+<p>Sayım yaparken kritik bir incelik vardır: bir hatayı, gerçekte ondan sorumlu olan bileşene atfetmelisiniz. Örneğin &ldquo;en iyi beş kaynağı seçme&rdquo; adımına giren tüm aday kaynaklar zaten hakemsiz ve zayıfsa, bu adımı daha iyi kaynak seçmediği için suçlamak haksızlık olur &mdash; çünkü o, eline verilen seçeneklerle bir insanın yapabileceğinin neredeyse en iyisini yapmıştır. Bu durumda kusur, kaynak seçen adımda değil, ona kötü girdi veren arama sonuçlarındadır.</p>
+<div class="note-card"><h3 id="adil-atif-neden-onemli">Adil atıf neden önemli?</h3><p>Hatayı yanlış bileşene yüklerseniz, aslında sağlam çalışan bir adımı &ldquo;iyileştirmek&rdquo; için emek harcar ve gerçek darboğazı (burada: arama sonuçlarının kalitesi) görmezden gelirsiniz. Bir adımın çıktısını değerlendirirken her zaman &ldquo;bu adıma <em>hangi girdi</em> verildi ve aynı girdiyle bir insan daha iyisini yapabilir miydi?&rdquo; diye sorun.</p></div>
+
+<h3 id="hangi-bilesene-oncelik-vermeli">Hangi bileşene öncelik vermeli?</h3>
+<p>Önceliklendirme iki şeyin birleşimidir: bir bileşenin <strong>ne sıklıkla hata ürettiği</strong> ve onu iyileştirmek için <strong>elinizde bir fikir olup olmadığı</strong>. Çok hata üreten ama düzeltmek için hiçbir fikrinizin olmadığı bir bileşeni belki yüksek önceliğe almazsınız. Buna karşılık, çok hata üreten <em>ve</em> nasıl iyileştirileceğine dair fikriniz olan bir bileşen, üzerinde çalışmak için güçlü bir adaydır.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Yüksek öncelik</h4><ul><li>Bileşen sık sık hata üretiyor.</li><li>Nasıl iyileştirileceğine dair somut bir fikriniz var.</li><li>Örnek: arama sonuçları %45 hatalı ve arama motoru parametreleri ayarlanabilir.</li></ul></div>
+<div class="cmp-card"><h4>Daha düşük öncelik</h4><ul><li>Bileşen hata üretiyor olabilir, ama elinizde iyileştirme fikri yok.</li><li>Ya da hata sıklığı düşük (örn. arama terimleri %5).</li><li>Çaba/getiri oranı şimdilik zayıf.</li></ul></div>
+</div>
+<p>Böylece &ldquo;hangi bileşeni düzelteyim?&rdquo; sorusu sezgiden çıkıp kanıta dayanan bir karara dönüşür: en çok hata üreten ve sizin de iyileştirebileceğiniz bileşen.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Hangi bileşeni düzelteceğimi içgüdüyle seçerim.&rdquo;</strong> İçgüdü bazen tutar; ama çoğu zaman aylarca emek verip neredeyse hiç ilerleme görmemeye yol açar. İzleri okuyup hataları saymak çok daha güvenilirdir.</li>
+<li><strong>&ldquo;Sadece nihai çıktıya bakmak yeterli.&rdquo;</strong> Nihai çıktı kötüyse bile, hangi adımın bozduğunu yalnızca ara çıktıları (izi) okuyarak anlarsınız.</li>
+<li><strong>&ldquo;Kötü görünen her adım suçludur.&rdquo;</strong> Girdisi zaten kötü olan bir adım, elindekiyle en iyisini yapmış olabilir; hatayı gerçek kaynağına atfetmek gerekir.</li>
+<li><strong>&ldquo;En çok hata üreten bileşene hemen yüklenmeliyim.&rdquo;</strong> Hata sıklığı tek başına yetmez; o bileşeni iyileştirmek için bir fikriniz yoksa öncelik düşebilir.</li>
+<li><strong>&ldquo;İz okumak zaman kaybı.&rdquo;</strong> Tam tersine, ara çıktılara bakma alışkanlığı yanlış bileşene haftalar harcamaktan sizi korur &mdash; en yüksek getirili tek alışkanlıklardan biridir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Karmaşık bir agentik sistemde üzerinde çalışılabilecek o kadar çok şey vardır ki, en kıymetli beceri doğru olanı seçmektir. Bunun yolu, bir agentik akış kurduktan sonra <strong>izlere bakma alışkanlığı</strong> geliştirmek; her adımın ne yaptığını ara çıktılardan okumaktır.</p>
+<p>Daha sistematik bir hata analizi &mdash; çoğu zaman basit bir çizelgeyle &mdash; hangi bileşenin en sık kötü çalıştığını sayısallaştırır. Hatayı doğru bileşene adil biçimde atfettiğinizde, gerçek darboğazı görür ve sağlam çalışan adımlara boşuna emek harcamaktan kurtulursunuz.</p>
+<p>Son olarak, önceliklendirme hata sıklığını &ldquo;iyileştirme fikrim var mı?&rdquo; ölçütüyle birleştirir. Hata analizi tam da bu yüzden bu kadar değerlidir: karmaşık sistemlerde nereye odaklanacağınıza karar vermenin en hızlı ve en güvenilir yolunu sunar.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#hata-analizi-ve-sonraki-adimlari-onceliklendirme" class="toc-h1">Hata Analizi ve Sonraki Adımları Önceliklendirme</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#sezgi-yerine-disiplinli-surec" class="toc-h2">Sezgi Yerine Disiplinli Süreç</a>
+<a href="#calisan-ornek-arastirma-ajani" class="toc-h3">Çalışan örnek: araştırma ajanı</a>
+<a href="#sorun-hangi-adimdan-kaynaklaniyor-olabilir" class="toc-h3">Sorun hangi adımdan kaynaklanıyor olabilir?</a>
+<a href="#izler-ve-span-ler" class="toc-h2">İzler ve Span'ler</a>
+<a href="#iki-anahtar-tanim" class="toc-h3">İki Anahtar Tanım</a>
+<a href="#hatalari-sayma-ve-onceliklendirme" class="toc-h2">Hataları Sayma ve Önceliklendirme</a>
+<a href="#hatayi-dogru-bilesene-atfetmek" class="toc-h3">Hatayı doğru bileşene atfetmek</a>
+<a href="#adil-atif-neden-onemli" class="toc-h3">Adil atıf neden önemli?</a>
+<a href="#hangi-bilesene-oncelik-vermeli" class="toc-h3">Hangi bileşene öncelik vermeli?</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

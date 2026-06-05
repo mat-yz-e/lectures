@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çok Ajanlı İş Akışları</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5; --neutral-blue-soft:#eef2ff;
+}
+html,body{width:100%;margin:0;padding:0;background:var(--lesson-bg);overflow-x:hidden;} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:100%;max-width:1040px;margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;overflow-wrap:break-word;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:100%;max-width:780px;margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:680px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:25%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.role-table col.role-col{width:24%;} .role-table col.tool-col{width:27%;}
+.role-table td.role{white-space:nowrap;font-weight:700;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+.team-panel{margin:1.15rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:#fff;}
+.team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.85rem;margin-top:0.85rem;}
+.agent-card{display:flex;flex-direction:column;gap:0.55rem;min-height:100%;padding:0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:linear-gradient(180deg,#fff,var(--lesson-soft));}
+.agent-mark{display:flex;align-items:center;justify-content:center;width:2.15rem;height:2.15rem;margin:0 auto 0.2rem;border-radius:999px;background:var(--dlai-coral-soft);border:1px solid #ffc6cf;color:var(--accent-dark);font-weight:800;}
+.agent-card h4{margin:0;text-align:center;color:var(--lesson-text);}
+.agent-card p{margin:0;color:var(--lesson-muted);font-size:0.93rem;text-align:center;}
+.tool-strip{margin-top:auto;padding:0.55rem 0.65rem;border-radius:0.45rem;background:var(--neutral-blue-soft);color:#26316c;font-size:0.86rem;text-align:center;}
+.linear-flow,.manager-flow{margin:1.15rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:var(--lesson-card);}
+.linear-flow-inner{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:0.55rem;align-items:stretch;}
+.flow-box{display:flex;flex-direction:column;justify-content:center;min-height:6.3rem;padding:0.82rem;border:1px solid var(--lesson-border-strong);border-radius:0.55rem;background:#fff;text-align:center;}
+.flow-box strong{display:block;margin-bottom:0.22rem;}
+.flow-box span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.42;}
+.flow-box.is-start{background:var(--dlai-coral-soft);border-color:#ffc6cf;}
+.flow-box.is-final{background:var(--lesson-soft);}
+.flow-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-weight:800;font-size:1.25rem;}
+.manager-map{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.35fr);gap:0.95rem;align-items:stretch;margin-top:0.9rem;}
+.manager-card{display:flex;flex-direction:column;justify-content:center;padding:1rem;border:1px solid #ffc6cf;border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:var(--dlai-coral-muted);}
+.manager-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.manager-card p{margin:0;color:var(--lesson-muted);}
+.delegate-stack{display:grid;grid-template-columns:1fr;gap:0.65rem;}
+.delegate-row{display:grid;grid-template-columns:8.2rem minmax(0,1fr);gap:0.55rem;align-items:center;}
+.delegate-name{padding:0.65rem 0.75rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-weight:700;text-align:center;}
+.delegate-task{position:relative;padding:0.65rem 0.8rem;border:1px solid var(--lesson-border);border-radius:0.5rem;background:var(--lesson-soft);color:var(--lesson-muted);font-size:0.92rem;}
+.delegate-task::before{content:"";position:absolute;top:50%;left:-0.55rem;width:0.55rem;height:2px;background:var(--dlai-coral);}
+.decision-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.decision-item{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.decision-item strong{display:block;margin-bottom:0.25rem;color:var(--accent-dark);}
+.decision-item span{color:var(--lesson-muted);font-size:0.94rem;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.team-grid,.decision-list,.manager-map{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.linear-flow-inner{grid-template-columns:1fr;}
+.flow-arrow{transform:rotate(90deg);min-height:1.6rem;}
+.delegate-row{grid-template-columns:1fr;}
+.delegate-task::before{display:none;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+table{min-width:720px;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-5-Patterns-for-Highly-Autonomous-Agents/M5-5-Multi-Agentic-Workflows/M5-5-Multi-Agentic-Workflows.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Çok Ajanlı İş Akışları</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="cok-ajanli-is-akislari">Çok Ajanlı İş Akışları</h1>
+<p class="lead-text">Karmaşık bir görevi tek bir ajanın omzuna yüklemek yerine, farklı rollerde uzmanlaşmış ajanların birlikte çalıştığı düzenli iş akışları tasarlama yaklaşımı.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yüksek özerklik gerektiren agentic sistemlerde neden birden fazla ajanın birlikte kullanılabileceğini açıklar. Temel soru şudur: aynı dil modeli tekrar tekrar çağrılıyorsa neden tek bir ajan yerine bir ekip kurgulayalım? Yanıt, donanım sayısından çok <strong>işin zihinsel olarak nasıl parçalandığı</strong> ile ilgilidir.</p>
+<p>Tek bir bilgisayarda bir işi farklı süreçlere veya iş parçacıklarına bölmek, geliştiricinin problemi daha yönetilebilir parçalara ayırmasına yardım eder. Benzer biçimde, karmaşık bir işte tek bir genel amaçlı ajan yerine araştırmacı, görsel tasarımcı, yazar veya yönetici gibi ayrışmış roller düşünmek, hem sistemi tasarlamayı hem de her parçayı ayrı ayrı iyileştirmeyi kolaylaştırır.</p>
+<div class="definition-card"><h3 id="dersin-ana-tezi">Dersin Ana Tezi</h3><p>Çok ajanlı iş akışlarının değeri, aynı modeli çoğaltmaktan değil; görevi anlamlı rollere bölmekten, her rol için uygun araçları seçmekten ve ajanlar arasındaki iletişim desenini bilinçli kurmaktan gelir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Çok ajanlı bir iş akışının neden yalnızca &ldquo;bir modeli birkaç kez çağırmak&rdquo; olmadığını açıklayabilmek.</li>
+<li>Karmaşık görevleri insan ekibi benzetmesiyle rollere ve alt görevlere ayırabilmek.</li>
+<li>Bir ajanın rolünü, görevini ve ihtiyaç duyduğu araçları birlikte düşünebilmek.</li>
+<li>Doğrusal çok ajanlı plan ile yönetici koordinasyonlu plan arasındaki farkı ayırt edebilmek.</li>
+<li>Ajanlar arası iletişim deseninin sistem tasarımındaki merkezi karar olduğunu kavrayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Tek ajanlı agentic iş akışı fikrine temel aşinalık.</li>
+<li>Bir dil modelinin belirli bir rolü oynaması için istemle yönlendirilebileceğini bilmek.</li>
+<li>Planlama ve araç kullanımı desenlerinin temel mantığını kavramış olmak.</li>
+<li>Karmaşık görevlerin alt görevlere bölünebileceğine dair yazılım geliştirme veya ekip çalışması sezgisi.</li>
+</ul>
+<p>Bu ders kavramsaldır; çalıştırılabilir kod gerektirmez. Bu nedenle sahte kod hücresi veya çıktı bloğu kullanılmaz.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Çok ajanlı iş akışı</td><td>Birden fazla ajanın aynı üst hedef için farklı alt görevleri yürüttüğü düzen.</td><td>Değer, ajan sayısından çok rol ayrımının doğruluğundan gelir.</td></tr>
+<tr><td class="term">Rol</td><td>Bir ajanın sistem içinde üstlendiği uzmanlık veya sorumluluk alanı.</td><td>Rol belirsizse ajan çıktısı da belirsizleşir.</td></tr>
+<tr><td class="term">Araç</td><td>Ajanın görevi tamamlamak için çağırabileceği dış yetenek veya işlem.</td><td>Her rol aynı araca ihtiyaç duymaz.</td></tr>
+<tr><td class="term">Doğrusal plan</td><td>Ajanların sırayla çalıştığı, bir ajanın çıktısının sonraki ajana aktarıldığı desen.</td><td>Basit ve denetlenebilirdir; ama esnekliği sınırlıdır.</td></tr>
+<tr><td class="term">Yönetici ajan</td><td>Diğer ajanlara görev veren, plan kuran ve çıktıları birleştiren koordinatör rol.</td><td>Araç çağırma mantığına benzer; ancak çağrılan bir araç değil, başka bir ajandır.</td></tr>
+<tr><td class="term">İletişim deseni</td><td>Ajanların birbirlerine hangi sırayla ve hangi bilgiyle bağlandığını belirleyen yapı.</td><td>Çok ajanlı sistemlerde temel tasarım kararlarından biridir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Çok ajanlı tasarımın büyük resmi, bir görevi önce rollere ayırmak, sonra bu rolleri uygun araçlarla donatmak ve son olarak ajanların nasıl haberleşeceğini seçmektir. Aşağıdaki akış, dersin ana düşüncesini tek bakışta özetler.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Görevi parçala</strong><span>Tek büyük işi doğal alt görevlere ayır.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Rolleri tanımla</strong><span>Her alt görev için uygun ajan kimliğini belirle.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Araçları eşleştir</strong><span>Her rolün gerçekten ihtiyaç duyduğu yetenekleri seç.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>İletişimi kur</strong><span>Doğrusal akış veya yönetici koordinasyonu gibi deseni seç.</span></div>
+</div></div>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Tek ajanlı bakış</h4><p>Geliştirici, bütün görevi tek bir rolün nasıl yapacağını düşünür. Bu yaklaşım hızlıdır; fakat büyük ve doğal olarak bölünebilir görevlerde zihinsel yük artar.</p></div>
+<div class="cmp-card"><h4>Çok ajanlı bakış</h4><p>Geliştirici, işi farklı uzmanlık alanlarına böler. Her ajan daha dar ve daha net tanımlanmış bir parçayı üstlenir; sonra parçalar bir iş akışıyla birleştirilir.</p></div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="neden-birden-fazla-ajan">Neden birden fazla ajan?</h3>
+<p>İlk bakışta çok ajanlı sistem gereksiz görünebilir: sonuçta aynı bilgisayar veya aynı model tekrar kullanılmaktadır. Fakat yazılım geliştirmedeki süreç ve iş parçacığı benzetmesi burada açıklayıcıdır. Tek bir işlemci üzerinde bile işin süreçlere ayrılması, geliştiricinin sistemi daha anlaşılır ve sürdürülebilir yazmasını sağlar.</p>
+<p>Aynı mantık agentic sistemlerde de geçerlidir. Bir pazarlama broşürü, bir araştırma yazısı veya bir hukuki hazırlık gibi işler çoğu zaman doğal olarak farklı uzmanlıklara ayrılır. İnsan ekiplerinde araştırmacı, tasarımcı, yazar, editör, yardımcı personel veya araştırmacı gibi roller nasıl ayrı sorumluluklar üstleniyorsa, ajanlar da benzer şekilde görev odaklı rollerle kurgulanabilir.</p>
+
+<div class="team-panel">
+<h3 id="ekip-benzetmesi">Ekip Benzetmesi</h3>
+<p>Güneş gözlüğü için bir pazarlama kampanyası hazırlamak gibi bir hedef, tek parça bir metin üretme görevi değildir. Önce pazar ve rakipler anlaşılır, sonra görseller hazırlanır, en sonunda araştırma ve görseller tutarlı bir metne dönüştürülür.</p>
+<div class="team-grid">
+<div class="agent-card"><div class="agent-mark">A</div><h4>Araştırmacı</h4><p>Pazar eğilimlerini ve rakip tekliflerini inceler.</p><div class="tool-strip">Uygun araç: web araması</div></div>
+<div class="agent-card"><div class="agent-mark">B</div><h4>Görsel Tasarımcı</h4><p>Veri görselleştirmeleri, grafikler ve görsel seçenekler üretir.</p><div class="tool-strip">Uygun araç: görsel üretim veya kod yürütme</div></div>
+<div class="agent-card"><div class="agent-mark">C</div><h4>Yazar</h4><p>Araştırmayı ve görsel çıktıları pazarlama metnine dönüştürür.</p><div class="tool-strip">Uygun araç: yalnızca dil üretimi yeterli olabilir</div></div>
+</div>
+</div>
+
+<h3 id="rol-gorev-ve-arac-birlikte-tasarlanir">Rol, görev ve araç birlikte tasarlanır</h3>
+<p>Bir ajanın yalnızca adını koymak yeterli değildir. Tasarım sorusu üç parçalıdır: bu ajan hangi rolü üstleniyor, hangi somut görevi tamamlıyor ve bunu yaparken hangi araca ihtiyaç duyuyor? Araştırmacı ajan için web araması doğal bir araçtır; görsel tasarımcı için görsel üretim, görsel düzenleme veya grafik çizmek üzere kod yürütme gerekebilir; yazar ajan ise yalnızca metin üretme yeteneğiyle görevini tamamlayabilir.</p>
+
+<div class="table-wrap"><table class="role-table">
+<colgroup><col class="role-col"><col><col class="tool-col"></colgroup>
+<thead><tr><th>Rol</th><th>Temel görev</th><th>Doğal araç ihtiyacı</th></tr></thead>
+<tbody>
+<tr><td class="role">Araştırmacı</td><td>Eğilimleri, rakipleri ve pazar bağlamını incelemek.</td><td>Web araması</td></tr>
+<tr><td class="role">Görsel tasarımcı</td><td>Grafikler, görselleştirmeler ve görsel seçenekler hazırlamak.</td><td>Görsel üretim, düzenleme veya kod yürütme</td></tr>
+<tr><td class="role">Yazar</td><td>Araştırma ve görsel girdileri tutarlı rapor veya metne dönüştürmek.</td><td>Ek araç gerekmeyebilir</td></tr>
+</tbody>
+</table></div>
+
+<div class="note-card"><h3 id="dar-gorev-daha-iyi-tasarim">Dar görev, daha iyi tasarım</h3><p>Her ajanı dar bir uzmanlık alanına yerleştirmek, geliştiricinin bir seferde tek bir parçayı iyileştirmesini sağlar. Örneğin bir ekip üyesi araştırmacı ajanı geliştirirken başka biri görsel tasarımcı ajan üzerinde çalışabilir; daha sonra bu parçalar birleştirilir.</p></div>
+</section>
+
+<section><h2 id="dogrusal-cok-ajanli-plan">Doğrusal Çok Ajanlı Plan</h2>
+<p>En basit çok ajanlı iletişim deseni doğrusal plandır. Bu düzende ajanlar sırayla çalışır; bir ajanın çıktısı, bir sonraki ajanın girdisi olur. Güneş gözlüğü kampanyası örneğinde araştırmacı önce pazar ve rakip bilgisini çıkarır, tasarımcı bu bilgiyle görseller üretir, yazar ise araştırma ve görsellerden son metni hazırlar.</p>
+<div class="linear-flow"><div class="linear-flow-inner">
+<div class="flow-box is-start"><strong>Kullanıcı hedefi</strong><span>Yaz kampanyası için pazarlama çıktısı istenir.</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box"><strong>Araştırmacı</strong><span>Eğilimleri ve rakip tekliflerini özetler.</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box"><strong>Görsel tasarımcı</strong><span>Veri görselleri ve görsel seçenekler üretir.</span></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box is-final"><strong>Yazar</strong><span>Son raporu veya broşür metnini hazırlar.</span></div>
+</div></div>
+<p>Bu desenin avantajı açıklık ve denetlenebilirliktir. Her aşamada hangi ajanın ne ürettiği bellidir. Ayrıca ajanlar yeniden kullanılabilir hale gelebilir: bir görsel tasarımcı ajan, yalnızca broşür için değil, sosyal medya gönderisi veya web sayfası görselleri için de uyarlanabilir.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Güçlü taraf</h4><ul><li>Kurması kolaydır.</li><li>Her aşama ayrı ayrı test edilebilir.</li><li>Çıktı zinciri açık ve izlenebilirdir.</li></ul></div>
+<div class="cmp-card"><h4>Sınırlı taraf</h4><ul><li>Ajanlar arasındaki sıra önceden belirlenmiştir.</li><li>Geri dönüş veya yeniden planlama gerekiyorsa akış katı kalabilir.</li><li>Koordinasyon mantığı geliştirici tarafından dışarıdan sabitlenir.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="yonetici-koordinasyonlu-plan">Yönetici Koordinasyonlu Plan</h2>
+<p>Doğrusal planın alternatifi, bir ajanı ekip yöneticisi gibi kurgulamaktır. Bu ajan, kullanıcı isteğini alır, ekibindeki ajanları tanır ve görevi tamamlamak için adım adım bir plan çıkarır. Buradaki mantık, araç kullanımı desenine benzer: model daha önce araçları çağırabiliyordu; burada ise çağrılabilecek birimler başka ajanlardır.</p>
+<div class="manager-flow">
+<p>Yönetici rolü, yalnızca sırayı takip etmez; hangi ajanı ne zaman görevlendireceğini, ara çıktıları nasıl kullanacağını ve son raporu ne zaman gözden geçireceğini belirler.</p>
+<div class="manager-map">
+<div class="manager-card"><h4>Yönetici ajan</h4><p>Hedefi yorumlar, ekip ajanlarını seçer, adımları düzenler ve gerekirse son çıktıyı gözden geçirir.</p></div>
+<div class="delegate-stack">
+<div class="delegate-row"><div class="delegate-name">Araştırmacı</div><div class="delegate-task">Mevcut eğilimleri ve rakip tekliflerini araştırır.</div></div>
+<div class="delegate-row"><div class="delegate-name">Tasarımcı</div><div class="delegate-task">Araştırmadan yola çıkarak görseller veya grafikler üretir.</div></div>
+<div class="delegate-row"><div class="delegate-name">Yazar</div><div class="delegate-task">Araştırma ve görselleri son rapora dönüştürür.</div></div>
+</div>
+</div>
+</div>
+<p>Bu kurguda yönetici ajan, araştırmacıya ilk görevi verir ve çıktıyı bekler. Sonra tasarımcıya gerekli bağlamı aktarır. Ardından yazara araştırma ve görsel çıktıları sağlar. En sonunda raporu gözden geçirip iyileştirme kararı verebilir. Böylece koordinasyon da agentic sistemin bir parçası haline gelir.</p>
+<div class="note-card"><h3 id="arac-yerine-ajan-cagirmak">Araç yerine ajan çağırmak</h3><p>Planlama deseninde model bir aracı çağırıyorsa, çok ajanlı planlamada benzer arayüz başka bir ajanı çağırmak için kullanılabilir. Kritik fark şudur: çağrılan şey tek bir işlem yapan araç değil, kendi rolü, istemi ve araçları olabilen daha kapsamlı bir alt sistemdir.</p></div>
+</section>
+
+<section><h2 id="iletisim-deseni-tasarim-karari">İletişim Deseni Tasarım Kararı</h2>
+<p>Çok ajanlı sistemlerde en önemli tasarım sorularından biri, ajanların birbirleriyle nasıl iletişim kuracağıdır. Ders boyunca iki temel desen görüldü: doğrusal akış ve yönetici koordinasyonu. Bu iki desen, tüm olasılıkları tüketmez; fakat tasarım düşüncesini başlatmak için güçlü bir çerçeve sağlar.</p>
+<div class="decision-list">
+<div class="decision-item"><strong>Görev doğal olarak sıraya mı bölünüyor?</strong><span>Araştırma, görsel üretim ve yazım gibi açık ardışıklık varsa doğrusal plan yeterli olabilir.</span></div>
+<div class="decision-item"><strong>Planı çalışma sırasında kim kuracak?</strong><span>Sabit sıra yerine dinamik karar gerekiyorsa yönetici ajan daha uygun hale gelir.</span></div>
+<div class="decision-item"><strong>Ara çıktılar kimlere aktarılacak?</strong><span>Her ajan yalnızca ihtiyacı olan bağlamı almalıdır; aksi halde sistem karmaşıklaşır.</span></div>
+<div class="decision-item"><strong>Ajan yeniden kullanılabilir mi?</strong><span>Rol yeterince genel tanımlanırsa aynı ajan farklı uygulamalarda da kullanılabilir.</span></div>
+</div>
+<div class="definition-card"><h3 id="tasarim-olcutu">Tasarım ölçütü</h3><p>İyi çok ajanlı tasarım, daha fazla ajan eklemek değildir. İyi tasarım, doğal iş bölümünü bulmak, her role uygun araçları vermek ve iletişim desenini gereksiz karmaşıklık yaratmadan kurmaktır.</p></div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card"><h3 id="sik-karsilasilan-yanlis-anlamalar">Sık Karşılaşılan Yanlış Anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Çok ajanlı sistem, aynı modeli rastgele birkaç kez çağırmaktır.&rdquo;</strong> Hayır. Her çağrının rolü, görevi ve girdi-çıktı ilişkisi bilinçli tanımlanmalıdır.</li>
+<li><strong>&ldquo;Her ajana aynı araçları vermek daha güçlüdür.&rdquo;</strong> Her rol aynı araçlara ihtiyaç duymaz. Gereksiz araçlar tasarımı bulanıklaştırabilir.</li>
+<li><strong>&ldquo;Doğrusal plan her zaman yeterlidir.&rdquo;</strong> Basit akışlarda yeterlidir; fakat dinamik karar verme gerekiyorsa yönetici koordinasyonu daha uygun olabilir.</li>
+<li><strong>&ldquo;Yönetici ajan yalnızca fazladan bir katmandır.&rdquo;</strong> Doğru kurulduğunda planlama, delegasyon ve son gözden geçirme sorumluluğunu üstlenir.</li>
+<li><strong>&ldquo;Ajan sayısı arttıkça sistem otomatik olarak iyileşir.&rdquo;</strong> Fazla ajan, rol ayrımı net değilse yalnızca iletişim karmaşası ekler.</li>
+</ul></div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Çok ajanlı iş akışları, karmaşık görevleri daha yönetilebilir alt görevlere ayırmanın agentic sistemlerdeki karşılığıdır. Bu yaklaşımın gücü, tek bir genel ajan yerine rolleri belirginleştirmekten gelir: araştırmacı araştırır, tasarımcı görselleştirir, yazar birleştirir, yönetici ise gerekirse ekibi koordine eder.</p>
+<p>İki temel iletişim deseni özellikle önemlidir. Doğrusal planda ajanlar sırayla çalışır ve her aşama bir sonraki aşamaya girdi sağlar. Yönetici koordinasyonlu planda ise bir ajan, diğer ajanları tıpkı bir ekip yöneticisi gibi görevlendirir ve planı adım adım işletir.</p>
+<p>Pratik tasarım sorusu şudur: bu görev tek bir uzmana mı, yoksa farklı rolleri olan küçük bir ekibe mi daha doğal biçimde ayrılıyor? Eğer görev doğal olarak uzmanlıklara bölünüyorsa, çok ajanlı iş akışı hem geliştirme sürecini hem de sistem davranışını daha anlaşılır hale getirebilir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#cok-ajanli-is-akislari" class="toc-h1">Çok Ajanlı İş Akışları</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#dersin-ana-tezi" class="toc-h3">Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#neden-birden-fazla-ajan" class="toc-h3">Neden birden fazla ajan?</a>
+<a href="#ekip-benzetmesi" class="toc-h3">Ekip Benzetmesi</a>
+<a href="#rol-gorev-ve-arac-birlikte-tasarlanir" class="toc-h3">Rol, görev ve araç birlikte tasarlanır</a>
+<a href="#dar-gorev-daha-iyi-tasarim" class="toc-h3">Dar görev, daha iyi tasarım</a>
+<a href="#dogrusal-cok-ajanli-plan" class="toc-h2">Doğrusal Çok Ajanlı Plan</a>
+<a href="#yonetici-koordinasyonlu-plan" class="toc-h2">Yönetici Koordinasyonlu Plan</a>
+<a href="#arac-yerine-ajan-cagirmak" class="toc-h3">Araç yerine ajan çağırmak</a>
+<a href="#iletisim-deseni-tasarim-karari" class="toc-h2">İletişim Deseni Tasarım Kararı</a>
+<a href="#tasarim-olcutu" class="toc-h3">Tasarım ölçütü</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık Karşılaşılan Yanlış Anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

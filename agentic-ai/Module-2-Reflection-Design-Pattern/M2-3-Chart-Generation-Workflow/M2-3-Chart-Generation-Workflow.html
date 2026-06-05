@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafik Üretimi İş Akışı</title>
+<style>
+:root{
+--dlai-coral:#fe4a61;--dlai-coral-dark:#e63f55;--dlai-coral-soft:#ffe8ec;--dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff;--lesson-text:#111827;--lesson-muted:#4b5563;--lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6;--lesson-border:#e5e7eb;--lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff;--lesson-card-muted:#fff8f9;--accent:#fe4a61;--accent-dark:#c2384a;
+--ink-soft:#374151;--note-bg:#fffaf0;--blue-gray:#526172;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);}
+*,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.note-card,.warn-card,.mini-panel,.reflection-card{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.note-card h3,.warn-card h3,.mini-panel h4,.reflection-card h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:680px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:24%;}
+.term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;}
+.cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{display:block;color:var(--lesson-muted);font-size:0.92rem;}
+.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.05rem 0;}
+.figure-card{margin:0;padding:0.85rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.figure-card img{display:block;max-width:100%;height:auto;margin:0 auto;border:1px solid var(--lesson-border);border-radius:4px;}
+.figure-card figcaption{margin-top:0.65rem;color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+.figure-label{display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:0.7rem;padding:0.18rem 0.55rem;border:1px solid var(--dlai-coral-soft);border-radius:999px;background:var(--dlai-coral-muted);color:var(--accent-dark);font-weight:700;font-size:0.84rem;}
+.workflow-map{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:#fff;}
+.workflow-row{display:grid;grid-template-columns:1.2fr 0.28fr 1.05fr 0.28fr 1.1fr;gap:0.65rem;align-items:stretch;margin:0.75rem 0;}
+.wf-node{display:flex;flex-direction:column;justify-content:center;min-height:5.2rem;padding:0.85rem;border:1px solid var(--lesson-border-strong);border-radius:0.6rem;background:var(--lesson-soft);}
+.wf-node strong{display:block;margin-bottom:0.3rem;color:var(--lesson-text);}
+.wf-node span{display:block;color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.wf-node.is-prompt{background:var(--dlai-coral-muted);border-color:var(--dlai-coral-soft);}
+.wf-node.is-model{background:#fff;border-top:3px solid var(--dlai-coral);}
+.wf-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-weight:800;font-size:1.3rem;}
+.wf-band{margin:0.95rem 0 0.4rem;padding:0.65rem 0.8rem;border-radius:0.55rem;background:var(--lesson-soft-2);color:var(--ink-soft);font-weight:700;text-align:center;}
+.criteria-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.criterion{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.criterion .dot{display:flex;align-items:center;justify-content:center;width:1.85rem;height:1.85rem;margin:0 auto 0.55rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-weight:700;}
+.criterion strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);}
+.criterion span{display:block;color:var(--lesson-muted);font-size:0.92rem;}
+.prompt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.prompt-card{border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:var(--lesson-card-muted);overflow:hidden;}
+.prompt-card .prompt-tag{padding:0.52rem 0.85rem;font-size:0.9rem;font-weight:700;color:var(--accent-dark);background:#fff;border-bottom:1px solid var(--lesson-border);}
+.prompt-text{margin:0;padding:0.85rem 0.95rem;color:var(--lesson-text);font-size:0.95rem;line-height:1.55;white-space:pre-wrap;}
+.process-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.process-item{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;}
+.process-item strong{display:block;margin-bottom:0.35rem;color:var(--accent-dark);}
+.process-item span{display:block;color:var(--lesson-muted);font-size:0.94rem;}
+.callout-strip{display:flex;flex-wrap:wrap;gap:0.65rem;margin:1rem 0;}
+.pill{display:inline-flex;align-items:center;padding:0.32rem 0.62rem;border:1px solid var(--lesson-border);border-radius:999px;background:#fff;color:var(--ink-soft);font-size:0.9rem;font-weight:600;}
+.pill.is-coral{border-color:var(--dlai-coral-soft);background:var(--dlai-coral-muted);color:var(--accent-dark);}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.chart-grid,.criteria-grid,.prompt-grid,.process-list{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.workflow-row{grid-template-columns:1fr;}
+.wf-arrow{transform:rotate(90deg);min-height:1.2rem;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+table{min-width:640px;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-2-Reflection-Design-Pattern/M2-3-Chart-Generation-Workflow/M2-3-Chart-Generation-Workflow.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Grafik Üretimi İş Akışı</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="grafik-uretimi-is-akisi">Grafik Üretimi İş Akışı</h1>
+<p class="lead-text">Bir dil modelinin ilk grafik taslağını üretmesi, bu taslağın çalıştırılıp gözlemlenmesi ve çok kipli yansıma ile daha okunabilir bir görselleştirmeye dönüştürülmesi.</p>
+</header>
+
+<section>
+<h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yansıma deseninin grafik üretimindeki somut karşılığını inceler. Başlangıçta bir dil modeli, kahve satışlarını 2024 ve 2025 yılının birinci çeyreği için karşılaştıran bir görselleştirme üretmek üzere Python kodu yazar. Bu ilk deneme çalıştırıldığında grafik oluşur; ancak grafiğin oluşması, grafiğin iyi olduğu anlamına gelmez.</p>
+<p>Yansıma adımı tam bu noktada devreye girer. İlk kod ve onun ürettiği görsel, görsel girdi kabul edebilen ikinci bir modele verilir. Bu model grafiğin okunabilirliğini, açıklığını ve tamamlayıcılığını değerlendirir; ardından daha iyi bir görselleştirme üretecek yeni kodun yazılmasını sağlar. Böylece iş akışı tek atışlı üretimden, eleştiri ve iyileştirme içeren agentik bir döngüye dönüşür.</p>
+<div class="definition-card">
+<h3 id="temel-fikir">Temel Fikir</h3>
+<p>Grafik üretiminde kalite yalnızca doğru veriyi çizmekle ölçülmez. Öğrencinin veya kullanıcının grafiği hızlıca okuyabilmesi, kategorileri ayırt edebilmesi ve iki yıl arasındaki farkı görmesi gerekir. Yansıma, bu görsel kalite ölçütlerini üretim sürecinin parçası haline getirir.</p>
+</div>
+</section>
+
+<section>
+<h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Grafik üretiminde doğrudan üretim ile yansımalı üretim arasındaki farkı açıklayabilmek.</li>
+<li>İlk grafik taslağının neden çalışmasına rağmen zayıf bir görselleştirme olabileceğini yorumlayabilmek.</li>
+<li>Çok kipli modelin grafiği görsel olarak inceleyerek nasıl eleştiri ürettiğini kavrayabilmek.</li>
+<li>Yansıma isteminde okunabilirlik, açıklık ve tamamlayıcılık gibi ölçütlerin neden açıkça verilmesi gerektiğini anlayabilmek.</li>
+<li>Üretim modeli ile yansıma modelinin aynı veya farklı seçilmesinin uygulama açısından ne anlama geldiğini tartışabilmek.</li>
+<li>Bir grafik üretim uygulamasında yansımanın gerçek kalite artışı sağlayıp sağlamadığını değerlendirecek bakış açısı kazanmak.</li>
+</ul>
+</section>
+
+<section>
+<h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline doğal dilde görev verildiğinde metin veya kod üretebildiğini bilmek.</li>
+<li>Bir tablo verisinin satır ve sütunlardan oluştuğunu, tarih, fiyat ve içecek adı gibi alanlar taşıyabileceğini anlamak.</li>
+<li>Çubuk grafik ve yığılmış çubuk grafik arasındaki temel görsel farkı ayırt edebilmek.</li>
+<li>Yansıma deseninin, ilk çıktıyı eleştirip yeniden üretme fikrine dayandığını hatırlamak.</li>
+</ul>
+<p>Bu ders kavramsal ve görsel odaklıdır. Tam çalıştırılabilir kod akışı verilmediği için ders notunda sahte bir kod hücresi oluşturulmamıştır.</p>
+</section>
+
+<section>
+<h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Grafik üretimi</td><td>Doğal dildeki bir analitik isteğin grafik çizen koda ve ardından görsele dönüştürülmesi.</td><td>Çalışan bir grafik, otomatik olarak iyi tasarlanmış bir grafik değildir.</td></tr>
+<tr><td class="term">İlk taslak</td><td>Modelin ilk denemede ürettiği kodun çizdiği görsel.</td><td>Veriyi gösterebilir; fakat okunabilirlik ve karşılaştırma gücü zayıf olabilir.</td></tr>
+<tr><td class="term">Yansıma</td><td>İlk çıktının eleştirilip aynı amaca daha iyi hizmet eden yeni bir çıktıya dönüştürülmesi.</td><td>Eleştiri ölçütleri açık verilirse iyileştirme daha hedefli olur.</td></tr>
+<tr><td class="term">Çok kipli model</td><td>Metnin yanında görüntüyü de girdi olarak değerlendirebilen model.</td><td>Grafiğin görsel düzenini gerçekten inceleyebildiği için bu iş akışında kritiktir.</td></tr>
+<tr><td class="term">Okunabilirlik</td><td>Grafikteki etiket, eksen, kategori ve değerlerin kolay ayırt edilebilmesi.</td><td>Yığılmış yapı veya kalabalık lejant karşılaştırmayı zorlaştırabilir.</td></tr>
+<tr><td class="term">Açıklık</td><td>Grafiğin hangi soruyu yanıtladığının izleyiciye doğrudan anlaşılması.</td><td>Başlık, eksen etiketi ve kategori düzeni bu açıklığı belirler.</td></tr>
+<tr><td class="term">Tamamlayıcılık</td><td>Grafiğin görevin gerektirdiği karşılaştırmayı eksiksiz göstermesi.</td><td>Yıllar, içecek türleri ve toplam satışlar görevle uyumlu biçimde görünmelidir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section>
+<h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Grafik üretimi iş akışının ana yapısı basittir: önce üret, sonra çalıştır, sonra görseli eleştir, son olarak daha iyi bir sürüm üret. Bu düzen, yansıma desenini veri görselleştirme gibi kalite yargısı gerektiren bir alana taşır.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>İsteği al</strong><span>Görev, birinci çeyrek kahve satışlarını iki yıl arasında karşılaştırmaktır.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>İlk grafiği üret</strong><span>Model kod yazar, kod çalıştırılır ve ilk taslak görsel oluşur.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Görseli eleştir</strong><span>Çok kipli model grafiğe bakar ve yapıcı geri bildirim üretir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Grafiği iyileştir</strong><span>Geri bildirim yeni koda dönüştürülür ve daha açık grafik üretilir.</span></div>
+</div></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Agentik yön</strong><span>Model yalnızca cevap vermekle kalmaz; kendi çıktısının sonucunu gözlemleyen bir döngünün parçası olur.</span></div>
+<div class="insight-card"><strong>Görsel akıl yürütme</strong><span>Yansıma modeli metinsel açıklama yerine gerçek grafiği inceleyerek karar verir.</span></div>
+<div class="insight-card"><strong>Kalite ölçütleri</strong><span>Okunabilirlik, açıklık ve tamamlayıcılık açıkça söylenirse eleştiri daha kullanışlı hale gelir.</span></div>
+</div>
+</section>
+
+<section>
+<h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="grafik-gorevinin-dogasi">Grafik görevinin doğası</h3>
+<p>Veri bağlamı, bir kahve makinesinden gelen satış kayıtlarıdır. Her kayıt, hangi içeceğin ne zaman satıldığını ve satış fiyatını temsil eder. Analitik soru ise belirgindir: 2024 ve 2025 yıllarının birinci çeyrek kahve satışları karşılaştırılmalıdır.</p>
+<p>Bu soru ilk bakışta sıradan görünür; ancak iyi bir grafik için birkaç kararın doğru verilmesi gerekir. Hangi zaman aralığı filtrelenecek, satışlar hangi içecek türüne göre gruplanacak, yıllar nasıl karşılaştırılacak, toplam değerler hangi eksende gösterilecek ve izleyici iki yılı kolayca nasıl ayırt edecek? Modelin ilk denemesi bu kararların bir kısmını doğru, bir kısmını ise zayıf biçimde verebilir.</p>
+
+<h3 id="dogrudan-uretimin-sinirliligi">Doğrudan üretimin sınırlılığı</h3>
+<p>İlk yaklaşımda modele yalnızca grafik üretme görevi verilir. Model buna karşılık Python kodu üretir ve kod çalıştırıldığında bir grafik ortaya çıkar. Bu noktada sistem işlevsel görünebilir; çünkü grafik vardır ve veriye dayanır. Fakat görsel tasarım açısından bakıldığında yığılmış çubuklar iki yıl arasındaki içecek bazlı farkı okumayı güçleştirir.</p>
+<div class="warn-card">
+<h3 id="kritik-ayrim">Kritik Ayrım</h3>
+<p>Bir görselleştirme teknik olarak doğru olabilir, ama pedagojik veya analitik olarak zayıf kalabilir. Yansıma deseni, bu ikinci kalite katmanını yakalamak için kullanılır.</p>
+</div>
+
+<h3 id="yansimanin-devreye-girdigi-an">Yansımanın devreye girdiği an</h3>
+<p>Yansıma adımı, ilk kodu ve onun çizdiği grafiği birlikte değerlendirir. Burada yalnızca kod metnine bakmak yeterli değildir; çünkü sorun çoğu zaman sözdiziminde değil, görsel düzenin kendisindedir. Çok kipli model, grafiğin kendisini inceleyerek karşılaştırmayı zorlaştıran noktaları belirler ve daha uygun bir temsil önerir.</p>
+<p>Bu dersteki iyileştirme, yığılmış çubukların yerine içecek türlerinin her yıl için daha net ayrıldığı bir düzen fikrine dayanır. Böylece iki yıl arasındaki fark, tek bir toplam barın içindeki renk parçalarını takip etmek yerine, kategori ve yıl ilişkisi üzerinden daha doğrudan okunur.</p>
+</section>
+
+<section>
+<h2 id="grafiklerin-yorumlanmasi">Grafiklerin Yorumlanması</h2>
+<p>Aşağıdaki iki görsel, aynı analitik soruya verilen iki farklı görselleştirme cevabını gösterir. İlk taslak çalışır; ancak yığılmış yapı, renk sayısı ve lejant yoğunluğu nedeniyle karşılaştırmayı zorlaştırır. İyileştirilmiş sürümde içecek türleri daha ayrık görünür ve iki yıl arasındaki fark görsel olarak daha hızlı okunur.</p>
+<div class="chart-grid">
+<figure class="figure-card">
+<span class="figure-label">İlk taslak</span>
+<img src="images/chart-01.jpg" alt="İlk grafik taslağı: iki yılın birinci çeyrek satışlarını yığılmış çubuklarla gösteren görsel">
+<figcaption>İlk grafik, toplam satışları gösterir; fakat içecek türleri tek bir yığılmış çubuğun parçaları haline geldiği için kategori bazlı karşılaştırma zahmetlidir.</figcaption>
+</figure>
+<figure class="figure-card">
+<span class="figure-label">Yansıma sonrası</span>
+<img src="images/chart-02.jpg" alt="Yansıma sonrası grafik: kahve içecek türlerine göre iki yılın birinci çeyrek satışlarını daha ayrık çubuklarla gösteren görsel">
+<figcaption>İyileştirilmiş grafik, kategorileri daha görünür kılar. Yıllar arasındaki fark, her içecek türünün yanında daha doğrudan okunabilir hale gelir.</figcaption>
+</figure>
+</div>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>İlk taslağın güçlü tarafı</h4>
+<p>Görevdeki iki yılı ve içecek türlerini aynı grafikte toplamaya çalışır. Bu, verinin doğru bağlamını yakaladığı anlamına gelir.</p>
+<ul>
+<li>Yıllar eksende görünür.</li>
+<li>Toplam satış ölçüsü kullanılır.</li>
+<li>İçecek türleri renkle temsil edilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>İyileştirmenin ana kazancı</h4>
+<p>Karşılaştırmanın bilişsel yükü azalır. İzleyici artık renk parçalarını üst üste toplayarak değil, ayrık çubukları okuyarak karar verir.</p>
+<ul>
+<li>Kategoriler daha seçilebilir hale gelir.</li>
+<li>Yıllar arasındaki fark daha hızlı görülür.</li>
+<li>Grafik, analitik soruya daha doğrudan cevap verir.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2 id="surec-yapisi">Süreç Yapısı</h2>
+<p>İş akışının tasarımında iki döngü vardır: üretim döngüsü ve yansıma döngüsü. Üretim döngüsü, kullanıcının isteğini ilk kod ve grafik taslağına çevirir. Yansıma döngüsü ise bu taslağı eleştirip yeni bir grafik sürümüne dönüştürür.</p>
+<div class="workflow-map">
+<div class="wf-band">Üretim döngüsü</div>
+<div class="workflow-row">
+<div class="wf-node is-prompt"><strong>Kullanıcı isteği</strong><span>Birinci çeyrek kahve satışlarını iki yıl arasında karşılaştıran grafik üret.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>Kod yazan model</strong><span>Grafiği çizecek Python mantığını üretir.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node"><strong>İlk çalıştırma</strong><span>Kod çalışır ve ilk grafik taslağı oluşur.</span></div>
+</div>
+<div class="wf-band">Yansıma döngüsü</div>
+<div class="workflow-row">
+<div class="wf-node is-prompt"><strong>Görsel ve bağlam</strong><span>İlk grafik, ilk kod ve görev amacı değerlendirme için birlikte sunulur.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>Eleştiren model</strong><span>Grafiği okunabilirlik, açıklık ve tamamlayıcılık açısından inceler.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node"><strong>Yeni sürüm</strong><span>Geri bildirim daha iyi grafik üreten yeni koda dönüştürülür.</span></div>
+</div>
+</div>
+<p>Bu yapı, yansımanın neden yalnızca bir "ek istem" olmadığını gösterir. Sistem, üretilen ara sonucu gözlemleyip onu yeni bir üretim kararına bağlar. Bu nedenle iş akışı agentik karakter kazanır.</p>
+</section>
+
+<section>
+<h2 id="yansima-isteminin-tasarimi">Yansıma İsteminin Tasarımı</h2>
+<p>Yansıma adımının etkili olabilmesi için modelden yalnızca "daha iyi yap" demek yeterli değildir. Değerlendirme rolü ve ölçütler açıkça tanımlanmalıdır. Bu derste eleştiren model, uzman bir veri analisti gibi davranmaya yönlendirilir ve grafiği belirli kriterlere göre incelemesi istenir.</p>
+<div class="criteria-grid">
+<div class="criterion"><span class="dot">1</span><strong>Okunabilirlik</strong><span>Etiketler, renkler, eksenler ve lejant izleyiciyi yormamalıdır.</span></div>
+<div class="criterion"><span class="dot">2</span><strong>Açıklık</strong><span>Grafik, hangi karşılaştırmayı yaptığını tereddütsüz göstermelidir.</span></div>
+<div class="criterion"><span class="dot">3</span><strong>Tamamlayıcılık</strong><span>Görevde istenen yıl, dönem ve içecek ayrımı eksiksiz temsil edilmelidir.</span></div>
+</div>
+<div class="prompt-grid">
+<div class="prompt-card">
+<div class="prompt-tag">Üretim rolü</div>
+<p class="prompt-text">Kullanıcının grafik sorusunu yanıtlayan bir görselleştirme üret. Veri tablosunu kullan, ilgili dönemi filtrele ve karşılaştırmayı çizilebilir hale getir.</p>
+</div>
+<div class="prompt-card">
+<div class="prompt-tag">Yansıma rolü</div>
+<p class="prompt-text">Uzman bir veri analisti gibi davran. İlk grafiği okunabilirlik, açıklık ve tamamlayıcılık açısından eleştir. Ardından bu eleştiriyi uygulayan yeni grafik üretim mantığını oluştur.</p>
+</div>
+</div>
+<div class="note-card">
+<h3 id="neden-olcut-vermek-onemli">Neden ölçüt vermek önemli?</h3>
+<p>Modelin "iyi grafik" kavramı belirsiz kalırsa, iyileştirme rastgele estetik değişikliklere dönüşebilir. Ölçütler açık verildiğinde model hangi kusuru arayacağını ve hangi yönde düzeltme yapacağını daha net bilir.</p>
+</div>
+</section>
+
+<section>
+<h2 id="model-secimi-ve-yapilandirma">Model Seçimi ve Yapılandırma</h2>
+<p>Üretim ve yansıma adımları aynı modelle yapılabilir; ancak uygulamada bu iki rol için farklı modeller denemek anlamlı olabilir. İlk adımda hızlı ve yeterli kod üreten bir model tercih edilebilir. Yansıma adımında ise görsel akıl yürütmesi daha güçlü veya muhakeme becerisi daha belirgin bir model daha iyi sonuç verebilir.</p>
+<div class="process-list">
+<div class="process-item"><strong>Aynı modelle çalışma</strong><span>Kurulumu daha sadedir. Küçük deneylerde veya düşük maliyetli uygulamalarda başlangıç için uygundur.</span></div>
+<div class="process-item"><strong>Farklı modelle yansıma</strong><span>İlk modelin kör noktalarını azaltabilir. Özellikle görsel kalite ve eleştirel değerlendirme gerektiğinde değerlidir.</span></div>
+<div class="process-item"><strong>Reasoning odaklı yansıma</strong><span>Eleştiri adımında daha sistematik gerekçelendirme sağlayabilir. Kazanç, görevin karmaşıklığına bağlıdır.</span></div>
+<div class="process-item"><strong>Uygulama bazlı ölçüm</strong><span>Yansımanın gerçek etkisi her uygulamada aynı değildir. Performans artışı deneyle ölçülmelidir.</span></div>
+</div>
+<p>Buradaki pratik sonuç şudur: yansıma desenini uygularken yalnızca "hangi modeli kullandım" sorusuna değil, "hangi rol için hangi modeli kullandım" sorusuna da bakmak gerekir.</p>
+</section>
+
+<section>
+<h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Çalışan grafiği yeterli saymak</h4>
+<p>Grafik oluştu diye görev tamamlanmış kabul edilirse, görselin asıl analitik soruyu ne kadar iyi yanıtladığı gözden kaçar.</p>
+<ul>
+<li>Yığılmış yapı kategori karşılaştırmasını zorlaştırabilir.</li>
+<li>Lejant ve renk sayısı izleyiciyi yorabilir.</li>
+<li>Eksen veya başlık, görevi yeterince açık anlatmayabilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Belirsiz eleştiri istemi yazmak</h4>
+<p>Yansıma modelinden yalnızca "iyileştir" demek çoğu zaman dağınık sonuç verir. Eleştiri ölçütleri açık olmalıdır.</p>
+<ul>
+<li>Okunabilirlik tek başına estetik değildir.</li>
+<li>Açıklık, göreve uygun temsil seçimini gerektirir.</li>
+<li>Tamamlayıcılık, gerekli tüm boyutların görünmesini ister.</li>
+</ul>
+</div>
+</div>
+<div class="callout-strip">
+<span class="pill is-coral">Üret</span>
+<span class="pill">Çalıştır</span>
+<span class="pill">Gözlemle</span>
+<span class="pill">Eleştir</span>
+<span class="pill is-coral">Yeniden üret</span>
+</div>
+</section>
+
+<section>
+<h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Grafik üretimi, yansıma deseninin değerini açık gösteren bir örnektir; çünkü kalite yalnızca kodun çalışmasına değil, görselin okunmasına da bağlıdır.</li>
+<li>İlk grafik taslağı doğru veriyi kullanabilir, fakat yığılmış veya kalabalık bir temsil yüzünden analitik karşılaştırmayı zorlaştırabilir.</li>
+<li>Çok kipli yansıma modeli, görseli doğrudan inceleyerek insan benzeri bir eleştiri katmanı sağlar.</li>
+<li>İyi yansıma için rol ve ölçütler açık olmalıdır: okunabilirlik, açıklık ve tamamlayıcılık gibi kriterler modelin neyi düzeltmesi gerektiğini belirginleştirir.</li>
+<li>Farklı üretim ve yansıma modelleri denemek, uygulamaya göre kaliteyi artırabilir; fakat nihai karar gerçek çıktı kalitesi ölçülerek verilmelidir.</li>
+</ul>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#grafik-uretimi-is-akisi" class="toc-h1">Grafik Üretimi İş Akışı</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#temel-fikir" class="toc-h3">Temel Fikir</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#grafik-gorevinin-dogasi" class="toc-h3">Grafik görevinin doğası</a>
+<a href="#dogrudan-uretimin-sinirliligi" class="toc-h3">Doğrudan üretimin sınırlılığı</a>
+<a href="#kritik-ayrim" class="toc-h3">Kritik Ayrım</a>
+<a href="#yansimanin-devreye-girdigi-an" class="toc-h3">Yansımanın devreye girdiği an</a>
+<a href="#grafiklerin-yorumlanmasi" class="toc-h2">Grafiklerin Yorumlanması</a>
+<a href="#surec-yapisi" class="toc-h2">Süreç Yapısı</a>
+<a href="#yansima-isteminin-tasarimi" class="toc-h2">Yansıma İsteminin Tasarımı</a>
+<a href="#neden-olcut-vermek-onemli" class="toc-h3">Neden ölçüt vermek önemli?</a>
+<a href="#model-secimi-ve-yapilandirma" class="toc-h2">Model Seçimi ve Yapılandırma</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add('js-ready');
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

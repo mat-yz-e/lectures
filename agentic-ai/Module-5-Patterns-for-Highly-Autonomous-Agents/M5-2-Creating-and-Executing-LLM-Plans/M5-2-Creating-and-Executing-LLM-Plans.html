@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Planları Oluşturmak ve Yürütmek</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5; --ink-soft:#374151;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+--tok-key:#1f3a8a; --tok-str:#b3261e; --tok-num:#6b7280; --tok-punc:#374151;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.example-card{border-left:4px solid var(--dlai-coral);background:var(--lesson-soft);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.anatomy-table col.k-col{width:22%;} .anatomy-table td.k{white-space:nowrap;font-weight:600;}
+.anatomy-table td.k code{background:transparent;padding:0;color:var(--accent-dark);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+/* json / structured-data display card */
+.data-card{margin:1.1rem 0;border:1px solid var(--code-border);border-radius:0.6rem;overflow:hidden;background:var(--code-bg);}
+.data-head{display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.45rem 0.7rem;background:#eef0f4;border-bottom:1px solid var(--code-border);}
+.data-head .data-label{font-size:0.82rem;font-weight:700;color:var(--ink-soft);letter-spacing:0.02em;}
+.data-head .copy-btn{appearance:none;border:1px solid var(--lesson-border-strong);background:#fff;color:var(--ink-soft);font-size:0.76rem;font-weight:600;padding:0.22rem 0.6rem;border-radius:0.4rem;cursor:pointer;}
+.data-head .copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.data-head .copy-btn:active{background:var(--dlai-coral-soft);}
+.data-body{margin:0;padding:0.85rem 0.95rem;overflow-x:auto;background:var(--code-bg);color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.86rem;line-height:1.55;white-space:pre;}
+.data-body .tk{color:var(--tok-key);} .data-body .ts{color:var(--tok-str);} .data-body .tn{color:var(--tok-num);} .data-body .tp{color:var(--tok-punc);}
+.data-body::-webkit-scrollbar{height:8px;} .data-body::-webkit-scrollbar-track{background:transparent;}
+.data-body::-webkit-scrollbar-thumb{background:#c7ccd4;border-radius:999px;} .data-body::-webkit-scrollbar-thumb:hover{background:#aab0ba;}
+.data-body{scrollbar-width:thin;scrollbar-color:#c7ccd4 transparent;}
+/* format reliability ranking */
+.rank-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.rank-item{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:0.85rem;padding:0.75rem 0.9rem;border:1px solid var(--lesson-border);border-left:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.rank-item .rank-name{font-weight:700;color:var(--lesson-text);}
+.rank-item .rank-name small{display:block;font-weight:400;color:var(--lesson-muted);font-size:0.86rem;margin-top:0.15rem;}
+.rank-item .rank-meter{display:flex;gap:0.2rem;}
+.rank-item .rank-meter i{display:block;width:0.85rem;height:0.85rem;border-radius:999px;background:var(--lesson-border);}
+.rank-item .rank-meter i.on{background:var(--dlai-coral);}
+.rank-item.is-low{border-left-color:var(--lesson-border-strong);}
+/* exec chain */
+.exec-chain{display:grid;gap:0.7rem;margin:1.1rem 0;}
+.exec-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto minmax(0,1fr);align-items:center;gap:0.5rem;padding:0.7rem 0.8rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.exec-row .e-tool{justify-self:start;}
+.exec-row .e-in{font-size:0.9rem;color:var(--lesson-text);}
+.exec-row .e-in b{display:block;color:var(--accent-dark);font-size:0.82rem;font-weight:700;}
+.exec-row .e-in span{color:var(--lesson-muted);font-size:0.82rem;}
+.exec-row .e-arrow{color:var(--dlai-coral);font-weight:700;}
+.exec-row .e-llm{padding:0.4rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.45rem;background:#eef0f4;color:#1f2937;font-weight:700;font-size:0.85rem;text-align:center;}
+.exec-row .e-tool{padding:0.45rem 0.6rem;border:1px solid var(--dlai-coral);border-radius:0.45rem;background:var(--dlai-coral-soft);color:var(--accent-dark);font-size:0.84rem;text-align:center;}
+.exec-row .e-tool code{background:transparent;padding:0;color:var(--accent-dark);font-weight:600;font-size:0.95em;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.exec-row{grid-template-columns:1fr;text-align:left;}
+.exec-row .e-arrow{display:none;}
+.rank-item{grid-template-columns:auto 1fr;}
+.rank-item .rank-meter{grid-column:1 / -1;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-5-Patterns-for-Highly-Autonomous-Agents/M5-2-Creating-and-Executing-LLM-Plans/M5-2-Creating-and-Executing-LLM-Plans.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">LLM Planları Oluşturmak ve Yürütmek</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="llm-planlari-olusturmak-ve-yurutmek">LLM Planları Oluşturmak ve Yürütmek</h1>
+<p class="lead-text">Bir dil modelinden yalnızca bir plan istemek yeterli değildir; o planın aşağı akış kodu tarafından güvenilir biçimde ayrıştırılıp adım adım çalıştırılabilmesi için yapısal bir biçimde &mdash; çoğunlukla JSON olarak &mdash; üretilmesi gerekir.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bir önceki konuda bir agent'ın kendi planını nasıl çıkardığını ve bu planı adım adım nasıl yürüttüğünü görmüştük. Orada plan, basit metin açıklamalarıyla yüksek seviyede gösterilmişti. Bu bölümde bir adım derine iniyoruz: <strong>bir dil modeline planı tam olarak nasıl ürettiririz</strong> ve ürettiği planı <strong>nasıl okur, yorumlar ve çalıştırırız?</strong></p>
+<p>Buradaki kritik fikir, planı düz İngilizce yerine <strong>yapısal bir biçimde</strong> ürettirmektir. Pek çok geliştirici modelden planı JSON biçiminde döndürmesini ister; çünkü bu, planı çalıştıracak aşağı akış kodunun adımları net ve belirsizlikten uzak biçimde ayrıştırabilmesini sağlar. Bölümün sonunda, neden yapısal bir format seçtiğimizi, JSON'un bir planı nasıl temsil ettiğini ve hangi alternatif formatların ne kadar güvenilir olduğunu kavramış olacaksınız.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Bir dil modeline planı yapısal bir biçimde ürettiren bir sistem isteminin nasıl kurulduğunu açıklayabilmek.</li>
+<li>Düz metin plan ile JSON plan arasındaki farkı ve JSON'un aşağı akış yürütme için neden avantajlı olduğunu gerekçelendirebilmek.</li>
+<li>Bir JSON plan adımının dört temel bileşenini &mdash; adım numarası, açıklama, araç adı ve argümanlar &mdash; tanıyabilmek.</li>
+<li>JSON, XML, markdown ve düz metin formatlarını ayrıştırma güvenilirliği açısından sıralayabilmek.</li>
+<li>Planı kodla ifade etme fikrinin neden daha karmaşık planları mümkün kıldığını kavramak.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir agent'ın bir araç kümesi alıp adım adım plan üretmesi ve bu planı sırayla yürütmesi fikrine aşinalık.</li>
+<li>Anahtar&ndash;değer çiftleri ve listeler gibi temel yapısal veri kavramlarına genel düzeyde aşinalık.</li>
+<li>Bir metnin "ayrıştırılması" (parse edilmesi), yani program tarafından anlamlı parçalara ayrılması fikrine dair temel bir sezgi.</li>
+</ul>
+<p>Bu ders kavramsaldır; herhangi bir programlama deneyimi veya kod yazımı gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Plan</td><td>Görevi tamamlamak için sırayla yapılacak adımların listesi.</td><td>Burada düz metin yerine yapısal biçimde temsil edilir.</td></tr>
+<tr><td class="term">Yapısal format</td><td>Adımları makinenin net okuyabileceği kurallı biçim: JSON, XML vb.</td><td>Belirsizliği azaltır; güvenilir yürütmeyi mümkün kılar.</td></tr>
+<tr><td class="term">JSON</td><td>Anahtar&ndash;değer çiftleri ve listelerden oluşan yaygın yapısal veri biçimi.</td><td>Modern dil modelleri JSON üretmede oldukça başarılıdır.</td></tr>
+<tr><td class="term">Ayrıştırma (parse)</td><td>Bir metni program tarafından anlamlı parçalara ayırma işlemi.</td><td>Yapısal format ayrıştırmayı güvenilir kılan şeydir.</td></tr>
+<tr><td class="term">Argümanlar (args)</td><td>Bir adımda çağrılacak araca verilecek girdi değerleri.</td><td>Genellikle önceki adımın çıktısına işaret eder.</td></tr>
+<tr><td class="term">Aşağı akış kodu</td><td>Modelin ürettiği planı okuyup adımları çalıştıran program mantığı.</td><td>Planın yürütülmesinden bu kod sorumludur, modelin kendisi değil.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu bölümün merkezi fikri şudur: <strong>bir plan ancak güvenilir biçimde ayrıştırılabildiği kadar yürütülebilir.</strong> Bu yüzden modelden planı serbest metin yerine kurallı bir biçimde isteriz. Süreç dört aşamadan oluşur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Yapısal plan iste</strong><span>Sistem istemi, modelden planı JSON gibi kurallı bir biçimde üretmesini ister.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Plan üretilir</strong><span>Model, her adımı net anahtar&ndash;değerlerle tanımlayan yapısal bir çıktı verir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Ayrıştır</strong><span>Aşağı akış kodu adımları belirsizlik olmadan tek tek okur.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Adım adım yürüt</strong><span>Her adım, aracı ve argümanlarıyla sırayla çalıştırılır.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: format seçimi yalnızca bir biçim tercihi değildir; planın <strong>ne kadar güvenilir çalıştırılabileceğini</strong> doğrudan belirler. Belirsiz bir biçim, ayrıştırma hatalarına ve dolayısıyla yanlış yürütmeye yol açar.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="metin-planindan-yapisal-plana">Metin planından yapısal plana</h3>
+<p>Bir önceki konudaki müşteri hizmetleri örneğini hatırlayalım. <em>"Stokta 100 doların altında yuvarlak güneş gözlüğünüz var mı?"</em> sorgusu için model üç adımlı bir plan çıkarıyordu: önce <code>get_item_descriptions</code> ile yuvarlak gözlükleri bul, sonra <code>check_inventory</code> ile stoğu kontrol et, son olarak <code>get_item_price</code> ile fiyatı 100 doların altında olanları gör. Ardından her adım, bir önceki adımın çıktısıyla birlikte modele yeniden verilerek sırayla yürütülüyordu.</p>
+<div class="exec-chain">
+<div class="exec-row">
+<div class="e-in"><b>Adım 1 metni</b><span>+ görev ve araç bağlamı</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool"><code>get_item_descriptions</code></div>
+</div>
+<div class="exec-row">
+<div class="e-in"><b>Adım 1 çıktısı + Adım 2 metni</b><span>yuvarlak bulunan modeller</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool"><code>check_inventory</code></div>
+</div>
+<div class="exec-row">
+<div class="e-in"><b>Adım 2 çıktısı + Adım 3 metni</b><span>stokta olan modeller</span></div>
+<span class="e-arrow">&rarr;</span><span class="e-llm">LLM</span><span class="e-arrow">&rarr;</span>
+<div class="e-tool"><code>get_item_price</code></div>
+</div>
+</div>
+<p>Bu plan yüksek seviyede, basit metin cümleleriyle gösterilmişti. Sorun şudur: bu cümleleri çalıştıracak kodun, hangi cümlenin hangi adım olduğunu, hangi aracın çağrılacağını ve o araca hangi değerlerin verileceğini düz metinden güvenilir biçimde çıkarması zordur. İşte bu noktada yapısal format devreye girer.</p>
+
+<h3 id="json-neden-yardimci-olur">JSON neden yardımcı olur?</h3>
+<p>Çözüm, sistem istemini güncelleyerek modelden planı <strong>JSON biçiminde</strong> üretmesini istemektir. İstemde araçlar tanıtılır ve ardından "adım adım bir planı JSON biçiminde oluştur; her adımda şu öğeler bulunsun: adım numarası, açıklama, araç adı ve argümanlar" denir. Modern dil modellerinin tamamı bu noktada JSON çıktısı üretmede oldukça başarılıdır.</p>
+<p>Aşağıda, yuvarlak güneş gözlüğü sorgusu için modelin üretebileceği türden bir JSON plan görülüyor. Çıktı bir liste oluşturur; listenin her ögesi tek bir adımı, net anahtar ve değerlerle tanımlar:</p>
+<div class="data-card">
+<div class="data-head"><span class="data-label">JSON planı</span><button class="copy-btn" type="button" data-copy-target="json-plan">Kopyala</button></div>
+<pre class="data-body" id="json-plan"><span class="tp">{</span>
+  <span class="tk">"plan"</span><span class="tp">:</span> <span class="tp">[</span>
+    <span class="tp">{</span>
+      <span class="tk">"step"</span><span class="tp">:</span> <span class="tn">1</span><span class="tp">,</span>
+      <span class="tk">"description"</span><span class="tp">:</span> <span class="ts">"Find round sunglasses"</span><span class="tp">,</span>
+      <span class="tk">"tool"</span><span class="tp">:</span> <span class="ts">"get_item_descriptions"</span><span class="tp">,</span>
+      <span class="tk">"args"</span><span class="tp">:</span> <span class="tp">{</span><span class="tk">"query"</span><span class="tp">:</span> <span class="ts">"round sunglasses"</span><span class="tp">}</span>
+    <span class="tp">},</span>
+    <span class="tp">{</span>
+      <span class="tk">"step"</span><span class="tp">:</span> <span class="tn">2</span><span class="tp">,</span>
+      <span class="tk">"description"</span><span class="tp">:</span> <span class="ts">"Check available stock"</span><span class="tp">,</span>
+      <span class="tk">"tool"</span><span class="tp">:</span> <span class="ts">"check_inventory"</span><span class="tp">,</span>
+      <span class="tk">"args"</span><span class="tp">:</span> <span class="tp">{</span><span class="tk">"items"</span><span class="tp">:</span> <span class="ts">"results from step 1"</span><span class="tp">}</span>
+    <span class="tp">},</span>
+    …
+  <span class="tp">]</span>
+<span class="tp">}</span></pre>
+</div>
+<p>Düz İngilizce yerine bu biçimi kullanmak, aşağı akış kodunun planın adımlarını <strong>tam olarak</strong> ve belirsizlik olmadan ayrıştırabilmesini sağlar; böylece her adım güvenilir biçimde, tek tek çalıştırılabilir.</p>
+
+<h3 id="bir-adimin-anatomisi">Bir adımın anatomisi</h3>
+<p>JSON planındaki her adım, çalıştırma için gereken her şeyi taşıyan dört bileşenden oluşur. Bu dört alan, "ne yapılacak ve nasıl yapılacak" sorusunu kodun anlayabileceği bir dile çevirir:</p>
+<div class="table-wrap"><table class="anatomy-table">
+<colgroup><col class="k-col"><col><col></colgroup>
+<thead><tr><th>Alan</th><th>Ne ifade eder</th><th>Örnek</th></tr></thead>
+<tbody>
+<tr><td class="k"><code>step</code></td><td>Adımın sıra numarası; yürütme sırasını belirler.</td><td><code>1</code></td></tr>
+<tr><td class="k"><code>description</code></td><td>Adımın insan tarafından okunabilir kısa açıklaması.</td><td><code>"Find round sunglasses"</code></td></tr>
+<tr><td class="k"><code>tool</code></td><td>Bu adımda çağrılacak aracın adı.</td><td><code>"get_item_descriptions"</code></td></tr>
+<tr><td class="k"><code>args</code></td><td>Araca verilecek girdiler; çoğu zaman önceki adımın çıktısına işaret eder.</td><td><code>{"items": "results from step 1"}</code></td></tr>
+</tbody>
+</table></div>
+<p>İkinci adımın <code>args</code> alanına dikkat edin: değeri "results from step 1" (birinci adımın sonuçları) ifadesidir. Bu, adımların birbirinden bağımsız olmadığını, bir zincir oluşturduğunu açıkça gösterir; her adım bir öncekinin çıktısı üzerine kurulur.</p>
+
+<div class="definition-card">
+<h3 id="tanim">Tanım</h3>
+<p>Bir <strong>yürütülebilir plan</strong>, modelin ürettiği ve aşağı akış kodunun belirsizlik olmadan ayrıştırıp tek tek çalıştırabileceği, yapısal biçimde temsil edilmiş bir adımlar listesidir. Her adım; bir sıra numarası, bir açıklama, çağrılacak araç ve o araca verilecek argümanları içerir.</p>
+</div>
+
+<h3 id="diger-yapisal-formatlar">Diğer yapısal formatlar</h3>
+<p>JSON tek seçenek değildir. Bazı geliştiriciler adımları ve adım numaralarını net biçimde belirtmek için XML etiketleri (sınırlayıcıları) kullanır. Daha az geliştirici markdown tercih eder; ancak markdown nasıl ayrıştırılacağı açısından bazen biraz daha belirsizdir. Düz metin ise bu seçenekler arasında en az güvenilir olanıdır. Aşağıdaki sıralama, formatları ayrıştırma güvenilirliği açısından özetler:</p>
+<div class="rank-list">
+<div class="rank-item">
+<span class="rank-meter"><i class="on"></i><i class="on"></i><i class="on"></i></span>
+<span class="rank-name">JSON<small>Net anahtar&ndash;değer yapısı; ayrıştırması güvenilir, yaygın olarak önerilir.</small></span>
+<span class="rank-name" style="font-weight:600;color:var(--accent-dark);font-size:0.85rem;">Önerilen</span>
+</div>
+<div class="rank-item">
+<span class="rank-meter"><i class="on"></i><i class="on"></i><i class="on"></i></span>
+<span class="rank-name">XML<small>Etiket sınırlayıcılarıyla adımlar açıkça belirtilir; güvenilir bir seçenektir.</small></span>
+<span class="rank-name" style="font-weight:600;color:var(--accent-dark);font-size:0.85rem;">İyi seçenek</span>
+</div>
+<div class="rank-item is-low">
+<span class="rank-meter"><i class="on"></i><i class="on"></i><i></i></span>
+<span class="rank-name">Markdown<small>Okunabilir ama ayrıştırması bazen daha belirsizdir.</small></span>
+<span class="rank-name" style="font-weight:600;color:var(--lesson-muted);font-size:0.85rem;">Daha belirsiz</span>
+</div>
+<div class="rank-item is-low">
+<span class="rank-meter"><i class="on"></i><i></i><i></i></span>
+<span class="rank-name">Düz metin<small>Yapısal sınır olmadığından adımları güvenilir ayırmak en zorudur.</small></span>
+<span class="rank-name" style="font-weight:600;color:var(--lesson-muted);font-size:0.85rem;">En az güvenilir</span>
+</div>
+</div>
+<p>Pratikte JSON veya XML, bir planı belirsizlik olmadan biçimlendirmek için iyi seçeneklerdir. Bir kez yapısal biçimde elde edildiğinde plan ayrıştırılabilir ve aşağı akış iş akışları farklı adımları çok daha sistematik biçimde çalıştırabilir.</p>
+
+<h3 id="bir-sonraki-adim-plani-kodla-ifade-etmek">Bir sonraki adım: planı kodla ifade etmek</h3>
+<p>Dil modellerine plan yaptırmanın bir başka zarif fikri daha vardır: modelin <strong>kod yazmasına</strong> izin vermek ve planı bu kodla ifade etmek. Bu yaklaşım, modelin çok daha karmaşık planlar üretmesini ve bu planların güvenilir biçimde çalıştırılmasını mümkün kılar. Bu fikir, planlama desenini bir üst seviyeye taşıyan doğal bir devam noktasıdır.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>"Plan formatı yalnızca bir tercih meselesidir."</strong> Hayır; format, planın ne kadar güvenilir ayrıştırılıp çalıştırılabileceğini doğrudan belirler.</li>
+<li><strong>"Düz metin plan da yeterlidir."</strong> Düz metin en az güvenilir seçenektir; adımları program tarafından net ayırmak zordur.</li>
+<li><strong>"JSON çıktısı modeller için risklidir."</strong> Tam tersine, modern dil modelleri JSON üretmede oldukça başarılıdır; bu yüzden yaygın olarak tercih edilir.</li>
+<li><strong>"Planı model üretince kendisi de çalıştırır."</strong> Planı çalıştıran, ayrıştırmayı yapan aşağı akış kodudur; model yalnızca yapısal planı üretir.</li>
+<li><strong>"Adımların <code>args</code> alanı önemsiz bir ayrıntıdır."</strong> Argümanlar çoğu zaman önceki adımın çıktısına işaret eder; zincirin birbirine bağlanmasını bu alan sağlar.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Bir agent'tan güvenilir davranış elde etmenin anahtarı, plana yapısal bir biçim vermektir. Modelden planı serbest metin yerine <strong>JSON gibi kurallı bir biçimde</strong> isteyince, aşağı akış kodu adımları belirsizlik olmadan ayrıştırabilir ve her adımı &mdash; aracı ve argümanlarıyla &mdash; sistematik biçimde, tek tek çalıştırabilir.</p>
+<p>Bir JSON plan adımı dört bileşenden oluşur: adım numarası, açıklama, araç adı ve argümanlar. Bu dört alan, "ne yapılacak ve nasıl yapılacak" sorusunu kodun anlayabileceği bir dile çevirir; argümanların önceki adımların çıktısına işaret etmesi de zinciri birbirine bağlar. JSON ve XML bu iş için güvenilir formatlardır; markdown ve düz metin daha belirsiz kalır.</p>
+<p>Buradan doğal bir sonraki adım, planı yapısal veriyle değil <strong>doğrudan kodla</strong> ifade etmektir; bu, daha karmaşık planları güvenilir biçimde çalıştırmanın kapısını aralar.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#llm-planlari-olusturmak-ve-yurutmek" class="toc-h1">LLM Planları Oluşturmak ve Yürütmek</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#metin-planindan-yapisal-plana" class="toc-h3">Metin planından yapısal plana</a>
+<a href="#json-neden-yardimci-olur" class="toc-h3">JSON neden yardımcı olur?</a>
+<a href="#bir-adimin-anatomisi" class="toc-h3">Bir adımın anatomisi</a>
+<a href="#tanim" class="toc-h3">Tanım</a>
+<a href="#diger-yapisal-formatlar" class="toc-h3">Diğer yapısal formatlar</a>
+<a href="#bir-sonraki-adim-plani-kodla-ifade-etmek" class="toc-h3">Bir sonraki adım: planı kodla ifade etmek</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+document.querySelectorAll(".copy-btn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    var el=document.getElementById(btn.getAttribute("data-copy-target"));
+    if(!el)return;
+    var text=el.textContent;
+    var done=function(){var o=btn.textContent;btn.textContent="Kopyalandı";setTimeout(function(){btn.textContent=o;},1400);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text);done();});}
+    else{fallback(text);done();}
+  });
+});
+function fallback(text){var ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="absolute";ta.style.left="-9999px";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);}
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

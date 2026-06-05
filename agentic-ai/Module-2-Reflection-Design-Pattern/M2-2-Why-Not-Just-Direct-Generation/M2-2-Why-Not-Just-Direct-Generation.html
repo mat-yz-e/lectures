@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neden Sadece Doğrudan Üretim Yetmez?</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.task-table col.ex-col{width:26%;} .task-table col.prob-col{width:30%;}
+.task-table td.ex{font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* direct-generation illustration flow */
+.gen-flow{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto minmax(0,1.4fr);gap:0.6rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.gen-box{padding:0.7rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.55rem;background:#fff;font-size:0.92rem;color:var(--lesson-text);}
+.gen-box.is-prompt{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);font-weight:600;}
+.gen-box.is-llm{background:var(--lesson-soft-2);font-weight:700;text-align:center;}
+.gen-box.is-out{background:var(--lesson-soft);}
+.gen-arrow{color:var(--dlai-coral);font-weight:700;font-size:1.2rem;text-align:center;}
+.snippet-inline{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.82rem;white-space:pre;overflow-x:auto;display:block;}
+.snip-tok-kw{color:var(--code-keyword);font-weight:700;}
+.snip-tok-fn{color:var(--code-function);}
+.snip-tok-op{color:var(--code-operator);}
+.snip-tok-cm{color:var(--code-comment);font-style:italic;}
+/* shot-prompt cards (zero/one/few) */
+.shot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.85rem;margin:1.1rem 0;}
+.shot-card{border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;overflow:hidden;display:flex;flex-direction:column;}
+.shot-card .shot-tag{padding:0.45rem 0.8rem;font-size:0.85rem;font-weight:700;color:var(--accent-dark);background:var(--dlai-coral-soft);border-bottom:1px solid var(--lesson-border);}
+.shot-body{padding:0.8rem 0.9rem;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.83rem;line-height:1.55;color:var(--lesson-text);white-space:pre-wrap;}
+.shot-body .ph{color:var(--accent-dark);font-weight:600;}
+/* prompt example cards (reflection prompts) */
+.prompt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1.1rem 0;}
+.prompt-card{border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:var(--lesson-card-muted);overflow:hidden;}
+.prompt-card .prompt-tag{padding:0.5rem 0.85rem;font-size:0.9rem;font-weight:700;color:var(--accent-dark);background:#fff;border-bottom:1px solid var(--lesson-border);}
+.prompt-text{padding:0.85rem 0.95rem;margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.84rem;line-height:1.6;color:var(--lesson-text);white-space:pre-wrap;}
+/* research evidence bar chart (HTML/CSS) */
+.evidence-panel{margin:1.1rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.evidence-legend{display:flex;flex-wrap:wrap;gap:0.6rem 1.1rem;margin:0 0 1rem;font-size:0.86rem;color:var(--lesson-muted);}
+.evidence-legend span{display:inline-flex;align-items:center;gap:0.4rem;}
+.lg-swatch{width:0.85rem;height:0.85rem;border-radius:0.2rem;display:inline-block;}
+.lg-a{background:#8a97b8;} .lg-b{background:var(--dlai-coral);} .lg-c{background:var(--accent-dark);}
+.ev-row{display:grid;grid-template-columns:11rem minmax(0,1fr);gap:0.7rem;align-items:center;padding:0.55rem 0;border-top:1px solid var(--lesson-soft-2);}
+.ev-row:first-of-type{border-top:0;}
+.ev-task{font-size:0.9rem;color:var(--lesson-text);font-weight:600;}
+.ev-bars{display:flex;flex-direction:column;gap:0.3rem;}
+.ev-bar{position:relative;height:0.85rem;border-radius:3px;background:#8a97b8;min-width:2px;}
+.ev-bar.b{background:var(--dlai-coral);} .ev-bar.c{background:var(--accent-dark);}
+.ev-bar span{position:absolute;left:calc(100% + 0.35rem);top:50%;transform:translateY(-50%);font-size:0.72rem;color:var(--lesson-muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.evidence-axis{margin-top:0.8rem;font-size:0.8rem;color:var(--lesson-muted);text-align:right;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.shot-grid,.prompt-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.gen-flow{grid-template-columns:1fr;}
+.gen-arrow{transform:rotate(90deg);}
+.ev-row{grid-template-columns:1fr;gap:0.3rem;}
+.ev-bar span{position:static;display:inline-block;transform:none;margin-left:0.35rem;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-2-Reflection-Design-Pattern/M2-2-Why-Not-Just-Direct-Generation/M2-2-Why-Not-Just-Direct-Generation.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Neden Sadece Doğrudan Üretim Yetmez?</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="neden-sadece-dogrudan-uretim-yetmez">Neden Sadece Doğrudan Üretim Yetmez?</h1>
+<p class="lead-text">Bir dil modeline isteği verip cevabı tek seferde almak en hızlı yoldur; ama çıktıyı ikinci bir adımda eleştiren yansıma deseni, çok çeşitli görevde bu basit yaklaşımı düzenli olarak geride bırakır.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yansıma desenini bir adım geriden çerçeveler ve haklı bir soruyu yanıtlar: madem bir dil modeline isteği verip cevabı doğrudan alabiliyoruz, neden araya bir gözden geçirme adımı ekleme zahmetine girelim? Bu yaklaşıma <strong>doğrudan üretim</strong> (direct generation) denir ve gerçekten de çoğu zaman makul sonuç verir.</p>
+<p>Anlatım önce doğrudan üretimin ne olduğunu ve neden &ldquo;sıfır-örnekli (zero-shot)&rdquo; istem olarak adlandırıldığını netleştirir. Ardından örnek sayısına göre istem türlerini (sıfır, bir, az-örnekli) ayırt eder. Sonra asıl soruya döner ve yansımanın doğrudan üretime kıyasla performansı nasıl artırdığını <strong>deneysel kanıtlarla</strong> gösterir. Son bölümlerde, yansımanın özellikle işe yaradığı görev türlerini ve etkili bir yansıma istemini nasıl yazacağınızı ele alır. Dersin sonunda, ne zaman doğrudan üretimle yetinebileceğinizi ve ne zaman yansımanın değer katacağını ayırt edebileceksiniz.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Doğrudan üretimi tanımlayabilmek ve onun neden bir &ldquo;sıfır-örnekli istem&rdquo; biçimi olduğunu açıklayabilmek.</li>
+<li>Sıfır-, bir- ve az-örnekli istem arasındaki farkı somut bir örnekle ayırt edebilmek.</li>
+<li>Yansımanın doğrudan üretime kıyasla performansı artırdığını gösteren deneysel kanıtı doğru biçimde okuyabilmek.</li>
+<li>Yansımanın özellikle hangi görev türlerinde fark yarattığını gerekçeleriyle örnekleyebilmek.</li>
+<li>Etkili bir yansıma istemi yazmanın iki temel ilkesini uygulayabilmek.</li>
+<li>Bir görevde doğrudan üretimin yeterli olup olmadığını değerlendirebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline metin biçiminde bir istem (prompt) verip yanıt almanın ne demek olduğuna dair temel bir fikir.</li>
+<li>Bir önceki konudan: yansıma deseninin temel mantığı (bir çıktıyı ikinci bir adımda eleştirip iyileştirme).</li>
+<li>Bir çubuk grafiği okuma; iki çubuğu yan yana karşılaştırabilme.</li>
+</ul>
+<p>Bu ders kavramsaldır; programlama gerektirmez. Anlatım içinde geçen küçük kod ve istem parçaları yalnızca fikri somutlaştırmak içindir.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Doğrudan üretim</td><td>Modele isteği verip cevabı tek seferde, tek adımda üretmesi.</td><td>Hızlıdır; ama gözden geçirme aşaması içermez.</td></tr>
+<tr><td class="term">Sıfır-örnekli istem</td><td>İstemde hiç örnek girdi-çıktı çifti verilmeyen biçim.</td><td>Doğrudan üretim örnekleri aslında sıfır-örneklidir.</td></tr>
+<tr><td class="term">Bir-örnekli istem</td><td>İstemde tek bir örnek girdi-çıktı çifti verilen biçim.</td><td>Modele istenen biçimi tek örnekle gösterir.</td></tr>
+<tr><td class="term">Az-örnekli istem</td><td>İstemde birden çok örnek verilen biçim (iki ve üzeri).</td><td>Örnek sayısı arttıkça biçim daha güçlü kalıplaşır.</td></tr>
+<tr><td class="term">Yansıma</td><td>İlk çıktıyı belirli ölçütlere göre eleştirip iyileştiren ikinci adım.</td><td>Doğrudan üretimin üzerine bir denetim katmanı ekler.</td></tr>
+<tr><td class="term">Yapılandırılmış çıktı</td><td>Belirli bir biçime uyması gereken çıktı (HTML tablosu, iç içe JSON gibi).</td><td>Karmaşıklaştıkça yansımanın yakaladığı hata olasılığı artar.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir omurgası var: <strong>doğrudan üretim hızlı bir başlangıçtır, yansıma ise onu denetleyen ve düzenli olarak iyileştiren bir katmandır.</strong> Aşağıdaki dört adım, dersin neyi nasıl gösterdiğini tek bakışta özetler.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Doğrudan üret</strong><span>İsteği ver, cevabı tek seferde al (sıfır-örnekli istem).</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Sınırı gör</strong><span>Tek geçişli çıktı doğru ama eksik veya kusurlu olabilir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Kanıta bak</strong><span>Deneyler, yansımanın çok çeşitli görevde daha iyi olduğunu gösterir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>İyi istem yaz</strong><span>Net bir yansıma talimatı ve açık ölçütlerle iyileştir.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: yansıma her zaman ve her görevde dramatik bir sıçrama getirmez. Kazanç, görevin türüne ve çıktının karmaşıklığına göre değişir &mdash; ama doğru kurulduğunda yön neredeyse her zaman yukarıdır.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="dogrudan-uretim-nedir">Doğrudan üretim nedir?</h3>
+<p>Doğrudan üretimde yaptığınız tek şey, modele bir talimat verip bir cevap üretmesine izin vermektir. Modelden &ldquo;kara delikler hakkında bir deneme yaz&rdquo; deyip metni doğrudan ürettirebilir; ya da &ldquo;bileşik faizi hesaplayan bir Python fonksiyonu yaz&rdquo; deyip kodu doğrudan aldırabilirsiniz. İki örnekte de araya hiçbir gözden geçirme adımı girmez: istek girer, cevap çıkar.</p>
+
+<div class="gen-flow">
+<div class="gen-box is-prompt">Kara delikler hakkında bir deneme yaz</div>
+<div class="gen-arrow">&rarr;</div>
+<div class="gen-box is-llm">Dil modeli</div>
+<div class="gen-arrow">&rarr;</div>
+<div class="gen-box is-out">Black holes are some of the most extreme and fascinating objects in our universe&hellip;</div>
+</div>
+
+<div class="gen-flow">
+<div class="gen-box is-prompt">Yıllık bileşik faizi hesaplayan bir Python fonksiyonu yaz</div>
+<div class="gen-arrow">&rarr;</div>
+<div class="gen-box is-llm">Dil modeli</div>
+<div class="gen-arrow">&rarr;</div>
+<div class="gen-box is-out"><span class="snippet-inline"><span class="snip-tok-kw">def</span> <span class="snip-tok-fn">compound_interest</span>(principal, rate, time):
+    <span class="snip-tok-cm"># time is in years</span>
+    <span class="snip-tok-kw">return</span> principal <span class="snip-tok-op">*</span> (1 <span class="snip-tok-op">+</span> rate) <span class="snip-tok-op">**</span> time</span></div>
+</div>
+
+<p>Bu örneklerin ortak özelliği, modele istenen çıktının nasıl görünmesi gerektiğine dair <strong>hiçbir örnek verilmemesidir</strong>. İşte bu yüzden bu tarz istemlere <em>sıfır-örnekli (zero-shot)</em> istem denir: istemde sıfır örnek vardır.</p>
+
+<h3 id="sifir-bir-ve-az-ornekli-istem">Sıfır-, bir- ve az-örnekli istem</h3>
+<p>Sıfır-örnekli isteme karşıt bir yaklaşım, çıktının nasıl görünmesini istediğinize dair istemin içine bir veya daha fazla örnek koymaktır. İstemde istenen tek bir girdi-çıktı çifti verirseniz buna <strong>bir-örnekli (one-shot)</strong>; iki örnek verirseniz <strong>iki-örnekli</strong>; daha fazlasını verirseniz <strong>az-örnekli (few-shot)</strong> istem denir. Aşağıda, bir tarihi <code>MM/DD/YYYY</code> biçimine çeviren aynı görevin üç istem türüyle nasıl kurulduğu görülmektedir.</p>
+
+<div class="shot-grid">
+<div class="shot-card">
+<div class="shot-tag">Sıfır-örnekli (örnek yok)</div>
+<div class="shot-body">Convert to MM/DD/YYYY format
+
+Input:
+<span class="ph">{input_date}</span></div>
+</div>
+<div class="shot-card">
+<div class="shot-tag">Bir-örnekli (tek örnek)</div>
+<div class="shot-body">Convert to MM/DD/YYYY format
+
+Input: Jan 1st, 2025
+Output: 01/01/2025
+
+Input:
+<span class="ph">{input_date}</span></div>
+</div>
+<div class="shot-card">
+<div class="shot-tag">İki-/az-örnekli (çok örnek)</div>
+<div class="shot-body">Convert to MM/DD/YYYY format
+
+Input: Jan 1st, 2025
+Output: 01/01/2025
+
+Input: 21st June, 2025
+Output: 06/21/2025
+
+Input:
+<span class="ph">{input_date}</span></div>
+</div>
+</div>
+<p>Buradaki kritik ayrım, istemde verilen örnek sayısıdır. Doğrudan üretimde gördüğümüz örnekler &mdash; deneme ve fonksiyon yazımı &mdash; herhangi bir örnek içermediği için aslında birer sıfır-örnekli istemdir. Bu terimlere henüz aşina değilseniz endişelenmeyin; dersin geri kalanı için bilmeniz gereken tek şey, &ldquo;doğrudan üretim = tek geçişte, örneksiz cevap&rdquo; eşitliğidir.</p>
+
+<h3 id="yansima-denenmis-ve-olculmustur">Yansıma denenmiş ve ölçülmüştür</h3>
+<p>Asıl soruya dönelim: madem doğrudan üretim iş görüyor, yansıma neden gerekli? Burada önemli olan nokta, yansımanın yalnızca hoş bir fikir olmadığı, <strong>ölçülmüş</strong> bir iyileştirme olmasıdır. Birden çok çalışma, yansımanın çok çeşitli görevde doğrudan üretimin performansını artırdığını göstermiştir. Aşağıdaki görselleştirme, farklı görevlerin farklı model ailelerinde, yansımalı ve yansımasız olarak çalıştırıldığında elde edilen <strong>performans artışını</strong> (yüzde puan olarak) özetler.</p>
+
+<div class="evidence-panel">
+<div class="evidence-legend">
+<span><span class="lg-swatch lg-a"></span>Model ailesi A</span>
+<span><span class="lg-swatch lg-b"></span>Model ailesi B</span>
+<span><span class="lg-swatch lg-c"></span>Model ailesi C</span>
+</div>
+<div class="ev-row">
+<div class="ev-task">Duygu tersine çevirme</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:43%"><span>+21,6</span></div>
+<div class="ev-bar b" style="width:64%"><span>+31,8</span></div>
+<div class="ev-bar c" style="width:65%"><span>+32,4</span></div>
+</div>
+</div>
+<div class="ev-row">
+<div class="ev-task">Diyalog yanıtı</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:54%"><span>+27,2</span></div>
+<div class="ev-bar b" style="width:40%"><span>+19,8</span></div>
+<div class="ev-bar c" style="width:98%"><span>+49,2</span></div>
+</div>
+</div>
+<div class="ev-row">
+<div class="ev-task">Kod optimizasyonu</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:16%"><span>+8,2</span></div>
+<div class="ev-bar b" style="width:7%"><span>+3,6</span></div>
+<div class="ev-bar c" style="width:17%"><span>+8,7</span></div>
+</div>
+</div>
+<div class="ev-row">
+<div class="ev-task">Kod okunabilirliği</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:28%"><span>+13,9</span></div>
+<div class="ev-bar b" style="width:71%"><span>+35,4</span></div>
+<div class="ev-bar c" style="width:58%"><span>+28,8</span></div>
+</div>
+</div>
+<div class="ev-row">
+<div class="ev-task">Matematiksel akıl yürütme</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:1%"><span>+0,0</span></div>
+<div class="ev-bar b" style="width:1%"><span>+0,2</span></div>
+<div class="ev-bar c" style="width:1%"><span>+0,2</span></div>
+</div>
+</div>
+<div class="ev-row">
+<div class="ev-task">Kısaltma üretimi</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:30%"><span>+14,8</span></div>
+<div class="ev-bar b" style="width:20%"><span>+10,0</span></div>
+<div class="ev-bar c" style="width:51%"><span>+25,6</span></div>
+</div>
+</div>
+<div class="ev-row">
+<div class="ev-task">Kısıtlı üretim</div>
+<div class="ev-bars">
+<div class="ev-bar a" style="width:18%"><span>+9,0</span></div>
+<div class="ev-bar b" style="width:46%"><span>+23,0</span></div>
+<div class="ev-bar c" style="width:60%"><span>+30,0</span></div>
+</div>
+</div>
+<div class="evidence-axis">Bar uzunluğu, yansımanın doğrudan üretime kattığı performans artışını (yüzde puan) gösterir.</div>
+</div>
+
+<p>Bu görselleştirmeyi okumanın yolu, her görevdeki çubukları karşılaştırmaktır: hemen her görevde, üç model ailesinin de yansımayla birlikte performansı yukarı çıkar. Tek belirgin istisna matematiksel akıl yürütmedir; orada artış neredeyse sıfırdır. Bunun makul bir yorumu şudur: bir matematik probleminin doğru cevabı zaten tek ve kesin olduğunda, üzerine eklenecek bir gözden geçirme adımının kazandıracağı pek bir şey kalmaz. Yine de genel eğilim açıktır: <strong>yansıma, çok çeşitli görevde doğrudan üretimi düzenli olarak geride bırakır.</strong> Elbette kazancın büyüklüğü uygulamanıza göre değişir.</p>
+
+<div class="note-card">
+<h3 id="cubuklari-nasil-yorumlamali">Çubukları nasıl yorumlamalı?</h3>
+<p>Her çubuk, aynı modelin aynı görevdeki performansının yansımayla <em>ne kadar</em> arttığını gösterir. Büyük çubuk büyük kazanç demektir; matematik akıl yürütmedeki neredeyse görünmez çubuklar ise &ldquo;burada doğrudan üretim zaten yeterli&rdquo; anlamına gelir.</p>
+</div>
+
+<h3 id="yansimanin-daha-cok-ise-yaradigi-gorevler">Yansımanın daha çok işe yaradığı görevler</h3>
+<p>Yansımanın özellikle değer kattığı bazı durumlar vardır. Genel kural şudur: çıktı ne kadar yapılandırılmış ve hata yapmaya ne kadar açıksa, ayrı bir doğrulama adımı o kadar işe yarar. Örneğin bir HTML tablosu gibi yapılandırılmış veri üretirken bazen biçim hatalı olabilir; çıktıyı doğrulayan bir yansıma istemi yardımcı olur. Basit HTML&rsquo;de bu pek fark etmez, çünkü modeller temel HTML&rsquo;de oldukça başarılıdır; ama çok katmanlı, iç içe bir JSON gibi karmaşık yapılarda yansımanın hata yakalama olasılığı belirgin biçimde artar.</p>
+
+<div class="table-wrap"><table class="task-table">
+<colgroup><col class="ex-col"><col class="prob-col"><col></colgroup>
+<thead><tr><th>Örnek görev</th><th>Olası sorun</th><th>Yansıma istemi</th></tr></thead>
+<tbody>
+<tr><td class="ex">HTML tablosu üret</td><td>Eksik <code>&gt;</code> gibi biçim hataları</td><td>HTML kodunu doğrula.</td></tr>
+<tr><td class="ex">Mükemmel bir çay nasıl demlenir</td><td>Adımların atlanması</td><td>Talimatları tutarlılık ve eksiksizlik açısından denetle.</td></tr>
+<tr><td class="ex">Alan adı üretimi</td><td>Adın istenmeyen bir anlamı olması veya zor telaffuz</td><td>Alan adının olumsuz çağrışımı var mı? Telaffuzu zor mu?</td></tr>
+</tbody>
+</table></div>
+
+<p>Alan adı örneği gerçek bir kullanımdır: bir dil modeliyle alan adı üretirken bazen ortaya istenmeyen bir anlam taşıyan ya da telaffuzu güç adlar çıkar. Bu durumda, üretilen adların sorunlu bir çağrışımı olup olmadığını veya telaffuzunun zor olup olmadığını ikinci bir adımda denetleten bir yansıma istemi kullanılır &mdash; ki bu yöntem girişimler için alan adı fikirleri üretirken pratikte uygulanmıştır.</p>
+
+<h3 id="iyi-bir-yansima-istemi-nasil-yazilir">İyi bir yansıma istemi nasıl yazılır?</h3>
+<p>Yansımanın gücü büyük ölçüde istemin nasıl yazıldığına bağlıdır. İki örnek üzerinden bakalım: alan adı fikirlerini elemek ve bir e-postayı iyileştirmek. Her ikisinde de istem, modele önce ilk çıktıyı gözden geçirmesini, sonra belirli ölçütlere göre eleştirmesini ve ardından yeni bir sürüm üretmesini söyler.</p>
+
+<div class="prompt-grid">
+<div class="prompt-card">
+<div class="prompt-tag">Alan adı fikirlerini elemek</div>
+<p class="prompt-text">Review the domain names you suggested.
+Check if each name is easy to pronounce and thus easy to spread via word of mouth.
+Consider whether each name might mean something negative in other languages.
+Then output a shortlist of only the names that meet these criteria.</p>
+</div>
+<div class="prompt-card">
+<div class="prompt-tag">Bir e-postayı iyileştirmek</div>
+<p class="prompt-text">Review the email first draft.
+Check that the tone is professional and look for phrases that could be considered rude or insensitive.
+Verify all facts, dates, and promises are accurate.
+Then write the next draft of the email.</p>
+</div>
+</div>
+
+<p>E-posta örneğinin mantıklı olması için bir koşul vardır: modele, e-posta taslağını yazarken kullanacağı gerçekler, tarihler ve sözler önceden bağlam olarak verilmiş olmalıdır. Yansıma adımı da bu bağlama dayanarak tutarsızlıkları yakalar ve bulduğu sorunlara göre bir sonraki taslağı yazar.</p>
+
+<div class="definition-card">
+<h3 id="iyi-yansima-istemi-icin-iki-ilke">İyi yansıma istemi için iki ilke</h3>
+<p>Birincisi, modelden <strong>ilk taslağı gözden geçirmesini/üzerine düşünmesini açıkça istemek</strong>. İkincisi, <strong>net bir ölçüt kümesi belirlemek</strong> &mdash; alan adı için &ldquo;telaffuzu kolay mı, olumsuz çağrışımı var mı&rdquo;; e-posta için &ldquo;tonu uygun mu, gerçekler doğru mu&rdquo; gibi. Bu iki ilke, modeli en çok önemsediğiniz ölçütler üzerinde eleştiri yapmaya yönlendirir.</p>
+</div>
+
+<div class="note-card">
+<h3 id="istem-yazmayi-gelistirmenin-pratik-bir-yolu">İstem yazmayı geliştirmenin pratik bir yolu</h3>
+<p>Daha iyi istem yazmanın yollarından biri, başkalarının yazdığı çok sayıda istemi okumaktır. İyi tasarlandığını düşündüğünüz açık kaynaklı yazılımları indirip içlerindeki istemleri incelemek, hem üslup hem de ölçüt belirleme açısından somut bir okuldur.</p>
+</div>
+</section>
+
+<section><h2 id="dogrudan-uretim-ile-yansima-karsilastirma">Doğrudan Üretim ile Yansıma: Karşılaştırma</h2>
+<p>İki yaklaşımı yan yana koymak, ne zaman hangisini seçeceğinizi netleştirir. Doğrudan üretim bir başlangıç noktası, yansıma ise onun üzerine kurulan bir denetim katmanıdır.</p>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Doğrudan üretim (zero-shot)</h4>
+<ul>
+<li>İstek girer, cevap tek seferde çıkar.</li>
+<li>Hızlı ve basittir; çoğu görevde makul sonuç verir.</li>
+<li>Gözden geçirme yoktur; biçim ve eksiklik hataları gözden kaçabilir.</li>
+<li>Cevabı zaten kesin olan görevlerde (örn. matematik) genellikle yeterlidir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Yansımalı yaklaşım</h4>
+<ul>
+<li>İlk çıktı, ölçütlere göre eleştirilip yeniden üretilir.</li>
+<li>Çok çeşitli görevde performansı düzenli olarak artırır.</li>
+<li>Karmaşık ve yapılandırılmış çıktılarda hatayı yakalama olasılığı yüksektir.</li>
+<li>İyi yazılmış bir yansıma istemi gerektirir; net ölçütlere bağlıdır.</li>
+</ul>
+</div>
+</div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Yapı arttıkça değer artar</strong><span>İç içe JSON gibi karmaşık çıktılarda yansıma daha çok hata yakalar.</span></div>
+<div class="insight-card"><strong>Net ölçüt belirleyin</strong><span>Modeli, en çok önemsediğiniz kriterler üzerinde eleştiriye yönlendirin.</span></div>
+<div class="insight-card"><strong>Kazanç göreve bağlı</strong><span>Cevabı zaten kesin görevlerde ek adımın kazancı küçük olabilir.</span></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Doğrudan üretim her zaman yetersizdir.&rdquo;</strong> Değildir. Cevabı zaten kesin olan görevlerde (örn. matematiksel akıl yürütme) yansımanın kazancı neredeyse sıfır olabilir.</li>
+<li><strong>&ldquo;Doğrudan üretim ile sıfır-örnekli istem farklı şeylerdir.&rdquo;</strong> Bu derste verilen doğrudan üretim örnekleri tam da sıfır-örnekli istemlerdir; örnek içermezler.</li>
+<li><strong>&ldquo;Yansıma her görevde aynı oranda iyileştirir.&rdquo;</strong> Kazanç göreve ve çıktının karmaşıklığına göre değişir; bazı görevlerde büyük, bazılarında küçüktür.</li>
+<li><strong>&ldquo;Yansıma istemi yazmak önemsizdir.&rdquo;</strong> Tam tersine, net bir gözden geçirme talimatı ve açık ölçütler belirlemek sonucu doğrudan etkiler.</li>
+<li><strong>&ldquo;Basit HTML için bile yansıma şart.&rdquo;</strong> Modeller temel HTML&rsquo;de zaten iyidir; yansıma asıl karmaşık, çok katmanlı yapılarda fark yaratır.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Doğrudan üretim &mdash; isteği verip cevabı tek seferde almak &mdash; hızlı ve çoğu zaman yeterince iyi bir başlangıçtır; teknik olarak bir sıfır-örnekli istemdir. Ama &ldquo;yeterince iyi&rdquo; ile &ldquo;belirgin biçimde daha iyi&rdquo; arasındaki farkı kapatan şey çoğu kez yansımadır.</p>
+<p>Bu dersin en sağlam dayanağı, yansımanın yalnızca sezgisel değil, <strong>deneysel olarak ölçülmüş</strong> bir iyileştirme olmasıdır: çok çeşitli görevde, farklı model ailelerinde yansıma doğrudan üretimi düzenli olarak geride bırakır. İstisnalar, cevabın zaten kesin olduğu görevlerdir; orada ek adımın kazancı küçülür.</p>
+<p>Pratik sonuç iki ilkede toplanır: modelden ilk taslağı <strong>açıkça gözden geçirmesini</strong> isteyin ve <strong>net ölçütler</strong> verin. Bu iki şeyi doğru yaptığınızda, yapılandırılmış ve karmaşık çıktılarda yansımanın değeri en yüksek noktasına ulaşır.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#neden-sadece-dogrudan-uretim-yetmez" class="toc-h1">Neden Sadece Doğrudan Üretim Yetmez?</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#dogrudan-uretim-nedir" class="toc-h3">Doğrudan üretim nedir?</a>
+<a href="#sifir-bir-ve-az-ornekli-istem" class="toc-h3">Sıfır-, bir- ve az-örnekli istem</a>
+<a href="#yansima-denenmis-ve-olculmustur" class="toc-h3">Yansıma denenmiş ve ölçülmüştür</a>
+<a href="#cubuklari-nasil-yorumlamali" class="toc-h3">Çubukları nasıl yorumlamalı?</a>
+<a href="#yansimanin-daha-cok-ise-yaradigi-gorevler" class="toc-h3">Yansımanın daha çok işe yaradığı görevler</a>
+<a href="#iyi-bir-yansima-istemi-nasil-yazilir" class="toc-h3">İyi bir yansıma istemi nasıl yazılır?</a>
+<a href="#iyi-yansima-istemi-icin-iki-ilke" class="toc-h3">İyi yansıma istemi için iki ilke</a>
+<a href="#istem-yazmayi-gelistirmenin-pratik-bir-yolu" class="toc-h3">İstem yazmayı geliştirmenin pratik bir yolu</a>
+<a href="#dogrudan-uretim-ile-yansima-karsilastirma" class="toc-h2">Doğrudan Üretim ile Yansıma: Karşılaştırma</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Görev Ayrıştırma: İş Akışındaki Adımları Belirleme</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--node-model-bg:#eef2ff; --node-model-border:#8b95c9; --node-model-text:#28336b;
+--node-tool-bg:#fff3f5; --node-tool-border:#fe4a61; --node-tool-text:#8f2638;
+--node-output-bg:#f8fafc; --node-output-border:#cbd5e1; --node-output-text:#1f2937;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.block-table col.block-col{width:28%;} .block-table td.block{font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+.decomp-ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.85rem;margin:1.1rem 0;}
+.ladder-card{display:flex;flex-direction:column;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.65rem;background:#fff;overflow:hidden;}
+.ladder-head{padding:0.62rem 0.85rem;border-bottom:1px solid var(--lesson-border);background:var(--dlai-coral-soft);color:var(--accent-dark);font-weight:700;}
+.ladder-body{padding:0.85rem 0.95rem;}
+.ladder-body ol{margin:0;padding-left:1.3rem;}
+.ladder-note{margin-top:auto;padding:0.72rem 0.85rem;border-top:1px solid var(--lesson-border);background:var(--lesson-soft);color:var(--lesson-muted);font-size:0.9rem;}
+.diagram{margin:1.2rem 0;padding:1.1rem 1.1rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram-title{margin:0 0 0.2rem;font-weight:700;color:var(--lesson-text);font-size:1rem;}
+.diagram-sub{margin:0 0 0.9rem;color:var(--lesson-muted);font-size:0.9rem;}
+.node-flow{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:0.3rem;}
+.node-col{display:flex;flex-direction:column;align-items:center;width:8.2rem;}
+.node{display:flex;align-items:center;justify-content:center;width:100%;min-height:3.25rem;padding:0.42rem 0.5rem;border:1.5px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;font-size:0.84rem;font-weight:600;line-height:1.2;}
+.node-input{background:#fff;border-color:var(--lesson-border-strong);color:var(--lesson-text);}
+.node-model{background:var(--node-model-bg);border-color:var(--node-model-border);color:var(--node-model-text);}
+.node-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);color:var(--node-tool-text);}
+.node-output{background:var(--node-output-bg);border-color:var(--node-output-border);color:var(--node-output-text);}
+.node-cap{margin-top:0.35rem;color:var(--lesson-muted);font-size:0.8rem;line-height:1.3;text-align:center;}
+.node-arrow{align-self:flex-start;padding-top:1rem;color:var(--lesson-muted);font-weight:700;font-size:1.05rem;}
+.legend{display:flex;flex-wrap:wrap;gap:0.7rem 1.3rem;margin:0.4rem 0 0;padding-top:0.85rem;border-top:1px dashed var(--lesson-border);}
+.legend-item{display:flex;align-items:center;gap:0.45rem;font-size:0.84rem;color:var(--lesson-muted);}
+.legend-swatch{width:1.05rem;height:1.05rem;border-radius:0.25rem;border:1.5px solid var(--lesson-border-strong);flex:none;}
+.sw-model{background:var(--node-model-bg);border-color:var(--node-model-border);}
+.sw-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);}
+.sw-output{background:var(--node-output-bg);border-color:var(--node-output-border);}
+.decision-panel{margin:1.2rem 0;padding:1rem 1.1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#fff 70%);}
+.decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin-top:0.8rem;}
+.decision-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.decision-card h4{color:var(--accent-dark);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+@media (max-width:860px){
+.bp-flow,.insight-grid,.decomp-ladder,.decision-grid,.comparison-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:640px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.node-col{width:7rem;}
+.node-arrow{width:100%;padding:0.15rem 0;text-align:center;transform:rotate(90deg);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-5-Task-Decomposition-Identifying-Steps-in-a-Workflow/M1-5-Task-Decomposition-Identifying-Steps-in-a-Workflow.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Görev Ayrıştırma: İş Akışındaki Adımları Belirleme</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="gorev-ayristirma-is-akisindaki-adimlari-belirleme">Görev Ayrıştırma: İş Akışındaki Adımları Belirleme</h1>
+<p class="lead-text">Karmaşık bir işi tek model çağrısıyla çözmeye çalışmak yerine, onu LLM, araç, fonksiyon çağrısı veya kısa kod parçasıyla yürütülebilen küçük ve denetlenebilir adımlara ayırma becerisi.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Agentic iş akışları, çoğu zaman tek bir büyük talimatın etrafında değil, birbirini izleyen küçük adımların etrafında tasarlanır. Bu derste temel soru şudur: bir insanın veya işletmenin yürüttüğü yararlı bir işi, bir yapay zekâ sisteminin takip edebileceği <strong>ayrık adımlara</strong> nasıl böleriz?</p>
+<p>Anlatım, deneme yazma örneğinden başlayarak doğrudan üretimin sınırlarını gösterir. Sonra müşteri e-postası yanıtlama ve fatura bilgisi çıkarma gibi daha operasyonel görevleri inceler. En sonunda, eldeki yapı taşlarını nasıl düşüneceğinizi ve her adım için hangi uygulanabilirlik sorusunu sormanız gerektiğini netleştirir.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>İyi bir agentic iş akışı, büyük görevi küçük görevlere bölmekle başlar. Her küçük görev için şu soru sorulur: bu adım bir LLM, bir araç, bir fonksiyon çağrısı veya kısa bir kod parçası ile güvenilir biçimde yapılabilir mi?</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Görev ayrıştırmanın agentic iş akışı tasarımındaki rolünü açıklayabilmek.</li>
+<li>Doğrudan üretim, üç adımlı iş akışı ve daha zengin beş adımlı iş akışı arasındaki farkı yorumlayabilmek.</li>
+<li>Bir müşteri e-postası veya fatura işleme görevini uygulanabilir alt adımlara bölebilmek.</li>
+<li>Bir adımın LLM, araç, fonksiyon çağrısı veya kısa kodla yapılıp yapılamayacağını değerlendirebilmek.</li>
+<li>Bir adım çok geniş kaldığında onu daha küçük parçalara bölme kararını gerekçelendirebilmek.</li>
+<li>İş akışını ilk tasarımdan sonra değerlendirme ve yineleme ihtiyacını kavramak.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>LLM kavramına ve bir modele metin talimatı verip yanıt alma fikrine temel aşinalık.</li>
+<li>Araç çağrısı, API, veritabanı sorgusu ve bilgi getirme gibi kavramların genel ne işe yaradığını bilmek.</li>
+<li>Bir iş sürecini adım adım düşünme ve her adımın girdisini, çıktısını ayırt edebilme.</li>
+</ul>
+<p>Bu ders kavramsaldır; çalıştırılabilir kod veya kayıtlı çıktı içermez. Bu nedenle sayfada Jupyter kod hücresi veya çıktı bloğu oluşturulmamıştır.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Görev ayrıştırma</td><td>Büyük bir görevi uygulanabilir küçük adımlara bölme süreci.</td><td>Amaç, her adımı sistemin sahip olduğu bir yapı taşıyla eşleştirmektir.</td></tr>
+<tr><td class="term">Doğrudan üretim</td><td>Modele nihai çıktıyı tek seferde yazdırma yaklaşımı.</td><td>Hızlıdır; fakat derinlik, tutarlılık ve kalite denetimi sınırlı kalabilir.</td></tr>
+<tr><td class="term">İş akışı</td><td>Bir görevi tamamlamak için sırayla yürütülen adımlar bütünü.</td><td>Agentic sistemlerde bu adımlar model, araç ve kod çağrılarına bağlanır.</td></tr>
+<tr><td class="term">Yapı taşı</td><td>LLM, başka bir AI modeli, API, veritabanı, RAG veya kod yürütme gibi kullanılabilir yetenek.</td><td>Hangi yapı taşlarına sahip olduğunuz, tasarlanabilecek akışları belirler.</td></tr>
+<tr><td class="term">Araç</td><td>Modelin bilgi almak veya eylem yapmak için kullanabileceği dış yazılım yeteneği.</td><td>Web arama, e-posta gönderme, takvim kontrolü veya veritabanı sorgusu olabilir.</td></tr>
+<tr><td class="term">Yineleme</td><td>İlk iş akışını değerlendirip yetersiz kalan adımı yeniden parçalama.</td><td>Bir akış ilk denemede iyi olmayabilir; tasarım kaliteye göre gelişir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Görev ayrıştırma, “bu işi model yapsın” demekten daha disiplinli bir düşünme biçimidir. Önce insan sürecini gözlemler, sonra onu küçük adımlara böler, her adımı uygulanabilir bir yapı taşıyla eşleştirir ve sonuç yeterli değilse tekrar ayrıştırırsınız.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>İşi gözle</strong><span>İnsan veya işletme görevi gerçekte nasıl yapıyor?</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Adımlara böl</strong><span>Tek büyük görevi ayrık ve sıralı parçalara ayır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Yapı taşı seç</strong><span>Her adımı LLM, araç, fonksiyon veya kodla eşleştir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Yinele</strong><span>Sonuç iyi değilse en zayıf adımı daha küçük parçalara ayır.</span></div>
+</div></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Tek çağrı başlangıçtır</strong><span>Doğrudan üretim hızlıdır; ancak karmaşık işlerde çoğu zaman yüzeysel kalır.</span></div>
+<div class="insight-card"><strong>Adım uygulanabilir olmalı</strong><span>Bir alt görev, mevcut yapı taşlarından biriyle yürütülebilecek kadar net olmalıdır.</span></div>
+<div class="insight-card"><strong>Kalite tasarımı iteratif kılar</strong><span>İlk akış yeterli değilse süreç yeniden parçalanır ve zenginleştirilir.</span></div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="dogrudan-uretimden-is-akisina-gecis">Doğrudan üretimden iş akışına geçiş</h3>
+<p>Bir araştırma sistemi tasarladığınızı düşünün. İlk fikir, modele “X konusu hakkında bir deneme yaz” demek olabilir. Bu doğrudan üretim yaklaşımı hızlıdır; fakat derin araştırma isteyen konularda çıktı çoğu zaman yalnızca yüzeysel noktaları veya en bariz bilgileri kapsar.</p>
+<p>İnsan bakışı burada önemlidir. Bir insan iyi bir deneme yazacaksa çoğu zaman önce taslak çıkarır, ardından bilgi arar ve bulduğu bilgiye göre metni yazar. Bu düşünce, tek adımlı görevi üç adımlı bir agentic iş akışına dönüştürür. Eğer sonuç hâlâ kopuksa, “denemeyi yaz” adımı da tekrar ayrıştırılır: önce ilk taslak yazılır, sonra hangi bölümlerin revize edilmesi gerektiği düşünülür, ardından taslak gözden geçirilir.</p>
+<div class="decomp-ladder">
+<div class="ladder-card">
+<div class="ladder-head">Tek adım</div>
+<div class="ladder-body"><ol><li>Konu hakkında deneme yaz.</li></ol></div>
+<div class="ladder-note">Hızlıdır; ancak derinlik ve tutarlılık sınırlı kalabilir.</div>
+</div>
+<div class="ladder-card">
+<div class="ladder-head">Üç adım</div>
+<div class="ladder-body"><ol><li>Deneme taslağı çıkar.</li><li>Web’de bilgi ara.</li><li>Denemeyi yaz.</li></ol></div>
+<div class="ladder-note">Araştırma adımı eklenir; çıktı daha bilgili olabilir.</div>
+</div>
+<div class="ladder-card">
+<div class="ladder-head">Beş adım</div>
+<div class="ladder-body"><ol><li>Deneme taslağı çıkar.</li><li>Web’de bilgi ara.</li><li>İlk taslağı yaz.</li><li>Revizyon gereken yerleri belirle.</li><li>Taslağı revize et.</li></ol></div>
+<div class="ladder-note">Yazma adımı da parçalanır; tutarlılık ve düşünsel bütünlük artar.</div>
+</div>
+</div>
+<div class="note-card"><h3 id="kritik-tasarim-refleksi">Kritik tasarım refleksi</h3><p>Bir alt adım hâlâ geniş veya belirsiz görünüyorsa, onu nihai adım kabul etmek zorunda değilsiniz. “Denemeyi yaz” gibi büyük bir adım, “ilk taslak yaz”, “eleştir”, “revize et” biçiminde daha uygulanabilir küçük parçalara ayrılabilir.</p></div>
+
+<h3 id="her-adim-icin-uygulanabilirlik-sorusu">Her adım için uygulanabilirlik sorusu</h3>
+<p>Bir iş akışını tasarlarken her adım için aynı soru sorulur: bu adım bir LLM tarafından, kısa bir kod parçasıyla, bir fonksiyon çağrısıyla veya bir araçla yapılabilir mi? Cevap evetse, adım muhtemelen iş akışına yerleştirilebilir. Cevap hayırsa, adım henüz fazla büyüktür veya eksik bir yapı taşı gerektiriyordur.</p>
+<div class="decision-panel">
+<p><strong>Karar kuralı:</strong> Bir adımı uygulamaya geçmeden önce, o adımın hangi yapı taşıyla yürütüleceğini açıkça söyleyebilmelisiniz.</p>
+<div class="decision-grid">
+<div class="decision-card"><h4>Evet: uygulanabilir</h4><p>“LLM anahtar bilgiyi çıkarır”, “araç veritabanını sorgular”, “API e-postayı gönderir” gibi açık bir eşleşme kurulabiliyorsa adım yeterince somuttur.</p></div>
+<div class="decision-card"><h4>Hayır: yeniden ayrıştır</h4><p>“Müşteri sorununu çöz” gibi geniş bir adım, anahtar bilgiyi çıkarma, kayıt bulma ve yanıt oluşturma gibi daha küçük adımlara bölünmelidir.</p></div>
+</div>
+</div>
+
+<h3 id="musteri-e-postasini-yanitlama">Müşteri e-postasını yanıtlama</h3>
+<p>Bir müşterinin yanlış ürün geldiğini belirten bir e-posta gönderdiğini düşünün. İnsan müşteri destek uzmanı bu isteğe genellikle üç aşamada yaklaşır: önce anahtar bilgiyi çıkarır, sonra ilgili müşteri ve sipariş kayıtlarını bulur, son olarak müşteriye yanıt yazar ve gönderir.</p>
+<div class="diagram">
+<p class="diagram-title">Müşteri e-postası iş akışı</p>
+<p class="diagram-sub">Her adım, LLM ve araçların birlikte yürütebileceği kadar somut biçimde tanımlanır.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-input">Müşteri iletisi</div><div class="node-cap">Girdi</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Anahtar bilgiyi çıkar</div><div class="node-cap">LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Sipariş kaydını bul</div><div class="node-cap">Veritabanı sorgusu</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Yanıtı yaz</div><div class="node-cap">LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Yanıtı gönder</div><div class="node-cap">E-posta API</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-model"></span>Model adımı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Araç veya API</span>
+</div>
+</div>
+<p>Bu örnekte bir LLM, iletiden kimin yazdığını, hangi ürünün sipariş edildiğini ve hangi sipariş bilgisinin gerektiğini çıkarabilir. Kayıt bulma adımı ise bir veritabanı sorgusu veya fonksiyon çağrısı gerektirir. Son adımda model, bulunan bilgiye dayanarak yanıt metnini oluşturur; sistem de e-posta gönderen bir API çağırabilir.</p>
+
+<h3 id="fatura-bilgisini-cikarma">Fatura bilgisini çıkarma</h3>
+<p>Fatura işleme örneği daha kısa ama aynı düşünce biçimini gösterir. Belge metne çevrildikten sonra sistemin yapması gereken ilk iş, gereken bilgileri çıkarmaktır: fatura kesen, adres, son ödeme tarihi, ödenecek tutar gibi alanlar. İkinci adımda bu bilginin kontrol edilip yeni bir veritabanı kaydı olarak saklanması gerekir.</p>
+<div class="diagram">
+<p class="diagram-title">Fatura işleme iş akışı</p>
+<p class="diagram-sub">Belgeden yapılandırılmış bilgi çıkarılır ve kayıt sistemine aktarılır.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-input">Fatura metni</div><div class="node-cap">Girdi</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Gerekli alanları çıkar</div><div class="node-cap">LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Bilgiyi kontrol et</div><div class="node-cap">LLM</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Kaydı güncelle</div><div class="node-cap">Veritabanı aracı</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-model"></span>Model adımı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Araç veya veritabanı</span>
+</div>
+</div>
+<p>Buradaki önemli nokta, görevin “faturayı işle” gibi tek ve geniş bir ifade olarak bırakılmamasıdır. Alan çıkarma, doğrulama ve kayıt oluşturma birbirinden ayrı adımlardır; böylece her adımın nasıl uygulanacağı daha açık hale gelir.</p>
+</section>
+
+<section><h2 id="kullanilabilir-yapi-taslari">Kullanılabilir Yapı Taşları</h2>
+<p>Agentic iş akışı tasarlarken elinizde farklı yapı taşları bulunur. Görev ayrıştırmanın gücü, bu yapı taşlarını sıraya koyabilmekten gelir. Bir görevi parçalarına ayırırken, her parçanın hangi yapı taşıyla yapılacağını düşünmek gerekir.</p>
+<div class="table-wrap"><table class="block-table">
+<colgroup><col class="block-col"><col><col></colgroup>
+<thead><tr><th>Yapı taşı</th><th>Tipik kullanım</th><th>Bu dersteki rolü</th></tr></thead>
+<tbody>
+<tr><td class="block">LLM veya çok kipli model</td><td>Metin üretme, karar verme, bilgi çıkarma; gerekirse görüntü veya ses işleme.</td><td>Deneme taslağı yazma, anahtar bilgi çıkarma ve yanıt oluşturma gibi adımları yürütür.</td></tr>
+<tr><td class="block">Özel AI modelleri</td><td>PDF’den metne dönüştürme, metinden sese çevirme, görüntü analizi.</td><td>Belge veya medya girdisini LLM’in işleyebileceği biçime getirebilir.</td></tr>
+<tr><td class="block">API ve yazılım araçları</td><td>Web araması, gerçek zamanlı veri alma, e-posta gönderme, takvim kontrolü.</td><td>Modelin yalnızca metin üretmekle kalmayıp dış dünyada eylem yapmasını sağlar.</td></tr>
+<tr><td class="block">Bilgi getirme</td><td>Veritabanı sorgusu, RAG veya büyük metin koleksiyonunda ilgili bölümü bulma.</td><td>Müşteri kayıtları ve araştırma sonuçları gibi dış bilgiyi iş akışına taşır.</td></tr>
+<tr><td class="block">Kod yürütme</td><td>Hesaplama, veri analizi veya modelin yazdığı kodu yürütme.</td><td>LLM’in yalnızca tahmin ederek değil, hesaplayarak veya analiz ederek ilerlemesini sağlar.</td></tr>
+</tbody>
+</table></div>
+<div class="note-card"><h3 id="neden-yapi-taslarini-bilmek-onemlidir">Neden yapı taşlarını bilmek önemlidir?</h3><p>Hangi yapı taşlarına sahip olduğunuzu bilirseniz, tasarlayabileceğiniz agentic iş akışlarını da daha net hayal edersiniz. Bir işletme görevi, bu yapı taşlarının uygun bir sırayla birleştirilmesiyle uygulanabilir hale gelir.</p></div>
+</section>
+
+<section><h2 id="gorev-ayristirma-cercevesi">Görev Ayrıştırma Çerçevesi</h2>
+<p>Bir görevi ayrıştırırken yalnızca adım listesi yazmak yetmez. Her adımın girdisi, çıktısı ve uygulanma biçimi zihinde net olmalıdır. Aksi halde, adım yalnızca güzel görünen ama yürütülemeyen bir süreç etiketi olarak kalır.</p>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>İyi ayrıştırılmış adım</h4>
+<ul>
+<li>Ne alacağı ve ne üreteceği bellidir.</li>
+<li>LLM, araç, fonksiyon veya kodla eşleşir.</li>
+<li>Başarısı gözlemlenebilir veya değerlendirilebilir.</li>
+<li>Bir sonraki adıma açık bir ara sonuç verir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Fazla geniş adım</h4>
+<ul>
+<li>“Araştır”, “çöz”, “işle” gibi genel kalır.</li>
+<li>Hangi yapı taşının kullanılacağı belli değildir.</li>
+<li>Başarısız olduğunda nerede hata olduğu anlaşılmaz.</li>
+<li>Daha küçük alt adımlara bölünmesi gerekir.</li>
+</ul>
+</div>
+</div>
+<p>Pratikte başarılı tasarım şöyle ilerler: ilk ayrıştırmayı yaparsınız, sistemi denersiniz, çıktının yeterli olup olmadığına bakarsınız. Eğer deneme yazısı kopuksa yazma adımını; müşteri yanıtı eksikse kayıt bulma veya bilgi çıkarma adımını; fatura kaydı hatalıysa alan çıkarma veya doğrulama adımını yeniden ayrıştırırsınız.</p>
+<div class="warn-card"><h3 id="insan-dongusu-ne-zaman-eklenir">İnsan döngüsü ne zaman eklenir?</h3><p>Eğer bir adımın çıktısı yüksek riskliyse veya mevcut yapı taşlarıyla yeterince güvenilir görünmüyorsa, görevi daha küçük parçalara bölmenin yanında insan onayı eklemek de düşünülebilir. Bu, otomasyonu iptal etmek değil, iş akışının güvenilirliğini artırmak için bilinçli bir tasarım seçimidir.</p></div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>“Tek bir güçlü model çağrısı yeterlidir.”</strong> Karmaşık görevlerde doğrudan üretim yüzeysel veya kopuk kalabilir; süreç adımlara ayrılmalıdır.</li>
+<li><strong>“Adım sayısı ne kadar çoksa o kadar iyidir.”</strong> Hayır. Amaç en uzun akışı kurmak değil, görevin gerektirdiği kadar ayrıntılı ve uygulanabilir bir akış kurmaktır.</li>
+<li><strong>“Her adımı LLM yapmalı.”</strong> Bazı adımlar veritabanı sorgusu, API çağrısı veya kod yürütme ile daha doğru yapılır.</li>
+<li><strong>“İlk ayrıştırma nihai tasarımdır.”</strong> İlk akış çoğu zaman başlangıçtır; sonuç yeterli değilse belirli adımlar yeniden parçalanır.</li>
+<li><strong>“Araç yoksa adım yine de yazılabilir.”</strong> Eğer adımı yürütecek yapı taşı yoksa tasarım eksiktir; adım ya değişmeli ya da gerekli araç sağlanmalıdır.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Görev ayrıştırma, agentic iş akışı tasarımının merkezindeki beceridir. Bir insanın veya işletmenin yaptığı işi gözlemleyip onu ayrık adımlara ayırır, ardından her adımı mevcut yapı taşlarından biriyle eşleştirirsiniz: LLM, özel AI modeli, API, veritabanı, RAG, fonksiyon çağrısı veya kod yürütme.</p>
+<p>Deneme yazma örneği, tek adımlı doğrudan üretimin nasıl üç adımlı ve sonra beş adımlı daha zengin bir iş akışına dönüştüğünü gösterir. Müşteri e-postası ve fatura işleme örnekleri ise aynı düşüncenin operasyonel görevlerde nasıl çalıştığını ortaya koyar: anahtar bilgiyi çıkar, gerekli kaydı bul veya oluştur, sonucu üret, gerekiyorsa dış aracı çağır.</p>
+<p>En önemli kural şudur: bir adımı iş akışına koymadan önce, onu hangi yapı taşının yürüteceğini söyleyebilmelisiniz. Söyleyemiyorsanız, adım henüz yeterince ayrıştırılmamıştır. İyi agentic sistemler, bu uygulanabilir adımların dikkatli sıralanması ve sonuçlara göre tekrar iyileştirilmesiyle ortaya çıkar.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#gorev-ayristirma-is-akisindaki-adimlari-belirleme" class="toc-h1">Görev Ayrıştırma: İş Akışındaki Adımları Belirleme</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#dogrudan-uretimden-is-akisina-gecis" class="toc-h3">Doğrudan üretimden iş akışına geçiş</a>
+<a href="#kritik-tasarim-refleksi" class="toc-h3">Kritik tasarım refleksi</a>
+<a href="#her-adim-icin-uygulanabilirlik-sorusu" class="toc-h3">Her adım için uygulanabilirlik sorusu</a>
+<a href="#musteri-e-postasini-yanitlama" class="toc-h3">Müşteri e-postasını yanıtlama</a>
+<a href="#fatura-bilgisini-cikarma" class="toc-h3">Fatura bilgisini çıkarma</a>
+<a href="#kullanilabilir-yapi-taslari" class="toc-h2">Kullanılabilir Yapı Taşları</a>
+<a href="#neden-yapi-taslarini-bilmek-onemlidir" class="toc-h3">Neden yapı taşlarını bilmek önemlidir?</a>
+<a href="#gorev-ayristirma-cercevesi" class="toc-h2">Görev Ayrıştırma Çerçevesi</a>
+<a href="#insan-dongusu-ne-zaman-eklenir" class="toc-h3">İnsan döngüsü ne zaman eklenir?</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

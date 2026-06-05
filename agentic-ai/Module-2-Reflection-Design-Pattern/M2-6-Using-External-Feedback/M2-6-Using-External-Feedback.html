@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dış Geri Bildirim Kullanımı</title>
+<style>
+:root{
+--dlai-coral:#fe4a61;--dlai-coral-dark:#e63f55;--dlai-coral-soft:#ffe8ec;--dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff;--lesson-text:#111827;--lesson-muted:#4b5563;--lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6;--lesson-border:#e5e7eb;--lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff;--lesson-card-muted:#fff8f9;--accent:#fe4a61;--accent-dark:#c2384a;
+--ink-soft:#374151;--blue-gray:#526172;--line-muted:#8a97b8;--amber-soft:#fff7ed;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);}
+*,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,780px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:700px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:24%;}
+.term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.feedback-table col.challenge-col{width:25%;}
+.feedback-table col.example-col{width:36%;}
+.feedback-table td.term{font-weight:600;color:var(--lesson-text);}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;}
+.cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{display:block;color:var(--lesson-muted);font-size:0.92rem;}
+.curve-panel{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.curve-panel svg{display:block;width:100%;height:auto;max-height:340px;}
+.curve-axis{stroke:#cfd6df;stroke-width:1.5;}
+.curve-grid{stroke:#eef1f4;stroke-width:1;}
+.curve-red{fill:none;stroke:var(--dlai-coral);stroke-width:4;stroke-linecap:round;}
+.curve-blue{fill:none;stroke:#526172;stroke-width:4;stroke-linecap:round;}
+.curve-purple{fill:none;stroke:#7b6f93;stroke-width:4;stroke-linecap:round;}
+.curve-label{font:600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;fill:#374151;}
+.curve-small{font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;fill:#4b5563;}
+.legend-row{display:flex;flex-wrap:wrap;gap:0.7rem 1rem;margin:0.7rem 0 0;color:var(--lesson-muted);font-size:0.9rem;}
+.legend-item{display:inline-flex;align-items:center;gap:0.4rem;}
+.legend-swatch{width:0.9rem;height:0.2rem;border-radius:999px;background:var(--dlai-coral);}
+.legend-swatch.b{background:#526172;}
+.legend-swatch.c{background:#7b6f93;}
+.workflow-map{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:#fff;}
+.workflow-row{display:grid;grid-template-columns:1.1fr 0.25fr 1.05fr 0.25fr 1.05fr;gap:0.65rem;align-items:stretch;margin:0.75rem 0;}
+.wf-node{display:flex;flex-direction:column;justify-content:center;min-height:5.2rem;padding:0.85rem;border:1px solid var(--lesson-border-strong);border-radius:0.6rem;background:var(--lesson-soft);}
+.wf-node strong{display:block;margin-bottom:0.3rem;color:var(--lesson-text);}
+.wf-node span{display:block;color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.wf-node.is-prompt{background:var(--dlai-coral-muted);border-color:var(--dlai-coral-soft);}
+.wf-node.is-model{background:#fff;border-top:3px solid var(--dlai-coral);}
+.wf-arrow{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-weight:800;font-size:1.3rem;}
+.wf-band{margin:0.95rem 0 0.4rem;padding:0.65rem 0.8rem;border-radius:0.55rem;background:var(--lesson-soft-2);color:var(--ink-soft);font-weight:700;text-align:center;}
+.error-card{margin:1rem 0;padding:0.85rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;}
+.error-card strong{display:block;margin-bottom:0.45rem;color:var(--accent-dark);}
+.error-card pre{margin:0;padding:0.75rem;border:1px solid #d1d5db;border-radius:0.35rem;background:#f7f7f7;color:#000;overflow-x:auto;white-space:pre;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;}
+.feedback-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.feedback-card{padding:0.95rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;}
+.feedback-card .tag{display:inline-flex;margin-bottom:0.55rem;padding:0.18rem 0.55rem;border:1px solid var(--dlai-coral-soft);border-radius:999px;background:var(--dlai-coral-muted);color:var(--accent-dark);font-weight:700;font-size:0.84rem;}
+.feedback-card strong{display:block;margin-bottom:0.35rem;color:var(--lesson-text);}
+.feedback-card p{margin:0;color:var(--lesson-muted);font-size:0.94rem;}
+.callout-strip{display:flex;flex-wrap:wrap;gap:0.65rem;margin:1rem 0;}
+.pill{display:inline-flex;align-items:center;padding:0.32rem 0.62rem;border:1px solid var(--lesson-border);border-radius:999px;background:#fff;color:var(--ink-soft);font-size:0.9rem;font-weight:600;}
+.pill.is-coral{border-color:var(--dlai-coral-soft);background:var(--dlai-coral-muted);color:var(--accent-dark);}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.feedback-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.workflow-row{grid-template-columns:1fr;}
+.wf-arrow{transform:rotate(90deg);min-height:1.2rem;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+table{min-width:680px;}
+.curve-panel{padding:0.65rem;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-2-Reflection-Design-Pattern/M2-6-Using-External-Feedback/M2-6-Using-External-Feedback.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Dış Geri Bildirim Kullanımı</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="dis-geri-bildirim-kullanimi">Dış Geri Bildirim Kullanımı</h1>
+<p class="lead-text">Yansıma adımını yalnızca modelin kendi eleştirisine bırakmak yerine, çalıştırma sonuçları, denetim araçları ve ölçüm sinyalleriyle zenginleştirerek performans platosunu aşma yaklaşımı.</p>
+</header>
+
+<section>
+<h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yansıma deseninin daha güçlü bir sürümünü ele alır: <strong>dış geri bildirimle yansıma</strong>. Önceki örneklerde model, ilk çıktısını kendi bakış açısıyla eleştirip iyileştirmeye çalışıyordu. Bu yaklaşım faydalıdır; fakat model çoğu zaman aynı bilgiyle yeniden düşünür. Dış geri bildirim, sisteme yeni bir sinyal ekler: kod çalıştırma hatası, yasaklı ad tespiti, doğrulama sonucu, kelime sayısı veya güvenilir bilgi kontrolü gibi.</p>
+<p>Bu yeni sinyal, yansıma adımını yalnızca "bir kez daha düşün" düzeyinden çıkarıp "yeni gözleme dayanarak düzelt" düzeyine taşır. Böylece prompt mühendisliğinin bir noktadan sonra azalan getirisine karşı daha verimli bir iyileştirme yolu açılır.</p>
+<div class="definition-card">
+<h3 id="temel-fikir">Temel Fikir</h3>
+<p>Bir modelin kendi çıktısını eleştirmesi yararlıdır; fakat dış geri bildirim, modele önceden sahip olmadığı somut bir bulgu verir. Bu bulgu doğru kullanıldığında, yansıma adımı daha hedefli ve daha güvenilir hale gelir.</p>
+</div>
+</section>
+
+<section>
+<h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Prompt mühendisliğinde performansın neden bir noktadan sonra plato yapabileceğini açıklayabilmek.</li>
+<li>Standart yansıma ile dış geri bildirimli yansıma arasındaki farkı ayırt edebilmek.</li>
+<li>Kod çalıştırma sonucunun, hata mesajının ve ölçüm aracının yansıma için nasıl yeni bilgi ürettiğini kavrayabilmek.</li>
+<li>Yasaklı isim tespiti, doğruluk kontrolü ve kelime sayımı gibi dış geri bildirim örneklerini yorumlayabilmek.</li>
+<li>Dış geri bildirimin performansı artırırken sisteme neden ek karmaşıklık getirdiğini değerlendirebilmek.</li>
+<li>Bu yaklaşımın araç kullanımı konusuna nasıl zemin hazırladığını görebilmek.</li>
+</ul>
+</section>
+
+<section>
+<h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Doğrudan üretim, prompt ayarlama ve yansıma deseninin temel mantığını bilmek.</li>
+<li>Bir kod parçasının çalıştırıldığında çıktı veya hata mesajı üretebileceğini anlamak.</li>
+<li>Basit metin denetimi, doğruluk kontrolü ve kelime sayımı gibi araçların ne işe yaradığını kavramak.</li>
+</ul>
+<p>Bu ders kavramsal akışa odaklanır. Materyal tam çalıştırılabilir uygulama akışı içermediği için sahte kod hücresi veya yapay çıktı oluşturulmamıştır.</p>
+</section>
+
+<section>
+<h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Prompt platosu</td><td>Prompt üzerinde daha çok uğraşıldığı halde performans artışının yavaşlaması.</td><td>Bu noktada yeni sinyal eklemek, aynı promptu zorlamaktan daha verimli olabilir.</td></tr>
+<tr><td class="term">Yansıma</td><td>İlk çıktıyı eleştirip ikinci bir sürüm üretme deseni.</td><td>Model yalnızca aynı bilgiyle düşünüyorsa iyileştirme sınırlı kalabilir.</td></tr>
+<tr><td class="term">Dış geri bildirim</td><td>Modelin ilk üretiminden sonra dış bir işlemle elde edilen yeni bilgi.</td><td>Hata mesajı, denetim sonucu veya ölçüm değeri olabilir.</td></tr>
+<tr><td class="term">Çalıştırma sinyali</td><td>Kod çalıştırıldığında gelen çıktı veya hata mesajı.</td><td>Modelin tahmin etmek yerine gerçek sonucu görmesini sağlar.</td></tr>
+<tr><td class="term">Desen eşleme</td><td>Metin içinde belirli isim, ifade veya kalıpları arama yöntemi.</td><td>Yasaklı veya istenmeyen ifadeleri nesnel biçimde tespit edebilir.</td></tr>
+<tr><td class="term">Kelime sayımı</td><td>Üretilen metnin gerçek uzunluğunu ölçen basit araç.</td><td>Modelin yaklaşık uzunluk sezgisinden daha güvenilirdir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section>
+<h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Dış geri bildirimli yansımanın ana fikri, performans eğrisini aynı bilgiyle tekrar tekrar iyileştirmeye çalışmak yerine, sisteme yeni gözlem eklemektir. Aşağıdaki akış, prompt ayarlama, yansıma ve dış geri bildirimin performans yolculuğundaki yerini özetler.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Promptu ayarla</strong><span>Başlangıçta doğrudan üretim hızla iyileşir, sonra artış yavaşlar.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Yansıma ekle</strong><span>Model ilk çıktısını eleştirir ve daha iyi ikinci sürüm üretir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Dış sinyal al</strong><span>Kod, denetim aracı veya ölçüm işlemi yeni bilgi üretir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Daha hedefli düzelt</strong><span>Model, somut geri bildirimle daha yüksek performans yoluna çıkar.</span></div>
+</div></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Azalan getiri</strong><span>Prompt üzerinde daha fazla çalışmak her zaman aynı ölçüde kazanç sağlamaz.</span></div>
+<div class="insight-card"><strong>Yeni bilgi</strong><span>Dış geri bildirim, modelin kendi kendine göremediği somut bir bulguyu içeri taşır.</span></div>
+<div class="insight-card"><strong>Ek karmaşıklık</strong><span>Performans artışı, araç ve geri bildirim döngüsü tasarlama maliyetiyle birlikte gelir.</span></div>
+</div>
+</section>
+
+<section>
+<h2 id="performans-egrisini-okumak">Performans Eğrisini Okumak</h2>
+<p>Prompt mühendisliği genellikle başlangıçta hızlı kazanç verir. Ancak bir noktadan sonra aynı istem üzerinde daha çok çalışmak, performansı yalnızca küçük miktarlarda artırır. Yansıma, bu eğriye ek bir sıçrama getirebilir. Dış geri bildirim ise modele yeni bilgi sağladığı için daha yüksek bir iyileştirme yolunu mümkün kılabilir.</p>
+<div class="curve-panel">
+<svg viewBox="0 0 900 360" role="img" aria-label="Prompt mühendisliği, yansıma ve dış geri bildirimli yansıma performans eğrileri">
+<line class="curve-axis" x1="80" y1="300" x2="840" y2="300"></line>
+<line class="curve-axis" x1="80" y1="300" x2="80" y2="40"></line>
+<line class="curve-grid" x1="80" y1="230" x2="840" y2="230"></line>
+<line class="curve-grid" x1="80" y1="160" x2="840" y2="160"></line>
+<line class="curve-grid" x1="80" y1="90" x2="840" y2="90"></line>
+<path class="curve-red" d="M90 270 C150 230, 210 205, 285 188 S430 176, 530 176 S700 176, 830 176"></path>
+<path class="curve-blue" d="M90 270 C150 230, 210 205, 285 188 S410 176, 470 176 C515 150, 575 135, 640 127 S760 118, 830 116"></path>
+<path class="curve-purple" d="M90 270 C150 230, 210 205, 285 188 S410 176, 470 176 C515 145, 575 126, 630 108 C690 80, 760 62, 830 54"></path>
+<text class="curve-label" x="330" y="335">Prompt mühendisliğine harcanan zaman</text>
+<text class="curve-label" x="18" y="48" transform="rotate(-90 18 48)">Performans</text>
+<text class="curve-small" x="596" y="171">Yansıma yok</text>
+<text class="curve-small" x="650" y="120">Yansıma</text>
+<text class="curve-small" x="615" y="54">Dış geri bildirimli yansıma</text>
+</svg>
+<div class="legend-row">
+<span class="legend-item"><span class="legend-swatch"></span>Yansıma yok</span>
+<span class="legend-item"><span class="legend-swatch b"></span>Yansıma</span>
+<span class="legend-item"><span class="legend-swatch c"></span>Dış geri bildirimli yansıma</span>
+</div>
+</div>
+<div class="note-card">
+<h3 id="ne-zaman-yon-degistirmeli">Ne zaman yön değiştirmeli?</h3>
+<p>Prompt ayarlama çabası belirgin biçimde plato yapıyorsa, aynı prompt üzerinde daha fazla vakit geçirmek yerine yansıma veya dış geri bildirim eklemeyi düşünmek daha verimli olabilir.</p>
+</div>
+</section>
+
+<section>
+<h2 id="kod-calistirmadan-gelen-geri-bildirim">Kod Çalıştırmadan Gelen Geri Bildirim</h2>
+<p>Kod üretimi, dış geri bildirimin en net görüldüğü alanlardan biridir. Model ilk taslağı yazar; sistem bu taslağı çalıştırır; çalışma sonucunda çıktı veya hata mesajı oluşur. Bu mesaj, modelin yalnızca tahminle değil, gerçek çalıştırma sonucuyla ikinci sürümü üretmesini sağlar.</p>
+<div class="workflow-map">
+<div class="wf-band">Çalıştırma sinyaliyle yansıma döngüsü</div>
+<div class="workflow-row">
+<div class="wf-node is-prompt"><strong>Görev</strong><span>Modelden belirli bir işi yapan kod taslağı yazması istenir.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>İlk taslak</strong><span>Model ilk kod sürümünü üretir.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node"><strong>Çalıştırma</strong><span>Kod yürütülür ve gerçek çıktı ya da hata mesajı elde edilir.</span></div>
+</div>
+<div class="workflow-row">
+<div class="wf-node"><strong>Geri bildirim</strong><span>Çalıştırma sonucu modele yeni bilgi olarak verilir.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-model"><strong>Yansıma</strong><span>Model hatayı veya çıktıyı yorumlayarak iyileştirme yapar.</span></div>
+<div class="wf-arrow">→</div>
+<div class="wf-node is-prompt"><strong>İkinci taslak</strong><span>Yeni sürüm, somut çalıştırma sonucuna dayanır.</span></div>
+</div>
+</div>
+<div class="error-card">
+<strong>Çalıştırma sinyali örneği</strong>
+<pre>SyntaxError: unterminated string literal (detected at line 1)</pre>
+</div>
+<p>Bu hata mesajı, modelin yalnızca "kodda bir sorun olabilir" diye düşünmesinden daha değerlidir. Hatanın türünü ve nerede yakalandığını söyler; bu nedenle ikinci taslak daha hedefli biçimde yazılabilir.</p>
+</section>
+
+<section>
+<h2 id="diger-dis-geri-bildirim-kanallari">Diğer Dış Geri Bildirim Kanalları</h2>
+<p>Dış geri bildirim yalnızca kod çalıştırmayla sınırlı değildir. Bir yazılım parçası veya araç, metnin içinde istenmeyen bir unsur bulabilir, bir iddiayı denetleyebilir ya da uzunluğu kesin olarak ölçebilir. Bu bulgu modele eleştiri değil, ölçülmüş durum bilgisi olarak verilir.</p>
+<div class="table-wrap"><table class="feedback-table">
+<colgroup><col class="challenge-col"><col class="example-col"><col></colgroup>
+<thead><tr><th>Zorluk</th><th>Örnek durum</th><th>Geri bildirim kanalı</th></tr></thead>
+<tbody>
+<tr><td class="term">Rakip adı geçmesi</td><td>Ürün metni, istenmeyen bir rakip adını içerir.</td><td>Desen eşleme ile belirli adların aranması.</td></tr>
+<tr><td class="term">Olgusal belirsizlik</td><td>Tarihi bir yapı hakkında verilen tarih eksik veya yanıltıcı olabilir.</td><td>Güvenilir doğrulama sonuçlarının metne geri verilmesi.</td></tr>
+<tr><td class="term">Uzunluk sınırı</td><td>Metin istenen kelime sınırını aşar.</td><td>Kelime sayımı ile kesin uzunluğun ölçülmesi.</td></tr>
+</tbody>
+</table></div>
+<div class="feedback-grid">
+<div class="feedback-card"><span class="tag">Desen eşleme</span><strong>Metinsel yasakları bulur</strong><p>Belirli rakip adları veya istenmeyen kalıplar, model tahminine bırakılmadan araçla aranır.</p></div>
+<div class="feedback-card"><span class="tag">Doğrulama</span><strong>Olgusal iddiayı sınar</strong><p>Modelin yazdığı metne ek bilgi verilerek tarih veya olay anlatımı daha doğru hale getirilebilir.</p></div>
+<div class="feedback-card"><span class="tag">Ölçüm</span><strong>Kesin uzunluğu verir</strong><p>Kelime sayımı gibi basit araçlar, modelin yaklaşık uzunluk sezgisinden daha güvenilir sinyal üretir.</p></div>
+</div>
+</section>
+
+<section>
+<h2 id="arac-ve-agent-etkilesim-mantigi">Araç ve Agent Etkileşim Mantığı</h2>
+<p>Bu ders aynı zamanda bir sonraki büyük konuya geçiş yapar: araç kullanımı. Dış geri bildirim sağlayan her mekanizma, agentik sistemin model dışındaki bir işlevi çağırabileceğini gösterir. Bu işlev bazen kod çalıştırma, bazen metin içinde arama, bazen doğrulama, bazen de kelime sayımıdır.</p>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Modelin kendi yansıması</h4>
+<p>Model ilk çıktıya tekrar bakar ve kendi değerlendirmesine göre ikinci sürüm üretir.</p>
+<ul>
+<li>Kurulumu daha basittir.</li>
+<li>Ek araç gerekmez.</li>
+<li>Yeni bilgi üretmediği için sınırlı kalabilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Dış geri bildirimli yansıma</h4>
+<p>Bir araç, çalıştırma veya ölçüm adımı sisteme yeni bulgu sağlar.</p>
+<ul>
+<li>Daha hedefli düzeltme sağlar.</li>
+<li>Uygulama başarısını daha fazla artırabilir.</li>
+<li>Ek tasarım ve yönetim maliyeti getirir.</li>
+</ul>
+</div>
+</div>
+<div class="callout-strip">
+<span class="pill is-coral">İlk üretim</span>
+<span class="pill">Dış işlem</span>
+<span class="pill">Somut bulgu</span>
+<span class="pill">Yansıma</span>
+<span class="pill is-coral">İkinci sürüm</span>
+</div>
+</section>
+
+<section>
+<h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Plato noktasını fark etmemek</h4>
+<p>Prompt üzerinde çok uzun süre çalışmak, bir noktadan sonra azalan getiri oluşturabilir. Bu durumda yeni sinyal eklemek daha doğru hamle olabilir.</p>
+<ul>
+<li>Performans eğrisini izlemek gerekir.</li>
+<li>Sürekli küçük prompt değişiklikleri tek başına yeterli olmayabilir.</li>
+<li>Dış geri bildirim, tıkanan eğriyi yukarı taşıyabilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Geri bildirimi belirsiz bırakmak</h4>
+<p>Modelin kullanacağı bulgu açık ve uygulanabilir olmalıdır. "Daha iyi yap" yerine, "rakip adı bulundu" veya "kelime sınırı aşıldı" gibi somut bilgi verilmelidir.</p>
+<ul>
+<li>Ölçüm değeri açık olmalıdır.</li>
+<li>Bulgu çıktıyla doğrudan ilişkili olmalıdır.</li>
+<li>İkinci sürümün neyi düzeltmesi gerektiği anlaşılmalıdır.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Prompt mühendisliği başlangıçta hızlı iyileşir; fakat performans bir noktadan sonra plato yapabilir.</li>
+<li>Yansıma, bu platodan çıkmak için ek bir iyileştirme adımı sunar; dış geri bildirim ise yansımayı daha güçlü hale getirir.</li>
+<li>Kod çalıştırma çıktıları ve hata mesajları, modelin ikinci sürümü gerçek gözleme dayanarak yazmasını sağlar.</li>
+<li>Desen eşleme, doğrulama sonuçları ve kelime sayımı gibi araçlar, metin üretimi görevlerinde somut geri bildirim sinyali sağlar.</li>
+<li>Dış geri bildirim performansı artırabilir; ancak sisteme ek karmaşıklık getirdiği için tasarımda bilinçli kullanılmalıdır.</li>
+<li>Bu fikir, agentik sistemlerde araç kullanımının neden güçlü olduğunu anlamak için doğrudan bir hazırlık oluşturur.</li>
+</ul>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#dis-geri-bildirim-kullanimi" class="toc-h1">Dış Geri Bildirim Kullanımı</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#temel-fikir" class="toc-h3">Temel Fikir</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#performans-egrisini-okumak" class="toc-h2">Performans Eğrisini Okumak</a>
+<a href="#ne-zaman-yon-degistirmeli" class="toc-h3">Ne zaman yön değiştirmeli?</a>
+<a href="#kod-calistirmadan-gelen-geri-bildirim" class="toc-h2">Kod Çalıştırmadan Gelen Geri Bildirim</a>
+<a href="#diger-dis-geri-bildirim-kanallari" class="toc-h2">Diğer Dış Geri Bildirim Kanalları</a>
+<a href="#arac-ve-agent-etkilesim-mantigi" class="toc-h2">Araç ve Agent Etkileşim Mantığı</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add('js-ready');
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

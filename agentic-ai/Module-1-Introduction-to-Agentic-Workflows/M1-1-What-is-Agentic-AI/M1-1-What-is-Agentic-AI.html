@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI Nedir?</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+/* linear flow rail (non-agentic) */
+.rail{display:flex;flex-direction:column;align-items:center;gap:0.4rem;margin:0.6rem 0 0;}
+.rail-node{width:100%;max-width:230px;padding:0.6rem 0.7rem;border:1px solid var(--lesson-border);border-radius:0.55rem;background:var(--lesson-soft);text-align:center;font-size:0.92rem;color:var(--lesson-text);}
+.rail-node.is-edge{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);font-weight:600;}
+.rail-arrow{color:var(--dlai-coral);font-size:1.1rem;line-height:1;}
+/* cyclic loop (agentic) */
+.loop{display:grid;grid-template-columns:1fr;gap:0.4rem;margin:0.6rem 0 0;}
+.loop-node{padding:0.6rem 0.7rem;border:1px solid var(--lesson-border);border-radius:0.55rem;background:var(--lesson-soft);font-size:0.92rem;text-align:center;color:var(--lesson-text);}
+.loop-cycle{margin-top:0.35rem;padding:0.6rem 0.7rem;border:1px dashed var(--dlai-coral);border-radius:0.55rem;background:var(--dlai-coral-muted);text-align:center;font-size:0.9rem;color:var(--accent-dark);font-weight:600;}
+.loop-cycle span{display:inline-block;}
+/* essay-component map */
+.step-map{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-row{display:grid;grid-template-columns:minmax(0,1.35fr) auto minmax(0,1fr);align-items:center;gap:0.6rem;padding:0.7rem 0.8rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.step-row .step-task{font-size:0.95rem;color:var(--lesson-text);}
+.step-row .step-eq{text-align:center;color:var(--lesson-muted);font-weight:700;font-size:1.05rem;}
+.step-row .step-comp{display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;}
+.pill{display:inline-block;padding:0.28rem 0.7rem;border-radius:999px;font-size:0.85rem;font-weight:600;white-space:nowrap;border:1px solid var(--lesson-border-strong);background:var(--lesson-soft-2);color:var(--lesson-text);}
+.pill-llm{border-color:var(--lesson-border-strong);background:#eef0f4;color:#1f2937;}
+.pill-extra{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pill-plus{border:0;background:transparent;color:var(--dlai-coral);font-weight:700;padding:0 0.1rem;}
+/* pipeline chips */
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.pipe-chip{padding:0.45rem 0.75rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.9rem;color:var(--lesson-text);}
+.pipe-arrow{color:var(--dlai-coral);font-weight:700;}
+/* autonomy spectrum */
+.spectrum{margin:1.1rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.spectrum-bar{position:relative;height:0.6rem;border-radius:999px;margin:1.4rem 0 0.6rem;background:linear-gradient(90deg,var(--dlai-coral-soft),var(--dlai-coral));}
+.spectrum-ends{display:flex;justify-content:space-between;font-size:0.9rem;color:var(--accent-dark);font-weight:600;}
+.spectrum-marks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin-top:1rem;}
+.spectrum-mark{padding:0.85rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.spectrum-mark strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.spectrum-mark span{color:var(--lesson-muted);font-size:0.92rem;}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.spectrum-marks{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.step-row{grid-template-columns:1fr;text-align:left;}
+.step-row .step-eq{text-align:left;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-1-What-is-Agentic-AI/M1-1-What-is-Agentic-AI.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Agentic AI Nedir?</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="agentic-ai-nedir">Agentic AI Nedir?</h1>
+<p class="lead-text">Bir dil modelini tek seferde sonuç üretmeye zorlamak yerine; planlama, araştırma, taslak yazma ve gözden geçirme gibi adımları birbiri ardına çalıştırarak daha iyi bir iş çıktısı elde etme yaklaşımı.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yapay zekâ uygulamalarında giderek daha çok konuşulan bir fikrin temelini kurar: bir dil modelini bir görevi <strong>tek bir hamlede</strong> çözmeye zorlamak yerine, görevi küçük adımlara bölüp bu adımları sırayla yürüten bir <strong>iş akışı</strong> tasarlamak. Bu yaklaşıma <em>agentic AI</em> (aracılı yapay zekâ) denir.</p>
+<p>Anlatımın merkezinde tanıdık bir örnek var: bir deneme (essay) yazmak. Bu örnek üzerinden iki çalışma biçimini karşılaştıracağız. Birincisi, modele &ldquo;şu konuda bir yazı yaz&rdquo; deyip tek seferde sonucu beklemek. İkincisi, aynı işi taslak çıkarma, araştırma, ilk metni yazma, eksikleri görme ve düzeltme gibi adımlara bölmek. Dersin sonunda, karmaşık bir görevi neden ve nasıl adımlara böldüğümüzü, her adımı hangi bileşenin yürüttüğünü ve bu adımların ne kadar otonom çalışabileceğini kavramsal olarak anlamış olacaksınız.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Doğrudan (tek geçişli) üretim ile agentik iş akışı arasındaki temel farkı açıklayabilmek.</li>
+<li>Bir agentik iş akışının &ldquo;çok adımlı süreç&rdquo; tanımını kendi cümlelerinizle ifade edebilmek.</li>
+<li>Karmaşık bir görevin neden daha küçük adımlara bölündüğünü ve bu bölmenin çıktıyı nasıl iyileştirdiğini gerekçelendirebilmek.</li>
+<li>Bir iş akışındaki her adımı hangi bileşenin yürüttüğünü (model çağrısı, web araması, insan onayı) ayırt edebilmek.</li>
+<li>Bir araştırma ajanının uçtan uca hangi aşamalardan geçtiğini sırayla tarif edebilmek.</li>
+<li>Otonominin bir &ldquo;evet/hayır&rdquo; değil, bir <strong>spektrum</strong> olduğunu kavramak.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline metin biçiminde bir istem (prompt) verip yanıt almanın ne demek olduğuna dair temel bir fikir.</li>
+<li>&ldquo;Bir görevi adımlara bölmek&rdquo; gibi gündelik bir problem çözme alışkanlığına aşinalık.</li>
+<li>Web araması, kaynak indirme ve metin özetleme kavramlarına genel düzeyde aşinalık.</li>
+</ul>
+<p>Bu ders kavramsaldır; herhangi bir programlama deneyimi veya kod yazımı gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Dil modeli (LLM)</td><td>Metin girdisini alıp metin üreten büyük ölçekli yapay zekâ modeli.</td><td>Tek bir çağrıda yalnızca bir adımı yürütür; akışın tamamını o kurmaz.</td></tr>
+<tr><td class="term">Doğrudan üretim</td><td>Görevi tek bir istemle, tek seferde tamamlatma biçimi.</td><td>Hızlıdır ama planlama ve düzeltme aşaması içermez.</td></tr>
+<tr><td class="term">Agentik iş akışı</td><td>Modelin birden çok adımı sırayla yürüterek görevi tamamladığı süreç.</td><td>Daha uzun sürebilir; karşılığında çıktı belirgin biçimde iyileşir.</td></tr>
+<tr><td class="term">Görev ayrıştırma</td><td>Karmaşık bir görevi tek tek yürütülebilir küçük adımlara bölme.</td><td>Dersin en kritik becerisidir; adımların kalitesi sonucu belirler.</td></tr>
+<tr><td class="term">Web araması</td><td>Bir adımın dış kaynaklardan bilgi getirmek için kullandığı bileşen.</td><td>Modelin kendi başına bilmediği güncel bilgiyi akışa katar.</td></tr>
+<tr><td class="term">İnsan onayı</td><td>Akışın kritik bir noktada insandan inceleme istemesi.</td><td>Her adımda değil, yalnızca tasarımın gerektirdiği yerde devreye girer.</td></tr>
+<tr><td class="term">Otonomi</td><td>Akışın insan müdahalesi olmadan ne kadar kendi başına ilerlediği.</td><td>İki uç değil, basitten karmaşığa uzanan bir aralıktır.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bu dersin tek bir merkezi fikri var: <strong>iyi iş, doğrusal tek hamleyle değil, tekrarlı adımlarla ortaya çıkar.</strong> Aşağıdaki dört adım, agentik bir deneme yazma akışının iskeletidir ve dersin geri kalanı bu iskeletin üzerine kurulur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Taslak çıkar</strong><span>Önce konunun ana hatlarını belirleyen bir deneme taslağı oluşturulur.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Araştır</strong><span>Gerekirse web araması yapılır ve ilgili kaynaklar getirilir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>İlk metni yaz</strong><span>Toplanan bilgiyle metnin ilk taslağı yazılır.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Gözden geçir</strong><span>Eksik yerler belirlenir, metin düzeltilir ve gerekirse döngü tekrarlanır.</span></div>
+</div></div>
+<p>Dikkat edilecek nokta: dördüncü adım sondan ziyade bir <strong>dönüş noktasıdır</strong>. &ldquo;Daha fazla düşünme/araştırma gerekiyor mu?&rdquo; sorusuna göre akış başa dönebilir. İşte bu tekrar, agentik yaklaşımı doğrudan üretimden ayıran şeydir.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="dogrudan-uretim-tek-hamlede-geri-tusu-olmadan">Doğrudan üretim: tek hamlede, geri tuşu olmadan</h3>
+<p>Bugün çoğumuz bir dil modelini şöyle kullanıyoruz: &ldquo;Şu konuda bir yazı yaz&rdquo; deyip sonucu bekliyoruz. Bunu bir insana gidip &ldquo;lütfen bu denemeyi ilk kelimeden son kelimeye kadar tek seferde, hiç geri tuşunu kullanmadan yaz&rdquo; demeye benzetebiliriz. İnsanlar en iyi yazılarını bu şekilde, tamamen doğrusal bir sırada yazmaya zorlandıklarında üretmezler; dil modelleri de üretmez.</p>
+<p>Buradaki şaşırtıcı nokta şudur: bu kısıtlamaya rağmen modeller yine de oldukça iyi sonuç verir. Ama &ldquo;oldukça iyi&rdquo; ile &ldquo;çok daha iyi&rdquo; arasındaki farkı kapatan şey, modeli bu doğrusal zorunluluktan kurtarmaktır.</p>
+
+<h3 id="agentik-akis-dusun-arastir-yaz-duzelt">Agentik akış: düşün, araştır, yaz, düzelt</h3>
+<p>Agentik bir akışta süreç şöyle görünür: önce modelden bir deneme taslağı yazması istenir, ardından herhangi bir web araştırması yapması gerekip gerekmediği sorulur. Biraz araştırma yapıp belki bazı web sayfalarını indirdikten sonra ilk taslak yazılır, sonra bu taslak okunur, hangi bölümlerin düzeltme veya ek araştırma gerektirdiği belirlenir, taslak revize edilir ve süreç bu şekilde devam eder.</p>
+<p>Bu tür bir akış; biraz düşünmeye, biraz araştırmaya, sonra biraz düzeltmeye, ardından tekrar düşünmeye benzer. Bu tekrarlı süreç daha uzun sürebilir, ancak <strong>belirgin biçimde daha iyi bir iş çıktısı</strong> üretir.</p>
+
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Doğrudan (zero-shot)</h4>
+<p>Görev tek bir istemle baştan sona tamamlanır.</p>
+<div class="rail">
+<div class="rail-node is-edge">Başla</div>
+<div class="rail-arrow">&darr;</div>
+<div class="rail-node">Tek geçişte yaz</div>
+<div class="rail-arrow">&darr;</div>
+<div class="rail-node is-edge">Bitir</div>
+</div>
+</div>
+<div class="cmp-card">
+<h4>Agentik akış</h4>
+<p>Görev adımlara bölünür; gözden geçirme aşaması akışı başa döndürebilir.</p>
+<div class="loop">
+<div class="loop-node">Taslak çıkar</div>
+<div class="loop-node">Araştırma gerekli mi? &rarr; (gerekirse) ara</div>
+<div class="loop-node">İlk taslağı yaz</div>
+<div class="loop-cycle"><span>Düşün / araştır &nbsp;&#8635;&nbsp; Düzelt</span></div>
+</div>
+</div>
+</div>
+
+<div class="definition-card">
+<h3 id="tanim">Tanım</h3>
+<p>Bir <strong>agentic AI iş akışı</strong>, dil modeli tabanlı bir uygulamanın bir görevi tamamlamak için <strong>birden çok adımı yürüttüğü</strong> bir süreçtir. Her adım tek başına küçük ve yönetilebilirdir; gücü, bu adımların doğru sırayla birbirine bağlanmasından gelir.</p>
+</div>
+
+<h3 id="her-adimi-hangi-bilesen-yurutur">Her adımı hangi bileşen yürütür?</h3>
+<p>Deneme örneğini biraz daha açalım. Akıştaki her adım aynı görünse de, arkasında farklı bileşenler çalışır. Bir adımda bir dil modeli taslağı yazar; başka bir adımda yine bir dil modeli, web arama motoruna (aslında bir web arama API'sine) hangi arama terimlerini vereceğine karar verir. İndirilen web sayfaları bir dil modeline verilerek ilk taslak yazdırılır; ardından bir başka model çağrısı, nelerin düzeltilmesi gerektiğini değerlendirir. Tasarıma göre, modele belirli kritik gerçekleri bir insana doğrulatma seçeneği veren bir <strong>insan onayı</strong> adımı bile eklenebilir.</p>
+
+<div class="step-map">
+<div class="step-row"><div class="step-task">Konu hakkında deneme taslağı yaz</div><div class="step-eq">=</div><div class="step-comp"><span class="pill pill-llm">Dil modeli</span></div></div>
+<div class="step-row"><div class="step-task">Web araştırması gerekiyor mu?</div><div class="step-eq">=</div><div class="step-comp"><span class="pill pill-llm">Dil modeli</span><span class="pill pill-plus">+</span><span class="pill pill-extra">Web araması</span></div></div>
+<div class="step-row"><div class="step-task">İlk taslağı yaz</div><div class="step-eq">=</div><div class="step-comp"><span class="pill pill-llm">Dil modeli</span></div></div>
+<div class="step-row"><div class="step-task">Hangi bölümler düzeltme/araştırma istiyor?</div><div class="step-eq">=</div><div class="step-comp"><span class="pill pill-llm">Dil modeli</span><span class="pill pill-plus">+</span><span class="pill pill-extra">İnsan onayı isteği</span></div></div>
+<div class="step-row"><div class="step-task">Taslağını revize et</div><div class="step-eq">=</div><div class="step-comp"><span class="pill pill-llm">Dil modeli</span></div></div>
+</div>
+<p>Bu tablonun anlattığı kritik fikir şudur: bir dil modeli her şeyi tek başına yapmaz. Çoğu adım bir model çağrısıdır, ancak bazı adımlar <strong>modele dışarıdan yetenek ekleyen</strong> bileşenlerle (web araması, insan onayı) güçlendirilir. Akışı tasarlayan kişi, hangi adımın hangi bileşene ihtiyaç duyduğuna karar verir.</p>
+
+<div class="note-card">
+<h3 id="dersin-temel-becerisi">Dersin temel becerisi</h3>
+<p>Bu derste öğrenilen anahtar beceri, deneme yazmak gibi karmaşık bir görevi alıp onu <strong>daha küçük adımlara bölmek</strong> ve agentik akışların her adımı tek tek yürütmesini sağlamaktır. Görevi adımlara ayırmayı ve her adımı iyi yürütecek bileşenleri kurmayı bilmek; zorlu ama belirleyici bir beceridir. Bu beceri, çok geniş bir uygulama yelpazesi için agentik akışlar kurabilme yeteneğinizi doğrudan tayin eder.</p>
+</div>
+</section>
+
+<section><h2 id="calisan-ornek-arastirma-ajani">Çalışan Örnek: Araştırma Ajanı</h2>
+<p>Ders boyunca tekrar tekrar kullanılan ve adım adım birlikte inşa edilen örnek, bir <strong>araştırma ajanıdır</strong>. Bu ajana bir araştırma konusu verirsiniz &mdash; örneğin &ldquo;SpaceX ile rekabet edecek yeni bir roket şirketini nasıl kurarım?&rdquo; gibi. Ajan bu konuyu alır ve uçtan uca bir araştırma süreci yürütür.</p>
+<p>Ajan önce hangi araştırmayı yapacağını planlar; bunun içinde web arama motorunu çağırıp bazı web sayfalarını indirmek de vardır. Ardından bulguları sentezler ve önem sırasına koyar, bir taslak çıkarır, bir editör ajanın tutarlılık açısından inceleme yapmasını sağlar ve en sonunda kapsamlı bir rapor üretir &mdash; giriş, arka plan, bulgular ve devamıyla.</p>
+
+<div class="pipeline">
+<span class="pipe-chip">Araştırmayı planla</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Web'de ara &amp; sayfaları indir</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Bulguları sentezle &amp; sırala</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Taslak çıkar</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Editör ajan tutarlılığı inceler</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip">Kapsamlı rapor üret</span>
+</div>
+
+<p>Sonuç neden daha iyidir? Çünkü ajan birden çok kaynağı bulup indirerek ve konu üzerinde derinlemesine &ldquo;düşünerek&rdquo;, bir dil modeline doğrudan &ldquo;bana bir yazı yaz&rdquo; demekten çok daha düşünülmüş bir rapor üretir. Aynı mantık başka birçok alanda da işe yarar: hukuki uyum için belge tarama, sağlık sektöründe araştırma veya iş ve ürün araştırması gibi özel amaçlı araştırma ajanları bu kalıbın doğrudan uygulamalarıdır.</p>
+
+<div class="insight-grid">
+<div class="insight-card"><strong>Çok kaynaklılık</strong><span>Tek bir çıktıya bel bağlamak yerine birden çok kaynak bulunur ve indirilir.</span></div>
+<div class="insight-card"><strong>Sentez ve sıralama</strong><span>Toplanan bilgi ham hâlde bırakılmaz; önem sırasına konup birleştirilir.</span></div>
+<div class="insight-card"><strong>İkinci bir göz</strong><span>Bir editör ajan, taslağı tutarlılık açısından gözden geçirir.</span></div>
+</div>
+</section>
+
+<section><h2 id="otonomi-bir-spektrumdur">Otonomi Bir Spektrumdur</h2>
+<p>Yapay zekâ ajanları hakkında en çok tartışılan konulardan biri, bu ajanların <strong>ne kadar otonom</strong> olduğudur. Yukarıda görülen araştırma ajanı; göreli olarak karmaşık, yüksek otonomili bir agentic AI akışıydı. Ancak otonomi bir &ldquo;ya hep ya hiç&rdquo; özelliği değildir. Aynı derecede değerli olan, çok daha basit akışlar da vardır.</p>
+<div class="spectrum">
+<div class="spectrum-bar"></div>
+<div class="spectrum-ends"><span>Basit / düşük otonomi</span><span>Karmaşık / yüksek otonomi</span></div>
+<div class="spectrum-marks">
+<div class="spectrum-mark"><strong>Basit akışlar</strong><span>Az sayıda adım, dar kapsam. Daha öngörülebilir, kurması ve denetlemesi kolaydır &mdash; ve çoğu zaman fazlasıyla değerlidir.</span></div>
+<div class="spectrum-mark"><strong>Yüksek otonomili akışlar</strong><span>Planlama, araştırma, sentez ve gözden geçirme gibi birçok adımı kendi başına yürütür; araştırma ajanı bu uca örnektir.</span></div>
+</div>
+</div>
+<p>Bu fikri akılda tutmak önemlidir, çünkü &ldquo;daha otonom her zaman daha iyidir&rdquo; doğru değildir. Doğru otonomi düzeyi, çözmeye çalıştığınız göreve göre değişir.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Agentik akış her zaman daha hızlıdır.&rdquo;</strong> Tam tersine, tekrarlı adımlar yüzünden genellikle daha uzun sürer; kazanç hızda değil, çıktı kalitesindedir.</li>
+<li><strong>&ldquo;Tek bir model her şeyi yapar.&rdquo;</strong> Akış birden çok adımdan oluşur ve bazı adımlar web araması veya insan onayı gibi ek bileşenlerle güçlendirilir.</li>
+<li><strong>&ldquo;Görevi adımlara bölmek kolay bir ayrıntıdır.&rdquo;</strong> Görev ayrıştırma, dersin en zorlu ve en belirleyici becerisidir; akışın başarısını doğrudan etkiler.</li>
+<li><strong>&ldquo;Ne kadar otonom, o kadar iyi.&rdquo;</strong> Otonomi bir spektrumdur; basit akışlar da çoğu zaman yeterli ve çok değerlidir. Doğru düzey göreve bağlıdır.</li>
+<li><strong>&ldquo;Gözden geçirme adımı sürecin sonudur.&rdquo;</strong> Gözden geçirme aslında bir dönüş noktasıdır; akışı yeniden düşünme ve düzeltme için başa döndürebilir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Bir dil modelini tek hamlede sonuç üretmeye zorlamak, onu en iyi olduğu işten alıkoyar. <strong>Agentic AI</strong>, aynı modeli planlama, araştırma, yazma ve gözden geçirme gibi adımlara yayarak çalıştırır; bu tekrarlı süreç daha uzun sürse de belirgin biçimde daha iyi bir sonuç verir.</p>
+<p>Bu yaklaşımın kalbinde tek bir beceri yatar: karmaşık bir görevi <strong>doğru adımlara bölmek</strong> ve her adımı yürütecek bileşeni &mdash; bir model çağrısını, bir web aramasını veya bir insan onayını &mdash; yerli yerine koymak. Araştırma ajanı örneği bu kalıbın güçlü bir uygulamasıdır ve aynı mantık çok geniş bir uygulama yelpazesine taşınabilir.</p>
+<p>Son olarak, otonominin bir spektrum olduğunu unutmayın. Hedef her zaman en otonom sistemi kurmak değil, eldeki göreve <strong>en uygun</strong> akışı tasarlamaktır.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#agentic-ai-nedir" class="toc-h1">Agentic AI Nedir?</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#dogrudan-uretim-tek-hamlede-geri-tusu-olmadan" class="toc-h3">Doğrudan üretim: tek hamlede, geri tuşu olmadan</a>
+<a href="#agentik-akis-dusun-arastir-yaz-duzelt" class="toc-h3">Agentik akış: düşün, araştır, yaz, düzelt</a>
+<a href="#tanim" class="toc-h3">Tanım</a>
+<a href="#her-adimi-hangi-bilesen-yurutur" class="toc-h3">Her adımı hangi bileşen yürütür?</a>
+<a href="#dersin-temel-becerisi" class="toc-h3">Dersin temel becerisi</a>
+<a href="#calisan-ornek-arastirma-ajani" class="toc-h2">Çalışan Örnek: Araştırma Ajanı</a>
+<a href="#otonomi-bir-spektrumdur" class="toc-h2">Otonomi Bir Spektrumdur</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

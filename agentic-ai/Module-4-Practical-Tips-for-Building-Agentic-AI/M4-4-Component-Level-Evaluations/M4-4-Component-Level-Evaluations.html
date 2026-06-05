@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bileşen Düzeyi Değerlendirmeler</title>
+<style>
+:root{
+--dlai-coral:#fe4a61;
+--dlai-coral-dark:#e63f55;
+--dlai-coral-soft:#ffe8ec;
+--dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff;
+--lesson-text:#111827;
+--lesson-muted:#4b5563;
+--lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6;
+--lesson-border:#e5e7eb;
+--lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff;
+--lesson-card-muted:#fff8f9;
+--accent:#fe4a61;
+--accent-dark:#c2384a;
+--code-bg:#f7f7f7;
+--code-text:#000000;
+--code-border:#cccccc;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);}
+*,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{
+  width:min(100%,1040px);
+  margin:0 auto;
+  padding:clamp(1rem,2.5vw,2.5rem);
+  background:var(--lesson-bg);
+  color:var(--lesson-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:1rem;
+  line-height:1.62;
+}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,780px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.note-card,.warn-card,.mini-panel,.example-card{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.note-card h3,.warn-card h3,.example-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.note-card h3::before,.warn-card h3::before,.example-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;min-width:680px;border-collapse:collapse;table-layout:fixed;background:#fff;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;}
+.term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.pipeline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.45rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 70%);}
+.pipe-chip{padding:0.5rem 0.8rem;border:1px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;font-size:0.9rem;color:var(--lesson-text);text-align:center;}
+.pipe-chip small{display:block;color:var(--lesson-muted);font-size:0.76rem;font-weight:400;margin-top:0.12rem;}
+.pipe-chip.is-llm{background:#eef0f4;color:#1f2937;}
+.pipe-chip.is-tool{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-chip.is-input{border-color:var(--dlai-coral);background:var(--dlai-coral-soft);color:var(--accent-dark);}
+.pipe-arrow{color:var(--dlai-coral);font-weight:700;}
+.case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.case-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.case-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.case-card p{margin:0.35rem 0;color:var(--lesson-muted);font-size:0.94rem;}
+.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;margin:1rem 0;}
+.metric-card{padding:0.95rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-soft);text-align:center;}
+.metric-card .metric-value{display:block;color:var(--accent-dark);font-size:clamp(1.45rem,3vw,2rem);font-weight:800;line-height:1.1;}
+.metric-card strong{display:block;margin:0.35rem 0 0.2rem;font-size:0.95rem;}
+.metric-card span{display:block;color:var(--lesson-muted);font-size:0.88rem;line-height:1.45;}
+.step-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-line{display:grid;grid-template-columns:1.9rem minmax(0,1fr);align-items:start;gap:0.7rem;padding:0.75rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.step-line .step-n{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.88rem;font-weight:700;}
+.step-line strong{display:block;color:var(--lesson-text);font-size:0.97rem;margin-bottom:0.12rem;}
+.step-line span{color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+.eval-panel{margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 68%);}
+.eval-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;}
+.eval-card{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:145px;padding:0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.eval-card .eval-num{display:flex;align-items:center;justify-content:center;width:1.65rem;height:1.65rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.85rem;font-weight:800;margin:0 auto 0.5rem;}
+.eval-card strong{display:block;margin-bottom:0.25rem;}
+.eval-card span{display:block;color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.overlap-visual{display:grid;grid-template-columns:minmax(0,1fr) minmax(128px,0.32fr) minmax(0,1fr);align-items:stretch;gap:0.8rem;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.set-card{min-height:150px;padding:0.9rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-soft);}
+.set-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.set-card ul{margin:0;padding-left:1.15rem;color:var(--lesson-muted);font-size:0.92rem;}
+.overlap-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.2rem;min-height:150px;padding:0.85rem 0.7rem;border:1px solid var(--dlai-coral);border-radius:0.65rem;background:var(--dlai-coral-soft);color:var(--accent-dark);font-weight:800;text-align:center;line-height:1.22;}
+.overlap-mid .overlap-kicker{color:var(--lesson-muted);font-size:0.76rem;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;}
+.overlap-mid .overlap-title{display:block;font-size:1rem;}
+.overlap-mid .overlap-note{color:var(--lesson-muted);font-size:0.78rem;font-weight:600;}
+.decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.decision-card{padding:1rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:#fff;}
+.decision-card.is-primary{border-top:3px solid var(--dlai-coral);background:var(--lesson-card-muted);}
+.decision-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.decision-card p{margin:0;color:var(--lesson-muted);font-size:0.94rem;}
+@media (max-width:860px){
+  .bp-flow,.case-grid,.metric-grid,.eval-grid,.decision-grid{grid-template-columns:1fr;}
+  .bp-step:not(:last-child)::after{display:none;}
+  .overlap-visual{grid-template-columns:1fr;}
+  .overlap-mid{width:100%;min-height:auto;border-radius:0.55rem;padding:0.75rem;}
+}
+@media (max-width:560px){
+  .lesson-page{padding:1rem;line-height:1.7;}
+  .term-table td.term{white-space:normal;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-4-Component-Level-Evaluations/M4-4-Component-Level-Evaluations.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Bileşen Düzeyi Değerlendirmeler</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="bilesen-duzeyi-degerlendirmeler">Bileşen Düzeyi Değerlendirmeler</h1>
+<p class="lead-text">Karmaşık bir agentic iş akışında yalnızca nihai sonucu ölçmek yerine, sorunlu bileşeni ayrı değerlendirerek daha net sinyal alan ve geliştirme döngüsünü hızlandıran yöntem.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bir araştırma ajanı bazen önemli noktaları kaçırıyorsa, yalnızca uçtan uca değerlendirme yapmak her zaman en verimli yaklaşım değildir. Uçtan uca ölçüm genel performansı gösterir; fakat web arama bileşenini her değiştirdiğinizde bütün akışı yeniden çalıştırmak pahalı olabilir ve sistemin diğer parçalarındaki rastlantısallık küçük iyileştirmeleri görünmez hâle getirebilir.</p>
+<p>Bu ders, hata analizi sonucunda belirli bir bileşene odaklanmaya karar verdiğinizde nasıl daha dar, daha net ve daha hızlı bir değerlendirme kurulacağını açıklar. Ana örnek, araştırma ajanındaki web arama adımıdır: kullanıcı isteğine uygun web sayfalarını bulmak, sonraki tüm adımların kalitesini belirgin biçimde etkiler.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Bir bileşeni iyileştirmeye karar verdiyseniz, o bileşenin kalitesini ayrı ölçen bir değerlendirme kurmak çoğu zaman daha net sinyal verir. Buna rağmen iş bitmeden önce uçtan uca performans da yeniden kontrol edilmelidir.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Uçtan uca değerlendirme ile bileşen düzeyi değerlendirme arasındaki farkı açıklayabilmek.</li>
+<li>Karmaşık bir iş akışında neden küçük bileşen iyileştirmelerinin genel gürültü içinde kaybolabileceğini kavramak.</li>
+<li>Web arama bileşeni için uzman tarafından belirlenmiş altın standart web sayfaları fikrini kullanabilmek.</li>
+<li>Arama sonuçları ile altın standart küme arasındaki örtüşmenin nasıl bir kalite sinyali verdiğini yorumlayabilmek.</li>
+<li>Arama motoru, sonuç sayısı ve tarih aralığı gibi ayarları bileşen metriğiyle hızlı karşılaştırabilmek.</li>
+<li>Bileşen düzeyi ölçümden sonra uçtan uca doğrulamanın neden hâlâ gerekli olduğunu açıklayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir araştırma ajanının kullanıcı isteği, web araması, sayfa getirme ve taslak yazma gibi birden fazla adımdan oluşabileceğini bilmek.</li>
+<li>Hata analizinin, hangi bileşene odaklanılacağını seçmek için kullanıldığını kavramış olmak.</li>
+<li>Bir metrik değerinin tek başına hedef değil, geliştirme kararını yönlendiren bir sinyal olduğunu kabul etmek.</li>
+</ul>
+<p>Ders kavramsaldır; çalıştırılabilir kod veya kayıtlı çıktı bulunmadığı için kod hücresi kullanılmaz.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Uçtan uca değerlendirme</td><td>Akışın nihai çıktısını baştan sona ölçen değerlendirme.</td><td>Genel başarıyı gösterir; fakat hangi bileşenin değiştiğini izole etmeyebilir.</td></tr>
+<tr><td class="term">Bileşen değerlendirmesi</td><td>Akıştaki tek bir adımın kalitesini ayrı ölçen değerlendirme.</td><td>Hata analizi belirli bir bileşeni işaret ettiğinde özellikle yararlıdır.</td></tr>
+<tr><td class="term">Altın standart küme</td><td>Uzmanın, belirli sorgular için bulunması gerektiğini söylediği web sayfaları listesi.</td><td>Arama sonuçlarını karşılaştırmak için referans kabul edilir.</td></tr>
+<tr><td class="term">Örtüşme</td><td>Arama sonucunda gelen sayfaların altın standart küme ile ne kadar kesiştiği.</td><td>F1 skoru gibi bilgi erişim metrikleri bu fikri sayısallaştırır.</td></tr>
+<tr><td class="term">Ayar</td><td>Arama motoru seçimi, sonuç sayısı veya tarih aralığı gibi değiştirilebilir seçenek.</td><td>Her değişiklik tüm sistemi değil, önce ilgili bileşeni ölçerek denenebilir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bileşen düzeyi değerlendirme, “sistem daha iyi mi?” sorusundan önce “iyileştirmeye çalıştığım parça gerçekten daha iyi mi?” sorusunu yanıtlar. Bu ayrım, özellikle karmaşık ve rastlantısallık içeren agentic akışlarda önemlidir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Darboğazı seç</strong><span>Hata analizi, örneğin web aramasının sorunlu olduğunu düşündürür.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Altın standart kur</strong><span>Uzman, her sorgu için bulunması beklenen web sayfalarını belirler.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Örtüşmeyi ölç</strong><span>Arama çıktısının uzman listesiyle ne kadar kesiştiği hesaplanır.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Geneli doğrula</strong><span>Bileşen iyileşince nihai sistemin de daha iyi olup olmadığı kontrol edilir.</span></div>
+</div></div>
+</section>
+
+<section><h2 id="arastirma-ajaninda-olcum-sorunu">Araştırma Ajanında Ölçüm Sorunu</h2>
+<p>Örnek akışta kullanıcı bir araştırma sorusu verir. Ajan önce web'de arama yapar, sonra en iyi görünen beş sayfayı getirir ve sonunda bir deneme taslağı yazar. Gözlenen sorun, bazı isteklerde önemli noktaların kaçırılmasıdır.</p>
+<div class="pipeline">
+<span class="pipe-chip is-input">Kullanıcı isteği</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>web'de ara</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Web arama aracı</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>en iyi 5 sayfayı seç</small></span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-tool">Web'den getir</span>
+<span class="pipe-arrow">&rarr;</span>
+<span class="pipe-chip is-llm">Dil modeli<small>taslak yaz</small></span>
+</div>
+<div class="table-wrap"><table>
+<colgroup><col style="width:40%"><col></colgroup>
+<thead><tr><th>İstek türü</th><th>Gözlenen durum</th></tr></thead>
+<tbody>
+<tr><td>Son kara delik bilimi</td><td>Çok haber yapılan yüksek profilli bir sonuç atlandı.</td></tr>
+<tr><td>Seattle'da kiralamak mı satın almak mı?</td><td>İyi iş çıkardı.</td></tr>
+<tr><td>Meyve hasadı robotikleri</td><td>Önde gelen ekipman şirketinden söz etmedi.</td></tr>
+</tbody>
+</table></div>
+<p>Bu tabloda görülen sorunlar web arama adımından geliyor olabilir. Ancak her arama motoru değişikliğinde tüm akışı yeniden çalıştırmak pahalıdır. Ayrıca taslak yazma adımının rastlantısallığı veya sayfa seçme adımındaki değişkenlik, web arama kalitesindeki küçük artışları görünmez kılabilir.</p>
+</section>
+
+<section><h2 id="yalnizca-web-arama-bilesenini-olcmek">Yalnızca Web Arama Bileşenini Ölçmek</h2>
+<p>Alternatif yaklaşım, web arama bileşenine özel bir değerlendirme kurmaktır. Burada hedef, arama aracının döndürdüğü sayfa listesinin uzman tarafından belirlenen altın standart sayfalarla ne kadar örtüştüğünü ölçmektir.</p>
+<div class="eval-panel"><div class="eval-grid">
+<div class="eval-card"><span class="eval-num">1</span><strong>Sorguları seç</strong><span>Ajanın zorlandığı veya öğretici görünen birkaç kullanıcı isteği belirlenir.</span></div>
+<div class="eval-card"><span class="eval-num">2</span><strong>Uzman liste çıkarır</strong><span>Her sorgu için bulunması beklenen otoriter web sayfaları belirlenir.</span></div>
+<div class="eval-card"><span class="eval-num">3</span><strong>Arama çıktısı ölçülür</strong><span>Dönen sayfaların uzman listesiyle örtüşmesi hesaplanır.</span></div>
+</div></div>
+<div class="overlap-visual">
+<div class="set-card"><h4>Altın standart küme</h4><ul><li>Uzmanın önemli gördüğü sayfalar</li><li>Otoriter ve konuya doğrudan bağlı sonuçlar</li><li>Belirli sorgu için beklenen sayfa listesi</li></ul></div>
+<div class="overlap-mid"><span class="overlap-kicker">Kesişim</span><span class="overlap-title">Örtüşme</span><span class="overlap-note">F1 / oran</span></div>
+<div class="set-card"><h4>Arama çıktısı</h4><ul><li>Arama aracının döndürdüğü sonuçlar</li><li>Değişen ayarlara göre farklı listeler</li><li>Kalitesi metrikle karşılaştırılan adaylar</li></ul></div>
+</div>
+<p>F1 skoru gibi bilgi erişim metrikleri bu örtüşmeyi sayısallaştırmak için kullanılabilir. Burada ayrıntılı formüle girmek gerekmez; önemli olan, arama sonuçları uzman listesindeki sayfalara ne kadar yaklaşıyor sorusuna tutarlı bir ölçüyle yanıt verebilmektir.</p>
+</section>
+
+<section><h2 id="ayarlari-daha-hizli-karsilastirmak">Ayarları Daha Hızlı Karşılaştırmak</h2>
+<p>Web arama bileşeni için ayrı bir metrik kurulduğunda, farklı seçenekleri tüm sistemi baştan sona koşturmadan karşılaştırmak mümkün olur. Bu, geliştirme döngüsünü hızlandırır ve küçük iyileştirmelerin gürültü içinde kaybolmasını azaltır.</p>
+<div class="metric-grid">
+<div class="metric-card"><span class="metric-value">Motor</span><strong>Arama sağlayıcısı</strong><span>Farklı arama motorlarının aynı sorgularda ne kadar iyi sonuç verdiği karşılaştırılabilir.</span></div>
+<div class="metric-card"><span class="metric-value">N</span><strong>Sonuç sayısı</strong><span>Kaç sonucun alınacağı değiştirilerek kalite ve maliyet dengesi gözlenebilir.</span></div>
+<div class="metric-card"><span class="metric-value">Tarih</span><strong>Zaman aralığı</strong><span>Yeni veya eski sayfalara öncelik verme kararının etkisi ölçülebilir.</span></div>
+</div>
+<div class="step-list">
+<div class="step-line"><span class="step-n">1</span><span><strong>Tek ayarı değiştir</strong> Aynı sorgu kümesinde yalnızca bir arama seçeneği değiştirilir.</span></div>
+<div class="step-line"><span class="step-n">2</span><span><strong>Bileşen metriğini hesapla</strong> Dönen sayfaların altın standart küme ile örtüşmesi izlenir.</span></div>
+<div class="step-line"><span class="step-n">3</span><span><strong>Net sinyali oku</strong> İyileşme web arama adımına ait olduğu için diğer bileşenlerin gürültüsü azalır.</span></div>
+<div class="step-line"><span class="step-n">4</span><span><strong>Son kontrolü yap</strong> Seçilen ayarların nihai iş akışını da iyileştirip iyileştirmediği ayrıca ölçülür.</span></div>
+</div>
+</section>
+
+<section><h2 id="uctan-uca-olcum-neden-hala-gerekli">Uçtan Uca Ölçüm Neden Hâlâ Gerekli?</h2>
+<p>Bileşen düzeyi değerlendirme daha hızlı ve daha net sinyal verir; fakat tek başına nihai kalite garantisi değildir. Bir arama bileşeni, uzman listesiyle daha yüksek örtüşme yakalayabilir; buna rağmen sonraki sayfa seçme veya taslak yazma adımı bu iyileşmeyi nihai yanıta taşıyamayabilir.</p>
+<div class="decision-grid">
+<div class="decision-card is-primary"><h4>Geliştirme sırasında</h4><p>Bir bileşeni ayarlarken dar metrik kullanılır. Bu, daha küçük ve hedefli bir problemi hızlı çözmeye yardım eder.</p></div>
+<div class="decision-card"><h4>İşi bitirmeden önce</h4><p>Genel akış tekrar ölçülür. Böylece bileşendeki iyileşmenin nihai performansa gerçekten yansıdığı doğrulanır.</p></div>
+</div>
+</section>
+
+<section><h2 id="faydalar">Faydalar</h2>
+<div class="case-grid">
+<div class="case-card"><h4>Daha net sinyal</h4><p>Belirli hata türüne odaklandığı için hangi değişikliğin işe yaradığını görmek kolaylaşır.</p></div>
+<div class="case-card"><h4>Daha az gürültü</h4><p>Karmaşık uçtan uca sistemdeki diğer bileşenlerin rastlantısallığı ölçümü daha az bozar.</p></div>
+<div class="case-card"><h4>Odaklı ekip çalışması</h4><p>Farklı ekipler kendi bileşenleri için açık ve küçük bir metrik üzerinde çalışabilir.</p></div>
+<div class="case-card"><h4>Daha hızlı geliştirme</h4><p>Küçük ve hedefli problem üzerinde iterasyon yapmak genel akışı tekrar tekrar çalıştırmaktan daha verimlidir.</p></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>Bileşen metriğini nihai hedef sanmak:</strong> Dar metrik geliştirme sırasında hız kazandırır; son kullanıcıya giden nihai kaliteyi tek başına garanti etmez.</li>
+<li><strong>Uzman listesini rastgele oluşturmak:</strong> Altın standart küme, konu için gerçekten bulunması beklenen web sayfalarını temsil etmelidir.</li>
+<li><strong>Her değişiklikte tüm sistemi koşturmak:</strong> Genel ölçüm önemlidir; fakat her küçük arama ayarında uçtan uca çalışmak pahalı ve gürültülü olabilir.</li>
+<li><strong>Birden fazla ayarı aynı anda değiştirmek:</strong> Arama motoru, sonuç sayısı ve tarih aralığı birlikte değişirse hangi unsurun iyileştirdiği anlaşılmaz.</li>
+<li><strong>Başka bileşenlerin etkisini unutmak:</strong> Web arama iyileşse bile sayfa seçme veya taslak yazma adımı hatalıysa nihai çıktı yine zayıf olabilir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Bileşen düzeyi değerlendirmeler, hata analiziyle belirlenen bir parçayı daha hızlı ve daha net biçimde iyileştirmek için kullanılır. Araştırma ajanı örneğinde web arama adımı sorunlu görünüyorsa, arama sonuçlarının uzman tarafından belirlenmiş altın standart web sayfalarıyla ne kadar örtüştüğünü ölçmek, bütün sistemi her denemede çalıştırmaktan daha verimli olabilir.</p>
+<p>Bu yaklaşım özellikle ayar denemelerinde güçlüdür: arama motoru, sonuç sayısı veya tarih aralığı gibi seçenekler hızlıca karşılaştırılabilir. Fakat geliştirme tamamlanmadan önce uçtan uca değerlendirme yeniden yapılmalıdır; çünkü nihai kalite, bileşenlerin birlikte nasıl çalıştığına bağlıdır.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#bilesen-duzeyi-degerlendirmeler" class="toc-h1">Bileşen Düzeyi Değerlendirmeler</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#arastirma-ajaninda-olcum-sorunu" class="toc-h2">Araştırma Ajanında Ölçüm Sorunu</a>
+<a href="#yalnizca-web-arama-bilesenini-olcmek" class="toc-h2">Yalnızca Web Arama Bileşenini Ölçmek</a>
+<a href="#ayarlari-daha-hizli-karsilastirmak" class="toc-h2">Ayarları Daha Hızlı Karşılaştırmak</a>
+<a href="#uctan-uca-olcum-neden-hala-gerekli" class="toc-h2">Uçtan Uca Ölçüm Neden Hâlâ Gerekli?</a>
+<a href="#faydalar" class="toc-h2">Faydalar</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add("js-enabled");
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

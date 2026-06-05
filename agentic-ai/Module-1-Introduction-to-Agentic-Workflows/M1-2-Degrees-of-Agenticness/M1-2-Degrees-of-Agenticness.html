@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Sistemlerde Otonomi Dereceleri</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+/* node notation (diagram content colors only) */
+--node-user-bg:#fde2e6; --node-user-border:#e96b7d; --node-user-text:#7a2230;
+--node-llm-bg:#e8eaee; --node-llm-border:#9aa1ad; --node-llm-text:#27303b;
+--node-tool-bg:#e9f7ec; --node-tool-border:#43a047; --node-tool-text:#1b5e20;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+/* tables */
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+/* comparison */
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+/* insight cards */
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* node-flow diagram (lesson notation) */
+.diagram{margin:1.2rem 0;padding:1.1rem 1.1rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram-title{margin:0 0 0.2rem;font-weight:700;color:var(--lesson-text);font-size:1rem;}
+.diagram-sub{margin:0 0 0.9rem;color:var(--lesson-muted);font-size:0.9rem;}
+.node-flow{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:0.3rem;}
+.node-col{display:flex;flex-direction:column;align-items:center;width:6.6rem;}
+.node{display:flex;align-items:center;justify-content:center;width:100%;min-height:3rem;padding:0.45rem 0.5rem;border:1.5px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;font-size:0.88rem;font-weight:600;line-height:1.2;}
+.node-user{background:var(--node-user-bg);border-color:var(--node-user-border);color:var(--node-user-text);}
+.node-llm{background:var(--node-llm-bg);border-color:var(--node-llm-border);color:var(--node-llm-text);}
+.node-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);color:var(--node-tool-text);}
+.node-out{border-style:solid;border-color:#111;color:#111;font-size:1.3rem;}
+.node-cap{margin-top:0.35rem;color:var(--lesson-muted);font-size:0.8rem;line-height:1.3;text-align:center;}
+.node-arrow{align-self:flex-start;padding-top:1rem;color:var(--lesson-muted);font-weight:700;font-size:1.05rem;}
+.tool-pool{display:inline-flex;flex-direction:column;gap:0.4rem;margin:0.2rem 0 0.9rem;padding:0.6rem 0.7rem;border:1.5px dashed var(--node-tool-border);border-radius:0.55rem;background:#f5fbf6;}
+.tool-pool-label{font-size:0.82rem;font-weight:700;color:var(--node-tool-text);text-align:center;}
+.tool-pool-chips{display:flex;flex-wrap:wrap;gap:0.35rem;justify-content:center;}
+.tool-chip{padding:0.28rem 0.6rem;border:1.5px solid var(--node-tool-border);border-radius:0.45rem;background:var(--node-tool-bg);color:var(--node-tool-text);font-size:0.82rem;font-weight:600;}
+.legend{display:flex;flex-wrap:wrap;gap:1rem 1.4rem;margin:0.4rem 0 0;padding-top:0.85rem;border-top:1px dashed var(--lesson-border);}
+.legend-item{display:flex;align-items:center;gap:0.45rem;font-size:0.86rem;color:var(--lesson-muted);}
+.legend-swatch{width:1.05rem;height:1.05rem;border-radius:0.25rem;border:1.5px solid var(--lesson-border-strong);flex:none;}
+.sw-user{background:var(--node-user-bg);border-color:var(--node-user-border);}
+.sw-llm{background:var(--node-llm-bg);border-color:var(--node-llm-border);}
+.sw-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);}
+/* spectrum 3-degree */
+.degree-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.85rem;margin:1.1rem 0;}
+.degree-card{display:flex;flex-direction:column;padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.degree-card .deg-rank{display:inline-block;align-self:flex-start;margin-bottom:0.5rem;padding:0.16rem 0.6rem;border-radius:999px;background:var(--dlai-coral-soft);color:var(--accent-dark);font-size:0.78rem;font-weight:700;}
+.degree-card h4{margin:0 0 0.5rem;color:var(--lesson-text);}
+.degree-card ul{margin:0;padding-left:1.1rem;} .degree-card li{font-size:0.92rem;color:var(--lesson-muted);}
+.scale{position:relative;height:0.55rem;border-radius:999px;margin:0.4rem 0 0.5rem;background:linear-gradient(90deg,var(--dlai-coral-soft),var(--dlai-coral));}
+.scale-ends{display:flex;justify-content:space-between;font-size:0.84rem;color:var(--accent-dark);font-weight:600;}
+@media (max-width:860px){
+.bp-flow,.comparison-grid,.insight-grid,.degree-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.node-col{width:5.6rem;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-2-Degrees-of-Agenticness/M1-2-Degrees-of-Agenticness.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Agentic Sistemlerde Otonomi Dereceleri</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="agentic-sistemlerde-otonomi-dereceleri">Agentic Sistemlerde Otonomi Dereceleri</h1>
+<p class="lead-text">Bir sistemin &ldquo;ajan mı, değil mi?&rdquo; diye ikiye ayrılması yerine; ne kadar otonom olduğunu basitten yükseğe uzanan bir spektrum üzerinde düşünmeyi öğreten bir bakış açısı.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders tek bir fikri sağlam biçimde yerleştirir: otonomluk bir <strong>açma/kapama düğmesi değil, bir derece meselesidir</strong>. Bir yapay zekâ sistemi &ldquo;ajan&rdquo; ya da &ldquo;ajan değil&rdquo; diye kesin biçimde ikiye ayrılmak yerine, <em>az otonom</em> ile <em>çok otonom</em> uçları arasında bir yerde durur.</p>
+<p>Bu bakış açısını somutlaştırmak için tanıdık bir görev kullanılır: kara delikler hakkında bir deneme yazmak. Aynı görevi önce neredeyse tüm adımları önceden belirlenmiş, az otonom bir sistemle; sonra adımların çoğuna modelin kendisinin karar verdiği, daha otonom bir sistemle ele alacağız. Yol boyunca, bu tür akış şemalarını okurken kullanacağımız bir <strong>renk gösterimini</strong> de öğreneceksiniz. Ders sonunda az, yarı ve yüksek otonom sistemleri ayırt edebilecek ve her birinin nerede değerli olduğunu kavrayacaksınız.</p>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Otonomluğun ikili (ajan/değil) değil, dereceli bir kavram olduğunu açıklayabilmek.</li>
+<li>&ldquo;Agentic&rdquo; (aracılı) teriminin bir sıfat olarak neden tercih edildiğini gerekçelendirebilmek.</li>
+<li>Akış şemalarındaki üç düğüm türünü &mdash; kullanıcı girdisi, model çağrısı ve dış yazılım/araç &mdash; renk gösterimiyle ayırt edebilmek.</li>
+<li>Az otonom (deterministik) bir akış ile daha otonom (modelin karar verdiği) bir akışı karşılaştırabilmek.</li>
+<li>Az, yarı ve yüksek otonom sistemleri tanımlayıp aralarındaki farkları sıralayabilmek.</li>
+<li>Spektrumun her ucunun hangi tür uygulamalar için uygun olduğunu değerlendirebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modeline metin verip metin yanıtı almanın temel mantığına aşinalık.</li>
+<li>Bir görevin adımlara bölünebileceği ve bu adımların bir akış oluşturduğu fikri.</li>
+<li>Web araması, sayfa indirme ve PDF&rsquo;den metne dönüştürme gibi işlemlerin genel kavranışı.</li>
+</ul>
+<p>Bu ders kavramsaldır; kod yazımı veya çalıştırma gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Otonomluk</td><td>Bir sistemin kararları kendi başına ne ölçüde aldığı.</td><td>İkili bir özellik değil; basitten yükseğe uzanan bir aralıktır.</td></tr>
+<tr><td class="term">Agentic</td><td>Bir sistemin &ldquo;ne kadar aracılı/otonom&rdquo; olduğunu niteleyen sıfat.</td><td>&ldquo;Ajan mı değil mi?&rdquo; tartışmasını derece diline çevirmek için kullanılır.</td></tr>
+<tr><td class="term">Kullanıcı girdisi</td><td>Akışı başlatan istek veya belge (şemalarda kırmızı).</td><td>Sistemin dışından gelir; akışın çıkış noktasıdır.</td></tr>
+<tr><td class="term">Model çağrısı</td><td>Bir dil modelinin metin üreten adımı (şemalarda gri).</td><td>Az otonom akışta da çoğu &ldquo;karar&rdquo; bu metin üretiminde gizlidir.</td></tr>
+<tr><td class="term">Araç / dış yazılım</td><td>Bir eylemi yürüten harici yazılım: web araması, sayfa indirme vb. (şemalarda yeşil).</td><td>Modelin kendi başına yapamadığı işleri akışa katar.</td></tr>
+<tr><td class="term">Deterministik akış</td><td>Adımların sırasının önceden, insan tarafından sabitlendiği yapı.</td><td>Öngörülebilir ve denetlenebilir; ama esnek değildir.</td></tr>
+<tr><td class="term">Araç kullanımı</td><td>Modelin bir işi yapmak için bir aracı çağırması.</td><td>İleride ayrı bir konu olarak derinlemesine ele alınır.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Bütün ders tek bir eksen üzerinde durur: <strong>otonomluk spektrumu</strong>. Aynı işi yapan sistemler, kararları ne kadar kendilerinin aldığına göre bu eksenin farklı noktalarına yerleşir. Üç temel durak şunlardır:</p>
+<div class="big-picture-panel">
+<div class="scale"></div>
+<div class="scale-ends"><span>Az otonom</span><span>Yüksek otonom</span></div>
+<div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Az otonom</strong><span>Tüm adımlar önceden belirlidir; otonomi yalnızca üretilen metindedir.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Yarı otonom</strong><span>Model bazı kararları verir ve araç seçer; ama araçlar önceden tanımlıdır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Yüksek otonom</strong><span>Model birçok kararı kendi alır; gerektiğinde yeni araçlar bile üretebilir.</span></div>
+</div>
+</div>
+<p>Önemli olan, bu uçlardan birinin diğerine mutlak üstünlüğü olmamasıdır. Spektrumun her noktası belirli bir uygulama türü için doğru tercih olabilir.</p>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="otonomluk-ikili-degildir">Otonomluk ikili değildir</h3>
+<p>Bir süre önce yapay zekâ topluluğunda büyüyen, tartışmalı bir soru vardı: &ldquo;Bir şeyi gerçekten ajan yapan nedir?&rdquo; Kimisi &ldquo;ben bir ajan kurdum&rdquo; derken, başkaları &ldquo;hayır, bu gerçek bir ajan değil&rdquo; diye itiraz ediyordu. Bu tartışma büyük ölçüde gereksizdi. Çözüm, sözcüğü ikili bir etiket (&ldquo;ajandır / değildir&rdquo;) yerine bir <strong>sıfat</strong> gibi kullanmaktan geçti: <em>agentic</em>. Bir sistemi &ldquo;ne kadar agentic&rdquo; olduğuyla nitelersek, sistemlerin <strong>farklı derecelerde</strong> otonom olabileceğini doğal olarak kabul etmiş oluruz. Böylece &ldquo;bu yeterince otonom mu değil mi?&rdquo; tartışmasında takılıp kalmak yerine, asıl işe &mdash; bu sistemleri kurmaya &mdash; odaklanabiliriz.</p>
+<div class="definition-card">
+<h3 id="temel-fikir">Temel fikir</h3>
+<p>Bir sistemin ajan olup olmadığını tartışmak yerine, sistemlerin <strong>ne ölçüde agentic</strong> olabileceğini kabul etmek daha verimlidir. &ldquo;Agentic&rdquo; bir sıfattır ve bir dereceyi ifade eder; keskin bir sınır değil.</p>
+</div>
+
+<h3 id="semalari-okumak-uc-dugum-turu">Şemaları okumak: üç düğüm türü</h3>
+<p>Bundan sonraki akış şemalarında tekrar tekrar göreceğiniz bir renk gösterimi vardır. Bu gösterim, her kutunun <strong>kim tarafından</strong> yürütüldüğünü tek bakışta anlamanızı sağlar.</p>
+<div class="diagram">
+<div class="legend" style="border-top:0;padding-top:0;margin-top:0;">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi &mdash; akışa giren istek veya belge</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı &mdash; bir dil modelinin metin ürettiği adım</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Dış yazılım / araç &mdash; web araması, sayfa indirme gibi eylemler</span>
+</div>
+</div>
+<p>Bu üç renk, ileri derslerdeki tüm akış şemalarının ortak dilidir. Bir adımın gri mi yoksa yeşil mi olduğunu görmek, o adımda &ldquo;model mi düşünüyor, yoksa dış bir yazılım mı bir eylem yapıyor?&rdquo; sorusunu anında yanıtlar.</p>
+
+<h3 id="az-otonom-ornek-deterministik-bir-deneme-ajani">Az otonom örnek: deterministik bir deneme ajanı</h3>
+<p>&ldquo;Kara delikler hakkında bir deneme yaz&rdquo; isteğini ele alalım. Az otonom bir çözümde adımların sırası <strong>önceden, programcı tarafından sabitlenir</strong>: model birkaç web arama sorgusu üretir, ardından sabit kodlanmış bir biçimde web araması çağrılır, sayfalar indirilir ve son olarak model bu sayfalardan bir deneme yazar. Bu akış gayet iyi çalışır; ama hangi adımın ne zaman geleceği baştan bellidir.</p>
+<div class="diagram">
+<p class="diagram-title">Az otonom akış</p>
+<p class="diagram-sub">Adımların sırası önceden sabittir; araç çağrıları insan tarafından sabit kodlanmıştır.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-user">Kara delikler hakkında deneme yaz</div><div class="node-cap">İstek</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Web arama sorguları üret</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">web araması</div><div class="node-cap">Sorguları çalıştır</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">sayfa indir</div><div class="node-cap">İçerikleri getir</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Denemeyi yaz</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-out">&#128196;</div><div class="node-cap">Çıktı</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Dış yazılım / araç</span>
+</div>
+</div>
+<p>Burada kritik gözlem şudur: bu sistemde <strong>otonominin neredeyse tamamı, modelin ürettiği metnin içindedir</strong>. Hangi sorguların yazılacağına veya denemenin nasıl ifade edileceğine model karar verir; ama akışın iskeleti &mdash; önce ara, sonra indir, sonra yaz &mdash; insan tarafından çizilmiştir. Çağrılan işlevler (örneğin web araması) sabit kodlanmıştır; bu tür işlev çağrılarına <em>araç kullanımı</em> denir ve ileride ayrıntılı ele alınır.</p>
+
+<h3 id="daha-otonom-ornek-karari-modele-birakmak">Daha otonom örnek: kararı modele bırakmak</h3>
+<p>Şimdi aynı isteği daha otonom bir sisteme verelim. Bu kez, hangi aracın kullanılacağına <strong>programcı değil, modelin kendisi</strong> karar verir. Model bir web araması mı yapmak istiyor, güncel haber kaynaklarını mı taramak istiyor, yoksa bir akademik makale arşivinde mi arama yapmak istiyor? Bu seçim modele bırakılır. Modele, seçebileceği bir <strong>araç havuzu</strong> sunulur:</p>
+<div class="diagram">
+<p class="diagram-title">Daha otonom akış</p>
+<p class="diagram-sub">Model, önceden tanımlı araç havuzlarından hangisini kullanacağına kendisi karar verir ve gerekirse daha fazla kaynak getirmek için geri dönebilir.</p>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;margin-bottom:0.9rem;">
+<div class="tool-pool"><span class="tool-pool-label">Araç havuzu (arama)</span><span class="tool-pool-chips"><span class="tool-chip">web araması</span><span class="tool-chip">haber</span><span class="tool-chip">arXiv</span></span></div>
+<div class="tool-pool"><span class="tool-pool-label">Araç havuzu (getirme)</span><span class="tool-pool-chips"><span class="tool-chip">sayfa indir</span><span class="tool-chip">PDF&rsquo;den metne</span></span></div>
+</div>
+<div class="node-flow">
+<div class="node-col"><div class="node node-user">Kara delikler hakkında deneme yaz</div><div class="node-cap">İstek</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Web&rsquo;de ara (aracı seç)</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">web araması</div><div class="node-cap">Seçilen arama</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">En iyi 5 kaynağı getir</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">sayfa indir</div><div class="node-cap">Seçilen getirme</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Deneme taslağı yaz</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-llm">LLM</div><div class="node-cap">Düşün ve taslağı iyileştir</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-out">&#128196;</div><div class="node-cap">Çıktı</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-user"></span>Kullanıcı girdisi</span>
+<span class="legend-item"><span class="legend-swatch sw-llm"></span>Model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Dış yazılım / araç</span>
+</div>
+</div>
+<p>Fark belirgindir: burada <strong>adımların kesin sırası bile modele bağlıdır</strong>. Model kaç sayfa getireceğine, bir PDF&rsquo;yi metne çevirmesi gerekip gerekmediğine ve hatta taslağı iyileştirmek için geri dönüp daha fazla kaynak getirmeye karar verebilir. Az otonom sürümde insan mühendisin çizdiği iskelet, burada büyük ölçüde modelin anlık kararlarına devredilmiştir.</p>
+
+<h3 id="iki-uc-yan-yana">İki uç yan yana</h3>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Az otonom</h4>
+<ul>
+<li>Adım sırası önceden, insan tarafından sabitlenir.</li>
+<li>Araç çağrıları sabit kodlanmıştır.</li>
+<li>Otonomi yalnızca üretilen metindedir.</li>
+<li>Daha öngörülebilir ve denetlenebilir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Daha otonom</h4>
+<ul>
+<li>Hangi aracın kullanılacağına model karar verir.</li>
+<li>Adımların sırası çalışma anında belirlenebilir.</li>
+<li>Model geri dönüp daha fazla kaynak getirebilir.</li>
+<li>Daha esnek; ama daha az öngörülebilir.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section><h2 id="otonomi-spektrumu-az-yari-yuksek">Otonomi Spektrumu: Az, Yarı, Yüksek</h2>
+<p>İki uç örneği gördükten sonra, spektrumu üç belirgin durakla özetleyebiliriz. Bu üç durak, bir sistemin ne kadar kararı kendisinin aldığına göre sıralanır.</p>
+<div class="degree-grid">
+<div class="degree-card">
+<span class="deg-rank">Az otonom</span>
+<h4>Adımlar baştan belli</h4>
+<ul>
+<li>Tüm adımlar önceden belirlenir.</li>
+<li>Tüm araç kullanımı sabit kodlanmıştır.</li>
+<li>Otonomi yalnızca metin üretimindedir.</li>
+</ul>
+</div>
+<div class="degree-card">
+<span class="deg-rank">Yarı otonom</span>
+<h4>Bazı kararlar modelde</h4>
+<ul>
+<li>Model bazı kararları verebilir.</li>
+<li>Araçlar arasından seçim yapabilir.</li>
+<li>Ancak araçlar önceden tanımlıdır.</li>
+</ul>
+</div>
+<div class="degree-card">
+<span class="deg-rank">Yüksek otonom</span>
+<h4>Kararların çoğu modelde</h4>
+<ul>
+<li>Model birçok kararı kendi alır.</li>
+<li>Adımların sırasını kendisi belirleyebilir.</li>
+<li>Gerektiğinde yeni araçlar üretebilir.</li>
+</ul>
+</div>
+</div>
+<div class="note-card">
+<h3 id="hangi-uc-daha-iyi">Hangi uç daha iyi?</h3>
+<p>Spektrumun az otonom ucunda, bugün birçok işletme için kurulmuş <strong>son derece değerli</strong> uygulamalar vardır; bunlar öngörülebilir ve denetlenebilir oldukları için tercih edilir. Yüksek otonom uçta ise daha esnek ama daha az kontrol edilebilir, daha öngörülemez sistemler bulunur; bu uç hâlâ yoğun bir araştırma alanıdır. Doğru tercih, her zaman &ldquo;daha otonom&rdquo; değil, <strong>eldeki göreve en uygun</strong> olandır.</p>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>&ldquo;Bir sistem ya ajandır ya değildir.&rdquo;</strong> Otonomluk ikili değildir; sistemler farklı derecelerde agentic olabilir.</li>
+<li><strong>&ldquo;Az otonom sistemde model hiç karar vermez.&rdquo;</strong> Tam tersine, otonominin neredeyse tamamı modelin ürettiği metnin içindedir; sabitlenen şey yalnızca adımların iskeletidir.</li>
+<li><strong>&ldquo;Gri ve yeşil kutular aynı şeydir.&rdquo;</strong> Gri kutular model çağrılarını, yeşil kutular ise dış yazılımın bir eylem yürüttüğü adımları gösterir; bu ayrım akışı okumanın anahtarıdır.</li>
+<li><strong>&ldquo;Daha otonom her zaman daha iyidir.&rdquo;</strong> Yüksek otonomi esneklik kazandırır ama denetimi zorlaştırır; az otonom sistemler çoğu iş için fazlasıyla değerlidir.</li>
+<li><strong>&ldquo;Yarı otonom sistem yeni araçlar üretir.&rdquo;</strong> Hayır; yarı otonom sistemde araçlar önceden tanımlıdır. Yeni araç üretmek yüksek otonom ucun özelliğidir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Bir sistemin &ldquo;gerçek ajan&rdquo; olup olmadığını tartışmak yerine, onun <strong>ne kadar otonom</strong> olduğunu bir spektrum üzerinde düşünmek hem daha doğru hem de daha verimlidir. &ldquo;Agentic&rdquo; sözcüğü tam da bu dereceyi ifade etmek için bir sıfat olarak kullanılır.</p>
+<p>Aynı görevi &mdash; kara delikler hakkında bir deneme yazmak &mdash; iki ayrı noktada gördük. Az otonom uçta adımların iskeletini insan çizer ve araçlar sabit kodlanır; otonomi yalnızca üretilen metindedir. Daha otonom uçta ise hangi aracın kullanılacağına ve adımların sırasına büyük ölçüde model karar verir. Akış şemalarını okurken kırmızı (kullanıcı girdisi), gri (model çağrısı) ve yeşil (dış yazılım/araç) ayrımı, her adımda kimin iş yaptığını anında gösterir.</p>
+<p>Son olarak, spektrumun hiçbir ucu mutlak olarak &ldquo;daha iyi&rdquo; değildir. Az otonom sistemler bugün sayısız işletme için yüksek değer üretirken, yüksek otonom sistemler daha esnek ama daha öngörülemezdir ve hâlâ aktif bir araştırma alanıdır. Asıl beceri, eldeki göreve uygun otonomi düzeyini seçebilmektir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#agentic-sistemlerde-otonomi-dereceleri" class="toc-h1">Agentic Sistemlerde Otonomi Dereceleri</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#otonomluk-ikili-degildir" class="toc-h3">Otonomluk ikili değildir</a>
+<a href="#temel-fikir" class="toc-h3">Temel fikir</a>
+<a href="#semalari-okumak-uc-dugum-turu" class="toc-h3">Şemaları okumak: üç düğüm türü</a>
+<a href="#az-otonom-ornek-deterministik-bir-deneme-ajani" class="toc-h3">Az otonom örnek: deterministik bir deneme ajanı</a>
+<a href="#daha-otonom-ornek-karari-modele-birakmak" class="toc-h3">Daha otonom örnek: kararı modele bırakmak</a>
+<a href="#iki-uc-yan-yana" class="toc-h3">İki uç yan yana</a>
+<a href="#otonomi-spektrumu-az-yari-yuksek" class="toc-h2">Otonomi Spektrumu: Az, Yarı, Yüksek</a>
+<a href="#hangi-uc-daha-iyi" class="toc-h3">Hangi uç daha iyi?</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

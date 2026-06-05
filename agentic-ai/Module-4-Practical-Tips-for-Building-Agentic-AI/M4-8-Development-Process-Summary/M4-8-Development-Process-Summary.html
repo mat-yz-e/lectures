@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geliştirme Süreci Özeti</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:650px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.loop-panel{margin:1.15rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:#fff;}
+.loop-grid{display:grid;grid-template-columns:minmax(0,1fr) 3rem minmax(0,1fr);gap:0.85rem;align-items:center;}
+.loop-card{min-height:10rem;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-soft);text-align:center;}
+.loop-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.loop-card p{margin:0;color:var(--lesson-muted);font-size:0.94rem;}
+.loop-arrow{display:flex;align-items:center;justify-content:center;width:3rem;height:3rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-weight:800;font-size:1.25rem;margin:0 auto;}
+.maturity-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.7rem;margin:1.1rem 0;}
+.maturity-step{position:relative;padding:0.9rem 0.85rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.maturity-step h4{color:var(--accent-dark);}
+.maturity-step p{margin:0.35rem 0 0;color:var(--lesson-muted);font-size:0.92rem;}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.55rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.93rem;color:var(--lesson-muted);}
+.step-list{display:grid;gap:0.6rem;margin:1.1rem 0;}
+.step-line{display:grid;grid-template-columns:1.9rem minmax(0,1fr);align-items:start;gap:0.7rem;padding:0.75rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.step-line .step-n{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.88rem;font-weight:700;}
+.step-line strong{display:block;color:var(--lesson-text);font-size:0.97rem;margin-bottom:0.12rem;}
+.step-line span{color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);border-top:3px solid var(--dlai-coral);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:900px){
+.bp-flow,.maturity-track,.comparison-grid,.insight-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+.loop-grid{grid-template-columns:1fr;}
+.loop-arrow{transform:rotate(90deg);}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.term-table td.term{white-space:normal;}
+.step-line{grid-template-columns:1fr;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-4-Practical-Tips-for-Building-Agentic-AI/M4-8-Development-Process-Summary/M4-8-Development-Process-Summary.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Geliştirme Süreci Özeti</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="gelistirme-sureci-ozeti">Geliştirme Süreci Özeti</h1>
+<p class="lead-text">Agentic AI sistemi geliştirmek, yalnızca sürekli kod yazmak değildir; iyi sistemler, hızlı inşa edilen uçtan uca akışlar ile disiplinli analiz, iz inceleme, eval ve hata analizi arasında gidip gelen ölçümlü bir döngüyle olgunlaşır.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, agentic sistem geliştirme sürecinin pratik ritmini özetler. Amaç, tek tek teknikleri yeniden anlatmak değil; bu tekniklerin geliştirme sürecinde hangi sırayla ve hangi olgunluk düzeyinde devreye girdiğini göstermektir. Bir sistemin gelişimi genellikle doğrusal ilerlemez. Bazen hızlıca bir uçtan uca sistem kurulur, bazen izler okunur, bazen birkaç örnek üzerinden kalite hissi alınır, bazen de daha disiplinli eval ve hata analizi ile hangi bileşenin iyileştirileceği belirlenir.</p>
+<p>Bu yaklaşımda iki temel faaliyet vardır: <strong>inşa etmek</strong> ve <strong>analiz etmek</strong>. İnşa etmek, yazılımı geliştirmek ve sistemi değiştirmektir. Analiz etmek ise çıktılara, izlere, metriklere ve hata örüntülerine bakarak bir sonraki inşa çabasının nereye yönelmesi gerektiğini belirlemektir. Analiz bazen “ilerleme” gibi hissettirmez; fakat doğru yere odaklanmayı sağladığı için en az kod yazmak kadar kritiktir.</p>
+<div class="definition-card"><h3 id="dersin-ana-tezi">Dersin Ana Tezi</h3><p>Agentic sistem geliştirme, “önce tamamen inşa et, sonra değerlendir” biçiminde tek yönlü bir süreç değildir. Daha doğru model, inşa ve analizin sürekli birbirini beslediği bir döngüdür: hızlı prototip kur, çıktı ve izleri incele, küçük eval setleriyle ölç, hata örüntülerini say, sonra en etkili bileşene odaklan.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Agentic sistem geliştirmede inşa ve analiz faaliyetlerinin birbirini nasıl tamamladığını açıklayabilmek.</li>
+<li>Yeni bir iş akışında neden hızlı bir uçtan uca sistemle başlamanın yararlı olduğunu gerekçelendirebilmek.</li>
+<li>Çıktı inceleme ve iz okumanın, hangi bileşeni iyileştireceğine dair ilk sezgiyi nasıl verdiğini yorumlayabilmek.</li>
+<li>Küçük eval veri setleriyle uçtan uca metrik hesaplamanın hangi aşamada değerli olduğunu açıklayabilmek.</li>
+<li>Hata analizi ve bileşen düzeyi eval kullanımının sistem olgunlaştıkça neden daha önemli hâle geldiğini kavrayabilmek.</li>
+<li>Hazır izleme/loglama araçları ile özel eval geliştirme arasındaki pratik dengeyi anlayabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Agentic iş akışlarının birden çok adımdan ve bileşenden oluşabileceğini bilmek.</li>
+<li>Trace, eval, hata analizi, uçtan uca performans ve bileşen düzeyi değerlendirme kavramlarına temel aşinalık.</li>
+<li>Bir sistemin çıktı kalitesini yalnızca tek örnekle değil, örnekler ve metrikler üzerinden değerlendirme fikrini anlamak.</li>
+<li>Yazılım geliştirmede hızlı prototip, iterasyon ve önceliklendirme kavramlarına aşinalık.</li>
+</ul>
+<p>Bu ders kavramsaldır; çalıştırılabilir kod, kayıtlı çıktı veya veri tablosu gerektirmez.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">İnşa</td><td>Sistemi geliştirme, kod yazma, bileşen ayarlama ve akışı değiştirme faaliyeti.</td><td>Analiz olmadan nereye odaklanacağı belirsiz kalabilir.</td></tr>
+<tr><td class="term">Analiz</td><td>Çıktı, iz, eval ve hata örüntülerini inceleyerek sonraki geliştirme odağını belirleme.</td><td>Kod yazmak kadar görünür olmayabilir; fakat yön tayini sağlar.</td></tr>
+<tr><td class="term">Uçtan uca sistem</td><td>İş akışının baştan sona çalışan ilk sürümü.</td><td>Başta hızlı ve kaba olabilir; amaç gerçek çıktıları görebilmektir.</td></tr>
+<tr><td class="term">Trace</td><td>Bir çalıştırmada hangi adımların, çağrıların ve ara sonuçların oluştuğunu gösteren kayıt.</td><td>Bileşen sorunlarını bulmak için final çıktısından daha açıklayıcı olabilir.</td></tr>
+<tr><td class="term">Eval seti</td><td>Sistemi ölçmek için kullanılan küçük veya büyük örnek kümesi.</td><td>Olgunlaşma başında 10-20 örnek bile metrik üretmeye yardımcı olabilir.</td></tr>
+<tr><td class="term">Hata analizi</td><td>Başarısız örnekleri sınıflandırıp hangi bileşenin ne sıklıkta soruna yol açtığını sayma.</td><td>Geliştirme emeğini en yüksek etkili alana yönlendirir.</td></tr>
+<tr><td class="term">Bileşen eval’i</td><td>Tek bir bileşenin başarısını bağımsız ölçen değerlendirme.</td><td>Sistem olgunlaştıkça daha verimli bileşen iyileştirmeleri sağlar.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Geliştirme sürecinin özeti, inşa ve analiz arasında dönen bir olgunlaşma akışıdır. Başlangıçta amaç hızlıca çalışan bir şey elde etmektir; ilerledikçe ölçüm ve hata analizi daha sistematik hâle gelir.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Hızlı uçtan uca akış</strong><span>Önce sistemin baştan sona çalışmasını sağlayan kaba bir sürüm kurulur.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Çıktı ve iz inceleme</strong><span>Final cevaplar ve ara adımlar okunarak ilk kalite sezgisi kazanılır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Küçük eval seti</strong><span>10-20 örnekle bile uçtan uca metrikler hesaplanmaya başlanabilir.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Hata analizi</strong><span>Başarısızlıkların hangi bileşenden geldiği sayılır ve önceliklendirilir.</span></div>
+<div class="bp-step"><span class="bp-num">5</span><strong>Bileşen eval’i</strong><span>Olgun sistemlerde tek tek bileşenler daha verimli iyileştirilir.</span></div>
+</div></div>
+<div class="loop-panel">
+<div class="loop-grid">
+<div class="loop-card"><h4>İnşa Et</h4><p>Kod yaz, bileşeni ayarla, modeli değiştir, akışı sadeleştir veya yeni bir değerlendirme ekle. Bu taraf sistemin davranışını değiştirir.</p></div>
+<div class="loop-arrow">↔</div>
+<div class="loop-card"><h4>Analiz Et</h4><p>Çıktıları oku, izleri incele, metrikleri hesapla, hata türlerini say ve bir sonraki inşa adımının en yüksek etkili yerini seç.</p></div>
+</div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="insa-etmek-tek-basina-yeterli-degildir">İnşa etmek tek başına yeterli değildir</h3>
+<p>Agentic iş akışı geliştirirken en görünür faaliyet kod yazmaktır. Yeni bir araç bağlanır, bir model çağrısı değiştirilir, bir prompt düzenlenir veya akışın bir adımı yeniden tasarlanır. Fakat yalnızca inşa etmek, sistemin nereye doğru geliştirileceğini garanti etmez. Bir noktadan sonra asıl sorun, “daha fazla ne yazalım?” değil, “hangi değişiklik gerçekten kaliteyi artırır?” sorusudur.</p>
+<p>Bu nedenle analiz, geliştirme sürecinin ikinci ana faaliyetidir. Çıktıları ve izleri incelemek, hangi bileşenin iyi çalıştığını, hangisinin zayıf kaldığını ve sonraki inşa çabasının nereye yönelmesi gerektiğini gösterir. Analiz, dışarıdan bakıldığında duraklama gibi görünebilir; ama yanlış bileşeni iyileştirmeye harcanacak zamanı önlediği için doğrudan ilerleme üretir.</p>
+
+<h3 id="baslangicta-hizli-uctan-uca-sistem-kurmak">Başlangıçta hızlı uçtan uca sistem kurmak</h3>
+<p>Yeni bir agentic iş akışında çoğu zaman iyi bir başlangıç, hızlı ve hatta kaba bir uçtan uca sistem kurmaktır. Bu ilk sürüm mükemmel olmak zorunda değildir. Değeri, sistemin gerçek çıktılarını ve ara adımlarını görünür hâle getirmesidir. Final çıktılara bakarak sistemin nerede iyi, nerede zayıf olduğunu görmeye başlarsınız. İzleri okuyarak da tek tek bileşenlerin davranışı hakkında ilk sezgiyi edinirsiniz.</p>
+<div class="note-card"><h3 id="hizli-prototipin-amaci">Hızlı prototipin amacı</h3><p>İlk uçtan uca sürümün amacı kalıcı mimariyi kesinleştirmek değildir. Amaç, gerçek davranış üretmek ve bu davranışı inceleyerek hangi parçanın iyileştirilmeye değer olduğunu görmektir.</p></div>
+
+<h3 id="sistem-olgunlastikca-analiz-disiplin-kazanir">Sistem olgunlaştıkça analiz disiplin kazanır</h3>
+<p>İlk aşamada birkaç çıktıyı elle okumak ve izlere bakmak yeterli olabilir. Sistem biraz daha olgunlaştığında, küçük bir eval seti ile metrik hesaplamak daha yararlı hâle gelir. Bu eval seti başta büyük olmak zorunda değildir; 10-20 örnek bile uçtan uca performans hakkında daha rafine bir bakış sağlayabilir.</p>
+<p>Daha sonra hata analizi devreye girer. Başarısız örnekler sınıflandırılır; hangi bileşenin ne sıklıkta düşük kaliteli çıktıya neden olduğu sayılır. Bu sayım, geliştirme odağını sezgiden ölçüme taşır. En sonunda, sistem daha da olgunlaştığında bileşen düzeyi eval’ler kurmak verimli hâle gelir. Böylece yalnızca tüm sistem değil, tek tek parçalar da izole biçimde iyileştirilebilir.</p>
+<div class="maturity-track">
+<div class="maturity-step"><h4>Erken aşama</h4><p>Çalışan uçtan uca sürüm kurulur; birkaç final çıktı ve trace okunur.</p></div>
+<div class="maturity-step"><h4>İlk ölçüm</h4><p>Küçük bir eval setiyle uçtan uca metrikler hesaplanır.</p></div>
+<div class="maturity-step"><h4>Disiplinli analiz</h4><p>Hata türleri ve sorun çıkaran bileşenler sayısallaştırılır.</p></div>
+<div class="maturity-step"><h4>Olgun sistem</h4><p>Bileşen düzeyi eval’lerle tek parçalar bağımsız iyileştirilir.</p></div>
+</div>
+</section>
+
+<section><h2 id="surec-yapisi">Süreç Yapısı</h2>
+<p>Bu geliştirme süreci doğrusal bir liste değil, geri beslemeli bir döngüdür. Bazen uçtan uca sistemi ayarlarsınız; bazen hata analizi yaparsınız; bazen tek bir bileşeni iyileştirirsiniz; bazen de bileşen düzeyi eval’i değiştirirsiniz. Bu gidip gelme, sürecin dağınık olduğu anlamına gelmez. Tam tersine, her analiz adımı bir sonraki inşa adımını daha hedefli yapar.</p>
+<div class="step-list">
+<div class="step-line"><span class="step-n">1</span><div><strong>Uçtan uca çalıştır</strong><span>Sistemin baştan sona çıktısını üret; kusurlu olsa bile gerçek davranışı görünür kıl.</span></div></div>
+<div class="step-line"><span class="step-n">2</span><div><strong>Çıktıları ve izleri oku</strong><span>Final cevapla yetinme; ara adımlar hangi bileşenin sorun çıkardığını daha iyi gösterebilir.</span></div></div>
+<div class="step-line"><span class="step-n">3</span><div><strong>İlk metrikleri kur</strong><span>Küçük eval setleriyle uçtan uca kaliteyi sayısal olarak izlemeye başla.</span></div></div>
+<div class="step-line"><span class="step-n">4</span><div><strong>Hataları sınıflandır</strong><span>Başarısızlıkların hangi bileşenden geldiğini say; en sık ve en etkili sorunu seç.</span></div></div>
+<div class="step-line"><span class="step-n">5</span><div><strong>Bileşeni veya eval’i iyileştir</strong><span>Seçilen parçayı geliştir; sistem olgunlaştıkça bileşen düzeyi eval’leri de ayrı ölçüm araçları hâline getir.</span></div></div>
+</div>
+</section>
+
+<section><h2 id="araclar-ve-ozel-eval-dengesi">Araçlar ve Özel Eval Dengesi</h2>
+<p>Agentic sistemleri izlemek, trace görüntülemek, çalışma süresini kaydetmek ve maliyet hesaplamak için birçok araç bulunur. Bu araçlar faydalıdır; özellikle sistem davranışını görünür kılmak, log toplamak ve temel metrikleri takip etmek için önemli kolaylık sağlar.</p>
+<p>Bununla birlikte, agentic iş akışları çoğu zaman oldukça özeldir. Her uygulamanın yanlış yapabileceği şeyler farklıdır. Bu yüzden hazır araçlar değerli olsa da, uygulamanın gerçek hata türlerini yakalayan özel eval’ler çoğu zaman kaçınılmazdır. İyi pratik, hazır gözlemleme araçlarını kullanırken, sisteminize özgü kalite sorunlarını ölçen özel değerlendirmeler geliştirmektir.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Hazır araçların güçlü yanı</h4><ul><li>Trace, log, çalışma süresi ve maliyet gibi genel sinyalleri hızlıca görünür kılar.</li><li>Geliştirme sürecinde ortak gözlem altyapısı sağlar.</li><li>Erken teşhis için pratik ve düşük sürtünmelidir.</li></ul></div>
+<div class="cmp-card"><h4>Özel eval’in güçlü yanı</h4><ul><li>Uygulamaya özgü hata biçimlerini doğrudan ölçer.</li><li>Yanlış çalışan bileşenleri daha hedefli yakalar.</li><li>Geliştirme odağını gerçek ürün sorunlarına bağlar.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="insight-grid">
+<div class="insight-card"><strong>Yalnızca inşa etmek</strong><span>Sürekli kod yazmak, analiz yapılmadığında yanlış bileşene emek harcatabilir.</span></div>
+<div class="insight-card"><strong>Eval’i çok geç kurmak</strong><span>Sistem olgunlaşmaya başladığında küçük eval setleri bile yön tayini için değerlidir.</span></div>
+<div class="insight-card"><strong>Hata türlerini saymamak</strong><span>Hangi bileşenin ne sıklıkta sorun çıkardığı sayılmadığında önceliklendirme sezgiye kalır.</span></div>
+<div class="insight-card"><strong>Hazır araçla yetinmek</strong><span>Genel izleme araçları yararlıdır; fakat özel uygulama hatalarını her zaman yakalamaz.</span></div>
+<div class="insight-card"><strong>Doğrusal süreç beklemek</strong><span>Uçtan uca ayar, hata analizi, bileşen geliştirme ve eval tasarımı doğal olarak birbirine döner.</span></div>
+<div class="insight-card"><strong>Analizi ilerleme saymamak</strong><span>Analiz görünür kod üretmese de, sonraki kod değişikliğinin etkisini belirleyen adımdır.</span></div>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Agentic sistem geliştirme, inşa ve analiz arasında gidip gelen yinelemeli bir süreçtir.</li>
+<li>Başta hızlı ve kaba bir uçtan uca sistem kurmak, gerçek çıktı ve trace incelemesini mümkün kılar.</li>
+<li>Sistem olgunlaştıkça küçük eval setleri ve uçtan uca metrikler geliştirme kararlarını daha sağlam hâle getirir.</li>
+<li>Hata analizi, hangi bileşenin düşük kaliteli çıktıya ne sıklıkta yol açtığını sayarak önceliklendirme sağlar.</li>
+<li>Bileşen düzeyi eval’ler, olgun sistemlerde tek tek parçaları daha verimli iyileştirmeye yardım eder.</li>
+<li>Hazır gözlemleme araçları yararlıdır; fakat özel agentic iş akışları çoğu zaman kendi özel eval’lerini gerektirir.</li>
+</ul>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#gelistirme-sureci-ozeti" class="toc-h1">Geliştirme Süreci Özeti</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#dersin-ana-tezi" class="toc-h3">Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#insa-etmek-tek-basina-yeterli-degildir" class="toc-h3">İnşa etmek tek başına yeterli değildir</a>
+<a href="#baslangicta-hizli-uctan-uca-sistem-kurmak" class="toc-h3">Başlangıçta hızlı uçtan uca sistem kurmak</a>
+<a href="#hizli-prototipin-amaci" class="toc-h3">Hızlı prototipin amacı</a>
+<a href="#sistem-olgunlastikca-analiz-disiplin-kazanir" class="toc-h3">Sistem olgunlaştıkça analiz disiplin kazanır</a>
+<a href="#surec-yapisi" class="toc-h2">Süreç Yapısı</a>
+<a href="#araclar-ve-ozel-eval-dengesi" class="toc-h2">Araçlar ve Özel Eval Dengesi</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  document.documentElement.classList.add('js-ready');
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>

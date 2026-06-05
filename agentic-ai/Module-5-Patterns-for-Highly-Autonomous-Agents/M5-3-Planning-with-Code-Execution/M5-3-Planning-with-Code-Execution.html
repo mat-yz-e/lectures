@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kod Yürütmeyle Planlama</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--neutral-blue:#3f51b5;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+--code-keyword:#008000; --code-string:#ba2121; --code-comment:#408080; --code-function:#0000ff;
+--code-number:#666666; --code-operator:#aa22ff;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+code:not(.code-body code):not(.output-body code){padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:680px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;}
+.term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.task-table col.term-col{width:24%;}
+.task-table td.term{font-weight:600;color:var(--lesson-text);}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:1rem 1.05rem 1.1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.55rem;color:var(--accent-dark);}
+.cmp-card p{margin:0.35rem 0 0.7rem;font-size:0.94rem;color:var(--lesson-muted);}
+.cmp-card ul{margin:0;padding-left:1.15rem;}
+.cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+.tool-cluster{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.2fr) minmax(0,0.95fr);gap:0.8rem;align-items:stretch;margin:1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 72%);}
+.tool-box{padding:0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.tool-box h4{color:var(--accent-dark);}
+.tool-tags{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.6rem;}
+.tool-tags span{display:inline-flex;align-items:center;border:1px solid var(--lesson-border);border-radius:0.45rem;background:var(--lesson-soft);padding:0.26rem 0.45rem;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.79rem;color:var(--lesson-text);}
+.arrow-column{display:flex;align-items:center;justify-content:center;color:var(--dlai-coral);font-weight:700;font-size:1.4rem;}
+.process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.process-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0.95rem 0.85rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;}
+.process-card .dot{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral-soft);color:var(--accent-dark);font-weight:700;margin:0 auto 0.5rem;}
+.process-card strong{display:block;margin-bottom:0.25rem;}
+.process-card span{font-size:0.9rem;color:var(--lesson-muted);}
+.figure-panel{margin:1.1rem 0;padding:1rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.figure-panel img{display:block;width:100%;height:auto;border:1px solid var(--lesson-border);border-radius:0.45rem;background:#fff;}
+.figure-panel figcaption{margin-top:0.65rem;color:var(--lesson-muted);font-size:0.92rem;line-height:1.5;}
+.code-card{position:relative;display:grid;grid-template-columns:4.35rem minmax(0,1fr);align-items:start;gap:0 0.65rem;margin:1.05rem 0;background:transparent;}
+.code-card::before{content:"In [ ]:";grid-column:1;grid-row:1;padding-top:0.62rem;color:#c2384a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.88rem;line-height:1.4;text-align:right;white-space:nowrap;}
+.code-head{grid-column:2;display:flex;justify-content:flex-end;gap:0.45rem;margin:0 0 0.25rem;}
+.copy-btn{border:1px solid #c4c8cf;border-radius:0.35rem;background:rgba(255,255,255,0.92);color:#374151;cursor:pointer;font-size:0.78rem;padding:0.22rem 0.5rem;}
+.copy-btn:hover{border-color:var(--dlai-coral);color:var(--accent-dark);}
+.code-body{grid-column:2;margin:0;padding:0.72rem 5.2rem 0.72rem 0.8rem;border:1px solid var(--code-border);border-radius:0.2rem;background:var(--code-bg);color:var(--code-text);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9rem;line-height:1.55;white-space:pre;overflow-x:auto;overflow-y:hidden;tab-size:4;scrollbar-width:thin;scrollbar-color:#c4c4c4 #f2f2f2;}
+.code-body::-webkit-scrollbar{height:10px;}
+.code-body::-webkit-scrollbar-track{background:#f2f2f2;border-top:1px solid #e3e3e3;}
+.code-body::-webkit-scrollbar-thumb{background:#c4c4c4;border:2px solid #f2f2f2;border-radius:6px;}
+.code-body::-webkit-scrollbar-thumb:hover{background:#9ca3af;}
+.code-body code{font-family:inherit;display:block;width:max-content;min-width:100%;}
+.code-line{display:block;width:max-content;min-width:100%;padding:0 0.25rem;border-radius:0.18rem;white-space:pre;font-size:0.9rem;line-height:1.55;}
+.code-line:empty::before{content:"\00a0";}
+.code-line[data-note]{cursor:help;}
+.code-line[data-note]:hover,.code-line[data-note]:focus{background:#fff8c5;outline:none;}
+.tok-keyword{color:var(--code-keyword);font-weight:700;}
+.tok-string{color:var(--code-string);}
+.tok-comment{color:var(--code-comment);font-style:italic;}
+.tok-function,.tok-attribute,.tok-class{color:var(--code-function);}
+.tok-number{color:var(--code-number);}
+.tok-operator{color:var(--code-operator);}
+.tok-name,.tok-builtin{color:#000000;}
+.line-tooltip{position:fixed;z-index:50;max-width:420px;max-height:min(52vh,360px);overflow:auto;padding:10px 12px;border:1px solid #d0d7de;border-left:3px solid var(--dlai-coral);border-radius:4px;background:#fffdf5;color:#24292f;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:400;white-space:normal;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity 120ms ease,transform 120ms ease;}
+.line-tooltip.is-visible{opacity:1;transform:translateY(0);}
+.line-tooltip .tooltip-section{display:block;font-weight:400;}
+.line-tooltip .tooltip-section + .tooltip-section{margin-top:0.55rem;padding-top:0.55rem;border-top:1px solid #eaeef2;}
+.line-tooltip code{padding:1px 4px;border:1px solid #d8dee4;border-radius:3px;background:#f6f8fa;color:#24292f;font-family:Menlo,Monaco,Consolas,monospace;font-size:12.5px;}
+@media (max-width:900px){
+.bp-flow{grid-template-columns:repeat(2,minmax(0,1fr));}
+.bp-step:not(:last-child)::after{display:none;}
+.tool-cluster{grid-template-columns:1fr;}
+.arrow-column{transform:rotate(90deg);}
+.process-grid,.comparison-grid,.insight-grid{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.lesson-logo{width:clamp(150px,46vw,210px);}
+.code-card{grid-template-columns:minmax(0,1fr);}
+.code-card::before{grid-column:1;grid-row:auto;padding:0 0 0.25rem;text-align:left;}
+.code-head,.code-body{grid-column:1;}
+.line-tooltip{max-width:calc(100vw - 32px);}
+table{min-width:640px;}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-5-Patterns-for-Highly-Autonomous-Agents/M5-3-Planning-with-Code-Execution/M5-3-Planning-with-Code-Execution.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Kod Yürütmeyle Planlama</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="kod-yurutmeyle-planlama">Kod Yürütmeyle Planlama</h1>
+<p class="lead-text">Bir dil modelinin planı yalnızca metin ya da JSON olarak yazması yerine, planı çalıştırılabilir kod biçiminde ifade etmesi karmaşık veri sorularını daha esnek ve güçlü biçimde çözebilir.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Bu ders, yüksek özerklik düzeyine sahip agent sistemlerinde planlamanın özel bir biçimini inceler: modelin adım adım bir araç listesi üretmesi yerine, çözüm adımlarını programlama dili içinde ifade etmesi. Böylece plan, yalnızca okunacak bir taslak olmaktan çıkar; gerektiğinde doğrudan çalıştırılabilen bir eylem dizisine dönüşür.</p>
+<p>Temel problem, araç temelli planlamanın veri işleme gibi görevlerde hızla kırılgan hale gelmesidir. Bir satış tablosu üzerinde ay, ürün, fiyat, tarih ya da benzersiz işlem gibi farklı sorular geldiğinde, her yeni soru için yeni bir özel araç tanımlamak sürdürülebilir değildir. Kod yürütmeyle planlama, bu araç patlamasını azaltır: model, zaten güçlü bir veri işleme kütüphanesinin geniş fonksiyon kümesini kullanarak planını kod olarak kurar.</p>
+<div class="definition-card"><h3 id="merkez-fikir">Merkez fikir</h3><p>Planlama, modelin ne yapacağını önceden sabit komutlarla sınırlandırmak değildir; modelin amaca ulaşmak için uygun ara adımları seçmesine izin vermektir. Kod yürütme yaklaşımında bu ara adımlar, filtreleme, sıralama, tarih dönüştürme, benzersiz kayıt sayma veya liste çıkarma gibi işlemlerle somutlaşır.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Araç temelli planlamanın neden belirli veri sorularında kırılgan ve verimsiz hale geldiğini açıklayabilmek.</li>
+<li>Kodun bir plan ifade biçimi olarak nasıl kullanılabileceğini sezgisel ve teknik düzeyde anlayabilmek.</li>
+<li>Bir kullanıcı sorusunun kod içinde hangi ara adımlara ayrıldığını okuyabilmek.</li>
+<li>Kodla eylem, JSON ile eylem ve düz metin planlama arasındaki performans farkını yorumlayabilmek.</li>
+<li>Kod yürütmenin sağladığı esnekliği güvenli yürütme ve kontrol kaybı riskleriyle birlikte değerlendirebilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>Bir dil modelinin araç çağırabileceği ya da yapılandırılmış çıktı üretebileceği fikrine aşinalık.</li>
+<li>Tablo biçimindeki verilerde satır, sütun, filtreleme, sıralama ve özet istatistik kavramlarını temel düzeyde bilmek.</li>
+<li>Python ve pandas benzeri veri işleme kütüphanelerinin, tablo üzerinde çok sayıda hazır işlem sunduğunu sezgisel olarak bilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Plan</td><td>Bir kullanıcı sorusunu yanıtlamak için izlenecek ara adımlar dizisi.</td><td>Plan, düz metin olarak kalabilir ya da çalıştırılabilir kod biçiminde ifade edilebilir.</td></tr>
+<tr><td class="term">Araç</td><td>Modele verilen, belirli ve sınırlı bir işlemi yapan fonksiyon.</td><td>Araç sayısı arttıkça sistem daha karmaşık ve bakımı zor hale gelebilir.</td></tr>
+<tr><td class="term">Kodla eylem</td><td>Modelin çözümü yürütülebilir program kodu olarak üretmesi.</td><td>Kod, birçok küçük aracı tek tek çağırmak yerine geniş bir kütüphane ekosisteminden yararlanır.</td></tr>
+<tr><td class="term">JSON ile eylem</td><td>Modelin yapılacak işlemleri yapılandırılmış JSON çıktısı olarak belirtmesi.</td><td>JSON çoğu zaman başka bir yürütme katmanına çevrilmek zorundadır.</td></tr>
+<tr><td class="term">Sandbox</td><td>Üretilen kodun sınırlandırılmış ve güvenli bir ortamda çalıştırılması.</td><td>Kod yürütme gücü arttıkça güvenli çalışma ortamı daha kritik hale gelir.</td></tr>
+<tr><td class="term">Etkileşim turu</td><td>Görevi tamamlamak için model ile çevre arasında gerçekleşen adım sayısı.</td><td>Plan kod olarak ifade edildiğinde bazı görevlerde daha az turla sonuca gidilebilir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Kod yürütmeyle planlama, modelin kendisine verilen dar araç kümesine sıkışması yerine, bir programlama dili ve veri işleme kütüphanesi üzerinden daha zengin bir eylem alanına erişmesini sağlar. Ana akış beş parçaya ayrılabilir.</p>
+<div class="big-picture-panel">
+<div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Soru</strong><span>Kullanıcı tablo verisi hakkında karmaşık bir istek belirtir.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Kod yönergesi</strong><span>Modelden cevabı kodla üretmesi istenir.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Planın kodlanması</strong><span>Filtreleme, sıralama ve sayma gibi adımlar kod satırlarına dönüşür.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Yürütme</strong><span>Kod güvenli ortamda çalıştırılarak ara işlemler tamamlanır.</span></div>
+<div class="bp-step"><span class="bp-num">5</span><strong>Cevap</strong><span>Son hesaplama kullanıcıya anlamlı sonuç olarak döner.</span></div>
+</div>
+</div>
+<div class="note-card"><h3 id="neden-guclu">Neden güçlü?</h3><p>Bir programlama dili, tekil araç listesinden çok daha geniş bir işlem uzayı sunar. Model, daha önce çok sayıda örnekte gördüğü kütüphane fonksiyonlarını bir araya getirerek, her yeni kullanıcı sorusu için ayrı bir araç yazılmasına gerek kalmadan karmaşık planlar kurabilir.</p></div>
+</section>
+
+<section><h2 id="araclarla-planlamanin-kirilganligi">Araçlarla Planlamanın Kırılganlığı</h2>
+<p>Basit bir araç setiyle çalıştığınızı düşünün: belirli bir sütunun ortalamasını almak, maksimumu bulmak, satır filtrelemek ya da satırları toplamak gibi işlemler mevcut olsun. İlk bakışta bu araçlar bir satış tablosu için yeterli görünebilir. Ancak soru biraz karmaşıklaştığında plan hızla uzar.</p>
+<div class="tool-cluster">
+<div class="tool-box"><h4>Model</h4><p>Tabloya dair doğal dilde gelen soruyu yanıtlamaya çalışır.</p></div>
+<div class="tool-box"><h4>Dar araç kümesi</h4><div class="tool-tags"><span>filter_rows</span><span>get_column_mean</span><span>get_column_max</span><span>get_column_min</span><span>get_column_median</span><span>sum_rows</span></div></div>
+<div class="tool-box"><h4>Sonuç</h4><p>Araçlar yalnızca önceden düşünülmüş işlemleri kapsar; yeni soru türleri yeni araç isteyebilir.</p></div>
+</div>
+<p>Örneğin belirli bir ürün için en yüksek satış ortalamasına sahip ayı bulmak, her ay için ayrı filtreleme ve özetleme adımları gerektirir. Daha da önemlisi, benzersiz işlem sayısını veya en son işlemlerin tutarlarını istemek mevcut araç kümesinin dışına çıkabilir. Bu durumda geliştirici yeni araç ekler; sonra başka bir soru gelir ve bir araç daha gerekir.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Dar araç yaklaşımı</h4><p>Her araç küçük ve kontrollüdür; ancak sistem, beklenmeyen veri sorularında büyüyen bir araç listesine bağımlı hale gelir.</p><ul><li>Edge case sayısı artar.</li><li>Bakım maliyeti yükselir.</li><li>Plan çok fazla ara çağrıya bölünür.</li></ul></div>
+<div class="cmp-card"><h4>Kodla plan yaklaşımı</h4><p>Model, tek tek özel araçlar yerine veri işleme kütüphanesinin geniş işlem repertuvarını kullanarak planı kod içinde kurar.</p><ul><li>Yeni soru türlerine daha esnek uyum sağlar.</li><li>Ara adımlar tek kod akışında birleşir.</li><li>Yürütme sonucu doğrudan hesaplanabilir.</li></ul></div>
+</div>
+</section>
+
+<section><h2 id="plani-kod-olarak-ifade-etmek">Planı Kod Olarak İfade Etmek</h2>
+<p>Kod yürütme yaklaşımında modele verilen temel yönerge şudur: kullanıcı sorusunu çözmek için kod yaz ve çalıştırılacak bölümü belirgin etiketlerle sınırla. Böylece modelin ürettiği metin içinden yürütülecek kod parçası ayrıştırılabilir.</p>
+<div class="process-grid">
+<div class="process-card"><span class="dot">1</span><strong>Veriyi yükle</strong><span>Tablo bir veri çerçevesi olarak okunur.</span></div>
+<div class="process-card"><span class="dot">2</span><strong>Tipleri hazırla</strong><span>Tarih gibi alanlar hesaplamaya uygun tipe çevrilir.</span></div>
+<div class="process-card"><span class="dot">3</span><strong>Ara işlemleri seç</strong><span>Sıralama, filtreleme veya benzersizleştirme uygulanır.</span></div>
+<div class="process-card"><span class="dot">4</span><strong>Sonucu yazdır</strong><span>Hesaplanan cevap okunabilir biçimde üretilir.</span></div>
+</div>
+
+<h3 id="son-islemlerin-tutarini-cikarma">Son işlemlerin tutarını çıkarma</h3>
+<p>İlk örnekte plan, veriyi yüklemek, tarih sütununu gerçek tarih tipine çevirmek, kayıtları tarihe göre sıralamak ve son beş işlemin fiyat alanını listelemek olarak ayrışır.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Bu etiket, model yanıtında yürütülecek kod bölgesinin başladığını gösterir." tabindex="0">&lt;execute_python&gt;</span><span class="code-line" data-note="`pandas`, tablo verisini okuma, dönüştürme ve sıralama işlemleri için içe aktarılır." tabindex="0"><span class="tok-keyword">import</span> <span class="tok-name">pandas</span> <span class="tok-keyword">as</span> <span class="tok-name">pd</span></span><span class="code-line"><span class="tok-comment"># Load CSV</span></span><span class="code-line" data-note="Tablo verisi bir DataFrame olarak yüklenir; planın geri kalanı bu nesne üzerinde çalışır." tabindex="0"><span class="tok-name">df</span> <span class="tok-operator">=</span> <span class="tok-name">pd</span><span class="tok-attribute">.read_csv</span>(<span class="tok-string">&quot;transactions.csv&quot;</span>)</span><span class="code-line"><span class="tok-comment"># Ensure date column is parsed as datetime</span></span><span class="code-line" data-note="Tarih sütunu metin olarak kalırsa doğru kronolojik sıralama yapılamaz; bu satır onu tarih tipine çevirir." tabindex="0"><span class="tok-name">df</span>[<span class="tok-string">&quot;date&quot;</span>] <span class="tok-operator">=</span> <span class="tok-name">pd</span><span class="tok-attribute">.to_datetime</span>(<span class="tok-name">df</span>[<span class="tok-string">&quot;date&quot;</span>])</span><span class="code-line"><span class="tok-comment"># Sort by date to get most recent transactions</span></span><span class="code-line" data-note="Kayıtlar en yeni tarihten en eski tarihe doğru sıralanır; böylece en son işlemler başa gelir." tabindex="0"><span class="tok-name">df_sorted</span> <span class="tok-operator">=</span> <span class="tok-name">df</span><span class="tok-attribute">.sort_values</span>(<span class="tok-name">by</span><span class="tok-operator">=</span><span class="tok-string">&quot;date&quot;</span>, <span class="tok-name">ascending</span><span class="tok-operator">=</span><span class="tok-keyword">False</span>)</span><span class="code-line"><span class="tok-comment"># Select the last 5 transactions</span></span><span class="code-line" data-note="Sıralanmış tablonun ilk beş satırı, tarihe göre en son beş işlemi temsil eder." tabindex="0"><span class="tok-name">last_5</span> <span class="tok-operator">=</span> <span class="tok-name">df_sorted</span><span class="tok-attribute">.head</span>(<span class="tok-number">5</span>)</span><span class="code-line"><span class="tok-comment"># Show just the price column (amounts)</span></span><span class="code-line" data-note="Kullanıcı yalnızca tutarları istediği için fiyat sütunu listeye çevrilerek yazdırılır." tabindex="0"><span class="tok-function">print</span>(<span class="tok-string">&quot;Last 5 transaction amounts:&quot;</span>)</span><span class="code-line" data-note="Seçilen beş satırın fiyat değerleri Python listesi olarak görüntülenir." tabindex="0"><span class="tok-function">print</span>(<span class="tok-name">last_5</span>[<span class="tok-string">&quot;price&quot;</span>]<span class="tok-attribute">.to_list</span>())</span><span class="code-line" data-note="Bu etiket, yürütülecek kod bölgesinin bittiğini gösterir." tabindex="0">&lt;/execute_python&gt;</span></code></pre></div>
+
+<h3 id="gecen-haftaki-benzersiz-islem-sayisini-bulma">Geçen haftaki benzersiz işlem sayısını bulma</h3>
+<p>İkinci örnekte planın yapısı değişir: tarih penceresi tanımlanır, yalnızca bu pencereye düşen satırlar seçilir, yinelenen kayıtlar atılır ve kalan satır sayısı hesaplanır.</p>
+<div class="code-card"><div class="code-head"><button class="copy-btn" type="button">Kopyala</button></div><pre class="code-body"><code data-lang="python"><span class="code-line" data-note="Bu etiket, model yanıtında yürütülecek kod bölgesinin başladığını gösterir." tabindex="0">&lt;execute_python&gt;</span><span class="code-line" data-note="`pandas`, CSV okuma, tarih hesabı ve tablo filtreleme işlemleri için kullanılır." tabindex="0"><span class="tok-keyword">import</span> <span class="tok-name">pandas</span> <span class="tok-keyword">as</span> <span class="tok-name">pd</span></span><span class="code-line"><span class="tok-comment"># Read CSV and parse the &quot;date&quot; column as datetime</span></span><span class="code-line" data-note="Veri okunurken tarih sütunu aynı anda tarih tipine çevrilir; bu, sonraki zaman aralığı filtresini mümkün kılar." tabindex="0"><span class="tok-name">df</span> <span class="tok-operator">=</span> <span class="tok-name">pd</span><span class="tok-attribute">.read_csv</span>(<span class="tok-string">&quot;transactions.csv&quot;</span>, <span class="tok-name">parse_dates</span><span class="tok-operator">=</span>[<span class="tok-string">&quot;date&quot;</span>])</span><span class="code-line"><span class="tok-comment"># Define time window</span></span><span class="code-line" data-note="Güncel zaman damgası alınır; bu değer zaman penceresinin üst sınırıdır." tabindex="0"><span class="tok-name">today</span> <span class="tok-operator">=</span> <span class="tok-name">pd</span><span class="tok-attribute">.Timestamp</span><span class="tok-attribute">.today</span>()</span><span class="code-line" data-note="Yedi gün geriye gidilerek geçen haftanın başlangıcı hesaplanır." tabindex="0"><span class="tok-name">week_ago</span> <span class="tok-operator">=</span> <span class="tok-name">today</span> <span class="tok-operator">-</span> <span class="tok-name">pd</span><span class="tok-attribute">.Timedelta</span>(<span class="tok-name">days</span><span class="tok-operator">=</span><span class="tok-number">7</span>)</span><span class="code-line"><span class="tok-comment"># Filter rows where date is within last week</span></span><span class="code-line" data-note="Tarih sütunu alt ve üst sınır arasında kalan satırlar için filtrelenir." tabindex="0"><span class="tok-name">last_week</span> <span class="tok-operator">=</span> <span class="tok-name">df</span>[<span class="tok-name">df</span>[<span class="tok-string">&quot;date&quot;</span>]<span class="tok-attribute">.between</span>(<span class="tok-name">week_ago</span>, <span class="tok-name">today</span>)]</span><span class="code-line"><span class="tok-comment"># Drop duplicate rows and count</span></span><span class="code-line" data-note="Yinelenen satırlar çıkarılır; kalan tablonun satır sayısı benzersiz işlem sayısı olarak yazdırılır." tabindex="0"><span class="tok-function">print</span>(<span class="tok-name">last_week</span><span class="tok-attribute">.drop_duplicates</span>()<span class="tok-attribute">.shape</span>[<span class="tok-number">0</span>])</span><span class="code-line" data-note="Bu etiket, yürütülecek kod bölgesinin bittiğini gösterir." tabindex="0">&lt;/execute_python&gt;</span></code></pre></div>
+
+<div class="note-card"><h3 id="kritik-ayrim">Kritik ayrım</h3><p>Bu örneklerde model, yalnızca hangi aracı çağıracağını seçmiyor; problemi programlama dili içinde yeniden formüle ediyor. Bu nedenle plan, hem daha açık bir ara işlem dizisine hem de çalıştırılabilir bir çözüme dönüşüyor.</p></div>
+</section>
+
+<section><h2 id="performans-kaniti">Performans Kanıtı</h2>
+<p>Karşılaştırmalı sonuçlar, kodu eylem biçimi olarak kullanan yaklaşımın birçok modelde daha yüksek görev tamamlama oranı verdiğini gösterir. Aynı karşılaştırmada JSON ya da düz metinle eylem planı yazdırmak da işe yarayabilir; ancak kod, özellikle veri işleme gibi programla ifade edilmesi doğal görevlerde daha güçlü bir temsil sunar.</p>
+<figure class="figure-panel">
+<img src="images/chart-01.png" alt="Kodla eylem, JSON ile eylem ve metinle eylem yaklaşımlarının başarı oranı ve etkileşim turu karşılaştırması">
+<figcaption>Kodla eylem yaklaşımı, soldaki başarı oranı karşılaştırmasında çoğu model için daha yüksek tamamlanma oranı sergiler. Sağdaki etkileşim turu görünümü, planın kod olarak ifade edilmesinin bazı görevlerde daha kısa ve doğrudan bir yürütme yolu sağlayabildiğini gösterir.</figcaption>
+</figure>
+<div class="insight-grid">
+<div class="insight-card"><strong>Kod daha yoğun bir plan taşıyabilir</strong><span>Tek bir kod parçası, ardışık filtreleme, dönüştürme ve hesaplama adımlarını birlikte temsil eder.</span></div>
+<div class="insight-card"><strong>JSON ara katman ister</strong><span>JSON planı genellikle başka bir sistemin yorumlaması ve eyleme çevirmesi gerekir.</span></div>
+<div class="insight-card"><strong>Düz metin belirsiz kalabilir</strong><span>Metin planı okunabilir olsa da, doğrudan çalıştırılabilirlik ve kesin işlem sırası bakımından daha zayıftır.</span></div>
+</div>
+</section>
+
+<section><h2 id="guvenli-yurutme-ve-kontrol-sinirlari">Güvenli Yürütme ve Kontrol Sınırları</h2>
+<p>Kod yürütmeyle planlama güçlüdür; fakat gücü nedeniyle daha dikkatli tasarlanmalıdır. Modelin ürettiği kod, dosya okuma, veri işleme ya da dış sistemlerle etkileşim gibi işlemler yapabilir. Bu nedenle kodun nerede, hangi izinlerle ve hangi sınırlar içinde çalıştırılacağı baştan düşünülmelidir.</p>
+<div class="comparison-grid">
+<div class="cmp-card"><h4>Kazanç</h4><p>Model, geliştiricinin önceden tanımladığı dar araç listesine bağlı kalmadan, göreve uygun ara adımları kendisi kurabilir.</p><ul><li>Daha zengin planlar oluşturur.</li><li>Veri sorularına esnek yanıt verir.</li><li>Agentik yazılım geliştirme gibi alanlarda karmaşık iş akışlarını taşıyabilir.</li></ul></div>
+<div class="cmp-card"><h4>Risk</h4><p>Geliştirici her adımı önceden belirlemediği için çalışma zamanında tam olarak ne olacağını öngörmek daha zordur.</p><ul><li>Güvenli yürütme ortamı gerekir.</li><li>İzinler sınırlandırılmalıdır.</li><li>Çıktı ve yan etkiler izlenmelidir.</li></ul></div>
+</div>
+<div class="warn-card"><h3 id="uygulama-ilkesi">Uygulama ilkesi</h3><p>Kod üretimini planlama aracı olarak kullanmak, modeli serbest bırakmak anlamına gelmemelidir. Güvenli sınırlar, izin modeli, çıktı denetimi ve hata yakalama, bu yaklaşımın temel parçalarıdır.</p></div>
+</section>
+
+<section><h2 id="agentik-sistemlerde-yeri">Agentik Sistemlerde Yeri</h2>
+<p>Kodla planlama, özellikle agentik yazılım geliştirme araçlarında güçlü biçimde görünür. Karmaşık bir yazılım parçası istenince sistem önce alt bileşenleri planlayabilir, sonra her bileşeni sırayla oluşturabilir ve aralarda test ya da kontrol adımları çalıştırabilir. Bu, planın yalnızca sözlü bir liste değil, yürütülebilir ve denetlenebilir bir iş akışı haline gelmesine yakındır.</p>
+<p>Buna karşılık, her uygulama kod yürütmeyi gerektirmez. Özel araç çağrıları hâlâ yararlıdır; özellikle alan bilgisi çok belirgin, işlemler dar ve güvenlik sınırları sıkıysa özel araçlar daha kontrollü bir seçenek olabilir. Kod yürütmeyle planlama en çok, görev doğal olarak kodla çözülebiliyor ve modelin geniş kütüphane repertuvarından yararlanması anlamlı oluyorsa değer kazanır.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="table-wrap"><table class="task-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Hata</th><th>Neden Sorun Yaratır?</th><th>Daha Sağlam Yaklaşım</th></tr></thead>
+<tbody>
+<tr><td class="term">Her soru için araç eklemek</td><td>Araç listesi hızla büyür ve sistem yeni edge case'lerle boğuşur.</td><td>Programlama diliyle ifade edilebilen görevlerde kod yürütme seçeneğini değerlendirmek.</td></tr>
+<tr><td class="term">Kodu sınırsız çalıştırmak</td><td>Üretilen kod beklenmeyen dosya, ağ veya sistem işlemleri yapabilir.</td><td>Yürütmeyi güvenli, sınırlandırılmış ve izlenebilir bir ortamda yapmak.</td></tr>
+<tr><td class="term">Planı yalnızca metin saymak</td><td>Düz metin plan, yürütme katmanına çevrilirken belirsizlik üretir.</td><td>Uygunsa planı doğrudan çalıştırılabilir kod ya da açık yapılandırılmış eylem olarak temsil etmek.</td></tr>
+<tr><td class="term">Performansı tek metrikle okumak</td><td>Başarı oranı yüksek olsa bile etkileşim sayısı, güvenlik ve kontrol maliyeti göz ardı edilebilir.</td><td>Başarı, tur sayısı, güvenlik ve bakım maliyetini birlikte değerlendirmek.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<ul>
+<li>Kod yürütmeyle planlama, agentin planını çalıştırılabilir bir işlem dizisi olarak ifade etmesini sağlar.</li>
+<li>Dar araç kümeleri, veri soruları çeşitlendikçe kırılgan ve bakım maliyeti yüksek hale gelebilir.</li>
+<li>Programlama dili ve veri işleme kütüphaneleri, modele çok daha geniş bir eylem repertuvarı sunar.</li>
+<li>Kodla eylem yaklaşımı, birçok modelde JSON ya da düz metinle eylem yaklaşımlarından daha yüksek görev başarısı gösterebilir.</li>
+<li>Bu güç, güvenli yürütme ortamı ve daha dikkatli denetim gerektirir.</li>
+<li>Planlama, özellikle agentik kodlama sistemlerinde olgunlaşmış görünür; diğer uygulamalarda ise hâlâ dikkatli tasarım gerektiren gelişen bir desendir.</li>
+</ul>
+<div class="definition-card"><h3 id="ozet-cumle">Özet cümle</h3><p>Kullanıcı sorusu kodla doğal biçimde çözülebiliyorsa, modelin planı kod olarak yazması hem daha zengin bir plan temsili hem de daha doğrudan bir yürütme yolu sağlayabilir.</p></div>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#kod-yurutmeyle-planlama" class="toc-h1">Kod Yürütmeyle Planlama</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#merkez-fikir" class="toc-h3">Merkez fikir</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#neden-guclu" class="toc-h3">Neden güçlü?</a>
+<a href="#araclarla-planlamanin-kirilganligi" class="toc-h2">Araçlarla Planlamanın Kırılganlığı</a>
+<a href="#plani-kod-olarak-ifade-etmek" class="toc-h2">Planı Kod Olarak İfade Etmek</a>
+<a href="#son-islemlerin-tutarini-cikarma" class="toc-h3">Son işlemlerin tutarını çıkarma</a>
+<a href="#gecen-haftaki-benzersiz-islem-sayisini-bulma" class="toc-h3">Geçen haftaki benzersiz işlem sayısını bulma</a>
+<a href="#kritik-ayrim" class="toc-h3">Kritik ayrım</a>
+<a href="#performans-kaniti" class="toc-h2">Performans Kanıtı</a>
+<a href="#guvenli-yurutme-ve-kontrol-sinirlari" class="toc-h2">Güvenli Yürütme ve Kontrol Sınırları</a>
+<a href="#uygulama-ilkesi" class="toc-h3">Uygulama ilkesi</a>
+<a href="#agentik-sistemlerde-yeri" class="toc-h2">Agentik Sistemlerde Yeri</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+<a href="#ozet-cumle" class="toc-h3">Özet cümle</a>
+</nav>
+</aside>
+</div>
+<script>
+(function(){
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+    });
+  }
+  function formatTooltipText(note){
+    return String(note==null?'':note).split(/\n{2,}/).map(function(part){
+      var safe=escapeHtml(part).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+      return '<span class="tooltip-section">'+safe+'</span>';
+    }).join('');
+  }
+  var tooltip=document.createElement('div');
+  tooltip.className='line-tooltip';
+  document.body.appendChild(tooltip);
+  var activeLine=null;
+  function positionTooltip(){
+    if(!activeLine)return;
+    var rect=activeLine.getBoundingClientRect();
+    tooltip.style.left='0px';tooltip.style.top='0px';
+    var tipW=tooltip.offsetWidth;var tipH=tooltip.offsetHeight;
+    var left=rect.right+12;
+    var top=rect.top;
+    if(left+tipW>window.innerWidth-16){left=rect.left;top=rect.bottom+8;}
+    if(top+tipH>window.innerHeight-16){top=Math.max(16,rect.top-tipH-8);}
+    left=Math.max(16,Math.min(left,window.innerWidth-tipW-16));
+    top=Math.max(16,Math.min(top,window.innerHeight-tipH-16));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  function showTooltip(line){
+    activeLine=line;
+    tooltip.innerHTML=formatTooltipText(line.getAttribute('data-note')||'');
+    tooltip.classList.add('is-visible');
+    positionTooltip();
+  }
+  function hideTooltip(){activeLine=null;tooltip.classList.remove('is-visible');}
+  document.addEventListener('mouseover',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('mouseout',function(event){
+    if(activeLine&&!activeLine.contains(event.relatedTarget))hideTooltip();
+  });
+  document.addEventListener('focusin',function(event){
+    var line=event.target.closest?event.target.closest('.code-line[data-note]'):null;
+    if(line)showTooltip(line);
+  });
+  document.addEventListener('focusout',function(event){
+    if(event.target.closest&&event.target.closest('.code-line[data-note]'))hideTooltip();
+  });
+  window.addEventListener('scroll',function(){if(activeLine)hideTooltip();},true);
+  window.addEventListener('resize',function(){if(activeLine)hideTooltip();});
+  function copyText(text){
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve,reject){
+      var area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');
+      area.style.position='fixed';area.style.left='-9999px';document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');resolve();}catch(err){reject(err);}finally{document.body.removeChild(area);}
+    });
+  }
+  document.querySelectorAll('.copy-btn').forEach(function(button){
+    button.addEventListener('click',function(){
+      var card=button.closest('.code-card');
+      var lines=card?[].slice.call(card.querySelectorAll('.code-line')):[];
+      var text=lines.map(function(l){return l.textContent;}).join('\n');
+      copyText(text).then(function(){
+        var original=button.textContent;button.textContent='Kopyaland\u0131!';
+        setTimeout(function(){button.textContent=original;},1500);
+      });
+    });
+  });
+})();
+</script>
+<script src="../../assets/nav.js"></script>
+</body></html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Bağlam Protokolü (MCP)</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:26%;} .term-table td.term{white-space:nowrap;font-weight:600;}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+/* big picture */
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.96rem;}
+.bp-step span:not(.bp-num){color:var(--lesson-muted);font-size:0.88rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:50%;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);z-index:1;}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;font-size:0.96rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+/* MCP m×n vs m+n diagram */
+.mcp-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.9rem;margin:1.1rem 0;}
+.mcp-panel{border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;padding:1rem 1rem 1.1rem;display:flex;flex-direction:column;}
+.mcp-panel.is-before{border-top:3px solid var(--lesson-border-strong);}
+.mcp-panel.is-after{border-top:3px solid var(--dlai-coral);}
+.mcp-panel h4{margin:0 0 0.2rem;font-size:1rem;color:var(--lesson-text);}
+.mcp-panel .mcp-sub{display:block;margin-bottom:0.75rem;color:var(--lesson-muted);font-size:0.88rem;}
+.mcp-diagram{display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;}
+.mcp-col{display:flex;flex-direction:column;gap:0.4rem;}
+.mcp-node{padding:0.4rem 0.6rem;border:1px solid var(--lesson-border-strong);border-radius:0.45rem;background:var(--lesson-soft);font-size:0.8rem;text-align:center;white-space:nowrap;}
+.mcp-node.is-app{background:var(--dlai-coral-soft);border-color:var(--dlai-coral);}
+.mcp-hub{display:flex;align-items:center;justify-content:center;padding:0.55rem 0.7rem;border:1.5px solid var(--dlai-coral);border-radius:0.5rem;background:var(--dlai-coral);color:#fff;font-weight:700;font-size:0.82rem;text-align:center;}
+.mcp-links{display:flex;align-items:center;color:var(--lesson-muted);font-size:0.72rem;text-align:center;line-height:1.3;padding:0 0.15rem;}
+.mcp-links.tangle{color:var(--accent-dark);font-weight:600;}
+.mcp-formula{margin-top:0.8rem;text-align:center;font-weight:700;font-size:1.2rem;letter-spacing:0.02em;}
+.mcp-formula .big{color:var(--accent-dark);}
+.mcp-formula.muted .big{color:var(--lesson-muted);}
+.mcp-formula small{display:block;font-weight:400;font-size:0.8rem;color:var(--lesson-muted);margin-top:0.2rem;}
+/* clients & servers */
+.cs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.9rem;margin:1.1rem 0;}
+.cs-col{border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;padding:0.9rem 1rem 1rem;}
+.cs-col h4{margin:0 0 0.6rem;color:var(--accent-dark);border-bottom:1px solid var(--lesson-border);padding-bottom:0.4rem;}
+.cs-item{display:flex;align-items:center;gap:0.55rem;padding:0.4rem 0;border-bottom:1px solid var(--lesson-soft-2);font-size:0.95rem;}
+.cs-item:last-child{border-bottom:0;}
+.cs-badge{flex-shrink:0;width:1.6rem;height:1.6rem;border-radius:0.4rem;background:var(--dlai-coral-muted);border:1px solid var(--dlai-coral);color:var(--accent-dark);font-weight:700;font-size:0.78rem;display:flex;align-items:center;justify-content:center;}
+.cs-item.is-own .cs-badge{background:var(--dlai-coral);color:#fff;}
+.cs-item.is-own{font-weight:600;}
+@media (max-width:760px){.bp-flow{grid-template-columns:repeat(2,minmax(0,1fr));} .bp-step:not(:last-child)::after{display:none;} .comparison-grid,.insight-grid,.mcp-compare,.cs-grid{grid-template-columns:1fr;}}
+@media (max-width:560px){.lesson-page{padding:1rem;line-height:1.7;}}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-3-Tool-Use/M3-7-Model-Context-Protocol-MCP/M3-7-Model-Context-Protocol-MCP.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Model Bağlam Protokolü (MCP)</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="model-baglam-protokolu-mcp">Model Bağlam Protokolü (MCP)</h1>
+<p class="lead-text">Bir dil modeline daha fazla bağlam ve daha fazla araca erişim vermenin ortak bir standardı: her uygulamanın her veri kaynağı için ayrı bağlayıcı yazmasını gerektiren dağınık düzeni, paylaşılan bir protokole dönüştürerek topluluğun toplam işini köklü biçimde azaltan yaklaşım.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Model Bağlam Protokolü (MCP), bir dil modeline daha fazla bağlam ve daha fazla araç erişimi vermek için ortaya konmuş bir standarttır. Başlangıçta Anthropic tarafından önerilmiş, ardından pek çok şirket ve geliştirici tarafından benimsenmiştir. Bugün MCP ekosistemi etrafında çok sayıda geliştirici çalıştığından, bu standardı tanımak uygulamalarınız için çok daha geniş bir kaynak havuzuna erişim kazandırır.</p>
+<p>Bu derste amaç, MCP’nin hangi sorunu çözdüğünü, temel parçalarının (istemci ve sunucu) ne olduğunu ve veri ile araçlara erişimi nasıl ortak bir standarda bağladığını kavramaktır. Bu, araç kullanımı konusunun doğal bir devamıdır: tek tek araçlar yazmaktan, bütün bir araç ve veri kaynağı ekosistemine standart bir kapıdan bağlanmaya geçişi anlatır.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-fikri">Bu Dersin Ana Fikri</h3><p>Her uygulama, ihtiyaç duyduğu her veri kaynağı için kendi özel sarmalayıcısını yazarsa, topluluğun toplam işi <strong>uygulama sayısı × araç sayısı</strong> kadar olur. MCP, uygulamaların araçlara ve veri kaynaklarına erişimi için ortak bir standart önererek bu toplam işi <strong>uygulama sayısı + araç sayısı</strong>’na indirir. Aynı işin tekrar tekrar yapılması yerine, bir kez yazılan sunucu herkes tarafından kullanılır.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2><ul>
+<li>MCP’nin hangi soruna çözüm olduğunu (tekrarlı, özel bağlayıcı yazma yükünü) açıklayabilmek.</li>
+<li>“M×N” entegrasyon yükü ile “M+N” standart yaklaşımı arasındaki farkı kavramak.</li>
+<li>MCP’nin sunduğu iki şeyi &mdash; veri (kaynaklar) ve genel işlevler (araçlar) &mdash; ayırt edebilmek.</li>
+<li>MCP istemcisi ile MCP sunucusu rollerini ve aralarındaki ilişkiyi açıklayabilmek.</li>
+<li>Hazır istemci ve sunucuların nasıl bir araya geldiğini somut bir örnek üzerinden izleyebilmek.</li>
+</ul></section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2><ul>
+<li>Bir dil modeline araç sunma ve modelin bir aracın çağrılmasını talep etmesi kavramı.</li>
+<li>Bir API’nin ne olduğu ve bir uygulamanın dış bir servise nasıl bağlandığına dair genel fikir.</li>
+<li>Bir veri kaynağını (örneğin bir veritabanı ya da dosya deposu) sorgulama fikri.</li>
+<li>İstemci–sunucu mimarisinin temel mantığı (bir taraf ister, diğer taraf sağlar).</li>
+</ul></section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table"><colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">MCP</td><td>Uygulamalara araç ve veri kaynaklarına standart erişim sağlayan protokol.</td><td>Bir araç değil, ortak bir <em>standarttır</em>.</td></tr>
+<tr><td class="term">MCP istemcisi</td><td>Araç veya veriye erişmek isteyen uygulama.</td><td>Sizin uygulamanız bir gün bir istemci olabilir.</td></tr>
+<tr><td class="term">MCP sunucusu</td><td>Bir veri kaynağına ya da eylemlere erişim veren yazılım sarmalayıcısı.</td><td>Servis sağlayıcılar kendi sunucularını yazabilir.</td></tr>
+<tr><td class="term">Kaynak (resource)</td><td>MCP’nin eriştirdiği veri; çoğunlukla veri çekmeye yarayan parça.</td><td>İlk tasarım ağırlıkla veri çekmeye odaklıydı.</td></tr>
+<tr><td class="term">Araç (tool)</td><td>Bir uygulamanın çağırmak isteyebileceği daha genel işlev.</td><td>MCP hem veriye hem işlevlere erişim verir.</td></tr>
+<tr><td class="term">M×N / M+N</td><td>Entegrasyon yükünün ölçüsü: çarpımsal yük yerine toplamsal yük.</td><td>MCP’nin çözdüğü temel ölçek sorunudur.</td></tr>
+</tbody></table></div>
+</section>
+
+<section><h2 id="buyuk-resim-mnden-m-nye">Büyük Resim: M×N’den M+N’ye</h2>
+<p>MCP’nin çözdüğü sorunu en iyi tek bir karşılaştırma anlatır. Diyelim ki ortada <strong>M</strong> uygulama ve <strong>N</strong> araç (veri kaynağı) var. MCP olmadan her uygulama, ihtiyaç duyduğu her aracı kendi başına sarmalamak zorundadır; bu da toplamda <strong>M×N</strong> kadar iş demektir. MCP ile her uygulama, ortak bir sunucu üzerinden bağlandığından toplam iş <strong>M+N</strong>’ye iner: her araç için bir sunucu, her uygulama için bir bağlantı yeterlidir.</p>
+<div class="mcp-compare">
+<div class="mcp-panel is-before"><h4>MCP’den önce</h4><span class="mcp-sub">Her uygulama kendi araçlarını ayrı ayrı sarmalar.</span>
+<div class="mcp-diagram">
+<div class="mcp-col"><span class="mcp-node is-app">Uygulama 1</span><span class="mcp-node is-app">Uygulama 2</span><span class="mcp-node is-app">Uygulama 3</span></div>
+<div class="mcp-links tangle">her uygulama&nbsp;&rarr;<br>her araç</div>
+<div class="mcp-col"><span class="mcp-node">Slack</span><span class="mcp-node">Google Drive</span><span class="mcp-node">GitHub</span><span class="mcp-node">PostgreSQL</span></div>
+</div>
+<div class="mcp-formula muted"><span class="big">M × N</span><small>çarpımsal entegrasyon yükü</small></div>
+</div>
+<div class="mcp-panel is-after"><h4>MCP ile</h4><span class="mcp-sub">Her uygulama ortak MCP sunucusunu kullanır.</span>
+<div class="mcp-diagram">
+<div class="mcp-col"><span class="mcp-node is-app">Uygulama 1</span><span class="mcp-node is-app">Uygulama 2</span><span class="mcp-node is-app">Uygulama 3</span></div>
+<div class="mcp-links">&rarr;<br><span class="mcp-hub">MCP</span><br>&rarr;</div>
+<div class="mcp-col"><span class="mcp-node">Slack</span><span class="mcp-node">Google Drive</span><span class="mcp-node">GitHub</span><span class="mcp-node">PostgreSQL</span></div>
+</div>
+<div class="mcp-formula"><span class="big">M + N</span><small>toplamsal entegrasyon yükü</small></div>
+</div>
+</div>
+<div class="note-card"><h3 id="neden-bu-kadar-onemli">Neden bu kadar önemli?</h3><p>Bir uygulama Slack, Google Drive, GitHub ve bir PostgreSQL veritabanıyla bütünleşmek istediğinde, MCP olmadan bunların her biri için ayrı sarmalayıcı kod yazması gerekir. Farklı bir ekip başka bir uygulama yaparken aynı kaynakları yine kendisi sarmalar. MCP, bu tekrarı ortadan kaldırır: bir kez yazılan sunucu, tüm istemciler tarafından paylaşılır.</p></div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+
+<h3 id="mcp-tam-olarak-neyi-cozer">MCP tam olarak neyi çözer?</h3>
+<p>MCP’den önce geliştirici topluluğunda şöyle bir tablo vardı: bir geliştirici, uygulamasını Slack, Google Drive ve GitHub verisiyle ya da bir PostgreSQL veritabanıyla bütünleştirmek isterse, bu kaynakların API’leri etrafına işlev sağlayan sarmalayıcı kodlar yazardı. Başka bir ekip farklı bir uygulama yaparken aynı kaynaklara yine kendi başına bağlanırdı. Böylece pek çok geliştirici, aynı veri kaynakları için tekrar tekrar özel sarmalayıcılar yazıyordu. MCP, uygulamaların araçlara ve veri kaynaklarına erişimi için ortak bir standart önererek bu çarpımsal yükü toplamsal yüke çevirdi.</p>
+
+<h3 id="kaynaklar-ve-araclar">Kaynaklar ve araçlar</h3>
+<p>MCP’nin ilk tasarımı, bir dil modeline nasıl daha fazla bağlam verileceğine ve verinin nasıl çekileceğine odaklanıyordu. Bu yüzden başlangıçtaki araçların çoğu yalnızca veri çeken araçlardı; MCP belgelerinde bunlara <strong>kaynak (resource)</strong> denir. Ancak MCP yalnızca veriye değil, bir uygulamanın çağırmak isteyebileceği daha <strong>genel işlevlere</strong> de erişim verir. Yani protokol iki şeyi birden eriştirir: çekilecek veri ve çalıştırılacak işlev.</p>
+<div class="insight-grid">
+<div class="insight-card"><strong>Kaynaklar</strong><span>Modele bağlam sağlamak için veri çeken parçalar. İlk MCP araçlarının çoğu bu türdendi.</span></div>
+<div class="insight-card"><strong>Araçlar</strong><span>Bir uygulamanın çağırmak isteyebileceği daha genel işlevler; veri kaynaklarında eylem almayı da kapsar.</span></div>
+</div>
+
+<h3 id="istemciler-ve-sunucular">İstemciler ve sunucular</h3>
+<p>MCP ekosisteminde iki rol vardır. <strong>İstemciler</strong>, araçlara veya verilere erişmek isteyen uygulamalardır. <strong>Sunucular</strong> ise çoğunlukla Slack, GitHub veya Google Drive gibi kaynaklardaki veriye erişim veren ya da bu kaynaklarda eylem almayı sağlayan yazılım sarmalayıcılarıdır. Bugün hem tüketici tarafında (araç ve kaynakları kullanan istemciler) hem de sağlayıcı tarafında (araç ve kaynakları sunan sunucular) hızla büyüyen bir liste vardır.</p>
+
+<h3 id="somut-bir-ornek">Somut bir örnek</h3>
+<p>Bir MCP istemcisinin çalışmasını kısa bir örnekle düşünelim: bir masaüstü sohbet uygulaması, bir GitHub MCP sunucusuna bağlanmış olsun. Kullanıcı “şu adresteki depodaki <code>readme.md</code> dosyasını özetle” dediğinde, istemci uygulama GitHub MCP sunucusundan ilgili depodaki <code>readme.md</code> dosyasını ister. Dönen (epey uzun) içerik modelin bağlamına beslenir ve model dosyanın özetini üretir.</p>
+<p>Ardından kullanıcı “en son çekme istekleri (pull request) neler?” diye sorduğunda, model bu kez MCP sunucusuna farklı bir istek yaptırır: çekme isteklerini listele. Bu, GitHub’ın MCP sunucusunun sunduğu başka bir araçtır. Dönen sonuç yine modele beslenir ve model en son çekme isteklerinin derli toplu bir metin özetini yazar. İki istekte de aynı kalıp işler: istemci, MCP sunucusu üzerinden doğru aracı çağırır; sonuç modele beslenir; model nihai yanıtı üretir.</p>
+<div class="warn-card"><h3 id="bir-nuans">Bir nüans</h3><p>Burada kullanıcı, alttaki API’lerin nasıl çağrıldığıyla hiç uğraşmaz. İstemci ile sunucu arasındaki konuşma standart bir protokolle yürüdüğünden, aynı istemci farklı sunuculara (Slack, GitHub, Google Drive, PostgreSQL...) aynı biçimde bağlanabilir. Standart olan şey, çağrının kendisi değil, çağrının <em>yapılma biçimidir</em>.</p></div>
+</section>
+
+<section><h2 id="istemci-ve-sunucu-mimarisi">İstemci ve Sunucu Mimarisi</h2>
+<p>Hazır istemciler ve sunucular bir araya geldiğinde, kendi uygulamanızı sıfırdan her kaynağa bağlamak zorunda kalmazsınız. Aşağıda, ekosistemin iki tarafından örnekler görülür. Listelerin sonundaki “Senin uygulaman” ve “Senin sunucun” girişleri, kendi uygulamanızın bir gün bir istemci, sağlayacağınız bir kaynağın da bir gün bir sunucu olabileceğini hatırlatır.</p>
+<div class="cs-grid">
+<div class="cs-col"><h4>İstemciler (tüketen)</h4>
+<div class="cs-item"><span class="cs-badge">C</span><span>Cursor</span></div>
+<div class="cs-item"><span class="cs-badge">CD</span><span>Claude Desktop</span></div>
+<div class="cs-item"><span class="cs-badge">W</span><span>Windsurf</span></div>
+<div class="cs-item is-own"><span class="cs-badge">A</span><span>Senin uygulaman</span></div>
+</div>
+<div class="cs-col"><h4>Sunucular (sağlayan)</h4>
+<div class="cs-item"><span class="cs-badge">S</span><span>Slack</span></div>
+<div class="cs-item"><span class="cs-badge">G</span><span>Google Drive</span></div>
+<div class="cs-item"><span class="cs-badge">GH</span><span>GitHub</span></div>
+<div class="cs-item"><span class="cs-badge">P</span><span>PostgreSQL</span></div>
+<div class="cs-item is-own"><span class="cs-badge">S</span><span>Senin sunucun</span></div>
+</div>
+</div>
+<p>Pek çok sunucu hazır olarak mevcuttur; bunların bir kısmı doğrudan servis sağlayıcıların kendisi tarafından geliştirilir. Bir istemci geliştirmek, uygulamanıza geniş bir araç ve kaynak havuzu açar; bir sunucu geliştirmek ise sağladığınız kaynağı tüm ekosisteme açar.</p>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card"><h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>MCP’yi bir araç sanmak.</strong> MCP bir araç değil, araçlara ve verilere erişimi düzenleyen ortak bir standarttır.</li>
+<li><strong>İstemci ve sunucu rollerini karıştırmak.</strong> İstemci erişmek ister; sunucu erişim sağlar. Aynı kaynak için bir sunucu, onu kullanan birçok istemci olabilir.</li>
+<li><strong>Kaynak ile aracı eşitlemek.</strong> Kaynak çoğunlukla veri çeker; araç daha genel işlevleri (eylem dâhil) kapsar. MCP ikisini birden sunar.</li>
+<li><strong>Her kaynağı yeniden sarmalamak.</strong> MCP’nin tüm amacı bu tekrarı önlemektir; hazır bir sunucu varken yeniden yazmak çarpımsal yüke geri dönmektir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>MCP, araç kullanımını tekil işlevlerden bütün bir ekosisteme taşıyan önemli bir standarttır. Çözdüğü sorun basittir ama büyüktür: her uygulamanın her veri kaynağı için ayrı bağlayıcı yazdığı çarpımsal (M×N) düzeni, ortak bir protokolle toplamsal (M+N) bir düzene çevirir. Protokol yalnızca veriye (kaynaklar) değil, çağrılabilecek genel işlevlere (araçlar) de standart erişim verir.</p>
+<p>İstemciler araçları ve kaynakları tüketir; sunucular onları sağlar. Pek çok hazır istemci ve sunucu mevcut olduğundan, kendi uygulamanızı geniş bir araç havuzuna standart bir kapıdan bağlayabilir; sağladığınız bir kaynağı da bir sunucu olarak tüm topluluğa açabilirsiniz. Modele kendi araçlarınıza erişim vermek, daha güçlü ve daha yetenekli agentik uygulamalar kurmanın temelidir; MCP de bu erişimi ölçeklenebilir ve paylaşılabilir kılan ortak zemindir. Bu protokol, üzerine ayrı ve daha derin çalışmalar yapılabilecek kadar geniş bir konudur.</p>
+</section>
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#model-baglam-protokolu-mcp" class="toc-h1">Model Bağlam Protokolü (MCP)</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-fikri" class="toc-h3">Bu Dersin Ana Fikri</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim-mnden-m-nye" class="toc-h2">Büyük Resim: M×N’den M+N’ye</a>
+<a href="#neden-bu-kadar-onemli" class="toc-h3">Neden bu kadar önemli?</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#mcp-tam-olarak-neyi-cozer" class="toc-h3">MCP tam olarak neyi çözer?</a>
+<a href="#kaynaklar-ve-araclar" class="toc-h3">Kaynaklar ve araçlar</a>
+<a href="#istemciler-ve-sunucular" class="toc-h3">İstemciler ve sunucular</a>
+<a href="#somut-bir-ornek" class="toc-h3">Somut bir örnek</a>
+<a href="#bir-nuans" class="toc-h3">Bir nüans</a>
+<a href="#istemci-ve-sunucu-mimarisi" class="toc-h2">İstemci ve Sunucu Mimarisi</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body></html>

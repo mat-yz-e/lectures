@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Tasarım Desenleri</title>
+<style>
+:root{
+--dlai-coral:#fe4a61; --dlai-coral-dark:#e63f55; --dlai-coral-soft:#ffe8ec; --dlai-coral-muted:#fff3f5;
+--lesson-bg:#ffffff; --lesson-text:#111827; --lesson-muted:#4b5563; --lesson-soft:#f9fafb;
+--lesson-soft-2:#f3f4f6; --lesson-border:#e5e7eb; --lesson-border-strong:#d1d5db;
+--lesson-card:#ffffff; --lesson-card-muted:#fff8f9; --accent:#fe4a61; --accent-dark:#c2384a;
+--node-model-bg:#eef2ff; --node-model-border:#8b95c9; --node-model-text:#28336b;
+--node-tool-bg:#fff3f5; --node-tool-border:#fe4a61; --node-tool-text:#8f2638;
+--node-output-bg:#f8fafc; --node-output-border:#cbd5e1; --node-output-text:#1f2937;
+--code-bg:#f7f7f7; --code-text:#000000; --code-border:#cccccc;
+}
+html,body{margin:0;padding:0;background:var(--lesson-bg);} *,*::before,*::after{box-sizing:border-box;}
+body{color:var(--lesson-text);}
+.lesson-page{width:min(100%,1040px);margin:0 auto;padding:clamp(1rem,2.5vw,2.5rem);background:var(--lesson-bg);color:var(--lesson-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.62;}
+.lesson-page>article{margin:0 auto;counter-reset:section;}
+.title-block{display:flex;flex-direction:column;align-items:center;margin:0 0 1.6rem;text-align:center;}
+.lesson-logo{display:block;width:clamp(180px,22vw,260px);height:auto;max-height:72px;object-fit:contain;margin:0 auto 1.15rem;}
+.lesson-page h1,.lesson-page h2,.lesson-page h3,.lesson-page h4{color:var(--lesson-text);font-weight:700;line-height:1.25;}
+.lesson-page h1{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);text-align:center;text-wrap:balance;}
+.lead-text{width:min(100%,760px);margin:0.85rem auto 0;color:var(--lesson-muted);font-size:1.08rem;text-align:center;text-wrap:balance;}
+.lesson-page h2{display:flex;align-items:center;gap:0.55rem;margin:2.2rem 0 0.85rem;padding-top:1.1rem;border-top:1px solid var(--lesson-border);font-size:clamp(1.35rem,2.1vw,1.7rem);counter-increment:section;counter-reset:subsection;}
+.lesson-page h2::before{content:counter(section) ".";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h3{display:flex;align-items:center;gap:0.55rem;margin:1.5rem 0 0.6rem;font-size:clamp(1.1rem,1.6vw,1.3rem);counter-increment:subsection;}
+.lesson-page h3::before{content:counter(section) "." counter(subsection) " ";color:currentColor;font-variant-numeric:tabular-nums;}
+.lesson-page h4{margin:0 0 0.45rem;font-size:1rem;}
+.lesson-page p{margin:0.7rem 0;}
+.lesson-page ul,.lesson-page ol{margin:0.6rem 0;padding-left:1.4rem;}
+.lesson-page li{margin:0.3rem 0;}
+.lesson-page strong{color:var(--lesson-text);}
+.definition-card,.example-card,.note-card,.warn-card,.mini-panel{margin:1rem 0;padding:0.95rem 1.05rem;border:1px solid var(--lesson-border);border-radius:0.65rem;background:var(--lesson-card);}
+.definition-card{border-left:4px solid var(--dlai-coral);background:linear-gradient(90deg,var(--dlai-coral-soft),#ffffff 42%);}
+.note-card{border-left:4px solid var(--dlai-coral-dark);background:var(--lesson-card-muted);}
+.warn-card{border-left:4px solid var(--dlai-coral-dark);background:var(--dlai-coral-muted);}
+.definition-card h3,.example-card h3,.note-card h3,.warn-card h3,.mini-panel h4{display:block;margin:0 0 0.4rem;counter-increment:none;color:var(--accent-dark);}
+.definition-card h3::before,.example-card h3::before,.note-card h3::before,.warn-card h3::before{content:none;}
+.table-wrap{width:100%;overflow-x:auto;margin:1rem 0;border:1px solid var(--lesson-border);border-radius:0.65rem;}
+table{width:100%;border-collapse:collapse;min-width:640px;background:#fff;table-layout:fixed;}
+th,td{padding:0.82rem 0.9rem;border-bottom:1px solid var(--lesson-border);text-align:left;vertical-align:top;}
+th{background:var(--lesson-soft);color:var(--accent-dark);font-size:0.95rem;}
+tr:last-child td{border-bottom:0;}
+.term-table col.term-col{width:25%;} .term-table td.term{white-space:nowrap;font-weight:600;color:var(--lesson-text);}
+.pattern-table col.pattern-col{width:25%;} .pattern-table td.pattern{font-weight:600;color:var(--lesson-text);}
+.score-table col.task-col{width:34%;} .score-table td.task{font-weight:600;color:var(--lesson-text);}
+code{padding:0.08rem 0.26rem;border-radius:0.28rem;background:#f1f1f1;color:#111;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.9em;}
+.big-picture-panel{margin:1.2rem 0;padding:1.1rem 1.15rem 1.25rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.7rem;background:linear-gradient(180deg,var(--dlai-coral-muted),#ffffff 60%);}
+.bp-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;margin:0.9rem 0 0;align-items:stretch;}
+.bp-step{position:relative;display:flex;flex-direction:column;align-items:center;padding:0.95rem 0.85rem 0.9rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:#fff;text-align:center;}
+.bp-step .bp-num{display:flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--dlai-coral);color:#fff;font-size:0.9rem;font-weight:700;margin:0 auto 0.55rem;}
+.bp-step strong{display:block;margin-bottom:0.25rem;color:var(--lesson-text);font-size:0.98rem;}
+.bp-step span{color:var(--lesson-muted);font-size:0.9rem;line-height:1.45;}
+.bp-step:not(:last-child)::after{content:"";position:absolute;top:2.05rem;right:-0.45rem;width:0.5rem;height:2px;background:var(--dlai-coral);}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;margin:1rem 0;}
+.insight-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-radius:0.6rem;background:var(--lesson-soft);}
+.insight-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.insight-card span{color:var(--lesson-muted);font-size:0.92rem;}
+.diagram{margin:1.2rem 0;padding:1.1rem 1.1rem 1.2rem;border:1px solid var(--lesson-border);border-radius:0.7rem;background:#fff;}
+.diagram-title{margin:0 0 0.2rem;font-weight:700;color:var(--lesson-text);font-size:1rem;}
+.diagram-sub{margin:0 0 0.9rem;color:var(--lesson-muted);font-size:0.9rem;}
+.node-flow{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:0.3rem;}
+.node-col{display:flex;flex-direction:column;align-items:center;width:8.4rem;}
+.node{display:flex;align-items:center;justify-content:center;width:100%;min-height:3.2rem;padding:0.42rem 0.5rem;border:1.5px solid var(--lesson-border-strong);border-radius:0.5rem;background:#fff;text-align:center;font-size:0.84rem;font-weight:600;line-height:1.2;}
+.node-input{background:#fff;border-color:var(--lesson-border-strong);color:var(--lesson-text);}
+.node-model{background:var(--node-model-bg);border-color:var(--node-model-border);color:var(--node-model-text);}
+.node-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);color:var(--node-tool-text);}
+.node-output{background:var(--node-output-bg);border-color:var(--node-output-border);color:var(--node-output-text);}
+.node-cap{margin-top:0.35rem;color:var(--lesson-muted);font-size:0.8rem;line-height:1.3;text-align:center;}
+.node-arrow{align-self:flex-start;padding-top:1rem;color:var(--lesson-muted);font-weight:700;font-size:1.05rem;}
+.legend{display:flex;flex-wrap:wrap;gap:0.7rem 1.3rem;margin:0.4rem 0 0;padding-top:0.85rem;border-top:1px dashed var(--lesson-border);}
+.legend-item{display:flex;align-items:center;gap:0.45rem;font-size:0.84rem;color:var(--lesson-muted);}
+.legend-swatch{width:1.05rem;height:1.05rem;border-radius:0.25rem;border:1.5px solid var(--lesson-border-strong);flex:none;}
+.sw-model{background:var(--node-model-bg);border-color:var(--node-model-border);}
+.sw-tool{background:var(--node-tool-bg);border-color:var(--node-tool-border);}
+.sw-output{background:var(--node-output-bg);border-color:var(--node-output-border);}
+.tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.75rem;margin:1rem 0;}
+.tool-card{padding:0.85rem 0.9rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.tool-card h4{color:var(--accent-dark);}
+.tool-card ul{margin:0.35rem 0 0;padding-left:1.1rem;color:var(--lesson-muted);font-size:0.92rem;}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.85rem;margin:1rem 0;}
+.cmp-card{padding:0.95rem 1rem;border:1px solid var(--lesson-border);border-top:3px solid var(--dlai-coral);border-radius:0.6rem;background:#fff;}
+.cmp-card h4{margin:0 0 0.45rem;color:var(--accent-dark);}
+.cmp-card ul{margin:0;padding-left:1.15rem;} .cmp-card li{font-size:0.94rem;color:var(--lesson-muted);}
+.agent-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;margin:1rem 0;}
+.agent-card{padding:0.9rem 0.95rem;border:1px solid var(--lesson-border);border-left:4px solid var(--dlai-coral);border-radius:0.6rem;background:var(--lesson-card-muted);}
+.agent-card strong{display:block;color:var(--accent-dark);margin-bottom:0.25rem;}
+.agent-card span{color:var(--lesson-muted);font-size:0.92rem;}
+@media (max-width:900px){
+.bp-flow,.insight-grid,.tool-grid,.comparison-grid,.agent-grid{grid-template-columns:1fr;}
+.bp-step:not(:last-child)::after{display:none;}
+}
+@media (max-width:640px){
+.lesson-page{padding:1rem;line-height:1.7;}
+.node-col{width:7rem;}
+.node-arrow{width:100%;padding:0.15rem 0;text-align:center;transform:rotate(90deg);}
+}
+</style>
+<link rel="stylesheet" href="../../assets/nav.css">
+</head>
+<body data-root="../../" data-active="Module-1-Introduction-to-Agentic-Workflows/M1-7-Agentic-Design-Patterns/M1-7-Agentic-Design-Patterns.html" data-logo="images/dlai-logo.png">
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
+<header class="mobile-bar">
+  <button class="nav-toggle" id="btn-course" type="button" aria-controls="course-nav" aria-expanded="false" aria-label="Kurs menüsünü aç veya kapat">&#9776; Kurs</button>
+  <span class="mobile-bar-title">Agentic Tasarım Desenleri</span>
+  <button class="nav-toggle" id="btn-toc" type="button" aria-controls="toc-nav" aria-expanded="false" aria-label="Ders içeriğini aç veya kapat">İçindekiler</button>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<div class="notebook-shell">
+<aside class="course-sidebar" id="course-nav" aria-label="Kurs navigasyonu"></aside>
+<main class="notebook-main" id="main-content" tabindex="-1">
+<div class="lesson-page"><article>
+<header class="title-block">
+<img class="lesson-logo" src="images/dlai-logo.png" alt="DeepLearning.AI logosu">
+<h1 id="agentic-tasarim-desenleri">Agentic Tasarım Desenleri</h1>
+<p class="lead-text">Agentic iş akışlarında yapı taşlarını birleştirmenin dört temel yolu: yansıma, araç kullanımı, planlama ve çoklu ajan işbirliği.</p>
+</header>
+
+<section><h2 id="kapsam-ve-baglam">Kapsam ve Bağlam</h2>
+<p>Agentic iş akışları, tek bir model çağrısından ibaret değildir. Önceki derslerde görevleri adımlara bölmeyi, bu adımları yapı taşlarıyla eşleştirmeyi ve çıktıları değerlendirmeyi gördük. Bu ders, bu yapı taşlarını daha büyük ve daha esnek iş akışlarına dönüştüren temel tasarım desenlerini özetler.</p>
+<p>Dört desen özellikle önemlidir: <strong>reflection</strong>, <strong>tool use</strong>, <strong>planning</strong> ve <strong>multi-agent collaboration</strong>. Bu desenler, bir LLM’in çıktısını eleştirmesini, dış araçlarla eylem yapmasını, adımları kendisinin sıralamasını veya farklı roller üstlenen ajanlarla birlikte çalışmasını sağlar.</p>
+<div class="definition-card"><h3 id="bu-dersin-ana-tezi">Bu Dersin Ana Tezi</h3><p>Agentic tasarım desenleri, yapı taşlarını rastgele bağlamak yerine onları belirli bir düşünme kalıbına göre düzenler. Desen doğru seçildiğinde, sistem yalnızca cevap üretmez; geri bildirim alır, araç kullanır, adım planlar veya roller arasında iş bölümü yapar.</p></div>
+</section>
+
+<section><h2 id="ogrenme-hedefleri">Öğrenme Hedefleri</h2>
+<ul>
+<li>Dört temel agentic tasarım desenini adlandırıp ayırt edebilmek.</li>
+<li>Reflection deseninde ilk çıktının nasıl eleştirildiğini ve yeniden üretildiğini açıklayabilmek.</li>
+<li>Tool use deseninde LLM’in dış işlevlerden nasıl yararlandığını yorumlayabilmek.</li>
+<li>Planning deseninin, geliştirici tarafından sabitlenmiş adımlar yerine model tarafından seçilen adımlar sunduğunu kavramak.</li>
+<li>Çoklu ajan işbirliğinde farklı rollerin aynı görev üzerinde nasıl birlikte çalıştığını açıklayabilmek.</li>
+<li>Her desenin güçlü yanlarını ve kontrol zorluklarını karşılaştırabilmek.</li>
+</ul>
+</section>
+
+<section><h2 id="on-kosullar">Ön Koşullar</h2>
+<ul>
+<li>LLM, agentic iş akışı, araç çağrısı ve görev ayrıştırma kavramlarına temel aşinalık.</li>
+<li>Bir iş akışında model, araç, geri bildirim ve ara adım rollerini ayırt edebilme.</li>
+<li>Eval ve hata analizi fikrinin, iş akışlarını iyileştirmek için neden gerekli olduğunu bilmek.</li>
+</ul>
+<p>Bu ders kavramsaldır; yürütülebilir kod veya kayıtlı çıktı içermez. Bu nedenle sayfada Jupyter kod hücresi veya çıktı bloğu oluşturulmamıştır.</p>
+</section>
+
+<section><h2 id="notasyon-ve-terim-tablosu">Notasyon ve Terim Tablosu</h2>
+<div class="table-wrap"><table class="term-table">
+<colgroup><col class="term-col"><col><col></colgroup>
+<thead><tr><th>Terim</th><th>Bu Dersteki Anlamı</th><th>Dikkat Edilecek Nokta</th></tr></thead>
+<tbody>
+<tr><td class="term">Tasarım deseni</td><td>Yapı taşlarını tekrar kullanılabilir bir iş akışı mantığıyla birleştirme biçimi.</td><td>Aynı desen farklı görevlerde farklı araçlarla uygulanabilir.</td></tr>
+<tr><td class="term">Reflection</td><td>Model çıktısının eleştirilip geri bildirimle iyileştirilmesi.</td><td>Tek modelle veya ayrı bir eleştirmen ajanıyla kurulabilir.</td></tr>
+<tr><td class="term">Tool use</td><td>Modelin dış işlevleri, API’leri veya kod yürütmeyi kullanması.</td><td>Modeli yalnızca metin üretmekten çıkarıp eylem ve bilgi alma yeteneğine taşır.</td></tr>
+<tr><td class="term">Planning</td><td>Modelin bir görevi tamamlamak için gerekli adımları kendisinin sıralaması.</td><td>Güçlüdür; ancak önceden sabitlenmiş akışlara göre daha zor kontrol edilir.</td></tr>
+<tr><td class="term">Çoklu ajan</td><td>Farklı roller üstlenen birden fazla ajanı birlikte yürütme yaklaşımı.</td><td>Kompleks görevlerde güçlü olabilir; davranış daha az öngörülebilir hale gelir.</td></tr>
+<tr><td class="term">Eval</td><td>Sistemin ne kadar iyi çalıştığını izleyen değerlendirme süreci.</td><td>Desenlerin pratikte işe yarayıp yaramadığını ölçmek için gereklidir.</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section><h2 id="buyuk-resim">Büyük Resim</h2>
+<p>Dört desen, agentic sistemlerin aynı yapı taşlarını farklı biçimde kullanmasını sağlar. Reflection geri bildirim döngüsü kurar; tool use modeli dış yeteneklerle genişletir; planning adım sırasını modele bırakır; çoklu ajan işbirliği ise farklı uzmanlık rollerini aynı görevde buluşturur.</p>
+<div class="big-picture-panel"><div class="bp-flow">
+<div class="bp-step"><span class="bp-num">1</span><strong>Reflection</strong><span>İlk çıktıyı eleştir, geri bildirimi kullan, daha iyi sürüm üret.</span></div>
+<div class="bp-step"><span class="bp-num">2</span><strong>Tool use</strong><span>Arama, kod yürütme, veri erişimi veya uygulama araçlarını çağır.</span></div>
+<div class="bp-step"><span class="bp-num">3</span><strong>Planning</strong><span>Görev için gerekli adımları ve sıralamayı modelin belirlemesine izin ver.</span></div>
+<div class="bp-step"><span class="bp-num">4</span><strong>Çoklu ajan</strong><span>Farklı rollerdeki ajanların aynı karmaşık iş üzerinde işbirliği yapmasını sağla.</span></div>
+</div></div>
+<div class="insight-grid">
+<div class="insight-card"><strong>Desenler sihir değildir</strong><span>Performansı artırabilirler; fakat her görevi otomatik olarak kusursuz yapmazlar.</span></div>
+<div class="insight-card"><strong>Kontrol derecesi değişir</strong><span>Sabit akışlar daha öngörülebilir; planlama ve çoklu ajan daha deneysel olabilir.</span></div>
+<div class="insight-card"><strong>Eval şarttır</strong><span>Hangi desenin fayda sağladığını görmek için sistem çıktıları ölçülmelidir.</span></div>
+</div>
+</section>
+
+<section><h2 id="ana-anlatim">Ana Anlatım</h2>
+<h3 id="reflection-ciktiyi-elestirip-iyilestirmek">Reflection: çıktıyı eleştirip iyileştirmek</h3>
+<p>Reflection deseninde sistem önce bir çıktı üretir; sonra bu çıktıyı dikkatle inceleyip hangi yönlerinin düzeltilmesi gerektiğini belirler. Örneğin bir modelden belirli bir görev için kod yazması istenebilir. Ardından aynı model veya ayrı bir eleştirmen rolü, bu kodu doğruluk, stil ve verimlilik açısından gözden geçirir.</p>
+<p>Eleştiri yalnızca metinsel yorum olmak zorunda değildir. Kod çalıştırılıp hangi testte başarısız olduğu görülebilir; hata mesajı veya test sonucu modele geri verilebilir. Böylece ilk sürüm, eleştiriyle ikinci sürüme; dış geri bildirimle üçüncü sürüme dönüşebilir.</p>
+<div class="diagram">
+<p class="diagram-title">Reflection döngüsü</p>
+<p class="diagram-sub">Üretim, eleştiri ve yeniden üretim birbirini izleyen bir iyileştirme döngüsü oluşturur.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-input">Görev isteği</div><div class="node-cap">Ne yapılacak?</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">İlk çıktı</div><div class="node-cap">Üreten ajan</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-model">Eleştiri</div><div class="node-cap">Kendi kontrolü veya ayrı rol</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Harici geri bildirim</div><div class="node-cap">Test veya hata bilgisi</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-output">İyileştirilmiş sürüm</div><div class="node-cap">Daha iyi çıktı</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-model"></span>Model rolü</span>
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Araç veya test geri bildirimi</span>
+<span class="legend-item"><span class="legend-swatch sw-output"></span>Üretilen çıktı</span>
+</div>
+</div>
+<div class="note-card"><h3 id="tek-model-veya-ayri-elestirmen">Tek model veya ayrı eleştirmen</h3><p>Reflection tek bir modele “kendi çıktını kontrol et” demekle kurulabilir. Daha gelişmiş durumda, ayrı bir eleştirmen ajanı yalnızca hataları bulmaya, testleri yorumlamaya veya iyileştirme önerisi üretmeye odaklanır.</p></div>
+
+<h3 id="tool-use-modeli-dis-yeteneklerle-genisletmek">Tool use: modeli dış yeteneklerle genişletmek</h3>
+<p>Tool use deseninde LLM yalnızca metin üretmez; belirli işlevleri çağırarak bilgi toplar, hesap yapar veya uygulamalarla etkileşime girer. Bu, modelin kendi eğitim bilgisinin sınırını aşmasını ve gerçek bir iş akışında daha fazla iş yapmasını sağlar.</p>
+<p>Bir kullanıcı “en iyi kahve makinesi hangisi?” diye sorduğunda, web arama aracı modelin güncel değerlendirmeleri bulmasına yardım edebilir. Bir yatırım veya faiz hesabı sorusunda kod yürütme aracı, modelin tahmin yerine hesaplama yapmasını sağlar. Aynı mantık veri analizi, e-posta, takvim, mesajlaşma, görüntü üretimi, görüntü açıklama veya metin çıkarma gibi çok farklı yeteneklere genişleyebilir.</p>
+<div class="tool-grid">
+<div class="tool-card"><h4>Analiz</h4><ul><li>Kod yürütme</li><li>Matematiksel hesaplama</li><li>Veri analizi</li></ul></div>
+<div class="tool-card"><h4>Bilgi toplama</h4><ul><li>Web araması</li><li>Ansiklopedi erişimi</li><li>Veritabanı erişimi</li></ul></div>
+<div class="tool-card"><h4>Üretkenlik</h4><ul><li>E-posta</li><li>Takvim</li><li>Mesajlaşma</li></ul></div>
+<div class="tool-card"><h4>Görsel işler</h4><ul><li>Görüntü üretimi</li><li>Görüntü açıklama</li><li>Metin çıkarma</li></ul></div>
+</div>
+<div class="definition-card"><h3 id="tool-use-deseninin-temel-fikri">Tool use deseninin temel fikri</h3><p>Model hangi aracı ne zaman çağıracağını seçer. Böylece dil modeli, dış işlevlerle birleşerek yalnızca cevap veren değil, işi yürüten bir sistem parçasına dönüşür.</p></div>
+
+<h3 id="planning-adimlari-modelin-siralamasi">Planning: adımları modelin sıralaması</h3>
+<p>Planning deseninde geliştirici her adımı önceden sabitlemek yerine, modelin görevi tamamlamak için gerekli eylem dizisini belirlemesine izin verir. Bu yaklaşım özellikle görevin tek bir sabit akışla tanımlanamadığı durumlarda önemlidir.</p>
+<p>Örneğin bir sistemden, bir örnek görseldeki poz bilgisini kullanarak yeni bir görüntü oluşturması ve ardından ortaya çıkan görüntüyü sesli biçimde betimlemesi istenebilir. Bu görev tek bir model çağrısı değildir: önce poz belirlenir, sonra görüntü üretilir, sonra görüntü metne çevrilir, en sonunda metin sese dönüştürülür. Planning deseninde model, bu adımları ve sıralamayı kendisi seçer.</p>
+<div class="diagram">
+<p class="diagram-title">Planlama örneği</p>
+<p class="diagram-sub">Model, karmaşık isteği uygun araç çağrılarından oluşan bir sıraya dönüştürür.</p>
+<div class="node-flow">
+<div class="node-col"><div class="node node-input">Karmaşık istek</div><div class="node-cap">Birden çok işlem gerekir</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Poz belirleme</div><div class="node-cap">Ara adım</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Görüntü üretme</div><div class="node-cap">Ara adım</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-tool">Görüntüyü metne çevirme</div><div class="node-cap">Ara adım</div></div>
+<span class="node-arrow">&rarr;</span>
+<div class="node-col"><div class="node node-output">Sesli betimleme</div><div class="node-cap">Nihai çıktı</div></div>
+</div>
+<div class="legend">
+<span class="legend-item"><span class="legend-swatch sw-tool"></span>Araç veya model çağrısı</span>
+<span class="legend-item"><span class="legend-swatch sw-output"></span>Sonuç</span>
+</div>
+</div>
+<div class="warn-card"><h3 id="planlama-neden-daha-zor-kontrol-edilir">Planlama neden daha zor kontrol edilir?</h3><p>Planlama yapan ajanlar, geliştiricinin önceden sabitlediği adımları takip etmek yerine kendi eylem sırasını seçer. Bu esneklik bazen çok iyi sonuçlar verir; fakat davranışı öngörmek ve sınırlandırmak daha zordur.</p></div>
+
+<h3 id="coklu-ajan-isbirligi-roller-arasi-calisma">Çoklu ajan işbirliği: roller arası çalışma</h3>
+<p>Çoklu ajan işbirliğinde tek bir model rolü yerine, birden fazla ajan farklı görevler üstlenir. İnsan yöneticinin karmaşık bir proje için araştırmacı, yazar, editör veya test uzmanı gibi kişilerle çalışması buna benzer bir düşünme biçimidir.</p>
+<p>Bir pazarlama broşürü üretmek için bir araştırma ajanı çevrimiçi bilgi toplayabilir; bir pazarlama ajanı bu bilgiye dayanarak metni yazabilir; bir editör ajanı ise dili cilalayıp tutarlılığı artırabilir. Yazılım geliştirmede de tasarımcı, programcı ve testçi gibi roller bir arada düşünülebilir.</p>
+<div class="agent-grid">
+<div class="agent-card"><strong>Araştırmacı ajan</strong><span>İlgili bilgileri toplar ve görevin bağlamını hazırlar.</span></div>
+<div class="agent-card"><strong>Üretici ajan</strong><span>Toplanan bağlama dayanarak ana metni, kodu veya taslağı üretir.</span></div>
+<div class="agent-card"><strong>Editör / testçi ajan</strong><span>Çıktıyı kontrol eder, hataları bulur ve cilalı sürüm için geri bildirim verir.</span></div>
+</div>
+<div class="table-wrap"><table class="score-table">
+<colgroup><col class="task-col"><col><col></colgroup>
+<thead><tr><th>Görev türü</th><th>Tek ajan yaklaşımı</th><th>Çoklu ajan yaklaşımı</th></tr></thead>
+<tbody>
+<tr><td class="task">Biyografi yazımı</td><td>%66.0</td><td>%73.8</td></tr>
+<tr><td class="task">Genel bilgi ölçümü</td><td>%63.9</td><td>%71.1</td></tr>
+<tr><td class="task">Satranç hamlesi seçimi</td><td>%29.3</td><td>%45.2</td></tr>
+</tbody>
+</table></div>
+<p>Bu karşılaştırma, farklı rollerin birlikte tartışmasının bazı görevlerde daha iyi sonuçlar verebildiğini gösterir. Ancak çoklu ajan yaklaşımı daha fazla etkileşim, daha fazla olası sapma ve daha zor kontrol anlamına da gelir.</p>
+</section>
+
+<section><h2 id="dort-deseni-karsilastirma">Dört Deseni Karşılaştırma</h2>
+<p>Desen seçimi, görevin doğasına ve sistemden beklenen kontrol düzeyine bağlıdır. Bazı görevlerde reflection yeterli olabilir; bazı görevlerde dış araçlar olmadan doğru yanıt üretmek mümkün değildir; bazı açık uçlu görevlerde planning gerekir; bazı karmaşık üretim süreçlerinde ise rol paylaşımı değer katar.</p>
+<div class="table-wrap"><table class="pattern-table">
+<colgroup><col class="pattern-col"><col><col></colgroup>
+<thead><tr><th>Desen</th><th>Ne zaman kullanılır?</th><th>Temel risk</th></tr></thead>
+<tbody>
+<tr><td class="pattern">Reflection</td><td>İlk çıktıyı eleştirerek kaliteyi artırmak istediğinizde.</td><td>Eleştiri her zaman doğru olmayabilir; eval ile doğrulanmalıdır.</td></tr>
+<tr><td class="pattern">Tool use</td><td>Modelin bilgi toplaması, hesaplama yapması veya uygulama çağırması gerektiğinde.</td><td>Yanlış araç seçimi veya araç çıktısını yanlış yorumlama olabilir.</td></tr>
+<tr><td class="pattern">Planning</td><td>Adımlar baştan sabitlenemiyor ve modelin eylem sırası seçmesi gerekiyorsa.</td><td>Daha az öngörülebilir ve daha zor kontrol edilebilir.</td></tr>
+<tr><td class="pattern">Çoklu ajan</td><td>Farklı rollerin aynı karmaşık görev üzerinde birlikte çalışması faydalıysa.</td><td>Koordinasyon maliyeti ve kontrol zorluğu artar.</td></tr>
+</tbody>
+</table></div>
+<div class="comparison-grid">
+<div class="cmp-card">
+<h4>Daha kontrollü desenler</h4>
+<ul>
+<li>Reflection ve tool use genellikle belirli bir akışa daha kolay oturtulur.</li>
+<li>Ara adımlar ve araç çağrıları daha açık biçimde izlenebilir.</li>
+<li>Eval tasarlamak görece daha nettir.</li>
+</ul>
+</div>
+<div class="cmp-card">
+<h4>Daha esnek desenler</h4>
+<ul>
+<li>Planning ve çoklu ajan işbirliği daha açık uçlu görevlerde güçlü olabilir.</li>
+<li>Sistem kendi adımlarını veya rol etkileşimlerini seçebilir.</li>
+<li>Kontrol, izleme ve hata analizi daha dikkatli tasarlanmalıdır.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section><h2 id="yaygin-hatalar">Yaygın Hatalar</h2>
+<div class="warn-card">
+<h3 id="sik-karsilasilan-yanlis-anlamalar">Sık karşılaşılan yanlış anlamalar</h3>
+<ul>
+<li><strong>“Tek bir desen her göreve yeter.”</strong> Hayır. Desen seçimi görevin gerektirdiği geri bildirim, araç, planlama ve rol yapısına bağlıdır.</li>
+<li><strong>“Reflection çıktıyı her zaman doğru yapar.”</strong> Reflection kaliteyi artırabilir; ama hatasızlık garantisi değildir.</li>
+<li><strong>“Araç kullanımı sadece web araması demektir.”</strong> Araçlar hesaplama, veritabanı erişimi, e-posta, takvim, görüntü işleme ve daha fazlasını kapsayabilir.</li>
+<li><strong>“Planning her zaman daha akıllıdır.”</strong> Planlama esneklik sağlar; fakat sabit iş akışlarına göre daha zor kontrol edilir.</li>
+<li><strong>“Çoklu ajan işbirliği yalnızca ajan sayısını artırmaktır.”</strong> Asıl değer, rollerin anlamlı biçimde ayrılması ve çıktının ölçülmesidir.</li>
+</ul>
+</div>
+</section>
+
+<section><h2 id="son-cikarimlar">Son Çıkarımlar</h2>
+<p>Agentic tasarım desenleri, yapı taşlarını daha büyük iş akışlarına dönüştürmek için kullanılan düşünme kalıplarıdır. Reflection, sistemin kendi çıktısını veya ayrı bir eleştirmen rolünün geri bildirimini kullanarak iyileşmesini sağlar. Tool use, modeli arama, hesaplama, veri erişimi ve uygulama çağrılarıyla genişletir.</p>
+<p>Planning, geliştiricinin her adımı önceden yazmadığı durumlarda modelin eylem sırasını belirlemesini sağlar; bu güçlü ama daha zor kontrol edilen bir yaklaşımdır. Çoklu ajan işbirliği ise karmaşık görevlerde farklı uzmanlık rollerini bir araya getirir; iyi tasarlandığında performansı artırabilir, ancak izleme ve koordinasyon ihtiyacını da yükseltir.</p>
+<p>Bu dört desen, agentic iş akışlarının neler yapabileceğine dair temel çerçeveyi verir. Pratikte başarılı sistem kurmak için bu desenleri görev ayrıştırma, uygun yapı taşı seçimi ve eval süreciyle birlikte düşünmek gerekir.</p>
+</section>
+
+</article></div>
+</main>
+<aside class="toc-sidebar" id="toc-nav" aria-label="Ders içeriği">
+<div class="toc-head">İçindekiler</div>
+<nav class="toc-list" aria-label="Sayfa içi gezinme">
+<a href="#agentic-tasarim-desenleri" class="toc-h1">Agentic Tasarım Desenleri</a>
+<a href="#kapsam-ve-baglam" class="toc-h2">Kapsam ve Bağlam</a>
+<a href="#bu-dersin-ana-tezi" class="toc-h3">Bu Dersin Ana Tezi</a>
+<a href="#ogrenme-hedefleri" class="toc-h2">Öğrenme Hedefleri</a>
+<a href="#on-kosullar" class="toc-h2">Ön Koşullar</a>
+<a href="#notasyon-ve-terim-tablosu" class="toc-h2">Notasyon ve Terim Tablosu</a>
+<a href="#buyuk-resim" class="toc-h2">Büyük Resim</a>
+<a href="#ana-anlatim" class="toc-h2">Ana Anlatım</a>
+<a href="#reflection-ciktiyi-elestirip-iyilestirmek" class="toc-h3">Reflection: çıktıyı eleştirip iyileştirmek</a>
+<a href="#tek-model-veya-ayri-elestirmen" class="toc-h3">Tek model veya ayrı eleştirmen</a>
+<a href="#tool-use-modeli-dis-yeteneklerle-genisletmek" class="toc-h3">Tool use: modeli dış yeteneklerle genişletmek</a>
+<a href="#tool-use-deseninin-temel-fikri" class="toc-h3">Tool use deseninin temel fikri</a>
+<a href="#planning-adimlari-modelin-siralamasi" class="toc-h3">Planning: adımları modelin sıralaması</a>
+<a href="#planlama-neden-daha-zor-kontrol-edilir" class="toc-h3">Planlama neden daha zor kontrol edilir?</a>
+<a href="#coklu-ajan-isbirligi-roller-arasi-calisma" class="toc-h3">Çoklu ajan işbirliği: roller arası çalışma</a>
+<a href="#dort-deseni-karsilastirma" class="toc-h2">Dört Deseni Karşılaştırma</a>
+<a href="#yaygin-hatalar" class="toc-h2">Yaygın Hatalar</a>
+<a href="#sik-karsilasilan-yanlis-anlamalar" class="toc-h3">Sık karşılaşılan yanlış anlamalar</a>
+<a href="#son-cikarimlar" class="toc-h2">Son Çıkarımlar</a>
+</nav>
+</aside>
+</div>
+<script src="../../assets/nav.js"></script>
+</body>
+</html>
